@@ -1,4 +1,5 @@
 from api import api_bp, jwt
+from flask import jsonify
 
 from werkzeug.exceptions import HTTPException
 
@@ -8,13 +9,14 @@ def handle_exception(e):
     """Return JSON instead of HTML for HTTP errors."""
     # start with the correct headers and status code from the error
     response = e.get_response()
+    print("ok")
     # replace the body with JSON
     response.content_type = "application/json"
-    return {
+    return jsonify({
         "status": e.code,
         "name": e.name,
         "data": e.description,
-    }, e.code
+    }), e.code
 
 
 @api_bp.errorhandler(404)
@@ -22,7 +24,7 @@ def page_not_found(e):
     response = e.get_response()
     # replace the body with JSON
     response.content_type = "application/json"
-    return {
+    return jsonify({
         "status": e.code,
         "name": e.name,
         "data": {
@@ -31,12 +33,12 @@ def page_not_found(e):
                 "Endpoint not found."
             ]
         },
-    }, e.code
+    }), e.code
 
 
 @jwt.expired_token_loader
 def expiredToken(jwt_header, jwt_payload):
-    return {
+    return jsonify({
         "status": 401,
         "name": "AuthenticationError",
         "data": {
@@ -45,12 +47,12 @@ def expiredToken(jwt_header, jwt_payload):
                 "Token has expired"
             ]
         }
-    }, 401
+    }), 401
 
 
 @jwt.invalid_token_loader
 def invalidToken(error):
-    return {
+    return jsonify({
         "status": 401,
         "name": "AuthenticationError",
         "data": {
@@ -59,12 +61,12 @@ def invalidToken(error):
                 error
             ]
         }
-    }, 401
+    }), 401
 
 
 @jwt.unauthorized_loader
 def unauthorized(error):
-    return {
+    return jsonify({
         "status": 401,
         "name": "AuthenticationError",
         "data": {
@@ -73,12 +75,12 @@ def unauthorized(error):
                 error
             ]
         }
-    }, 401
+    }), 401
 
 
 @jwt.needs_fresh_token_loader
 def needsFreshToken(jwt_header, jwt_payload):
-    return {
+    return jsonify({
         "status": 401,
         "name": "AuthenticationError",
         "data": {
@@ -87,12 +89,12 @@ def needsFreshToken(jwt_header, jwt_payload):
                 "Fresh token required"
             ]
         }
-    }, 401
+    }), 401
 
 
 @jwt.user_lookup_error_loader
 def userLookupError(jwt_header, jwt_payload):
-    return {
+    return jsonify({
         "status": 401,
         "name": "AuthenticationError",
         "data": {
@@ -101,12 +103,12 @@ def userLookupError(jwt_header, jwt_payload):
                 "Error loading the user"
             ]
         }
-    }, 401
+    }), 401
 
 
 @jwt.token_verification_failed_loader
 def tokenVerificationFailed(jwt_header, jwt_payload):
-    return {
+    return jsonify({
         "status": 401,
         "name": "AuthenticationError",
         "data": {
@@ -115,7 +117,7 @@ def tokenVerificationFailed(jwt_header, jwt_payload):
                 "User claims verification failed"
             ]
         }
-    }, 401
+    }), 401
 
 
 @api_bp.errorhandler(500)
@@ -123,7 +125,7 @@ def internal(e):
     response = e.get_response()
     # replace the body with JSON
     response.content_type = "application/json"
-    return {
+    return jsonify({
         "status": e.code,
         "name": e.name,
         "data": {
@@ -132,4 +134,4 @@ def internal(e):
                 e.description
             ]
         },
-    }, 500
+    }), 500

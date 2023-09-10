@@ -1,6 +1,6 @@
 from flask import send_from_directory
 
-from api import db, app, api_bp, endpoints
+from api import db, app, api_bp, errorHandler, endpoints
 
 
 with app.app_context():

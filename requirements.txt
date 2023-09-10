@@ -7,3 +7,4 @@ marshmallow-sqlalchemy
 requests
 python-dotenv
 gunicorn
+pyodbc

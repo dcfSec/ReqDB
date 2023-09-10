@@ -145,6 +145,7 @@ class TopicOnlyIDAndTitleSchema(ma.SQLAlchemySchema):
         include_relationships = True
         load_instance = True
         include_fk = True
+        unknown = EXCLUDE
 
     id = ma.auto_field()
     title = ma.auto_field(required=True)
@@ -169,11 +170,12 @@ class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
         include_relationships = True
         load_instance = True
         include_fk = True
+        unknown = EXCLUDE
 
     title = ma.auto_field(validate=validate.Length(min=1))
     maxDepth = ma.auto_field(validate=validate.Range(min=1))
     rootObject = fields.Nested(
-        nested='TopicSchema', only=["key", "title", "id"]
+        nested='TopicOnlyIDAndTitleSchema', only=["key", "title", "id"]
     )
 
 
