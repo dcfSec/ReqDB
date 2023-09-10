@@ -14,7 +14,7 @@ export const msalConfig = {
   auth: {
     clientId: process.env.REACT_APP_CLIENT_ID, // This is the ONLY mandatory field that you need to supply.
     authority: `https://login.microsoftonline.com/${process.env.REACT_APP_TENANT}`, // Defaults to "https://login.microsoftonline.com/common"
-    // redirectUri: "/", // You must register this URI on Azure Portal/App Registration. Defaults to window.location.origin
+    redirectUri: "/", // You must register this URI on Azure Portal/App Registration. Defaults to window.location.origin
     postLogoutRedirectUri: "/", // Indicates the page to navigate after logout.
     clientCapabilities: ["CP1"] // this lets the resource owner know that this client is capable of handling claims challenge.
   },

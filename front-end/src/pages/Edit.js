@@ -135,7 +135,7 @@ export function Tags({ setShowSpinner, notificationToastHandler, setNotification
     searchFields={[
       "name"
     ]}
-    endpoint="/tags"
+    endpoint="tags"
     parameters={["minimal"]}
   />
 }
@@ -160,7 +160,7 @@ export function Catalogues({ setShowSpinner, notificationToastHandler, setNotifi
       "title",
       "description"
     ]}
-    endpoint="/catalogues"
+    endpoint="catalogues"
     parameters={["minimal"]}
   />
 }
@@ -185,7 +185,7 @@ export function Topics({ setShowSpinner, notificationToastHandler, setNotificati
     searchFields={[
       "key", "title", "description"
     ]}
-    endpoint="/topics"
+    endpoint="topics"
     parameters={[]}
   />
 }
@@ -211,7 +211,7 @@ export function Requirements({ setShowSpinner, notificationToastHandler, setNoti
     searchFields={[
       "key", "title", "description"
     ]}
-    endpoint="/requirements"
+    endpoint="requirements"
     parameters={[]}
   />
 }
@@ -234,7 +234,7 @@ export function ExtraTypes({ setShowSpinner, notificationToastHandler, setNotifi
     searchFields={[
       "title", "description"
     ]}
-    endpoint="/extraTypes"
+    endpoint="extraTypes"
     parameters={[]}
   />
 }
@@ -257,7 +257,7 @@ export function ExtraEntries({ setShowSpinner, notificationToastHandler, setNoti
     searchFields={[
       "content"
     ]}
-    endpoint="/extraEntries"
+    endpoint="extraEntries"
     parameters={[]}
   />
 }
