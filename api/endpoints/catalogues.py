@@ -86,7 +86,7 @@ class Catalogues(Resource):
 
     def post(self):
         checkAccess(get_jwt(), ['Writer'])
-        schema = CatalogueSchema()
+        schema = CatalogueUpdateSchema()
         try:
             catalogue = schema.load(request.json, session=db.session)
             db.session.add(catalogue)

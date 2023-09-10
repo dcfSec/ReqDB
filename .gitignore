@@ -167,3 +167,6 @@ cython_debug/
 
 # env
 .env
+
+# ZIP
+*.zip
