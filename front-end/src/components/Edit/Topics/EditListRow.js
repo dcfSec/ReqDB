@@ -107,7 +107,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
             show={showUpdateMany2Many}
             setShow={setShowUpdateMany2Many}
             initialSelectedItems={item.requirement}
-            endpoint="/topics"
+            endpoint="topics"
             columns={["key", "title"]}
             updateKey={"requirement"}
             updateItem={updateTempItem}
@@ -125,7 +125,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
             itemId={item.id}
             show={showSelectParentModal}
             setShow={setShowSelectParentModal}
-            endpoint="/topics"
+            endpoint="topics"
             updateIdField="parentId"
             updateObjectField="parent"
             checkCircle={true}
