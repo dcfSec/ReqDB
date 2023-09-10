@@ -1,0 +1,9 @@
+Flask
+Flask-RESTful
+flask-jwt-extended[asymmetric_crypto]
+flask-sqlalchemy
+flask-marshmallow
+marshmallow-sqlalchemy
+requests
+python-dotenv
+gunicorn

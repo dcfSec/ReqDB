@@ -1,0 +1,49 @@
+.footer-col {
+  margin-bottom: 0em;
+}
+
+div.col {
+  margin-bottom: 1em;
+}
+
+.bg-body.container-fluid {
+  width: 95%;
+}
+
+.bg-body  {
+  border-left: 1px;
+  border-right: 1px;
+  border-top: 0px;
+  border-bottom: 0px;
+
+  border-style: solid;
+  border-color: var(--bs-border-color);
+
+}
+
+.footer {
+  padding-top: 0.5em;
+  font-size: large;
+  font-weight: bold;
+}
+
+.footer a{
+  text-decoration: none;
+  color: var(--bs-nav-link-color);
+}
+
+.navbar-text {
+  margin-right: 2em;
+}
+
+.smallLogo {
+  height: 1.3em;
+}
+
+.no-bullets {
+  list-style-type: none;
+}
+
+.navbar-signed-in-text {
+  margin-right: 0.2em;
+}
