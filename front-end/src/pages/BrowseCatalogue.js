@@ -75,7 +75,7 @@ export default function BrowseCatalogue() {
         rows.sort((a, b) => {
           const nameA = a.Key.toUpperCase(); 
           const nameB = b.Key.toUpperCase();
-          if (nameA > nameB) {
+          if (nameA < nameB) {
             return -1;
           }
           if (nameA > nameB) {
