@@ -22,7 +22,7 @@
     "react-router-dom": "^6.15.0",
     "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz"
   },
   "scripts": {
     "start": "react-scripts start",
