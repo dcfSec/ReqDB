@@ -15,7 +15,7 @@ class RequirementTag(Base):
 
 class Requirement(Base):
     key = db.Column(db.String(20), unique=True, nullable=False)
-    title = db.Column(db.String(150), unique=True, nullable=False)
+    title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
     parentId = db.Column(
         db.Integer, db.ForeignKey('topic.id'), nullable=False)
@@ -47,7 +47,7 @@ class Tag(Base):
 class Topic(Base):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     key = db.Column(db.String(20), unique=True, nullable=False)
-    title = db.Column(db.String(150), unique=True, nullable=False)
+    title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
     parentId = db.Column(db.Integer, db.ForeignKey('topic.id'), nullable=True)
     parent = db.relationship(
@@ -61,7 +61,7 @@ class Topic(Base):
 
 class ExtraType(Base):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(150), unique=True, nullable=False)
+    title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
     children = db.relationship('ExtraEntry', backref='extraType')
     extraType = db.Column(db.Integer, nullable=False)
@@ -84,7 +84,7 @@ class ExtraEntry(Base):
 
 class Catalogue(Base):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(150), unique=True, nullable=False)
+    title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
     root = db.Column(
         db.Integer, db.ForeignKey('topic.id'), nullable=False)
