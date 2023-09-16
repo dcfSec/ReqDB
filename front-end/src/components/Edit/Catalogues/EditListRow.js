@@ -4,7 +4,6 @@ import { inSearchField } from "../../MiniComponents";
 import { useContext, useState } from "react";
 import { API, UserContext, handleErrorMessage } from "../../../static";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
-import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
 import SelectMany from "../SelectManyModal";
