@@ -1,5 +1,6 @@
 import './App.css';
 import { MsalProvider, AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
+import { loginRequest } from './authConfig';
 
 import { UserContext } from "./static";
 import { useEffect, useState } from 'react';
@@ -23,6 +24,13 @@ const MainContent = () => {
    */
   const { instance } = useMsal();
   const activeAccount = instance.getActiveAccount();
+  if (!instance) {
+    instance.setActiveAccount(instance);
+    instance.loginRedirect({
+        ...loginRequest,
+        prompt: 'login',
+    });
+  }
 
   /**
    * Most applications will need to conditionally render certain components based on whether a user is signed in or not.
