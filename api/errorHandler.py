@@ -85,9 +85,7 @@ def needsFreshToken(jwt_header, jwt_payload):
         "name": "AuthenticationError",
         "data": {
             "error": "NeedsFreshToken",
-            "message": [
-                "Fresh token required"
-            ]
+            "message": "Fresh token required"
         }
     }), 401
 
@@ -99,9 +97,7 @@ def userLookupError(jwt_header, jwt_payload):
         "name": "AuthenticationError",
         "data": {
             "error": "UserLookupError",
-            "message": [
-                "Error loading the user"
-            ]
+            "message": "Error loading the user"
         }
     }), 401
 
@@ -113,9 +109,7 @@ def tokenVerificationFailed(jwt_header, jwt_payload):
         "name": "AuthenticationError",
         "data": {
             "error": "TokenVerificationFailed",
-            "message": [
-                "User claims verification failed"
-            ]
+            "message": "User claims verification failed"
         }
     }), 401
 
@@ -130,8 +124,6 @@ def internal(e):
         "name": e.name,
         "data": {
             "error": "InternalError",
-            "message": [
-                e.description
-            ]
+            "message": e.description
         },
     }), 500
