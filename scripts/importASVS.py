@@ -1,7 +1,8 @@
 import json
 
 from api import db
-from api.models import Tag, Topic, Requirement, ExtraEntry, ExtraType
+from api.models import Tag, Topic, Requirement, ExtraEntry, ExtraType, \
+    Catalogue
 
 db.drop_all()
 db.create_all()
@@ -22,13 +23,14 @@ cve = ExtraType(title="CVE Ref", extraType=1, description="CVE Reference")
 root = Topic(key=asvs["ShortName"], title=asvs["Name"],
              description=asvs["Description"])
 
-
 db.session.add_all(tags)
 db.session.add_all([nist, cve])
 
 db.session.add(root)
 
 db.session.commit()
+
+rootTopics = []
 
 for itemL1 in asvs["Requirements"]:
     parentL1 = Topic(
@@ -39,6 +41,7 @@ for itemL1 in asvs["Requirements"]:
     )
     db.session.add(parentL1)
     db.session.commit()
+    rootTopics.append(parentL1)
     for itemL2 in itemL1["Items"]:
         parentL2 = Topic(
             key=itemL2["Shortcode"],
@@ -81,4 +84,7 @@ for itemL1 in asvs["Requirements"]:
                 )
             db.session.commit()
 
+catalogue = Catalogue(title=asvs["Name"], description=asvs["Description"],
+                      maxDepth=2, topics=rootTopics)
+db.session.add(catalogue)
 db.session.commit()
