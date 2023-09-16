@@ -1,5 +1,7 @@
 #!/bin/sh
 
+if [[ -f ".env" ]]; then source .env; fi;
+
 # ENV: RESOURCE_GROUP_NAME
 # ENV: APP_SERVICE_NAME
 
