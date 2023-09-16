@@ -47,3 +47,7 @@ div.col {
 .navbar-signed-in-text {
   margin-right: 0.2em;
 }
+
+table tr:hover td {
+  background-color: rgba(var(--bs-tertiary-bg-rgb),var(--bs-bg-opacity));
+}
