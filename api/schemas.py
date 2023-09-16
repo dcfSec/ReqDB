@@ -161,7 +161,7 @@ class CatalogueSchema(ma.SQLAlchemyAutoSchema):
 
     title = ma.auto_field(validate=validate.Length(min=1))
     maxDepth = ma.auto_field(validate=validate.Range(min=1))
-    rootObject = fields.Nested(nested='TopicSchema')
+    topics = fields.Nested(nested='TopicSchema', many=True)
 
 
 class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
@@ -174,9 +174,8 @@ class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
 
     title = ma.auto_field(validate=validate.Length(min=1))
     maxDepth = ma.auto_field(validate=validate.Range(min=1))
-    rootObject = fields.Nested(
-        nested='TopicOnlyIDAndTitleSchema', only=["key", "title", "id"]
-    )
+    topics = fields.Nested(nested='TopicSchema', only=['id', 'title'],
+                           many=True)
 
 
 class CatalogueMinimalSchema(ma.SQLAlchemyAutoSchema):
@@ -188,6 +187,5 @@ class CatalogueMinimalSchema(ma.SQLAlchemyAutoSchema):
 
     title = ma.auto_field(validate=validate.Length(min=1))
     maxDepth = ma.auto_field(validate=validate.Range(min=1))
-    rootObject = fields.Nested(
-        nested='TopicSchema', only=["key", "title", "id"]
-    )
+    topics = fields.Nested(nested='TopicSchema', only=['id', 'title'],
+                           many=True)

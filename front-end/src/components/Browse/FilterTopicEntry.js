@@ -36,9 +36,10 @@ export default function FilterTopicEntry({topic, filteredTopics, setFilteredTopi
     }
   }
 
-  return (search === "" || inFilterField(search, allChildren)) ? <li className='no-bullets'>
-        <Form.Check key={`${topic.key} ${topic.title}`} id={`${topic.key} ${topic.title}`} type="switch" label={`${topic.key} ${topic.title}`} style={{paddingLeft:"1.5em"}} onChange={toggleAll} checked={allChecked}/>
-        <ul>{topic.children.map((child, index) => ((search === "" || inFilterField(search, getAllChildren(child, []))) ? <li className='no-bullets'><FilterTopicEntry key={index} topic={child} search={search} filteredTopics={filteredTopics} setFilteredTopics={setFilteredTopics} /></li> : null))}</ul>
+  return (search === "" || inFilterField(search, allChildren)) ? 
+    <li className='no-bullets'>
+      <Form.Check key={`${topic.key} ${topic.title}`} id={`${topic.key} ${topic.title}`} type="switch" label={`${topic.key} ${topic.title}`} style={{paddingLeft:"1.5em"}} onChange={toggleAll} checked={allChecked}/>
+      <ul>{topic.children.map((child, index) => ((search === "" || inFilterField(search, getAllChildren(child, []))) ? <FilterTopicEntry key={index} topic={child} search={search} filteredTopics={filteredTopics} setFilteredTopics={setFilteredTopics} /> : null))}</ul>
     </li> : null
 
 }
