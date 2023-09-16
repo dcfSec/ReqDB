@@ -66,7 +66,7 @@ export default function BrowseCatalogue() {
   let body = <ProgressBar animated now={100} />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data</Alert>
+    body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
   } else {
     if (catalogueData && catalogueData.status === 200) {
       if (!isBuilt) {
