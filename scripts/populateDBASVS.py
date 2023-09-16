@@ -1,12 +1,12 @@
 import json
 
-from reqdb.extensions import db
-from reqdb.models import Tag, Topic, Requirement, ExtraEntry, ExtraType
+from api import db
+from api.models import Tag, Topic, Requirement, ExtraEntry, ExtraType
 
-
+db.drop_all()
 db.create_all()
 
-with open("apit/scripts/asvs.json") as f:
+with open("scripts/asvs.json") as f:
     asvs = json.load(f)
 
 
