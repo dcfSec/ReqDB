@@ -37,7 +37,6 @@ class Tag(Resource):
         try:
             tag = updateSchema.load(request.json, instance=tag, partial=True,
                                     session=db.session)
-            print(tag)
             db.session.commit()
             return {
                 'status': 200,
@@ -95,7 +94,6 @@ class Tags(Resource):
                 'data': schema.dump(tag)
             }, 201
         except ValidationError as e:
-            print(e.messages)
             abort(400, {'error': 'ValidationError', 'message': e.messages})
         except IntegrityError as e:
             abort(400, {'error': 'IntegrityError', 'message': e.args})
