@@ -11,7 +11,6 @@ export function handleErrorMessage(message) {
       errorLines = <>{message.map((line, index) => (
         <p key={index}>{line}</p>
       ))}</>
-      
     } else if (typeof message === "object") {
       errorLines = <ul>
       {Object.keys(message).map((m, index) => (
@@ -22,8 +21,10 @@ export function handleErrorMessage(message) {
           </ul></li>
       ))}
       </ul>
-    } else {
+    } else if (typeof message === "string")  {
       errorLines = <p>{message}</p>
+    } else {
+      errorLines = <p>{JSON.stringify(message)}</p>
     }
     return errorLines
 }
