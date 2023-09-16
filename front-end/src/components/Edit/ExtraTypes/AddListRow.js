@@ -13,9 +13,14 @@ export default function AddListRow({blankItem, humanKey, endpoint, addItemToList
 
   const [newItem, setNewItem] = useState(blankItem);
 
-  const { execute } = useFetchWithMsal({
+  const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
   });
+
+  if (error) {
+    setNotificationToastHandler(["UnhandledError", error.message, true])
+    setShowSpinner(false)    
+  }
 
   function addItem() {
     execute("POST", `${API}/${endpoint}`, newItem).then(

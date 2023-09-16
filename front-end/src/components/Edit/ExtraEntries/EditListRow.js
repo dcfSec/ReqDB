@@ -33,9 +33,14 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
     setItem(tempItem)
   }
 
-  const { execute } = useFetchWithMsal({
+  const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
   });
+
+  if (error) {
+    setNotificationToastHandler(["UnhandledError", error.message, true])
+    setShowSpinner(false)    
+  }
   
   function saveItem() {
     execute("PUT", `${API}/${endpoint}/${originalItem.id}?minimal`, item).then(
