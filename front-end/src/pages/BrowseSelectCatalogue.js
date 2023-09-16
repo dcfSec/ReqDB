@@ -36,7 +36,7 @@ export default function BrowseSelectCatalogue() {
   let body = <ProgressBar animated now={100} />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data</Alert>
+    body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
   } else {
     if (catalogueData && catalogueData.status === 200) {
       body = <Stack gap={2} className="col-md-5 mx-auto"><ListGroup>
