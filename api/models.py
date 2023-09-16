@@ -13,6 +13,12 @@ class RequirementTag(Base):
     tagId = db.Column(db.Integer, db.ForeignKey('tag.id'))
 
 
+class CatalogueTopic(Base):
+    __tablename__ = 'CatalogueTopic'
+    catalogueId = db.Column(db.Integer, db.ForeignKey('catalogue.id'))
+    topicId = db.Column(db.Integer, db.ForeignKey('topic.id'))
+
+
 class Requirement(Base):
     key = db.Column(db.String(20), unique=True, nullable=False)
     title = db.Column(db.String(150), nullable=False)
@@ -45,6 +51,7 @@ class Tag(Base):
 
 
 class Topic(Base):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     key = db.Column(db.String(20), unique=True, nullable=False)
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -54,11 +61,17 @@ class Topic(Base):
     requirements = db.relationship(
         'Requirement', backref='parent', lazy="joined")
 
+    catalogues = db.relationship(
+        'Catalogue',
+        secondary='CatalogueTopic'
+    )
+
     def __repr__(self):
         return f'<Topic "{self.title}">'
 
 
 class ExtraType(Base):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
     children = db.relationship('ExtraEntry', backref='extraType')
@@ -69,6 +82,7 @@ class ExtraType(Base):
 
 
 class ExtraEntry(Base):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     content = db.Column(db.Text)
     extraTypeId = db.Column(
         db.Integer, db.ForeignKey('extra_type.id'), nullable=False)
@@ -80,12 +94,16 @@ class ExtraEntry(Base):
 
 
 class Catalogue(Base):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    root = db.Column(db.Integer, db.ForeignKey('topic.id'))
     maxDepth = db.Column(db.Integer, nullable=False)
 
-    rootObject = db.relationship('Topic')
+    topics = db.relationship(
+        'Topic',
+        secondary='CatalogueTopic',
+        back_populates='catalogues'
+    )
 
     def __repr__(self):
         return f'<Catalogue "{self.title}">'

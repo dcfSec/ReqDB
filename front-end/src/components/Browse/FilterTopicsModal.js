@@ -5,7 +5,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { useState } from 'react';
 import FilterTopicEntry from './FilterTopicEntry';
 
-export default function FilterTopicsModal({ show, setShow, topic, setFilteredTopics, filteredTopics }) {
+export default function FilterTopicsModal({ show, setShow, topics, setFilteredTopics, filteredTopics }) {
 
   const [search, setSearch] = useState("");
 
@@ -33,7 +33,7 @@ export default function FilterTopicsModal({ show, setShow, topic, setFilteredTop
           <Col><SearchField title="topic" search={search} onSearch={setSearch}></SearchField></Col>
         </Row>
         <Row>
-          <FilterTopicEntry topic={topic} filteredTopics={filteredTopics} setFilteredTopics={setFilteredTopics} search={search} />
+        <ul>{topics.map((topic, index) => ( <FilterTopicEntry key={index} topic={topic} filteredTopics={filteredTopics} setFilteredTopics={setFilteredTopics} search={search} /> ))}</ul>
         </Row>
       </Container>
       </Modal.Body>

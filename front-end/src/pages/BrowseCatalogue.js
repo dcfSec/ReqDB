@@ -52,7 +52,7 @@ export default function BrowseCatalogue() {
   let extraHeaders = []
   let extraHeaderTypes = {}
   let isBuilt = false
-  let rootObject = {}
+  let rootTopics = []
 
   let tagFilterItems = []
   let topicFilterItems = []
@@ -70,8 +70,8 @@ export default function BrowseCatalogue() {
   } else {
     if (catalogueData && catalogueData.status === 200) {
       if (!isBuilt) {
-        rootObject = catalogueData.data.rootObject
-        getItemEntry(catalogueData.data.rootObject, [], Number(catalogueData.data.maxDepth))
+        rootTopics = catalogueData.data.topics
+        getItemEntry( { children: rootTopics }, [], Number(catalogueData.data.maxDepth))
         rows.sort((a, b) => {
           const nameA = a.Key.toUpperCase(); 
           const nameB = b.Key.toUpperCase();
@@ -209,7 +209,7 @@ export default function BrowseCatalogue() {
           {body}
         </Col>
         </Row>
-        <FilterTopicModal show={showFilterModal} setShow={setShowFilterModal} topic={rootObject} filteredTopics={topicFiltered} setFilteredTopics={setTopicFiltered} />
+        <FilterTopicModal show={showFilterModal} setShow={setShowFilterModal} topics={rootTopics} filteredTopics={topicFiltered} setFilteredTopics={setTopicFiltered} />
       </Container>
     );
   } else {

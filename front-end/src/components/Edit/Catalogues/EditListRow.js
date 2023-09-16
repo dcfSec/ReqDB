@@ -7,6 +7,7 @@ import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
+import SelectMany from "../SelectManyModal";
 
 
 export default function EditListRow({ index, endpoint, originalItem, humanKey, deleteItemInList, search, searchFields }) {
@@ -21,7 +22,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
   
   const [item, setItem] = useState(originalItem);
 
-  const [showSelectParentModal, setShowSelectParentModal] = useState(false);
+  const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
 
   function resetTempItem() {
     setItem(originalItem)
@@ -102,21 +103,18 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
         <td><Form.Control disabled={!edit} type="text" id="description" value={item.description} onChange={e => { updateTempItem({description: e.target.value}) }} /></td>
         <td><Form.Control disabled={!edit} type="number" id="maxDepth" min="0" value={item.maxDepth} onChange={e => { updateTempItem({maxDepth: e.target.value}) }} /></td>
         <td><Button disabled={!edit} variant="primary" onClick={() => {
-        setShowSelectParentModal(true) }}>{item.root ? item.rootObject.key : "Root Element"}</Button></td>
+        setShowUpdateMany2Many(true) }}>Set elements</Button></td>
         <td>{buttons}</td>
-        {showSelectParentModal ? <SelectParentModal id="parent"
-        itemId={item.id}
-        humanKey={item.title}
-        show={showSelectParentModal}
-        setShow={setShowSelectParentModal}
-        initialSelectedItem={item.parentId}
-        endpoint={"topics"}
-        updateItem={updateTempItem}
-        updateIdField={"root"}
-        updateObjectField={"rootObject"}
-        checkCircle={false}
-        columns={["key", "title"]}
-      ></SelectParentModal> : null}
+        {showUpdateMany2Many ?<SelectMany
+            humanKey={item.name}
+            show={showUpdateMany2Many}
+            setShow={setShowUpdateMany2Many}
+            initialSelectedItems={item.topics}
+            endpoint="topics"
+            columns={["key", "title"]}
+            updateKey={"topics"}
+            updateItem={updateTempItem}
+          ></SelectMany> : null}
         { showDeleteModal ? <DeleteConfirmationModal
         show={showDeleteModal}
         item={item[humanKey]}
