@@ -30,6 +30,32 @@ cd front-end
 npm run build
 ```
 
+## Configuration
+
+The base configuration is done  via environment variables:
+
+```
+FLASK_APP="ReqDB"           # Name of the Flask app
+FLASK_ENV="production"      # Flask environment  production or development
+SECRET_KEY="CHANGEME"       # The secret key for flaks
+
+DATABASE_URI="app.sqlite"   # Database URI fpr sqlalchemie (See https://docs.sqlalchemy.org/en/20/core/engines.html for details)
+
+OAUTH_APP_CLIENT_ID="xxx"   # Client ID for oauth (Azure Entra)
+OAUTH_APP_TENANT="xxx"      # Azure Tenant ID
+
+RESOURCE_GROUP_NAME="ReqDB"  # Resource group for zip deployment with deployZip.sh
+APP_SERVICE_NAME="ReqDB"     # App Service for zip deployment with deployZip.sh
+
+REACT_APP_CLIENT_ID = "xxx"  # Client ID for oauth (Azure Entra) (React)
+REACT_APP_TENANT = "xxx"     # Azure Tenant ID (React)
+
+```
+
+## Deployment
+
+ReqDB can be deployed everywhere where python is supported as runtime environment. `deployZip.sh`  is a simple deployment script to deploy the app to an Azure App Service.
+
 ## Development
 
 1. Clone the repository: `git clone git@github.com:dcfSec/ReqDB.git; cd ReqDB`
