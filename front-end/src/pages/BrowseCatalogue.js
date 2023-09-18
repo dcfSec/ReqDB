@@ -92,7 +92,7 @@ export default function BrowseCatalogue() {
   }
 
   function getItemEntry(item, topics, depth) {
-    if (depth === 0) {
+    if ('requirements' in item) {
       item.requirements.forEach(requirement => {
         const tags = []
         requirement.tags.forEach(tag => {
@@ -118,14 +118,14 @@ export default function BrowseCatalogue() {
           });
         rows.push({...base, ...extraColumns})
       });
-    } else { 
+    }
+    if ('children' in item) {
       item.children.forEach(topic => {
         if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
           topicFilterItems.push(`${topic.key} ${topic.title}`)
         }
         getItemEntry(topic, [...topics, topic], depth-1)
-      }
-   );
+      });
     }
   }
 
