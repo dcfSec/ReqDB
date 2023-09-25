@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { inFilterField } from '../MiniComponents';
 
-export default function FilterTopicEntry({topic, filteredTopics, setFilteredTopics, search}) {
+export default function FilterTopicEntry({topic, filteredTopics, setFilteredTopics, search, root=false}) {
 
   let allChildren = getAllChildren(topic, [])
 
@@ -38,7 +38,7 @@ export default function FilterTopicEntry({topic, filteredTopics, setFilteredTopi
 
   return (search === "" || inFilterField(search, allChildren)) ? 
     <li className='no-bullets'>
-      <Form.Check key={`${topic.key} ${topic.title}`} id={`${topic.key} ${topic.title}`} type="switch" label={`${topic.key} ${topic.title}`} style={{paddingLeft:"1.5em"}} onChange={toggleAll} checked={allChecked}/>
+      <Form.Check key={`${topic.key} ${topic.title}`} id={`${topic.key} ${topic.title}`} type="switch" label={root ? `${topic.title}` : `${topic.key} - ${topic.title}`} style={{paddingLeft:"1.5em"}} onChange={toggleAll} checked={allChecked}/>
       <ul>{topic.children.map((child, index) => ((search === "" || inFilterField(search, getAllChildren(child, []))) ? <FilterTopicEntry key={index} topic={child} search={search} filteredTopics={filteredTopics} setFilteredTopics={setFilteredTopics} /> : null))}</ul>
     </li> : null
 

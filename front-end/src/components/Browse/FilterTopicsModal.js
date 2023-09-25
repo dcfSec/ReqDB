@@ -14,6 +14,11 @@ export default function FilterTopicsModal({ show, setShow, topics, setFilteredTo
     setSearch("")
   }
 
+  const all = {
+    title: "All",
+    children: topics
+  }
+
   return (
     <Modal
       show={show}
@@ -33,7 +38,7 @@ export default function FilterTopicsModal({ show, setShow, topics, setFilteredTo
           <Col><SearchField title="topic" search={search} onSearch={setSearch}></SearchField></Col>
         </Row>
         <Row>
-        <ul>{topics.map((topic, index) => ( <FilterTopicEntry key={index} topic={topic} filteredTopics={filteredTopics} setFilteredTopics={setFilteredTopics} search={search} /> ))}</ul>
+          <ul><FilterTopicEntry topic={all} filteredTopics={filteredTopics} setFilteredTopics={setFilteredTopics} search={search} root={true} /></ul>
         </Row>
       </Container>
       </Modal.Body>
