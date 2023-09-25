@@ -52,7 +52,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
           setItem(response.data)
           setNotificationToastHandler([<>Item <code>{response.data[humanKey]}</code> edited</>, "Item successfully edited", true])
         } else {
-          setNotificationToastHandler([response.data.error, handleErrorMessage(response.data.message), true])
+          setNotificationToastHandler([response.error, handleErrorMessage(response.message), true])
         }
         setShowSpinner(false)
       },
@@ -78,7 +78,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
           setItem(null)
         } else {
           response.json().then((r) => {
-            setNotificationToastHandler([r.data.error, handleErrorMessage(r.data.message), true])
+            setNotificationToastHandler([r.error, handleErrorMessage(r.message), true])
           }
           );
         }

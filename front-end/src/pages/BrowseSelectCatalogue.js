@@ -53,7 +53,7 @@ export default function BrowseSelectCatalogue() {
       }).map((catalogue, index) => ( <SelecttCatalogueItem key={index} catalogue={catalogue}/>))}
         </ListGroup></Stack>
     } else if (catalogueData && catalogueData.status !== 200) {
-      body = <Alert variant="danger">{handleErrorMessage(catalogueData.data.message)}</Alert>
+      body = <Alert variant="danger">{handleErrorMessage(catalogueData.message)}</Alert>
     }
   }
 

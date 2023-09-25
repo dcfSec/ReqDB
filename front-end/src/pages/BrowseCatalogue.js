@@ -87,7 +87,7 @@ export default function BrowseCatalogue() {
         body = <DataTable headers={[...headers, ...extraHeaders]} markAll={true} markAllCallback={handleCheckboxChangeAll} markAllChecked={allMarkRowChecked}>{rows.map((row, index) => ( <BrowseRow key={index} index={index} extraHeaders={extraHeaders} row={row} search={search} tags={tagFilterItems} topicFiltered={topicFiltered} tagFiltered={tagFiltered} extraHeaderTypes={extraHeaderTypes} markRowCallback={handleSelectCheckboxChange} markRowChecked={markRowChecked}></BrowseRow>))}</DataTable>
       }
     } else if (catalogueData && catalogueData.status !== 200) {
-      body = <Alert variant="danger">{handleErrorMessage(catalogueData.data.message)}</Alert>
+      body = <Alert variant="danger">{handleErrorMessage(catalogueData.message)}</Alert>
     }
   }
 
