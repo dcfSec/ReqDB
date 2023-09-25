@@ -2,7 +2,7 @@ import { Badge, Form } from "react-bootstrap";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { inSearchField } from "../MiniComponents";
 
-export default function BrowseRow({ index, extraHeaders, extraHeaderTypes, row, search, tagFiltered, topicFiltered, markRowCallback, markRowChecked = []}) {
+export default function BrowseRow({ index, extraHeaders, extraHeaderTypes, row, search, tags, tagFiltered, topicFiltered, markRowCallback, markRowChecked = []}) {
 
   function renderExtraField(item, extraType) {
     if (extraHeaderTypes[extraType] === 1) {
@@ -14,7 +14,7 @@ export default function BrowseRow({ index, extraHeaders, extraHeaderTypes, row, 
     }
   }
 
-  if (inSearchField(search, Object.keys(row), row) && row.Tags.some(r=> tagFiltered.indexOf(r) >= 0) && row.Topics.some(r=> topicFiltered.indexOf(`${r.key} ${r.title}`) >= 0)) {
+  if (inSearchField(search, Object.keys(row), row) && (tags.length === 0 || row.Tags.some(r=> tagFiltered.indexOf(r) >= 0)) && row.Topics.some(r=> topicFiltered.indexOf(`${r.key} ${r.title}`) >= 0)) {
     return (
       <tr key={row.Key}>
         <td>{row.Tags.map((tag) => ( <span key={row.Key + " " + tag}><Badge bg="info">{tag}</Badge><br /></span>))}</td>
