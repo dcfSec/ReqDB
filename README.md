@@ -54,6 +54,24 @@ REACT_APP_TENANT = "xxx"     # Azure Tenant ID (React)
 
 ```
 
+## Azure Entra Configuration
+
+The application in Azure Entra needs to be configured to allow users to access it. The configuration below is the needed configuration (The section headers are the config menues in the Azure Portal)
+
+### API Permissions
+
+* `User.Read` -> Get the e-Mail to display in the upper corner
+
+### Expose an API
+
+* `api://<APP-ID>/ReqDB.Reader` -> Read access to the API
+* `api://<APP-ID>/ReqDB.Writer` -> Write access to the API
+
+### App Roles
+
+* `Reader` -> Read access to the front-end
+* `Writer` -> Write access to the front-end
+
 ## Deployment
 
 ReqDB can be deployed everywhere where python is supported as runtime environment. `deployZip.sh`  is a simple deployment script to deploy the app to an Azure App Service.
