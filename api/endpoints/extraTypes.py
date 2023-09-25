@@ -37,9 +37,18 @@ class ExtraType(Resource):
                 'data': schema.dump(extraType)
             }
         except ValidationError as e:
-            abort(400, {'error': 'ValidationError', 'message': e.messages})
+            return {
+                'status': 400,
+                'error': 'ValidationError',
+                'message': e.messages
+            }, 400
         except IntegrityError as e:
-            abort(400, {'error': 'IntegrityError', 'message': e.args})
+            return {
+                'status': 400,
+                'error':
+                'IntegrityError',
+                'message': e.args
+            }, 400
 
     def delete(self, id: int):
         checkAccess(get_jwt(), ['Writer'])
@@ -56,9 +65,18 @@ class ExtraType(Resource):
             db.session.commit()
             return {}, 204
         except ValidationError as e:
-            abort(400, {'error': 'ValidationError', 'message': e.messages})
+            return {
+                'status': 400,
+                'error': 'ValidationError',
+                'message': e.messages
+            }, 400
         except IntegrityError as e:
-            abort(400, {'error': 'IntegrityError', 'message': e.args})
+            return {
+                'status': 400,
+                'error':
+                'IntegrityError',
+                'message': e.args
+            }, 400
 
 
 class ExtraTypes(Resource):
@@ -85,6 +103,15 @@ class ExtraTypes(Resource):
                 'data': schema.dump(extraType)
             }, 201
         except ValidationError as e:
-            abort(400, {'error': 'ValidationError', 'message': e.messages})
+            return {
+                'status': 400,
+                'error': 'ValidationError',
+                'message': e.messages
+            }, 400
         except IntegrityError as e:
-            abort(400, {'error': 'IntegrityError', 'message': e.args})
+            return {
+                'status': 400,
+                'error':
+                'IntegrityError',
+                'message': e.args
+            }, 400

@@ -30,7 +30,7 @@ export default function AddListRow({blankItem, humanKey, endpoint, addItemToList
           setNotificationToastHandler([`Item created`, `Item "${response.data[humanKey]}" created.`, true])
           setNewItem(blankItem)
         } else {
-          setNotificationToastHandler([response.data.error, handleErrorMessage(response.data.message), true])
+          setNotificationToastHandler([response.error, handleErrorMessage(response.message), true])
         }
         setShowSpinner(false)
       },
