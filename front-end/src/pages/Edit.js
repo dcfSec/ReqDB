@@ -161,7 +161,7 @@ export function Catalogues({ setShowSpinner, notificationToastHandler, setNotifi
       "description"
     ]}
     endpoint="catalogues"
-    parameters={["minimal"]}
+    parameters={["nested"]}
   />
 }
 
