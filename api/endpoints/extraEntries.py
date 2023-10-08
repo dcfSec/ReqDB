@@ -15,9 +15,22 @@ from flask_jwt_extended import get_jwt
 
 
 class ExtraEntry(Resource):
+    """
+    EtryEntry class. This class represents an extra entry object in the API
+    """
     method_decorators = [jwt_required()]
 
     def get(self, id: int):
+        """
+        Returns a single extra entry object or a 404
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :param int id: The object id to use in the query
+        :return dict: ExtraEntry ressource or 404
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         extraEntry = ExtraEntryModel.query.get_or_404(id)
         schema = ExtraEntrySchema()
@@ -27,6 +40,15 @@ class ExtraEntry(Resource):
         }
 
     def put(self, id: int):
+        """
+        Updates an extra entry item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Updated extra entry ressource
+        """
         checkAccess(get_jwt(), ['Writer'])
         extraEntry = ExtraEntryModel.query.get_or_404(id)
         updateSchema = ExtraEntryUpdateSchema()
@@ -55,6 +77,15 @@ class ExtraEntry(Resource):
             }, 400
 
     def delete(self, id: int):
+        """
+        Deletes an extra entry item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Empty (204) if successfull, else error message
+        """
         checkAccess(get_jwt(), ['Writer'])
         extraEntry = ExtraEntryModel.query.get_or_404(id)
         try:
@@ -77,9 +108,21 @@ class ExtraEntry(Resource):
 
 
 class ExtraEntries(Resource):
+    """
+    ExtraEntries class, represents the extraEntires API to fetch all or add an
+    extraEntires item
+    """
     method_decorators = [jwt_required()]
 
     def get(self):
+        """Get all extra entries elements
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :return list: All extra entries elements
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         extraEntries = ExtraEntryModel.query.all()
         schema = ExtraEntrySchema(many=True)
@@ -89,6 +132,14 @@ class ExtraEntries(Resource):
         }
 
     def post(self):
+        """
+        Adds a new extra entry item
+
+        Required roles:
+            - Writer
+
+        :return dict: The new extra entry item
+        """
         checkAccess(get_jwt(), ['Writer'])
         updateSchema = ExtraEntryUpdateSchema()
         schema = ExtraEntrySchema()
