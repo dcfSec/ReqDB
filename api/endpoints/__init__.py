@@ -1,3 +1,9 @@
+"""
+Path mapping for the API.
+
+Maps classes to the API paths
+"""
+
 from api import api
 
 from api.endpoints.catalogues import Catalogue, Catalogues
