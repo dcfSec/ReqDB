@@ -153,6 +153,9 @@ class TopicOnlyIDAndTitleSchema(ma.SQLAlchemySchema):
 
 
 class CatalogueSchema(ma.SQLAlchemyAutoSchema):
+    """
+    Default catalogue schema. Without any nested elements
+    """
     class Meta:
         model = Catalogue
         include_relationships = True
@@ -161,10 +164,12 @@ class CatalogueSchema(ma.SQLAlchemyAutoSchema):
 
     title = ma.auto_field(validate=validate.Length(min=1))
     maxDepth = ma.auto_field(validate=validate.Range(min=1))
-    topics = fields.Nested(nested='TopicSchema', many=True)
 
 
-class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
+class CatalogueLightNestedSchema(ma.SQLAlchemyAutoSchema):
+    """
+    Catalogue schema with topics (id, title) as nested elements
+    """
     class Meta:
         model = Catalogue
         include_relationships = True
@@ -178,7 +183,10 @@ class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
                            many=True)
 
 
-class CatalogueMinimalSchema(ma.SQLAlchemyAutoSchema):
+class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
+    """
+    Catalogue schema with all nested elements
+    """
     class Meta:
         model = Catalogue
         include_relationships = True
@@ -187,5 +195,4 @@ class CatalogueMinimalSchema(ma.SQLAlchemyAutoSchema):
 
     title = ma.auto_field(validate=validate.Length(min=1))
     maxDepth = ma.auto_field(validate=validate.Range(min=1))
-    topics = fields.Nested(nested='TopicSchema', only=['id', 'title'],
-                           many=True)
+    topics = fields.Nested(nested='TopicSchema', many=True)

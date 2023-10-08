@@ -42,7 +42,7 @@ export default function BrowseCatalogue() {
 
   useEffect(() => {
       if (!catalogueData) {
-          execute("GET", `${API}/catalogues/${id}`).then((response) => {
+          execute("GET", `${API}/catalogues/${id}?extended`).then((response) => {
             setCatalogueData(response);
           });
       }

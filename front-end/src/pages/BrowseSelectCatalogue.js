@@ -26,7 +26,7 @@ export default function BrowseSelectCatalogue() {
 
   useEffect(() => {
       if (!catalogueData) {
-          execute("GET", `${API}/catalogues?minimal`).then((response) => {
+          execute("GET", `${API}/catalogues`).then((response) => {
             setCatalogueData(response);
           });
       }
