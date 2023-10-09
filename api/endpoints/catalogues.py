@@ -150,12 +150,13 @@ class Catalogues(Resource):
         """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         catalogues = CatalogueModel.query.all()
+        print(catalogues)
         if request.args.get('nested') is not None:
-            schema = CatalogueLightNestedSchema()
+            schema = CatalogueLightNestedSchema(many=True)
         elif request.args.get('extend') is not None:
-            schema = CatalogueExtendedSchema()
+            schema = CatalogueExtendedSchema(many=True)
         else:
-            schema = CatalogueSchema()
+            schema = CatalogueSchema(many=True)
         return {
             'status': 200,
             'data': schema.dump(catalogues)
