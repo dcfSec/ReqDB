@@ -41,7 +41,7 @@ class Catalogue(Resource):
         catalogue = CatalogueModel.query.get_or_404(id)
         if request.args.get('nested') is not None:
             schema = CatalogueLightNestedSchema()
-        elif request.args.get('extend') is not None:
+        elif request.args.get('extended') is not None:
             schema = CatalogueExtendedSchema()
         else:
             schema = CatalogueSchema()
