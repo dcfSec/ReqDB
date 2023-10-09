@@ -31,4 +31,4 @@ class Coffee(Resource):
         return {
             'status': 418,
             'data': 'I\'m a teapot'
-        }
+        }, 418
