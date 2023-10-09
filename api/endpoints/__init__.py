@@ -12,6 +12,7 @@ from api.endpoints.extraTypes import ExtraType, ExtraTypes
 from api.endpoints.requirements import Requirement, Requirements
 from api.endpoints.tags import Tag, Tags
 from api.endpoints.topics import Topic, Topics
+from api.endpoints.coffee import Coffee
 from api.endpoints.base import Base
 
 api.add_resource(Catalogues, '/catalogues')
@@ -31,5 +32,7 @@ api.add_resource(Tag, '/tags/<int:id>')
 
 api.add_resource(Topics, '/topics')
 api.add_resource(Topic, '/topics/<int:id>')
+
+api.add_resource(Coffee, '/coffee')
 
 api.add_resource(Base, '', '/', '/<path:path>')
