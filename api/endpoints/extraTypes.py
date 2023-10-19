@@ -15,9 +15,22 @@ from flask_jwt_extended import get_jwt
 
 
 class ExtraType(Resource):
+    """
+    ExtraType class. This class represents an extra type object in the API
+    """
     method_decorators = [jwt_required()]
 
     def get(self, id: int):
+        """
+        Returns a single extra type object or a 404
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :param int id: The object id to use in the query
+        :return dict: ExtraType ressource or 404
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         extraType = ExtraTypeModel.query.get_or_404(id)
         schema = ExtraTypeSchema()
@@ -27,6 +40,15 @@ class ExtraType(Resource):
         }
 
     def put(self, id: int):
+        """
+        Updates an extra type item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Updated extra type ressource
+        """
         checkAccess(get_jwt(), ['Writer'])
         extraType = ExtraTypeModel.query.get_or_404(id)
         schema = ExtraTypeSchema()
@@ -51,6 +73,15 @@ class ExtraType(Resource):
             }, 400
 
     def delete(self, id: int):
+        """
+        Deletes an extra type item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Empty (204) if successfull, else error message
+        """
         checkAccess(get_jwt(), ['Writer'])
         extraType = ExtraTypeModel.query.get_or_404(id)
         if (len(extraType.children) > 0) \
@@ -80,9 +111,21 @@ class ExtraType(Resource):
 
 
 class ExtraTypes(Resource):
+    """
+    ExtraTypes class, represents the extraTypes API to fetch all or add an
+    extraType item
+    """
     method_decorators = [jwt_required()]
 
     def get(self):
+        """Get all extra type elements
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :return list: All extra type elements
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         extraTypes = ExtraTypeModel.query.all()
         schema = ExtraTypeSchema(many=True)
@@ -92,6 +135,14 @@ class ExtraTypes(Resource):
         }
 
     def post(self):
+        """
+        Adds a new extra type item
+
+        Required roles:
+            - Writer
+
+        :return dict: The new extra type item
+        """
         checkAccess(get_jwt(), ['Writer'])
         schema = ExtraTypeSchema()
         try:

@@ -16,9 +16,22 @@ from flask_jwt_extended import get_jwt
 
 
 class Topic(Resource):
+    """
+    Topic class. This class represents a topic object in the API
+    """
     method_decorators = [jwt_required()]
 
     def get(self, id: int):
+        """
+        Returns a single topic object or a 404
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :param int id: The object id to use in the query
+        :return dict: Topic ressource or 404
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         topic = TopicModel.query.get_or_404(id)
         schema = TopicSchema()
@@ -28,6 +41,15 @@ class Topic(Resource):
         }
 
     def put(self, id: int):
+        """
+        Updates a topic item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Updated topic ressource
+        """
         checkAccess(get_jwt(), ['Writer'])
         topic = TopicModel.query.get_or_404(id)
         updateSchema = TopicUpdateSchema()
@@ -79,6 +101,15 @@ class Topic(Resource):
             }, 400
 
     def delete(self, id: int):
+        """
+        Deletes a topic item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Empty (204) if successfull, else error message
+        """
         checkAccess(get_jwt(), ['Writer'])
         topic = TopicModel.query.get_or_404(id)
         if ((len(topic.requirements) > 0) or len(topic.children) > 0) and \
@@ -107,9 +138,21 @@ class Topic(Resource):
 
 
 class Topics(Resource):
+    """
+    Topics class, represents the Topics API to fetch all or add a
+    topic item
+    """
     method_decorators = [jwt_required()]
 
     def get(self):
+        """Get all topic elements
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :return list: All topic elements
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         if request.args.get('root') is not None:
             topics = TopicModel.query.filter_by(parentId=None)
@@ -125,6 +168,14 @@ class Topics(Resource):
         }
 
     def post(self):
+        """
+        Adds a new topic item
+
+        Required roles:
+            - Writer
+
+        :return dict: The new topic item
+        """
         checkAccess(get_jwt(), ['Writer'])
         updateSchema = TopicUpdateSchema()
         schema = TopicSchema()
