@@ -16,7 +16,7 @@ export function handleErrorMessage(message) {
       {Object.keys(message).map((m, index) => (
         <li key={index}>Key <code>{m}</code>:<ul>
             {message[m].map((line) => (
-        <li>{line}</li>
+        <li key={index}>{line}</li>
       ))}
           </ul></li>
       ))}
