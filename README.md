@@ -41,7 +41,7 @@ FLASK_APP="ReqDB"           # Name of the Flask app
 FLASK_ENV="production"      # Flask environment  production or development
 SECRET_KEY="CHANGEME"       # The secret key for flaks
 
-DATABASE_URI="app.sqlite"   # Database URI fpr sqlalchemie (See https://docs.sqlalchemy.org/en/20/core/engines.html for details)
+DATABASE_URI="app.sqlite"   # Database URI for sqlalchemie (See https://docs.sqlalchemy.org/en/20/core/engines.html for details)
 
 OAUTH_APP_CLIENT_ID="xxx"   # Client ID for oauth (Azure Entra)
 OAUTH_APP_TENANT="xxx"      # Azure Tenant ID
