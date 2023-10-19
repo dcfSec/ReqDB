@@ -15,9 +15,22 @@ from flask_jwt_extended import get_jwt
 
 
 class Requirement(Resource):
+    """
+    Requirement class. This class represents a requirement object in the API
+    """
     method_decorators = [jwt_required()]
 
     def get(self, id: int):
+        """
+        Returns a single requirement object or a 404
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :param int id: The object id to use in the query
+        :return dict: Requirement ressource or 404
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         requirement = RequirementModel.query.get_or_404(id)
         schema = RequirementSchema()
@@ -27,6 +40,15 @@ class Requirement(Resource):
         }
 
     def put(self, id: int):
+        """
+        Updates a requirement item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Updated requirement ressource
+        """
         checkAccess(get_jwt(), ['Writer'])
         requirement = RequirementModel.query.get_or_404(id)
         updateSchema = RequirementUpdateSchema()
@@ -71,6 +93,15 @@ class Requirement(Resource):
             }, 400
 
     def delete(self, id: int):
+        """
+        Deletes a requirement item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Empty (204) if successfull, else error message
+        """
         checkAccess(get_jwt(), ['Writer'])
         requirement = RequirementModel.query.get_or_404(id)
         if (len(requirement.extras) > 0) \
@@ -100,9 +131,21 @@ class Requirement(Resource):
 
 
 class Requirements(Resource):
+    """
+    Requirements class, represents the Requirements API to fetch all or add a
+    Requirement item
+    """
     method_decorators = [jwt_required()]
 
     def get(self):
+        """Get all requirement elements
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :return list: All requirement elements
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         requirements = RequirementModel.query.all()
         schema = RequirementSchema(many=True)
@@ -112,6 +155,14 @@ class Requirements(Resource):
         }
 
     def post(self):
+        """
+        Adds a new requirement item
+
+        Required roles:
+            - Writer
+
+        :return dict: The new requirement item
+        """
         checkAccess(get_jwt(), ['Writer'])
         schema = RequirementUpdateSchema()
         try:

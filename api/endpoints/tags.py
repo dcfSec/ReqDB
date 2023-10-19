@@ -15,9 +15,22 @@ from flask_jwt_extended import get_jwt
 
 
 class Tag(Resource):
+    """
+    Tag class. This class represents a tag object in the API
+    """
     method_decorators = [jwt_required()]
 
     def get(self, id: int):
+        """
+        Returns a single tag object or a 404
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :param int id: The object id to use in the query
+        :return dict: Tag ressource or 404
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         tag = TagModel.query.get_or_404(id)
         schema = TagSchema()
@@ -27,6 +40,15 @@ class Tag(Resource):
         }
 
     def put(self, id: int):
+        """
+        Updates a tag item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Updated tag ressource
+        """
         checkAccess(get_jwt(), ['Writer'])
         tag = TagModel.query.get_or_404(id)
         updateSchema = TagUpdateSchema()
@@ -57,10 +79,18 @@ class Tag(Resource):
             }, 400
 
     def delete(self, id: int):
+        """
+        Deletes a tag item
+
+        Required roles:
+            - Writer
+
+        :param int id: Item id
+        :return dict: Empty (204) if successfull, else error message
+        """
         checkAccess(get_jwt(), ['Writer'])
         tag = TagModel.query.get_or_404(id)
-        if (len(tag.requirement) > 0 or len(tag.requirement) > 0) \
-                and request.args.get('force') is None:
+        if len(tag.requirement) > 0 and request.args.get('force') is None:
             abort(400, {
                 'error': 'ValidationError',
                 'message': [
@@ -86,9 +116,21 @@ class Tag(Resource):
 
 
 class Tags(Resource):
+    """
+    Tags class, represents the Tags API to fetch all or add a
+    tag item
+    """
     method_decorators = [jwt_required()]
 
     def get(self):
+        """Get all tag elements
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :return list: All tag elements
+        """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         tags = TagModel.query.all()
         if request.args.get('minimal') is not None:
@@ -101,6 +143,14 @@ class Tags(Resource):
         }
 
     def post(self):
+        """
+        Adds a new tag item
+
+        Required roles:
+            - Writer
+
+        :return dict: The new tag item
+        """
         checkAccess(get_jwt(), ['Writer'])
         schema = TagSchema()
         try:

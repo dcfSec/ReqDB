@@ -16,7 +16,7 @@ from flask_jwt_extended import get_jwt
 
 class ExtraEntry(Resource):
     """
-    EtryEntry class. This class represents an extra entry object in the API
+    ExtraEntry class. This class represents an extra entry object in the API
     """
     method_decorators = [jwt_required()]
 
@@ -109,8 +109,8 @@ class ExtraEntry(Resource):
 
 class ExtraEntries(Resource):
     """
-    ExtraEntries class, represents the extraEntires API to fetch all or add an
-    extraEntires item
+    ExtraEntries class, represents the extraEntries API to fetch all or add an
+    extraEntries item
     """
     method_decorators = [jwt_required()]
 
