@@ -8,7 +8,7 @@ export const UserContext = createContext(null);
 /**
  * Parses the error message from the API and returns it as readable HTML
  * 
- * @param {string|array|object} message 
+ * @param {string|array|object} message Message from the API
  * @returns Error message HTML formated
  */
 export function handleErrorMessage(message) {
