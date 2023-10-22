@@ -51,3 +51,12 @@ div.col {
 table tr:hover td {
   background-color: rgba(var(--bs-tertiary-bg-rgb),var(--bs-bg-opacity));
 }
+
+.vertical-middle {
+  vertical-align: middle;
+}
+
+.eye-button {
+  --bs-btn-padding-x: 0.3rem !important;
+  --bs-btn-padding-y: 0.1rem !important;
+}
