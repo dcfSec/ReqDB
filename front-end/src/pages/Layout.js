@@ -5,7 +5,13 @@ import { Col, Container, Image, OverlayTrigger, Row, Tooltip } from "react-boots
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { brands } from "@fortawesome/fontawesome-svg-core/import.macro";
 
-const Layout = ({ showSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode }) => {
+/**
+ * Parent component for all views
+ * 
+ * @param {object} props Props for this component: showSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode
+ * @returns Main layout
+ */
+export default function Layout({ showSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode }) {
 
   return (
     <>
@@ -20,5 +26,3 @@ const Layout = ({ showSpinner, notificationToastHandler, setNotificationToastHan
     </>
   )
 };
-
-export default Layout;

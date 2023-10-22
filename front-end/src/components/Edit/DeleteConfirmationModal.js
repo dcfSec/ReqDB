@@ -2,6 +2,12 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
+/**
+ * Component for a confirmation modal when deleting objects
+ * 
+ * @param {object} props Props for this component: item, show, onCancel, onConfirm, onForceChange
+ * @returns A modal to confirm delection
+ */
 export default function DeleteConfirmationModal(props) {
   const { item, show, onCancel, onConfirm, onForceChange } = props
   return (

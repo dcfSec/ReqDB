@@ -10,6 +10,12 @@ import RouteGuard from "./RouteGuard";
 import { appRoles } from "../authConfig";
 import Login from "../pages/Login";
 
+/**
+ * Main Router for the web app
+ * 
+ * @param {object} props Props for the component: showSpinner, setShowSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode
+ * @returns Returns the router for the app
+ */
 export function Router({ showSpinner, setShowSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode }) {
 
   return (
@@ -21,22 +27,22 @@ export function Router({ showSpinner, setShowSpinner, notificationToastHandler, 
           <Route path="Browse/:catalogueId" element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Browse"><BrowseCatalogue setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>} />
           <Route path="Edit" >
             <Route path="Tags" element={
-              <RouteGuard roles={[appRoles.Writer]} title="Tags"><Tags setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}/></RouteGuard>
+              <RouteGuard roles={[appRoles.Writer]} title="Tags"><Tags setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>
             } />
             <Route path="Catalogues" element={
-              <RouteGuard roles={[appRoles.Writer]} title="Catalogues"><Catalogues setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}/></RouteGuard>
+              <RouteGuard roles={[appRoles.Writer]} title="Catalogues"><Catalogues setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>
             } />
             <Route path="Topics" element={
-              <RouteGuard roles={[appRoles.Writer]} title="Topics"><Topics setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}/></RouteGuard>
+              <RouteGuard roles={[appRoles.Writer]} title="Topics"><Topics setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>
             } />
             <Route path="Requirements" element={
-              <RouteGuard roles={[appRoles.Writer]} title="Requirements"><Requirements setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}/></RouteGuard>
+              <RouteGuard roles={[appRoles.Writer]} title="Requirements"><Requirements setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>
             } />
             <Route path="ExtraTypes" element={
-              <RouteGuard roles={[appRoles.Writer]} title="ExtraTypes"><ExtraTypes setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}/></RouteGuard>
+              <RouteGuard roles={[appRoles.Writer]} title="ExtraTypes"><ExtraTypes setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>
             } />
             <Route path="ExtraEntries" element={
-              <RouteGuard roles={[appRoles.Writer]} title="ExtraEntries"><ExtraEntries setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}/></RouteGuard>
+              <RouteGuard roles={[appRoles.Writer]} title="ExtraEntries"><ExtraEntries setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>
             } />
           </Route>
           <Route path="*" element={<NoPage />} />
@@ -46,7 +52,13 @@ export function Router({ showSpinner, setShowSpinner, notificationToastHandler, 
   )
 }
 
-export function LoginRouter({ showSpinner, setShowSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode }) {
+/**
+ * Router for a non-logged in user
+ * 
+ * @param {object} props Props for the component: showSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode
+ * @returns Returns the login router
+ */
+export function LoginRouter({ showSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode }) {
 
   return (
     <BrowserRouter>

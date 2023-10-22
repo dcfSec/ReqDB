@@ -1,7 +1,4 @@
-import {
-    useState,
-    useCallback,
-} from 'react';
+import { useState, useCallback } from 'react';
 
 import { InteractionType } from '@azure/msal-browser';
 import { useMsal, useMsalAuthentication } from "@azure/msal-react";
@@ -39,9 +36,9 @@ const useFetchWithMsal = (msalRequest) => {
         if (result) {
             try {
                 let response = null;
-                
+
                 const headers = new Headers();
-                const bearer = `Bearer ${result.accessToken}`;            
+                const bearer = `Bearer ${result.accessToken}`;
                 headers.append("Authorization", bearer);
 
                 if (data) headers.append('Content-Type', 'application/json');

@@ -13,6 +13,12 @@ import { useMsal } from "@azure/msal-react";
 import { useEffect, useState } from 'react';
 import { appRoles } from '../authConfig';
 
+/**
+ * Component for the main navigation bar
+ * 
+ * @param {object} props Props for the component: showSpinner, darkMode, setDarkMode
+ * @returns Returns the main navigation bar container
+ */
 export default function MainNavbar({ showSpinner, darkMode, setDarkMode }) {
 
   function setDarkModeSwitch() {

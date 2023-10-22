@@ -7,11 +7,16 @@ import SelecttCatalogueItem from "../components/Browse/SelectCatalogueItem";
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 
+/**
+ * View to select a catalogue to browse in the BrowseCatalogue view
+ * 
+ * @returns View to select a catalogue
+ */
 export default function BrowseSelectCatalogue() {
 
   const title = "Browse"
   const breadcrumbs = [
-      { href: "", title: title, active: true }
+    { href: "", title: title, active: true }
   ]
 
   const { setShowSpinner } = useContext(UserContext)
@@ -25,11 +30,11 @@ export default function BrowseSelectCatalogue() {
   useEffect(() => { setShowSpinner(!catalogueData) }, [catalogueData]);
 
   useEffect(() => {
-      if (!catalogueData) {
-          execute("GET", `${API}/catalogues`).then((response) => {
-            setCatalogueData(response);
-          });
-      }
+    if (!catalogueData) {
+      execute("GET", `${API}/catalogues`).then((response) => {
+        setCatalogueData(response);
+      });
+    }
   }, [execute, catalogueData])
 
 
@@ -41,17 +46,17 @@ export default function BrowseSelectCatalogue() {
     if (catalogueData && catalogueData.status === 200) {
       body = <Stack gap={2} className="col-md-5 mx-auto"><ListGroup>
         {catalogueData.data.sort((a, b) => {
-        const nameA = a.title.toUpperCase();
-        const nameB = b.title.toUpperCase();
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-        return 0;
-      }).map((catalogue, index) => ( <SelecttCatalogueItem key={index} catalogue={catalogue}/>))}
-        </ListGroup></Stack>
+          const nameA = a.title.toUpperCase();
+          const nameB = b.title.toUpperCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        }).map((catalogue, index) => (<SelecttCatalogueItem key={index} catalogue={catalogue} />))}
+      </ListGroup></Stack>
     } else if (catalogueData && catalogueData.status !== 200) {
       body = <Alert variant="danger">{handleErrorMessage(catalogueData.message)}</Alert>
     }
@@ -66,9 +71,9 @@ export default function BrowseSelectCatalogue() {
         <Col><h2>Select Catalogue</h2></Col>
       </Row>
       <Row>
-      <Col>
-        {body}
-      </Col>
+        <Col>
+          {body}
+        </Col>
       </Row>
     </Container>
   );

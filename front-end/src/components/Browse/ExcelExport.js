@@ -1,8 +1,13 @@
 import { Button } from "react-bootstrap";
 import XLSX from "xlsx";
 
-export default function ExcelExport({headers, toExport, rows}) {
-
+/**
+ * Component for the button to export the selected  item as excel file
+ * 
+ * @param {object} props Props for this component: headers, toExport, rows
+ * @returns Returns a button for the export to excel
+ */
+export default function ExcelExport({ headers, toExport, rows }) {
 
   function exportExcel() {
     var table_elt = document.getElementById("DataTable");

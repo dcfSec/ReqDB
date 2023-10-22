@@ -7,6 +7,12 @@ import { API, UserContext, handleErrorMessage } from '../../static';
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 import { protectedResources } from '../../authConfig';
 
+/**
+ * Component to show the option to select a parent model
+ * 
+ * @param {object} props Props for the component: itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns
+ * @returns A modal to select a parent model
+ */
 export default function SelectParentModal(props) {
   const { itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns } = props
 
@@ -31,11 +37,11 @@ export default function SelectParentModal(props) {
   useEffect(() => { setShowSpinner(!data) }, [data]);
 
   useEffect(() => {
-      if (!data) {
-          execute("GET", `${API}/${endpoint}`).then((response) => {
-            setData(response);
-          });
-      }
+    if (!data) {
+      execute("GET", `${API}/${endpoint}`).then((response) => {
+        setData(response);
+      });
+    }
   }, [execute, data])
 
   let body = <ProgressBar animated now={100} />
@@ -46,20 +52,20 @@ export default function SelectParentModal(props) {
     if (data && data.status === 200) {
       selectedItemObjects = data.data
       body = <Form onChange={(e) => onSelect(e.target.value)}>
-      <Table responsive>
-      <thead>
-        <tr>
-          <th style={{width:"0.5em"}}></th>
-          {columns.map((item, index) => (<th key={index}>{item}</th>))}
-        </tr>
-      </thead>
-      <tbody>
-      <tr><td style={{width:"0.5em"}}><Form.Check name="itemSelect" type="radio" aria-label="None" reverse value="-1" defaultChecked={initialSelectedItem === null ? true : false}/></td>
-        {columns.map((column, cIndex) => (<td key={cIndex}>None</td>))}</tr>
-      {selectedItemObjects.map((item, index) => (getRenderRow(item, index)))}
-      </tbody>
-    </Table>
-    </Form>
+        <Table responsive>
+          <thead>
+            <tr>
+              <th style={{ width: "0.5em" }}></th>
+              {columns.map((item, index) => (<th key={index}>{item}</th>))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style={{ width: "0.5em" }}><Form.Check name="itemSelect" type="radio" aria-label="None" reverse value="-1" defaultChecked={initialSelectedItem === null ? true : false} /></td>
+              {columns.map((column, cIndex) => (<td key={cIndex}>None</td>))}</tr>
+            {selectedItemObjects.map((item, index) => (getRenderRow(item, index)))}
+          </tbody>
+        </Table>
+      </Form>
     } else if (data && data.status !== 200) {
       setNotificationToastHandler([data.error, data.message, true])
       body = <Alert variant="danger">{handleErrorMessage(data.message)}</Alert>
@@ -71,7 +77,7 @@ export default function SelectParentModal(props) {
     setSearch("")
   }
 
-    function updateParent() {
+  function updateParent() {
     const updateItemObject = {}
     if (selectedItemId === "-1") {
       updateItemObject[updateIdField] = null
@@ -87,10 +93,10 @@ export default function SelectParentModal(props) {
 
   function getRenderRow(item, index) {
     return (search === "" || inSearchField(search, columns, item) || `${item.id}` === selectedItemId) && !(checkCircle === true && itemId === item.id) ?
-    <tr key={index}>
-      <td style={{width:"0.5em"}}><Form.Check name="itemSelect" type="radio" aria-label={item.id} reverse value={index} defaultChecked={initialSelectedItem === item.id ? true : false}/></td>
-      {columns.map((column, cIndex) => (<td key={cIndex}>{item[column]}</td>))}
-    </tr> 
+      <tr key={index}>
+        <td style={{ width: "0.5em" }}><Form.Check name="itemSelect" type="radio" aria-label={item.id} reverse value={index} defaultChecked={initialSelectedItem === item.id ? true : false} /></td>
+        {columns.map((column, cIndex) => (<td key={cIndex}>{item[column]}</td>))}
+      </tr>
       : null
 
   }
@@ -100,7 +106,7 @@ export default function SelectParentModal(props) {
       show={show}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
-      onHide={() => {reset()}}
+      onHide={() => { reset() }}
       centered
     >
       <Modal.Header closeButton>
@@ -109,14 +115,14 @@ export default function SelectParentModal(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      <Container>
-        <Row>
-          <Col><SearchField title={updateObjectField} search={search} onSearch={setSearch}></SearchField></Col>
-        </Row>
-        <Row>
-          {body}
-        </Row>
-      </Container>
+        <Container>
+          <Row>
+            <Col><SearchField title={updateObjectField} search={search} onSearch={setSearch}></SearchField></Col>
+          </Row>
+          <Row>
+            {body}
+          </Row>
+        </Container>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={() => updateParent()}>Select</Button>

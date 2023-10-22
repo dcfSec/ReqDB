@@ -7,6 +7,12 @@ import { API, handleErrorMessage } from '../static';
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { protectedResources } from '../authConfig';
 
+/**
+ * Component for the parent view of the editor pages
+ * 
+ * @param {object} props Props for the component: editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters, needsParent, setNotificationToastHandler, setShowSpinner
+ * @returns Parent component for all editor views
+ */
 function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [], needsParent = false, setNotificationToastHandler, setShowSpinner }) {
 
   const EditListRow = lazy(() => import(`../components/Edit/${editPageName}/EditListRow`));
@@ -121,6 +127,12 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
 
 }
 
+/**
+ * View for editing Tags
+ * 
+ * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
+ * @returns Tags view for editing
+ */
 export function Tags({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
   return <EditParent editPageName="Tags" humanKey="name" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
     headers={[
@@ -140,6 +152,12 @@ export function Tags({ setShowSpinner, notificationToastHandler, setNotification
   />
 }
 
+/**
+ * View for editing Catalogues
+ * 
+ * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
+ * @returns Catalogues view for editing
+ */
 export function Catalogues({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
   return <EditParent editPageName="Catalogues" humanKey="title" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
     headers={[
@@ -165,6 +183,12 @@ export function Catalogues({ setShowSpinner, notificationToastHandler, setNotifi
   />
 }
 
+/**
+ * View for editing Topics
+ * 
+ * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
+ * @returns Topics view for editing
+ */
 export function Topics({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
   return <EditParent editPageName="Topics" humanKey="key" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
     headers={[
@@ -190,6 +214,12 @@ export function Topics({ setShowSpinner, notificationToastHandler, setNotificati
   />
 }
 
+/**
+ * View for editing Requirements
+ * 
+ * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
+ * @returns Requirements view for editing
+ */
 export function Requirements({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
   return <EditParent editPageName="Requirements" humanKey="key" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
     headers={[
@@ -216,6 +246,12 @@ export function Requirements({ setShowSpinner, notificationToastHandler, setNoti
   />
 }
 
+/**
+ * View for editing ExtraTypes
+ * 
+ * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
+ * @returns ExtraTypes view for editing
+ */
 export function ExtraTypes({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
   return <EditParent editPageName="ExtraTypes" humanKey="title" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
     headers={[
@@ -239,6 +275,12 @@ export function ExtraTypes({ setShowSpinner, notificationToastHandler, setNotifi
   />
 }
 
+/**
+ * View for editing ExtraEntries
+ * 
+ * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
+ * @returns ExtraEntries view for editing
+ */
 export function ExtraEntries({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
   return <EditParent editPageName="ExtraEntries" humanKey="id" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
     headers={[

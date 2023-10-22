@@ -8,17 +8,22 @@ import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
 
-
+/**
+ * Component for a row to edit an object
+ * 
+ * @param {object} props Props for this component: index, endpoint, originalItem, humanKey, deleteItemInList, search, searchFields
+ * @returns Table row for editing an object
+ */
 export default function EditListRow({ index, endpoint, originalItem, humanKey, deleteItemInList, search, searchFields }) {
 
   const { setNotificationToastHandler } = useContext(UserContext)
   const { setShowSpinner } = useContext(UserContext)
-  
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [force, setForce] = useState(false);
 
   const [edit, setEdit] = useState(false);
-  
+
   const [item, setItem] = useState(originalItem);
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
@@ -29,7 +34,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
   }
 
   function updateTempItem(properties) {
-    const tempItem = {...item, ...properties}
+    const tempItem = { ...item, ...properties }
     setItem(tempItem)
   }
 
@@ -39,9 +44,9 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
 
   if (error) {
     setNotificationToastHandler(["UnhandledError", error.message, true])
-    setShowSpinner(false)    
+    setShowSpinner(false)
   }
-  
+
   function saveItem() {
     execute("PUT", `${API}/${endpoint}/${originalItem.id}?minimal`, item).then(
       (response) => {
@@ -99,46 +104,47 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
     return (
       <tr>
         <td>{originalItem.id}</td>
-        <td><Form.Control as="textarea" disabled={!edit} rows={3} id="content" placeholder="New content" value={item.content} onChange={e => { updateTempItem({content: e.target.value}) }} /></td>
+        <td><Form.Control as="textarea" disabled={!edit} rows={3} id="content" placeholder="New content" value={item.content} onChange={e => { updateTempItem({ content: e.target.value }) }} /></td>
         <td><Button variant="primary" disabled={!edit} onClick={() => {
-          setShowSelectParentModal(true) }}>{item.extraType ? item.extraType.title : "ExtraType"}</Button></td>
+          setShowSelectParentModal(true)
+        }}>{item.extraType ? item.extraType.title : "ExtraType"}</Button></td>
         <td><Button variant="primary" disabled={!edit} onClick={() => {
-          setShowSelectParentModal(true) }}>{item.requirement ? item.requirement.key : "Requirement"}</Button></td>
+          setShowSelectParentModal(true)
+        }}>{item.requirement ? item.requirement.key : "Requirement"}</Button></td>
         <td>{buttons}</td>
         {showSelectParentModal ? <SelectParentModal id="parent"
-        itemId={item.id}
-        humanKey={item.title}
-        show={showSelectParentModal}
-        setShow={setShowSelectParentModal}
-        initialSelectedItem={item.parentId}
-        endpoint={"requirements"}
-        updateItem={updateTempItem}
-        updateIdField={"requirementId"}
-        updateObjectField={"requirement"}
-        checkCircle={false}
-        columns={["key", "title"]}
-      ></SelectParentModal> : null}
-      {showSelectExtraModal ? <SelectParentModal id="extra"
-        itemId={item.id}
-        humanKey={item.title}
-        show={showSelectExtraModal}
-        setShow={setShowSelectExtraModal}
-        initialSelectedItem={item.parentId}
-        endpoint={"extraTypes"}
-        updateItem={updateTempItem}
-        updateIdField={"extraTypeId"}
-        updateObjectField={"extraType"}
-        checkCircle={false}
-        columns={["title"]}
-      ></SelectParentModal> : null}
-      { showDeleteModal ? <DeleteConfirmationModal
-        show={showDeleteModal}
-        item={item[humanKey]}
-        onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()}
-        onForceChange={e => setForce(e)}
-      ></DeleteConfirmationModal> : null }
+          itemId={item.id}
+          humanKey={item.title}
+          show={showSelectParentModal}
+          setShow={setShowSelectParentModal}
+          initialSelectedItem={item.parentId}
+          endpoint={"requirements"}
+          updateItem={updateTempItem}
+          updateIdField={"requirementId"}
+          updateObjectField={"requirement"}
+          checkCircle={false}
+          columns={["key", "title"]}
+        ></SelectParentModal> : null}
+        {showSelectExtraModal ? <SelectParentModal id="extra"
+          itemId={item.id}
+          humanKey={item.title}
+          show={showSelectExtraModal}
+          setShow={setShowSelectExtraModal}
+          initialSelectedItem={item.parentId}
+          endpoint={"extraTypes"}
+          updateItem={updateTempItem}
+          updateIdField={"extraTypeId"}
+          updateObjectField={"extraType"}
+          checkCircle={false}
+          columns={["title"]}
+        ></SelectParentModal> : null}
+        {showDeleteModal ? <DeleteConfirmationModal
+          show={showDeleteModal}
+          item={item[humanKey]}
+          onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()}
+          onForceChange={e => setForce(e)}
+        ></DeleteConfirmationModal> : null}
       </tr>
     );
   }
 }
-

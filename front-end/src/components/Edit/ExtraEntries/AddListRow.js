@@ -6,8 +6,13 @@ import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
 
-
-export default function AddListRow({blankItem, humanKey, endpoint, addItemToList}) {
+/**
+ * Component to add a item in the editor table
+ * 
+ * @param {object} props Props for the component: blankItem, humanKey, endpoint, addItemToList
+ * @returns A table row to add an item
+ */
+export default function AddListRow({ blankItem, humanKey, endpoint, addItemToList }) {
 
   const { setNotificationToastHandler } = useContext(UserContext)
   const { setShowSpinner } = useContext(UserContext)
@@ -23,7 +28,7 @@ export default function AddListRow({blankItem, humanKey, endpoint, addItemToList
 
   if (error) {
     setNotificationToastHandler(["UnhandledError", error.message, true])
-    setShowSpinner(false)    
+    setShowSpinner(false)
   }
 
   function addItem() {
@@ -46,18 +51,20 @@ export default function AddListRow({blankItem, humanKey, endpoint, addItemToList
   }
 
   function updateNewItem(properties) {
-    const tempItem = {...newItem, ...properties}
+    const tempItem = { ...newItem, ...properties }
     setNewItem(tempItem)
   }
 
   return (
     <tr>
       <td></td>
-      <td><Form.Control as="textarea" rows={3} id="content" placeholder="New content" value={newItem.content} onChange={e => { updateNewItem({content: e.target.value}) }} /></td>
+      <td><Form.Control as="textarea" rows={3} id="content" placeholder="New content" value={newItem.content} onChange={e => { updateNewItem({ content: e.target.value }) }} /></td>
       <td><Button variant="primary" onClick={() => {
-        setShowSelectExtraModal(true) }}>{newItem.extraType ? newItem.extraType.title : "ExtraType"}</Button></td>
+        setShowSelectExtraModal(true)
+      }}>{newItem.extraType ? newItem.extraType.title : "ExtraType"}</Button></td>
       <td><Button variant="primary" onClick={() => {
-        setShowSelectParentModal(true) }}>{newItem.requirement ? newItem.requirement.key : "Requirement"}</Button></td>
+        setShowSelectParentModal(true)
+      }}>{newItem.requirement ? newItem.requirement.key : "Requirement"}</Button></td>
       <td><Button variant="success" onClick={() => addItem()}>Add</Button></td>
       {showSelectParentModal ? <SelectParentModal id="parent"
         itemId={newItem.id}
