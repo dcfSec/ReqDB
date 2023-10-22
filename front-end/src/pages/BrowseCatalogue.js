@@ -12,7 +12,7 @@ import { protectedResources } from "../authConfig";
 import useFetchWithMsal from "../hooks/useFetchWithMsal";
 
 /**
- * View to browse a catalogue
+ * View to browse a
  * 
  * @returns View to browse a catalogue
  */
@@ -89,7 +89,7 @@ export default function BrowseCatalogue() {
           return 0;
         });
         isBuilt = true
-        body = <DataTable headers={[...headers, ...extraHeaders]} markAll={true} markAllCallback={handleCheckboxChangeAll} markAllChecked={allMarkRowChecked}>{rows.map((row, index) => (<BrowseRow key={index} index={index} extraHeaders={extraHeaders} row={row} search={search} tags={tagFilterItems} topicFiltered={topicFiltered} tagFiltered={tagFiltered} extraHeaderTypes={extraHeaderTypes} markRowCallback={handleSelectCheckboxChange} markRowChecked={markRowChecked}></BrowseRow>))}</DataTable>
+        body = <DataTable headers={["", ...headers, ...extraHeaders]} markAll={true} markAllCallback={handleCheckboxChangeAll} markAllChecked={allMarkRowChecked}>{rows.map((row, index) => (<BrowseRow key={index} index={index} extraHeaders={extraHeaders} row={row} search={search} tags={tagFilterItems} topicFiltered={topicFiltered} tagFiltered={tagFiltered} extraHeaderTypes={extraHeaderTypes} markRowCallback={handleSelectCheckboxChange} markRowChecked={markRowChecked}></BrowseRow>))}</DataTable>
       }
     } else if (catalogueData && catalogueData.status !== 200) {
       body = <Alert variant="danger">{handleErrorMessage(catalogueData.message)}</Alert>
@@ -107,6 +107,7 @@ export default function BrowseCatalogue() {
           }
         });
         const base = {
+          id: requirement.id,
           Tags: tags,
           Topics: [...topics],
           Key: requirement.key,

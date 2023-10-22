@@ -9,6 +9,7 @@ import NoPage from '../pages/NoPage';
 import RouteGuard from "./RouteGuard";
 import { appRoles } from "../authConfig";
 import Login from "../pages/Login";
+import Requirement from "../pages/Requirement";
 
 /**
  * Main Router for the web app
@@ -25,6 +26,7 @@ export function Router({ showSpinner, setShowSpinner, notificationToastHandler, 
           <Route index element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Home"><Home /></RouteGuard>} />
           <Route path="Browse" element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Browse"><BrowseSelectCatalogue /></RouteGuard>} />
           <Route path="Browse/:catalogueId" element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Browse"><BrowseCatalogue setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>} />
+          <Route path="Browse/Requirement/:requirementId" element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Requirement"><Requirement setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>} />
           <Route path="Edit" >
             <Route path="Tags" element={
               <RouteGuard roles={[appRoles.Writer]} title="Tags"><Tags setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} /></RouteGuard>
