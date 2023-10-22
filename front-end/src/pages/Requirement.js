@@ -17,11 +17,9 @@ import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
  */
 export default function Requirement() {
 
-
   const params = useParams();
   const id = params.requirementId
   let title = "View Requirement"
-
 
   const { setShowSpinner } = useContext(UserContext)
 
@@ -40,7 +38,6 @@ export default function Requirement() {
       });
     }
   }, [execute, requirementData])
-
 
   let body = <ProgressBar animated now={100} />
 
