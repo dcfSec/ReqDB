@@ -9,17 +9,22 @@ import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
 
-
+/**
+ * Component for a row to edit an object
+ * 
+ * @param {object} props Props for this component: index, endpoint, originalItem, humanKey, deleteItemInList, search, searchFields
+ * @returns Table row for editing an object
+ */
 export default function EditListRow({ index, endpoint, originalItem, humanKey, deleteItemInList, search, searchFields }) {
 
   const { setNotificationToastHandler } = useContext(UserContext)
   const { setShowSpinner } = useContext(UserContext)
-  
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [force, setForce] = useState(false);
 
   const [edit, setEdit] = useState(false);
-  
+
   const [item, setItem] = useState(originalItem);
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
@@ -30,7 +35,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
   }
 
   function updateTempItem(properties) {
-    const tempItem = {...item, ...properties}
+    const tempItem = { ...item, ...properties }
     setItem(tempItem)
   }
 
@@ -40,9 +45,9 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
 
   if (error) {
     setNotificationToastHandler(["UnhandledError", error.message, true])
-    setShowSpinner(false)    
+    setShowSpinner(false)
   }
-  
+
   function saveItem() {
     execute("PUT", `${API}/${endpoint}/${originalItem.id}?minimal`, item).then(
       (response) => {
@@ -99,31 +104,32 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
   if (originalItem && inSearchField(search, searchFields, item)) {
     return (
       <tr>
-          <td>{originalItem.id}</td>
-          <td><Form.Control type="text" id="key" disabled={!edit} value={item.key}  onChange={e => { updateTempItem({key: e.target.value}) }} /></td>
-          <td><Form.Control type="text" id="title" disabled={!edit} value={item.title}  onChange={e => { updateTempItem({title: e.target.value}) }} /></td>
-          <td><Form.Control type="text" id="description" disabled={!edit} value={item.description} onChange={e => { updateTempItem({description: e.target.value}) }} /></td>
-          <td><Button variant="primary" disabled={!edit} onClick={() => {
-            setShowSelectParentModal(true) }}>{item.parent ? item.parent.key : "None"}</Button></td>
-          <td></td>
-          <td>{buttons}</td>
-          {showUpdateMany2Many ?<SelectMany
-            humanKey={item.name}
-            show={showUpdateMany2Many}
-            setShow={setShowUpdateMany2Many}
-            initialSelectedItems={item.requirement}
-            endpoint="topics"
-            columns={["key", "title"]}
-            updateKey={"requirement"}
-            updateItem={updateTempItem}
-          ></SelectMany> : null}
-          { showDeleteModal ? <DeleteConfirmationModal
-            show={showDeleteModal}
-            item={item[humanKey]}
-            onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()}
-            onForceChange={e => setForce(e)}
-          ></DeleteConfirmationModal> : null }
-          { showSelectParentModal ?
+        <td>{originalItem.id}</td>
+        <td><Form.Control type="text" id="key" disabled={!edit} value={item.key} onChange={e => { updateTempItem({ key: e.target.value }) }} /></td>
+        <td><Form.Control type="text" id="title" disabled={!edit} value={item.title} onChange={e => { updateTempItem({ title: e.target.value }) }} /></td>
+        <td><Form.Control type="text" id="description" disabled={!edit} value={item.description} onChange={e => { updateTempItem({ description: e.target.value }) }} /></td>
+        <td><Button variant="primary" disabled={!edit} onClick={() => {
+          setShowSelectParentModal(true)
+        }}>{item.parent ? item.parent.key : "None"}</Button></td>
+        <td></td>
+        <td>{buttons}</td>
+        {showUpdateMany2Many ? <SelectMany
+          humanKey={item.name}
+          show={showUpdateMany2Many}
+          setShow={setShowUpdateMany2Many}
+          initialSelectedItems={item.requirement}
+          endpoint="topics"
+          columns={["key", "title"]}
+          updateKey={"requirement"}
+          updateItem={updateTempItem}
+        ></SelectMany> : null}
+        {showDeleteModal ? <DeleteConfirmationModal
+          show={showDeleteModal}
+          item={item[humanKey]}
+          onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()}
+          onForceChange={e => setForce(e)}
+        ></DeleteConfirmationModal> : null}
+        {showSelectParentModal ?
           <SelectParentModal
             humanKey={item.title}
             initialSelectedItem={item.parentId}

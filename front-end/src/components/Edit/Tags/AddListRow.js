@@ -6,8 +6,13 @@ import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
 
-
-export default function AddListRow({blankItem, humanKey, endpoint, addItemToList, updateParent}) {
+/**
+ * Component to add a item in the editor table
+ * 
+ * @param {object} props Props for the component: blankItem, humanKey, endpoint, addItemToList
+ * @returns A table row to add an item
+ */
+export default function AddListRow({ blankItem, humanKey, endpoint, addItemToList, updateParent }) {
 
   const { setNotificationToastHandler } = useContext(UserContext)
   const { setShowSpinner } = useContext(UserContext)
@@ -22,7 +27,7 @@ export default function AddListRow({blankItem, humanKey, endpoint, addItemToList
 
   if (error) {
     setNotificationToastHandler(["UnhandledError", error.message, true])
-    setShowSpinner(false)    
+    setShowSpinner(false)
   }
 
   function addItem() {
@@ -45,14 +50,14 @@ export default function AddListRow({blankItem, humanKey, endpoint, addItemToList
   }
 
   function updateNewItem(properties) {
-    const tempItem = {...newItem, ...properties}
+    const tempItem = { ...newItem, ...properties }
     setNewItem(tempItem)
   }
 
   return (
     <tr>
       <td></td>
-      <td><Form.Control type="text" id="name" placeholder="New Tag name" value={newItem.name} onChange={e => { updateNewItem({name: e.target.value}) }} /></td>
+      <td><Form.Control type="text" id="name" placeholder="New Tag name" value={newItem.name} onChange={e => { updateNewItem({ name: e.target.value }) }} /></td>
       <td></td>
       <td><Button variant="success" onClick={() => addItem()}>Add</Button></td>
       {updateParent.needsParent && showSelectParentModal ? <SelectParentModal

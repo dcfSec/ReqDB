@@ -71,6 +71,13 @@ export function inSearchField(search, fields, item) {
   return r
 }
 
+/**
+ * Returns an array of filtered items
+ * 
+ * @param {string} search Searchstring for filter
+ * @param {Array} item Items to filter
+ * @returns Array of filtered items
+ */
 export function inFilterField(search = "", item) {
   return item.some(r => r.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
 }

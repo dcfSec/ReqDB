@@ -6,8 +6,13 @@ import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
 
-
-export default function AddListRow({blankItem, humanKey, endpoint, addItemToList}) {
+/**
+ * Component to add a item in the editor table
+ * 
+ * @param {object} props Props for the component: blankItem, humanKey, endpoint, addItemToList
+ * @returns A table row to add an item
+ */
+export default function AddListRow({ blankItem, humanKey, endpoint, addItemToList }) {
 
   const { setNotificationToastHandler } = useContext(UserContext)
   const { setShowSpinner } = useContext(UserContext)
@@ -22,7 +27,7 @@ export default function AddListRow({blankItem, humanKey, endpoint, addItemToList
 
   if (error) {
     setNotificationToastHandler(["UnhandledError", error.message, true])
-    setShowSpinner(false)    
+    setShowSpinner(false)
   }
 
   function addItem() {
@@ -44,18 +49,19 @@ export default function AddListRow({blankItem, humanKey, endpoint, addItemToList
     )
   }
   function updateNewItem(properties) {
-    const tempItem = {...newItem, ...properties}
+    const tempItem = { ...newItem, ...properties }
     setNewItem(tempItem)
   }
 
   return (
     <tr>
       <td></td>
-      <td><Form.Control type="text" id="key" placeholder="New Requirement key" value={newItem.key} onChange={e => { updateNewItem({key: e.target.value}) }} /></td>
-      <td><Form.Control type="text" id="title" placeholder="New Requirement name" value={newItem.title} onChange={e => { updateNewItem({title: e.target.value}) }} /></td>
-      <td><Form.Control as="textarea" rows={3} id="description" placeholder="New Requirement description" value={newItem.description} onChange={e => { updateNewItem({description: e.target.value}) }} /></td>
+      <td><Form.Control type="text" id="key" placeholder="New Requirement key" value={newItem.key} onChange={e => { updateNewItem({ key: e.target.value }) }} /></td>
+      <td><Form.Control type="text" id="title" placeholder="New Requirement name" value={newItem.title} onChange={e => { updateNewItem({ title: e.target.value }) }} /></td>
+      <td><Form.Control as="textarea" rows={3} id="description" placeholder="New Requirement description" value={newItem.description} onChange={e => { updateNewItem({ description: e.target.value }) }} /></td>
       <td><Button variant="primary" onClick={() => {
-        setShowSelectParentModal(true) }}>{newItem.parent ? newItem.parent.key : "Parent"}</Button></td>
+        setShowSelectParentModal(true)
+      }}>{newItem.parent ? newItem.parent.key : "Parent"}</Button></td>
       <td></td><td></td>
       <td><Button variant="success" onClick={() => addItem()}>Add</Button></td>
       {showSelectParentModal ? <SelectParentModal

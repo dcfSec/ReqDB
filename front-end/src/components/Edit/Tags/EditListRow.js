@@ -8,7 +8,12 @@ import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
 
-
+/**
+ * Component for a row to edit an object
+ * 
+ * @param {object} props Props for this component: index, endpoint, originalItem, humanKey, deleteItemInList, search, searchFields
+ * @returns Table row for editing an object
+ */
 export default function EditListRow({ index, endpoint, originalItem, humanKey, deleteItemInList, search, searchFields }) {
 
   const { setNotificationToastHandler } = useContext(UserContext)

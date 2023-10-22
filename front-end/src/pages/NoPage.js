@@ -1,11 +1,16 @@
 import { Alert, Col, Container, Row } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 
+/**
+ * View for a 404 page
+ * 
+ * @returns Returns a 404 page
+ */
 export default function NoPage() {
 
   const title = "404"
   const breadcrumbs = [
-      { href: "", title: title, active: true }
+    { href: "", title: title, active: true }
   ]
 
   return (
@@ -18,7 +23,7 @@ export default function NoPage() {
       </Row>
       <Row>
         <Col><Alert variant="danger">The requested page does not exist.</Alert>
-      </Col>
+        </Col>
       </Row>
     </Container>
   );

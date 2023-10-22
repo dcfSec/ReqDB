@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { MainBreadcrumb } from "./MiniComponents";
 
+/**
+ * Route guard to protect protected ressources
+ * 
+ * @param {object} props Props for this component: roles, title, children
+ * @returns Route gard container for the jwt secured routes
+ */
 export default function RouteGuard(props) {
   const { instance } = useMsal();
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -26,14 +32,14 @@ export default function RouteGuard(props) {
   }, [instance]);
 
   const breadcrumbs = [
-      { href: "", title: props.title, active: true }
+    { href: "", title: props.title, active: true }
   ]
 
   return (
     <>
       {isAuthorized ? (
         props.children
-      ) : ( !isLoading ?
+      ) : (!isLoading ?
         <Container fluid className="bg-body">
           <Row>
             <Col><MainBreadcrumb items={breadcrumbs}></MainBreadcrumb></Col>
@@ -44,9 +50,9 @@ export default function RouteGuard(props) {
           <Row>
             <Col>
               <p>You are missing the role(s):</p>
-                <ul>
-                  {props.roles.map((role) => (<li key={role}><code>{role}</code></li>))}
-                </ul>
+              <ul>
+                {props.roles.map((role) => (<li key={role}><code>{role}</code></li>))}
+              </ul>
             </Col>
           </Row>
         </Container> : null

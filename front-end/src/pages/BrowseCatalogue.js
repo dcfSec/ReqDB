@@ -11,11 +11,16 @@ import FilterTopicModal from "../components/Browse/FilterTopicsModal";
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from "../hooks/useFetchWithMsal";
 
+/**
+ * View to browse a catalogue
+ * 
+ * @returns View to browse a catalogue
+ */
 export default function BrowseCatalogue() {
 
   const title = "Browse"
   const breadcrumbs = [
-      { href: "", title: title, active: true }
+    { href: "", title: title, active: true }
   ]
   const [search, setSearch] = useState("");
 
@@ -41,11 +46,11 @@ export default function BrowseCatalogue() {
   useEffect(() => { setShowSpinner(!catalogueData) }, [catalogueData]);
 
   useEffect(() => {
-      if (!catalogueData) {
-          execute("GET", `${API}/catalogues/${id}?extended`).then((response) => {
-            setCatalogueData(response);
-          });
-      }
+    if (!catalogueData) {
+      execute("GET", `${API}/catalogues/${id}?extended`).then((response) => {
+        setCatalogueData(response);
+      });
+    }
   }, [execute, catalogueData])
 
   let rows = []
@@ -71,9 +76,9 @@ export default function BrowseCatalogue() {
     if (catalogueData && catalogueData.status === 200) {
       if (!isBuilt) {
         rootTopics = catalogueData.data.topics
-        getItemEntry( { children: rootTopics }, [], Number(catalogueData.data.maxDepth))
+        getItemEntry({ children: rootTopics }, [], Number(catalogueData.data.maxDepth))
         rows.sort((a, b) => {
-          const nameA = a.Key.toUpperCase(); 
+          const nameA = a.Key.toUpperCase();
           const nameB = b.Key.toUpperCase();
           if (nameA < nameB) {
             return -1;
@@ -84,7 +89,7 @@ export default function BrowseCatalogue() {
           return 0;
         });
         isBuilt = true
-        body = <DataTable headers={[...headers, ...extraHeaders]} markAll={true} markAllCallback={handleCheckboxChangeAll} markAllChecked={allMarkRowChecked}>{rows.map((row, index) => ( <BrowseRow key={index} index={index} extraHeaders={extraHeaders} row={row} search={search} tags={tagFilterItems} topicFiltered={topicFiltered} tagFiltered={tagFiltered} extraHeaderTypes={extraHeaderTypes} markRowCallback={handleSelectCheckboxChange} markRowChecked={markRowChecked}></BrowseRow>))}</DataTable>
+        body = <DataTable headers={[...headers, ...extraHeaders]} markAll={true} markAllCallback={handleCheckboxChangeAll} markAllChecked={allMarkRowChecked}>{rows.map((row, index) => (<BrowseRow key={index} index={index} extraHeaders={extraHeaders} row={row} search={search} tags={tagFilterItems} topicFiltered={topicFiltered} tagFiltered={tagFiltered} extraHeaderTypes={extraHeaderTypes} markRowCallback={handleSelectCheckboxChange} markRowChecked={markRowChecked}></BrowseRow>))}</DataTable>
       }
     } else if (catalogueData && catalogueData.status !== 200) {
       body = <Alert variant="danger">{handleErrorMessage(catalogueData.message)}</Alert>
@@ -96,27 +101,27 @@ export default function BrowseCatalogue() {
       item.requirements.forEach(requirement => {
         const tags = []
         requirement.tags.forEach(tag => {
-            tags.push(tag.name)
-            if (!tagFilterItems.includes(tag.name)) {
-              tagFilterItems.push(tag.name)
-            }
+          tags.push(tag.name)
+          if (!tagFilterItems.includes(tag.name)) {
+            tagFilterItems.push(tag.name)
+          }
         });
         const base = {
-            Tags: tags,
-            Topics: [...topics],
-            Key: requirement.key,
-            Title: requirement.title,
-            Description: requirement.description,
+          Tags: tags,
+          Topics: [...topics],
+          Key: requirement.key,
+          Title: requirement.title,
+          Description: requirement.description,
+        }
+        const extraColumns = {}
+        requirement.extras.forEach(extra => {
+          extraColumns[extra.extraType.title] = extra.content
+          if (!extraHeaders.includes(extra.extraType.title)) {
+            extraHeaders.push(extra.extraType.title)
+            extraHeaderTypes[extra.extraType.title] = extra.extraType.extraType
           }
-          const extraColumns = {}
-          requirement.extras.forEach(extra => {
-            extraColumns[extra.extraType.title] = extra.content
-            if (!extraHeaders.includes(extra.extraType.title)) {
-              extraHeaders.push(extra.extraType.title)
-              extraHeaderTypes[extra.extraType.title] = extra.extraType.extraType
-            }
-          });
-        rows.push({...base, ...extraColumns})
+        });
+        rows.push({ ...base, ...extraColumns })
       });
     }
     if ('children' in item) {
@@ -124,27 +129,27 @@ export default function BrowseCatalogue() {
         if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
           topicFilterItems.push(`${topic.key} ${topic.title}`)
         }
-        getItemEntry(topic, [...topics, topic], depth-1)
+        getItemEntry(topic, [...topics, topic], depth - 1)
       });
     }
   }
 
 
-  useEffect(() => { arrayIsEqualLength(markRowChecked, rows) ?  setAllMarkRowChecked(true) : setAllMarkRowChecked(false) }, [rows, markRowChecked]);
+  useEffect(() => { arrayIsEqualLength(markRowChecked, rows) ? setAllMarkRowChecked(true) : setAllMarkRowChecked(false) }, [rows, markRowChecked]);
 
   function handleSelectCheckboxChange(changeEvent) {
     const { id } = changeEvent.target;
 
     if (!markRowChecked.includes(Number(id))) {
-      setMarkRowChecked([ ...markRowChecked, ...[Number(id)] ])
+      setMarkRowChecked([...markRowChecked, ...[Number(id)]])
     } else {
-      const tempItem = markRowChecked.filter(function(v){ return v !== Number(id); });
-      setMarkRowChecked([ ...tempItem ]);
-      
+      const tempItem = markRowChecked.filter(function (v) { return v !== Number(id); });
+      setMarkRowChecked([...tempItem]);
+
     }
   };
 
-  function arrayIsEqualLength (a1, a2) {
+  function arrayIsEqualLength(a1, a2) {
     return a1.length === a2.length
   }
 
@@ -152,21 +157,21 @@ export default function BrowseCatalogue() {
     const { checked } = changeEvent.target;
 
     if (checked === true) {
-      setMarkRowChecked([ ...Array(rows.length).keys() ])
+      setMarkRowChecked([...Array(rows.length).keys()])
     } else {
-      setMarkRowChecked([ ]);
+      setMarkRowChecked([]);
     }
   };
 
   function exportExcel() {
 
-    let exportData = rows.filter(function(v, index){ return markRowChecked.includes(index); });
-    exportData = exportData.map((row) => ({ ...row, ...{Tags: row.Tags.join("\r\n"), Topics: row.Topics.map((topic) => (topic.title)).join("\r\n")}}));
+    let exportData = rows.filter(function (v, index) { return markRowChecked.includes(index); });
+    exportData = exportData.map((row) => ({ ...row, ...{ Tags: row.Tags.join("\r\n"), Topics: row.Topics.map((topic) => (topic.title)).join("\r\n") } }));
 
     const headerRow = `A1:${String.fromCharCode(64 + [...headers, ...extraHeaders].length)}1`
 
-    var sheet = XLSX.utils.json_to_sheet(exportData, {headers:[...headers, ...extraHeaders]});
-    sheet['!autofilter']={ref:headerRow};
+    var sheet = XLSX.utils.json_to_sheet(exportData, { headers: [...headers, ...extraHeaders] });
+    sheet['!autofilter'] = { ref: headerRow };
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, "Export");
@@ -194,10 +199,10 @@ export default function BrowseCatalogue() {
             <Dropdown className="d-inline">
               <Dropdown.Toggle id="tag-dropdown">Filter Tags</Dropdown.Toggle>
               <Dropdown.Menu as={CheckboxDropdown} filteredItem={tagFiltered} setFilteredItem={setTagFiltered} filterItems={tagFilterItems}>
-                {tagFilterItems.sort().map((tag, index) => ( <Dropdown.Item key={index} eventKey={tag}>{tag}</Dropdown.Item> ))}
+                {tagFilterItems.sort().map((tag, index) => (<Dropdown.Item key={index} eventKey={tag}>{tag}</Dropdown.Item>))}
               </Dropdown.Menu>
             </Dropdown>
-            <Button className="mx-1" onClick={() => {setShowFilterModal(true)}}>Filter topic</Button>
+            <Button className="mx-1" onClick={() => { setShowFilterModal(true) }}>Filter topic</Button>
           </Col>
           <Col md={2}>
             <Stack direction="horizontal" gap={3}>
@@ -205,28 +210,28 @@ export default function BrowseCatalogue() {
             </Stack></Col>
         </Row>
         <Row>
-        <Col>
-          {body}
-        </Col>
+          <Col>
+            {body}
+          </Col>
         </Row>
         <FilterTopicModal show={showFilterModal} setShow={setShowFilterModal} topics={rootTopics} filteredTopics={topicFiltered} setFilteredTopics={setTopicFiltered} />
       </Container>
     );
   } else {
     return (
-    <Container fluid className="bg-body">
-      <Row>
-        <Col><MainBreadcrumb items={breadcrumbs}></MainBreadcrumb></Col>
-      </Row>
-      <Row>
-        <Col><h2>Browse</h2></Col>
-      </Row>
-      <Row>
-      <Col>
-        {body}
-      </Col>
-      </Row>
-    </Container>
+      <Container fluid className="bg-body">
+        <Row>
+          <Col><MainBreadcrumb items={breadcrumbs}></MainBreadcrumb></Col>
+        </Row>
+        <Row>
+          <Col><h2>Browse</h2></Col>
+        </Row>
+        <Row>
+          <Col>
+            {body}
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }
