@@ -6,10 +6,10 @@ import DataTable from "../components/DataTable";
 import BrowseRow from "../components/Browse/BrowseRow";
 import { CheckboxDropdown } from "../components/CheckboxDropdown";
 import { useParams } from "react-router-dom";
-import * as XLSX from "xlsx";
 import FilterTopicModal from "../components/Browse/FilterTopicsModal";
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from "../hooks/useFetchWithMsal";
+import { ExportTable } from "../components/Export";
 
 /**
  * View to browse a
@@ -164,21 +164,6 @@ export default function BrowseCatalogue() {
     }
   };
 
-  function exportExcel() {
-
-    let exportData = rows.filter(function (v, index) { return markRowChecked.includes(index); });
-    exportData = exportData.map((row) => ({ ...row, ...{ Tags: row.Tags.join("\r\n"), Topics: row.Topics.map((topic) => (topic.title)).join("\r\n") } }));
-
-    const headerRow = `A1:${String.fromCharCode(64 + [...headers, ...extraHeaders].length)}1`
-
-    var sheet = XLSX.utils.json_to_sheet(exportData, { headers: [...headers, ...extraHeaders] });
-    sheet['!autofilter'] = { ref: headerRow };
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, sheet, "Export");
-    XLSX.writeFile(workbook, "ReqDB-Export.xlsx");
-  }
-
   if (catalogueData && catalogueData.status === 200) {
     if (topicFiltered == null && tagFiltered == null) {
       setTopicFiltered(topicFilterItems); setTagFiltered(tagFilterItems)
@@ -207,7 +192,7 @@ export default function BrowseCatalogue() {
           </Col>
           <Col md={2}>
             <Stack direction="horizontal" gap={3}>
-              <div className="p-2 ms-auto"><Button variant="primary" onClick={exportExcel}>Export Selected</Button></div>
+              <div className="p-2 ms-auto"><ExportTable headers={[...headers, ...extraHeaders]} dataToExport={rows.filter(function (v, index) { return markRowChecked.includes(index); })}/></div>
             </Stack></Col>
         </Row>
         <Row>
