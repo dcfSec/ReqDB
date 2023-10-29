@@ -15,8 +15,8 @@ import { protectedResources } from '../authConfig';
  */
 function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [], needsParent = false, setNotificationToastHandler, setShowSpinner }) {
 
-  const EditListRow = lazy(() => import(`../components/Edit/${editPageName}/EditListRow`));
-  const AddListRow = lazy(() => import(`../components/Edit/${editPageName}/AddListRow`));
+  const EditListRow = lazy(() => import(`../components/Edit/${editPageName}/EditListRow.jsx`));
+  const AddListRow = lazy(() => import(`../components/Edit/${editPageName}/AddListRow.jsx`));
 
   const [search, setSearch] = useState("");
   let [items, setItems] = useState([]);

@@ -12,8 +12,8 @@ import { LogLevel } from "@azure/msal-browser";
  */
 export const msalConfig = {
   auth: {
-    clientId: process.env.REACT_APP_CLIENT_ID, // This is the ONLY mandatory field that you need to supply.
-    authority: `https://login.microsoftonline.com/${process.env.REACT_APP_TENANT}`, // Defaults to "https://login.microsoftonline.com/common"
+    clientId: import.meta.env.VITE_APP_CLIENT_ID, // This is the ONLY mandatory field that you need to supply.
+    authority: `https://login.microsoftonline.com/${import.meta.env.VITE_APP_TENANT}`, // Defaults to "https://login.microsoftonline.com/common"
     redirectUri: "/", // You must register this URI on Azure Portal/App Registration. Defaults to window.location.origin
     postLogoutRedirectUri: "/", // Indicates the page to navigate after logout.
     clientCapabilities: ["CP1"] // this lets the resource owner know that this client is capable of handling claims challenge.
@@ -59,7 +59,7 @@ export const msalConfig = {
 export const protectedResources = {
   ReqDB: {
     endpoint: "http://localhost:3000/",
-    scopes:  [`api://${process.env.REACT_APP_CLIENT_ID}/ReqDB.Reader`, `api://${process.env.REACT_APP_CLIENT_ID}/ReqDB.Writer`]
+    scopes:  [`api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Reader`, `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Writer`]
     
   }
 }
