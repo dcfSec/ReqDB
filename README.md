@@ -49,8 +49,8 @@ OAUTH_APP_TENANT="xxx"      # Azure Tenant ID
 RESOURCE_GROUP_NAME="ReqDB"  # Resource group for zip deployment with deployZip.sh
 APP_SERVICE_NAME="ReqDB"     # App Service for zip deployment with deployZip.sh
 
-REACT_APP_CLIENT_ID = "xxx"  # Client ID for oauth (Azure Entra) (React)
-REACT_APP_TENANT = "xxx"     # Azure Tenant ID (React)
+VITE_APP_CLIENT_ID = "xxx"  # Client ID for oauth (Azure Entra) (React)
+VITE_APP_TENANT = "xxx"     # Azure Tenant ID (React)
 
 ```
 
