@@ -53,6 +53,9 @@ class ExtraType(Resource):
         extraType = ExtraTypeModel.query.get_or_404(id)
         schema = ExtraTypeSchema()
         try:
+            extraType = schema.load(
+                request.json, instance=extraType,
+                partial=True, session=db.session)
             db.session.commit()
             return {
                 'status': 200,
