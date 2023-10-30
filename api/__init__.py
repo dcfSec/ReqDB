@@ -21,7 +21,7 @@ db = SQLAlchemy()
 ma = Marshmallow()
 
 app = Flask(__name__, static_url_path='',
-            static_folder=path.abspath('front-end/build'))
+            static_folder=path.abspath('front-end/dist'))
 app.config.from_object(Config)
 
 jwt = JWTManager(app)
