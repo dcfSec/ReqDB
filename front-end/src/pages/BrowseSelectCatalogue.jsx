@@ -14,10 +14,11 @@ import useFetchWithMsal from '../hooks/useFetchWithMsal';
  */
 export default function BrowseSelectCatalogue() {
 
-  const title = "Browse"
+  const title = "Browse - Select Requirement Catalogue"
   const breadcrumbs = [
     { href: "", title: title, active: true }
   ]
+  document.title = `${title} | ReqDB - Requirement Database`;
 
   const { setShowSpinner } = useContext(UserContext)
 
