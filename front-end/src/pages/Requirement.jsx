@@ -20,6 +20,7 @@ export default function Requirement() {
   const params = useParams();
   const id = params.requirementId
   let title = "View Requirement"
+  document.title = `${title} | ReqDB - Requirement Database`;
 
   const { setShowSpinner } = useContext(UserContext)
 
@@ -47,6 +48,7 @@ export default function Requirement() {
     if (requirementData && requirementData.status === 200) {
       const requirement = requirementData.data
       title = `${requirement.key} - ${requirement.title}`
+      document.title = `${title} | ReqDB - Requirement Database`;
       body = <Container>
         <Row>
           <Col>

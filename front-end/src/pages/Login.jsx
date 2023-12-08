@@ -12,6 +12,7 @@ export default function Login() {
   const breadcrumbs = [
     { href: "", title: title, active: true }
   ]
+  document.title = `${title} | ReqDB - Requirement Database`;
 
   const { instance } = useMsal();
 

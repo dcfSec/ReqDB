@@ -45,6 +45,9 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
     scopes: protectedResources.ReqDB.scopes,
   });
 
+  document.title = `${editPageName} | ReqDB - Requirement Database`;
+
+
   const [data, setData] = useState(null);
   useEffect(() => { setShowSpinner(!data) }, [data]);
 

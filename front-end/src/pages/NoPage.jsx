@@ -8,10 +8,11 @@ import { MainBreadcrumb } from "../components/MiniComponents";
  */
 export default function NoPage() {
 
-  const title = "404"
+  const title = "Page not found"
   const breadcrumbs = [
     { href: "", title: title, active: true }
   ]
+  document.title = `${title} | ReqDB - Requirement Database`;
 
   return (
     <Container fluid className="bg-body">
@@ -19,7 +20,7 @@ export default function NoPage() {
         <Col><MainBreadcrumb items={breadcrumbs}></MainBreadcrumb></Col>
       </Row>
       <Row>
-        <Col><h2>404 - Page not found</h2></Col>
+        <Col><h2>{title}</h2></Col>
       </Row>
       <Row>
         <Col><Alert variant="danger">The requested page does not exist.</Alert>

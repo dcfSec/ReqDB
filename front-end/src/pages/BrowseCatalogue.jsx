@@ -23,6 +23,7 @@ export default function BrowseCatalogue() {
     { href: "", title: title, active: true }
   ]
   const [search, setSearch] = useState("");
+  document.title = `${title} | ReqDB - Requirement Database`;
 
   const headers = [
     "Tags",
@@ -168,6 +169,9 @@ export default function BrowseCatalogue() {
     if (topicFiltered == null && tagFiltered == null) {
       setTopicFiltered(topicFilterItems); setTagFiltered(tagFilterItems)
     }
+    
+    document.title = `${catalogueData.data.title} | ReqDB - Requirement Database`;
+
 
     return (
       <Container fluid className="bg-body">

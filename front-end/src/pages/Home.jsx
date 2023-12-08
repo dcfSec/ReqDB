@@ -15,6 +15,7 @@ export default function Home() {
   const breadcrumbs = [
     { href: "", title: title, active: true }
   ]
+  document.title = `${title} | ReqDB - Requirement Database`;
 
   const { instance } = useMsal();
   const [roles, setRoles] = useState([]);
