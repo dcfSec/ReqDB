@@ -115,6 +115,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
           setShowUpdateMany2Many(true)
         }}>Set</Button></td>
         <td><Button variant="primary" disabled={!edit}>Show</Button></td>
+        <td><Form.Check  type="switch" id="visible" disabled={!edit} defaultChecked={item.visible} onChange={e => { updateTempItem({ visible: e.target.value }) }} /></td>
         <td>{buttons}</td>
         {showUpdateMany2Many ? <SelectMany
           humanKey={item.key}

@@ -59,7 +59,6 @@ export default function AddListRow({ blankItem, humanKey, endpoint, addItemToLis
       <td></td>
       <td><Form.Control type="text" id="title" value={newItem.title} onChange={e => { updateNewItem({ title: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="description" value={newItem.description} onChange={e => { updateNewItem({ description: e.target.value }) }} /></td>
-      <td><Form.Control type="number" id="maxDepth" min="0" value={newItem.maxDepth} onChange={e => { updateNewItem({ maxDepth: e.target.value }) }} /></td>
       <td><Button variant="primary" onClick={() => {
         setShowSelectParentModal(true)
       }}>{newItem.root ? newItem.rootObject.key : "Set elements"}</Button></td>

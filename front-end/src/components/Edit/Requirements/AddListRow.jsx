@@ -63,6 +63,7 @@ export default function AddListRow({ blankItem, humanKey, endpoint, addItemToLis
         setShowSelectParentModal(true)
       }}>{newItem.parent ? newItem.parent.key : "Parent"}</Button></td>
       <td></td><td></td>
+      <td><Form.Check  type="switch" id="visible" defaultChecked={true} onChange={e => { updateNewItem({ visible: e.target.value }) }} /></td>
       <td><Button variant="success" onClick={() => addItem()}>Add</Button></td>
       {showSelectParentModal ? <SelectParentModal
         itemId={newItem.id}

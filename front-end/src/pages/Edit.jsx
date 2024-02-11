@@ -167,8 +167,7 @@ export function Catalogues({ setShowSpinner, notificationToastHandler, setNotifi
       "#",
       "Title",
       "Description",
-      "Max Depth",
-      "Root Element",
+      "Root Elements",
       "Action"
     ]}
     blankItem={{
@@ -233,6 +232,7 @@ export function Requirements({ setShowSpinner, notificationToastHandler, setNoti
       "Parent",
       "Tags",
       "Extras",
+      "Visible",
       "Action"
     ]}
     blankItem={{
@@ -240,6 +240,7 @@ export function Requirements({ setShowSpinner, notificationToastHandler, setNoti
       title: "",
       description: "",
       parentId: null,
+      visible: true,
     }}
     searchFields={[
       "key", "title", "description"
