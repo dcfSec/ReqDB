@@ -34,6 +34,7 @@ class Requirement(Base):
         secondary='RequirementTag',
         back_populates='requirement'
     )
+    visible = db.Column(db.Boolean, unique=False, default=True)
 
     def __repr__(self):
         return f'<Requirement "{self.title}">'
@@ -97,7 +98,6 @@ class Catalogue(Base):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    maxDepth = db.Column(db.Integer, nullable=False)
 
     topics = db.relationship(
         'Topic',

@@ -163,7 +163,6 @@ class CatalogueSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
 
     title = ma.auto_field(validate=validate.Length(min=1))
-    maxDepth = ma.auto_field(validate=validate.Range(min=1))
 
 
 class CatalogueLightNestedSchema(ma.SQLAlchemyAutoSchema):
@@ -178,7 +177,6 @@ class CatalogueLightNestedSchema(ma.SQLAlchemyAutoSchema):
         unknown = EXCLUDE
 
     title = ma.auto_field(validate=validate.Length(min=1))
-    maxDepth = ma.auto_field(validate=validate.Range(min=1))
     topics = fields.Nested(nested='TopicSchema', only=['id', 'title'],
                            many=True)
 
@@ -194,5 +192,4 @@ class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
 
     title = ma.auto_field(validate=validate.Length(min=1))
-    maxDepth = ma.auto_field(validate=validate.Range(min=1))
     topics = fields.Nested(nested='TopicSchema', many=True)

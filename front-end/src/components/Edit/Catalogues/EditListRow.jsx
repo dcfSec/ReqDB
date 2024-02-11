@@ -105,7 +105,6 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
         <td>{originalItem.id}</td>
         <td><Form.Control disabled={!edit} type="text" id="title" value={item.title} onChange={e => { updateTempItem({ title: e.target.value }) }} /></td>
         <td><Form.Control disabled={!edit} type="text" id="description" value={item.description} onChange={e => { updateTempItem({ description: e.target.value }) }} /></td>
-        <td><Form.Control disabled={!edit} type="number" id="maxDepth" min="0" value={item.maxDepth} onChange={e => { updateTempItem({ maxDepth: e.target.value }) }} /></td>
         <td><Button disabled={!edit} variant="primary" onClick={() => {
           setShowUpdateMany2Many(true)
         }}>Set elements</Button></td>

@@ -20,7 +20,7 @@ export default function BrowseCatalogue() {
 
   const title = "Browse"
   const breadcrumbs = [
-    { href: "", title: title, active: true }
+    { href: "/Browse", title: title, active: false }
   ]
   const [search, setSearch] = useState("");
   document.title = `${title} | ReqDB - Requirement Database`;
@@ -101,6 +101,7 @@ export default function BrowseCatalogue() {
     if ('requirements' in item) {
       item.requirements.forEach(requirement => {
         const tags = []
+        if (requirement.visible === true) {
         requirement.tags.forEach(tag => {
           tags.push(tag.name)
           if (!tagFilterItems.includes(tag.name)) {
@@ -124,6 +125,7 @@ export default function BrowseCatalogue() {
           }
         });
         rows.push({ ...base, ...extraColumns })
+      }
       });
     }
     if ('children' in item) {
@@ -172,6 +174,7 @@ export default function BrowseCatalogue() {
     
     document.title = `${catalogueData.data.title} | ReqDB - Requirement Database`;
 
+    breadcrumbs.push({ href: "", title: catalogueData.data.title, active: true })
 
     return (
       <Container fluid className="bg-body">
