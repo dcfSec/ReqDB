@@ -5,7 +5,7 @@ from flask_restful import Api
 
 from flask_jwt_extended import JWTManager
 
-from api.config import Config
+from api.config import Config, getAzureJWTKeys
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -44,4 +44,8 @@ def getDecodeKey(header, payload):
     if header['kid'] in Config.JWT_PUBLIC_KEY:
         return Config.JWT_PUBLIC_KEY[header['kid']]
     else:
-        raise KeyError(f"kid {header['kid']} is not a supported key ID")
+        Config.JWT_PUBLIC_KEY = getAzureJWTKeys()
+        if header['kid'] in Config.JWT_PUBLIC_KEY:
+            return Config.JWT_PUBLIC_KEY[header['kid']]
+        else:
+            raise KeyError(f"kid {header['kid']} is not a supported key ID")
