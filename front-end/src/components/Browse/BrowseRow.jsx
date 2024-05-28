@@ -1,5 +1,7 @@
 import { Badge, Button, Form } from "react-bootstrap";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { inSearchField } from "../MiniComponents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
@@ -12,13 +14,17 @@ import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
  */
 export default function BrowseRow({ index, extraHeaders, extraHeaderTypes, row, search, tags, tagFiltered, topicFiltered, markRowCallback, markRowChecked = [] }) {
 
+  const topicMaxlength = 40
+  let badgeIdExtrafieldRunner = 0
+
   function renderExtraField(item, extraType) {
     if (extraHeaderTypes[extraType] === 1) {
       return item
     } else if (extraHeaderTypes[extraType] === 2) {
       return <ReactMarkdown>{item}</ReactMarkdown>
-    } else if (extraHeaderTypes[extraType] === 3) { //@TODO: Implement
-      return item
+    } else if (extraHeaderTypes[extraType] === 3) {
+      console.log(item)
+      return item ? item.split(";").map((badge)  => (<span key={"extraFieldBade" + ++badgeIdExtrafieldRunner}><Badge bg="secondary">{badge}</Badge><br /></span>)) : null
     }
   }
 
@@ -27,7 +33,14 @@ export default function BrowseRow({ index, extraHeaders, extraHeaderTypes, row, 
       <tr key={row.Key}>
         <td className="vertical-middle"><Button className="eye-button" variant="primary" href={`/Browse/Requirement/${row.id}`}><FontAwesomeIcon icon={solid("link")} /></Button></td>
         <td>{row.Tags.map((tag) => (<span key={row.Key + " " + tag}><Badge bg="info">{tag}</Badge><br /></span>))}</td>
-        <td>{row.Topics.map((topic) => (<span key={row.Key + " " + topic.key}><Badge bg="primary">{topic.key} {topic.title}</Badge><br /></span>))}</td>
+        <td>{row.Topics.map((topic) => (
+          <span key={row.Key + " " + topic.key}>
+            <OverlayTrigger overlay={<Tooltip id={"tooltip-" + row.Key + "-" + topic.key}>{topic.key} {topic.title}</Tooltip>}>
+              <Badge bg="primary">{topic.key} {topic.title.length > topicMaxlength ? topic.title.substring(0, topicMaxlength) + "..." : topic.title}</Badge>
+              </OverlayTrigger>
+              <br />
+          </span>
+        ))}</td>
         <td>{row.Key}</td>
         <td>{row.Title}</td>
         <td><ReactMarkdown>{row.Description}</ReactMarkdown></td>
