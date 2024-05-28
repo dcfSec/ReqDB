@@ -1,5 +1,6 @@
 import Dropdown from 'react-bootstrap/Dropdown';
 import ExcelJS from "exceljs";
+import YAML from 'yaml';
 
 /**
  * Exports the browse table in different formats
@@ -33,6 +34,21 @@ export function ExportTable({ headers, dataToExport }) {
       });
   }
 
+  function exportJson() {
+    const fileType = 'data:text/json;charset=utf-8;';
+    const json = JSON.stringify(dataToExport, null, 2);
+    const blob = new Blob([json], { type: fileType });
+    saveAs(blob, "ReqDB-Export.json");    
+  }
+
+  function exportYaml() {
+    const fileType = 'data:text/yaml;charset=utf-8;';
+    const doc = new YAML.Document();
+    doc.contents = dataToExport;
+    const blob = new Blob([doc.toString()], { type: fileType });
+    saveAs(blob, "ReqDB-Export.yaml");    
+  }
+
   return (
     <Dropdown>
       <Dropdown.Toggle variant="success" id="export-dropdown">
@@ -40,6 +56,8 @@ export function ExportTable({ headers, dataToExport }) {
       </Dropdown.Toggle>
       <Dropdown.Menu>
         <Dropdown.Item onClick={exportExcel}>As Excel</Dropdown.Item>
+        <Dropdown.Item onClick={exportJson}>As JSON</Dropdown.Item>
+        <Dropdown.Item onClick={exportYaml}>As Yaml</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );
