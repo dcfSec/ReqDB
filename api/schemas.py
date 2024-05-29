@@ -66,6 +66,7 @@ class RequirementUpdateSchema(ma.SQLAlchemySchema):
     key = ma.auto_field()
     parentId = ma.auto_field()
     title = ma.auto_field()
+    visible = ma.auto_field()
 
 
 class TagSchema(ma.SQLAlchemyAutoSchema):
