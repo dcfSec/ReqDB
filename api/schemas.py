@@ -76,7 +76,7 @@ class TagSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         include_fk = True
 
-    name = ma.auto_field(validate=validate.Length(min=1))
+    name = ma.auto_field(validate=validate.Length(min=1, max=50))
     requirement = fields.Nested(nested='RequirementSchema', exclude=['tags'],
                                 many=True)
 
