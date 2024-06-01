@@ -8,6 +8,8 @@ from api import db
 from api.models import Topic as TopicModel
 from api.schemas import TopicSchema, TopicUpdateSchema, \
     TopicOnlyIDAndTitleSchema
+from api.endpoints.base import BaseRessources
+
 
 from api.helper import checkAccess
 
@@ -137,12 +139,14 @@ class Topic(Resource):
             }, 400
 
 
-class Topics(Resource):
+class Topics(BaseRessources):
     """
     Topics class, represents the Topics API to fetch all or add a
     topic item
     """
     method_decorators = [jwt_required()]
+    addSchemaClass = TopicUpdateSchema
+    dumpSchemaClass = TopicSchema
 
     def get(self):
         """Get all topic elements
@@ -154,10 +158,10 @@ class Topics(Resource):
         :return list: All topic elements
         """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
-        if request.args.get('root') is not None:
-            topics = TopicModel.query.filter_by(parentId=None)
-        else:
-            topics = TopicModel.query.all()
+        # if request.args.get('root') is not None:
+        #     topics = TopicModel.query.filter_by(parentId=None)
+        # else:
+        topics = TopicModel.query.all()
         if request.args.get('minimal') is not None:
             schema = TopicOnlyIDAndTitleSchema(many=True)
         else:
@@ -166,37 +170,3 @@ class Topics(Resource):
             'status': 200,
             'data': schema.dump(topics)
         }
-
-    def post(self):
-        """
-        Adds a new topic item
-
-        Required roles:
-            - Writer
-
-        :return dict: The new topic item
-        """
-        checkAccess(get_jwt(), ['Writer'])
-        updateSchema = TopicUpdateSchema()
-        schema = TopicSchema()
-        try:
-            topic = updateSchema.load(request.json)
-            db.session.add(topic)
-            db.session.commit()
-            return {
-                'status': 200,
-                'data': schema.dump(topic)
-            }, 201
-        except ValidationError as e:
-            return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
-            }, 400
-        except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400

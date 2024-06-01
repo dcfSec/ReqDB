@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import Tag as TagModel
 from api.schemas import TagSchema, TagUpdateSchema, TagMinimalSchema
+from api.endpoints.base import BaseRessources
 
 from api.helper import checkAccess
 
@@ -115,12 +116,13 @@ class Tag(Resource):
             }, 400
 
 
-class Tags(Resource):
+class Tags(BaseRessources):
     """
     Tags class, represents the Tags API to fetch all or add a
     tag item
     """
-    method_decorators = [jwt_required()]
+    addSchemaClass = TagSchema
+    dumpSchemaClass = TagSchema
 
     def get(self):
         """Get all tag elements
@@ -141,36 +143,3 @@ class Tags(Resource):
             'status': 200,
             'data': schema.dump(tags)
         }
-
-    def post(self):
-        """
-        Adds a new tag item
-
-        Required roles:
-            - Writer
-
-        :return dict: The new tag item
-        """
-        checkAccess(get_jwt(), ['Writer'])
-        schema = TagSchema()
-        try:
-            tag = schema.load(request.json)
-            db.session.add(tag)
-            db.session.commit()
-            return {
-                'status': 200,
-                'data': schema.dump(tag)
-            }, 201
-        except ValidationError as e:
-            return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
-            }, 400
-        except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400

@@ -13,7 +13,7 @@ from api.endpoints.requirements import Requirement, Requirements
 from api.endpoints.tags import Tag, Tags
 from api.endpoints.topics import Topic, Topics
 from api.endpoints.coffee import Coffee
-from api.endpoints.base import Base
+from api.endpoints.wildcard import Wildcard
 
 api.add_resource(Catalogues, '/catalogues')
 api.add_resource(Catalogue, '/catalogues/<int:id>')
@@ -35,4 +35,4 @@ api.add_resource(Topic, '/topics/<int:id>')
 
 api.add_resource(Coffee, '/coffee')
 
-api.add_resource(Base, '', '/', '/<path:path>')
+api.add_resource(Wildcard, '', '/', '/<path:path>')

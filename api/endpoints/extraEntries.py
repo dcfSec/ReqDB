@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import ExtraEntry as ExtraEntryModel
 from api.schemas import ExtraEntrySchema, ExtraEntryUpdateSchema
+from api.endpoints.base import BaseRessources
 
 from api.helper import checkAccess
 
@@ -107,12 +108,13 @@ class ExtraEntry(Resource):
             }, 400
 
 
-class ExtraEntries(Resource):
+class ExtraEntries(BaseRessources):
     """
     ExtraEntries class, represents the extraEntries API to fetch all or add an
     extraEntries item
     """
-    method_decorators = [jwt_required()]
+    addSchemaClass = ExtraEntryUpdateSchema
+    dumpSchemaClass = ExtraEntrySchema
 
     def get(self):
         """Get all extra entries elements
@@ -130,37 +132,3 @@ class ExtraEntries(Resource):
             'status': 200,
             'data': schema.dump(extraEntries)
         }
-
-    def post(self):
-        """
-        Adds a new extra entry item
-
-        Required roles:
-            - Writer
-
-        :return dict: The new extra entry item
-        """
-        checkAccess(get_jwt(), ['Writer'])
-        updateSchema = ExtraEntryUpdateSchema()
-        schema = ExtraEntrySchema()
-        try:
-            extraEntry = updateSchema.load(request.json, session=db.session)
-            db.session.add(extraEntry)
-            db.session.commit()
-            return {
-                'status': 200,
-                'data': schema.dump(extraEntry)
-            }, 201
-        except ValidationError as e:
-            return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
-            }, 400
-        except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400
