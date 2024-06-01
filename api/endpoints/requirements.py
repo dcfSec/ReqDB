@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import Topic, Requirement as RequirementModel
 from api.schemas import RequirementSchema, RequirementUpdateSchema
+from api.endpoints.base import BaseRessources
 
 from api.helper import checkAccess
 
@@ -130,12 +131,13 @@ class Requirement(Resource):
             }, 400
 
 
-class Requirements(Resource):
+class Requirements(BaseRessources):
     """
     Requirements class, represents the Requirements API to fetch all or add a
     Requirement item
     """
-    method_decorators = [jwt_required()]
+    addSchemaClass = RequirementUpdateSchema
+    dumpSchemaClass = RequirementSchema
 
     def get(self):
         """Get all requirement elements
@@ -154,43 +156,12 @@ class Requirements(Resource):
             'data': schema.dump(requirements)
         }
 
-    def post(self):
-        """
-        Adds a new requirement item
-
-        Required roles:
-            - Writer
-
-        :return dict: The new requirement item
-        """
-        checkAccess(get_jwt(), ['Writer'])
-        schema = RequirementUpdateSchema()
-        try:
-            requirement = schema.load(request.json, session=db.session)
-            if requirement.parentId is not None:
-                parent = Topic.query.get_or_404(requirement.parentId)
-                if parent.children != []:
-                    abort(400, {
-                        'error': 'ValidationError',
-                        'message': [
-                            "Parent Topic can't have children and requirements"
-                        ]})
-            db.session.add(requirement)
-            db.session.commit()
-            return {
-                'status': 200,
-                'data': schema.dump(requirement)
-            }, 201
-        except ValidationError as e:
-            return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
-            }, 400
-        except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400
+    def check(self, object):
+        if object.parentId is not None:
+            parent = Topic.query.get_or_404(object.parentId)
+            if parent.children != []:
+                abort(400, {
+                    'error': 'ValidationError',
+                    'message': [
+                        "Parent Topic can't have children and requirements"
+                    ]})

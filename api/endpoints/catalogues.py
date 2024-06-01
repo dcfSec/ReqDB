@@ -9,6 +9,7 @@ from api.helper import checkAccess
 from api.models import Catalogue as CatalogueModel
 from api.schemas import CatalogueExtendedSchema, CatalogueSchema, \
     CatalogueLightNestedSchema
+from api.endpoints.base import BaseRessources
 
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt
@@ -126,12 +127,13 @@ class Catalogue(Resource):
             }, 400
 
 
-class Catalogues(Resource):
+class Catalogues(BaseRessources):
     """
     Catalogues class, represents the catalogues API to fetch all or add a
     catalogue item
     """
-    method_decorators = [jwt_required()]
+    addSchemaClass = CatalogueLightNestedSchema
+    dumpSchemaClass = CatalogueLightNestedSchema
 
     def get(self):
         """Get all catalogue elements
@@ -160,36 +162,3 @@ class Catalogues(Resource):
             'status': 200,
             'data': schema.dump(catalogues)
         }
-
-    def post(self):
-        """
-        Adds a new catalogue item
-
-        Required roles:
-            - Writer
-
-        :return dict: The new catalogue item
-        """
-        checkAccess(get_jwt(), ['Writer'])
-        schema = CatalogueLightNestedSchema()
-        try:
-            catalogue = schema.load(request.json, session=db.session)
-            db.session.add(catalogue)
-            db.session.commit()
-            return {
-                'status': 200,
-                'data': schema.dump(catalogue)
-            }, 201
-        except ValidationError as e:
-            return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
-            }, 400
-        except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400

@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import ExtraType as ExtraTypeModel
 from api.schemas import ExtraTypeSchema
+from api.endpoints.base import BaseRessources
 
 from api.helper import checkAccess
 
@@ -113,12 +114,13 @@ class ExtraType(Resource):
             }, 400
 
 
-class ExtraTypes(Resource):
+class ExtraTypes(BaseRessources):
     """
     ExtraTypes class, represents the extraTypes API to fetch all or add an
     extraType item
     """
-    method_decorators = [jwt_required()]
+    addSchemaClass = ExtraTypeSchema
+    dumpSchemaClass = ExtraTypeSchema
 
     def get(self):
         """Get all extra type elements
@@ -136,36 +138,3 @@ class ExtraTypes(Resource):
             'status': 200,
             'data': schema.dump(extraTypes)
         }
-
-    def post(self):
-        """
-        Adds a new extra type item
-
-        Required roles:
-            - Writer
-
-        :return dict: The new extra type item
-        """
-        checkAccess(get_jwt(), ['Writer'])
-        schema = ExtraTypeSchema()
-        try:
-            extraType = schema.load(request.json)
-            db.session.add(extraType)
-            db.session.commit()
-            return {
-                'status': 200,
-                'data': schema.dump(extraType)
-            }, 201
-        except ValidationError as e:
-            return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
-            }, 400
-        except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400
