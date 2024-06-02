@@ -31,6 +31,15 @@ def page_not_found(e):
     }), 404
 
 
+@api_bp.errorhandler(405)
+def method_not_allowed(e):
+    return jsonify({
+        "status": 405,
+        "error": "MethodNotAllowed",
+        "message": "The method is not allowed for the requested URL."
+    }), 404
+
+
 @jwt.expired_token_loader
 def expiredToken(jwt_header, jwt_payload):
     return jsonify({
