@@ -2,7 +2,7 @@ import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import { inSearchField } from "../../MiniComponents";
 import { useContext, useState } from "react";
-import { API, UserContext, handleErrorMessage } from "../../../static";
+import { API, LoadingSpinnerContext, NotificationToastContext, handleErrorMessage } from "../../../static";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
@@ -16,8 +16,8 @@ import { protectedResources } from "../../../authConfig";
  */
 export default function EditListRow({ index, endpoint, originalItem, humanKey, deleteItemInList, search, searchFields }) {
 
-  const { setNotificationToastHandler } = useContext(UserContext)
-  const { setShowSpinner } = useContext(UserContext)
+  const { setNotificationToastHandler } = useContext(NotificationToastContext)
+  const { setShowSpinner } = useContext(LoadingSpinnerContext)
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [force, setForce] = useState(false);
@@ -104,9 +104,9 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
     return (
       <tr>
         <td>{originalItem.id}</td>
-        <td><Form.Control as="textarea" disabled={!edit} rows={3} id="content" placeholder="New content" value={item.content} onChange={e => { updateTempItem({ content: e.target.value }) }} /></td>
+        <td><Form.Control as="textarea" disabled={!edit} rows={3} id="content" value={item.content} onChange={e => { updateTempItem({ content: e.target.value }) }} /></td>
         <td><Button variant="primary" disabled={!edit} onClick={() => {
-          setShowSelectParentModal(true)
+          setShowSelectExtraModal(true)
         }}>{item.extraType ? item.extraType.title : "ExtraType"}</Button></td>
         <td><Button variant="primary" disabled={!edit} onClick={() => {
           setShowSelectParentModal(true)
@@ -127,10 +127,10 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
         ></SelectParentModal> : null}
         {showSelectExtraModal ? <SelectParentModal id="extra"
           itemId={item.id}
-          humanKey={item.title}
+          humanKey={item.id}
           show={showSelectExtraModal}
           setShow={setShowSelectExtraModal}
-          initialSelectedItem={item.parentId}
+          initialSelectedItem={item.extraTypeId}
           endpoint={"extraTypes"}
           updateItem={updateTempItem}
           updateIdField={"extraTypeId"}

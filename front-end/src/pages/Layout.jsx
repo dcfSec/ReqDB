@@ -4,18 +4,20 @@ import NotificationToast from "../components/NotificationToast";
 import { Col, Container, Image, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { brands } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { useContext } from 'react';
+import { NotificationToastContext } from '../static';
 
 /**
  * Parent component for all views
  * 
- * @param {object} props Props for this component: showSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode
+ * @param {object} props Props for this component: darkMode, setDarkMode
  * @returns Main layout
  */
-export default function Layout({ showSpinner, notificationToastHandler, setNotificationToastHandler, darkMode, setDarkMode }) {
-
+export default function Layout({ darkMode, setDarkMode }) {
+  const { notificationToastHandler, setNotificationToastHandler } = useContext(NotificationToastContext)
   return (
     <>
-      <MainNavbar showSpinner={showSpinner} darkMode={darkMode} setDarkMode={setDarkMode}></MainNavbar>
+      <MainNavbar darkMode={darkMode} setDarkMode={setDarkMode}></MainNavbar>
       <Outlet />
       <NotificationToast close={() => setNotificationToastHandler([notificationToastHandler[0], notificationToastHandler[1], !notificationToastHandler[2]])} show={notificationToastHandler[2]} header={notificationToastHandler[0]} body={notificationToastHandler[1]}></NotificationToast>
       <Container fluid className="bg-footer">

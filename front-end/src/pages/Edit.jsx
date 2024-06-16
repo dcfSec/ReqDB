@@ -3,7 +3,8 @@ import EditorLayout from '../components/Edit/EditLayout';
 import DataTable from '../components/DataTable';
 
 import { Alert, ProgressBar } from 'react-bootstrap';
-import { API, handleErrorMessage } from '../static';
+import { useContext } from 'react';
+import { API, LoadingSpinnerContext, NotificationToastContext, handleErrorMessage } from '../static';
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { protectedResources } from '../authConfig';
 
@@ -13,14 +14,16 @@ import { protectedResources } from '../authConfig';
  * @param {object} props Props for the component: editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters, needsParent, setNotificationToastHandler, setShowSpinner
  * @returns Parent component for all editor views
  */
-function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [], needsParent = false, setNotificationToastHandler, setShowSpinner }) {
+function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [], needsParent = false }) {
 
   const EditListRow = lazy(() => import(`../components/Edit/${editPageName}/EditListRow.jsx`));
   const AddListRow = lazy(() => import(`../components/Edit/${editPageName}/AddListRow.jsx`));
 
   const [search, setSearch] = useState("");
   let [items, setItems] = useState([]);
-
+  
+  const { setNotificationToastHandler } = useContext(NotificationToastContext)
+  const { setShowSpinner } = useContext(LoadingSpinnerContext)
 
   const [updateIdField, setUpdateIdField] = useState("");
   const [updateObjectField, setUpdateObjectField] = useState("");
@@ -133,11 +136,10 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
 /**
  * View for editing Tags
  * 
- * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
  * @returns Tags view for editing
  */
-export function Tags({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
-  return <EditParent editPageName="Tags" humanKey="name" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
+export function Tags() {
+  return <EditParent editPageName="Tags" humanKey="name"
     headers={[
       "#",
       "Name",
@@ -158,11 +160,10 @@ export function Tags({ setShowSpinner, notificationToastHandler, setNotification
 /**
  * View for editing Catalogues
  * 
- * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
  * @returns Catalogues view for editing
  */
-export function Catalogues({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
-  return <EditParent editPageName="Catalogues" humanKey="title" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
+export function Catalogues() {
+  return <EditParent editPageName="Catalogues" humanKey="title"
     headers={[
       "#",
       "Title",
@@ -188,11 +189,10 @@ export function Catalogues({ setShowSpinner, notificationToastHandler, setNotifi
 /**
  * View for editing Topics
  * 
- * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
  * @returns Topics view for editing
  */
-export function Topics({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
-  return <EditParent editPageName="Topics" humanKey="key" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
+export function Topics() {
+  return <EditParent editPageName="Topics" humanKey="key"
     headers={[
       "#",
       "Key",
@@ -219,11 +219,10 @@ export function Topics({ setShowSpinner, notificationToastHandler, setNotificati
 /**
  * View for editing Requirements
  * 
- * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
  * @returns Requirements view for editing
  */
-export function Requirements({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
-  return <EditParent editPageName="Requirements" humanKey="key" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
+export function Requirements() {
+  return <EditParent editPageName="Requirements" humanKey="key"
     headers={[
       "#",
       "Key",
@@ -253,11 +252,10 @@ export function Requirements({ setShowSpinner, notificationToastHandler, setNoti
 /**
  * View for editing ExtraTypes
  * 
- * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
  * @returns ExtraTypes view for editing
  */
-export function ExtraTypes({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
-  return <EditParent editPageName="ExtraTypes" humanKey="title" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
+export function ExtraTypes() {
+  return <EditParent editPageName="ExtraTypes" humanKey="title"
     headers={[
       "#",
       "Title",
@@ -282,11 +280,10 @@ export function ExtraTypes({ setShowSpinner, notificationToastHandler, setNotifi
 /**
  * View for editing ExtraEntries
  * 
- * @param {object} param0 Props for the component: setShowSpinner, notificationToastHandler, setNotificationToastHandler
  * @returns ExtraEntries view for editing
  */
-export function ExtraEntries({ setShowSpinner, notificationToastHandler, setNotificationToastHandler }) {
-  return <EditParent editPageName="ExtraEntries" humanKey="id" setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler}
+export function ExtraEntries() {
+  return <EditParent editPageName="ExtraEntries" humanKey="id"
     headers={[
       "#",
       "Content",

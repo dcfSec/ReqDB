@@ -3,6 +3,8 @@ import { Form } from 'react-bootstrap';
 import { Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
+import { useContext } from 'react';
+import {  LoadingSpinnerContext, LoadingSpinnerDialogContext } from '../static';
 
 /**
  * Component for the main logo which is replaced by a spinner if something is loading
@@ -10,9 +12,10 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
  * @param {object} props Props for the component: show
  * @returns Logo/Spinner component
  */
-export function MainLogoSpinner(props) {
-  const { show } = props
-  if (show) {
+export function MainLogoSpinner() {
+  const { showSpinner } = useContext(LoadingSpinnerContext)
+  const { showDialogSpinner } = useContext(LoadingSpinnerDialogContext)
+  if (showSpinner || showDialogSpinner) {
     return <><Spinner animation="grow" size="sm" />{'  '}</>
   } else {
     return <><FontAwesomeIcon icon={solid("database")} />{'  '}</>

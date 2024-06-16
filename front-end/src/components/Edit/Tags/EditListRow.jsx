@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { inSearchField } from "../../MiniComponents";
 import SelectMany from "../SelectManyModal";
 import { useContext, useState } from "react";
-import { API, UserContext, handleErrorMessage } from "../../../static";
+import { API, LoadingSpinnerContext, NotificationToastContext, handleErrorMessage } from "../../../static";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
@@ -16,8 +16,8 @@ import { protectedResources } from "../../../authConfig";
  */
 export default function EditListRow({ index, endpoint, originalItem, humanKey, deleteItemInList, search, searchFields }) {
 
-  const { setNotificationToastHandler } = useContext(UserContext)
-  const { setShowSpinner } = useContext(UserContext)
+  const { setNotificationToastHandler } = useContext(NotificationToastContext)
+  const { setShowSpinner } = useContext(LoadingSpinnerContext)
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [force, setForce] = useState(false);

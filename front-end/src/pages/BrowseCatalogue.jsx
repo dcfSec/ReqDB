@@ -1,7 +1,7 @@
 import { Alert, Button, Col, Container, Dropdown, ProgressBar, Row, Stack } from "react-bootstrap";
 import { MainBreadcrumb, SearchField } from "../components/MiniComponents";
 import { useContext, useEffect, useState } from "react";
-import { API, UserContext, handleErrorMessage } from "../static";
+import { API, LoadingSpinnerContext, handleErrorMessage } from "../static";
 import DataTable from "../components/DataTable";
 import BrowseRow from "../components/Browse/BrowseRow";
 import { CheckboxDropdown } from "../components/CheckboxDropdown";
@@ -36,7 +36,7 @@ export default function BrowseCatalogue() {
   const params = useParams();
   const id = params.catalogueId
 
-  const { setShowSpinner } = useContext(UserContext)
+  const { setShowSpinner } = useContext(LoadingSpinnerContext)
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
@@ -63,11 +63,11 @@ export default function BrowseCatalogue() {
   let tagFilterItems = []
   let topicFilterItems = []
 
-  let [tagFiltered, setTagFiltered] = useState(null);
-  let [topicFiltered, setTopicFiltered] = useState(null);
-  let [markRowChecked, setMarkRowChecked] = useState([]);
-  let [allMarkRowChecked, setAllMarkRowChecked] = useState(false);
-  let [showFilterModal, setShowFilterModal] = useState(false);
+  const [tagFiltered, setTagFiltered] = useState(null);
+  const [topicFiltered, setTopicFiltered] = useState(null);
+  const [markRowChecked, setMarkRowChecked] = useState([]);
+  const [allMarkRowChecked, setAllMarkRowChecked] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
   let body = <ProgressBar animated now={100} />
 
@@ -199,7 +199,7 @@ export default function BrowseCatalogue() {
           </Col>
           <Col md={2}>
             <Stack direction="horizontal" gap={3}>
-              <div className="p-2 ms-auto"><ExportTable headers={[...headers, ...extraHeaders]} dataToExport={rows.filter(function (v, index) { return markRowChecked.includes(index); })}/></div>
+              <div className="p-2 ms-auto"><ExportTable max={rows.length} headers={[...headers, ...extraHeaders]} dataToExport={rows.filter(function (v, index) { return markRowChecked.includes(index); })}/></div>
             </Stack></Col>
         </Row>
         <Row>

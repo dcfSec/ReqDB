@@ -1,7 +1,7 @@
 import { Alert, Badge, Card, Col, Container, ProgressBar, Row } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 import { useContext, useEffect, useState } from "react";
-import { API, UserContext, handleErrorMessage } from "../static";
+import { API, LoadingSpinnerContext, handleErrorMessage } from "../static";
 
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
@@ -22,7 +22,7 @@ export default function Requirement() {
   let title = "View Requirement"
   document.title = `${title} | ReqDB - Requirement Database`;
 
-  const { setShowSpinner } = useContext(UserContext)
+  const { setShowSpinner } = useContext(LoadingSpinnerContext)
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
