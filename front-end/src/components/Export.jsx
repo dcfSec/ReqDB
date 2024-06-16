@@ -8,7 +8,7 @@ import YAML from 'yaml';
  * @param {object} props Props for the component: headers, dataToExport
  * @returns Returns a dropdown for export selection
  */
-export function ExportTable({ headers, dataToExport }) {
+export function ExportTable({ max, headers, dataToExport }) {
 
   function exportExcel() {
 
@@ -52,7 +52,7 @@ export function ExportTable({ headers, dataToExport }) {
   return (
     <Dropdown>
       <Dropdown.Toggle variant="success" id="export-dropdown">
-        Export selected
+        Export {dataToExport.length}/{max} rows
       </Dropdown.Toggle>
       <Dropdown.Menu>
         <Dropdown.Item onClick={exportExcel}>As Excel</Dropdown.Item>
