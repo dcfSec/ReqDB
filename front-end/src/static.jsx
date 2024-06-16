@@ -3,7 +3,9 @@ import { createContext } from 'react';
 export const API = "/api";
 
 // Global states
-export const UserContext = createContext(null);
+export const NotificationToastContext = createContext({});
+export const LoadingSpinnerContext = createContext({});
+export const LoadingSpinnerDialogContext = createContext({});
 
 /**
  * Parses the error message from the API and returns it as readable HTML

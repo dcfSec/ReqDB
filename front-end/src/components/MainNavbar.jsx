@@ -16,10 +16,10 @@ import { appRoles } from '../authConfig';
 /**
  * Component for the main navigation bar
  * 
- * @param {object} props Props for the component: showSpinner, darkMode, setDarkMode
+ * @param {object} props Props for the component: darkMode, setDarkMode
  * @returns Returns the main navigation bar container
  */
-export default function MainNavbar({ showSpinner, darkMode, setDarkMode }) {
+export default function MainNavbar({ darkMode, setDarkMode }) {
 
   function setDarkModeSwitch() {
     document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", !darkMode ? "dark" : "light");
@@ -46,7 +46,7 @@ export default function MainNavbar({ showSpinner, darkMode, setDarkMode }) {
   return (
     <Navbar className="bg-body-tertiary">
       <Container fluid>
-        <Navbar.Brand as={Link} to="/"><MainLogoSpinner show={showSpinner} ></MainLogoSpinner>ReqDB</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/"><MainLogoSpinner></MainLogoSpinner>ReqDB</Navbar.Brand>
         <Navbar.Toggle aria-controls="mainNavbarCollapse" />
         <Navbar.Collapse id="mainNavbarCollapse">
         <Nav

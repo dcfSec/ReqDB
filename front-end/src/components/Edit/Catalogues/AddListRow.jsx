@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
-import { API, UserContext, handleErrorMessage } from "../../../static";
-import SelectParentModal from "../SelectParentModal";
+import { API, LoadingSpinnerContext, NotificationToastContext, handleErrorMessage } from "../../../static";
+import SelectMany from "../SelectManyModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
 
@@ -14,12 +14,12 @@ import { protectedResources } from "../../../authConfig";
  */
 export default function AddListRow({ blankItem, humanKey, endpoint, addItemToList }) {
 
-  const { setNotificationToastHandler } = useContext(UserContext)
-  const { setShowSpinner } = useContext(UserContext)
+  const { setNotificationToastHandler } = useContext(NotificationToastContext)
+  const { setShowSpinner } = useContext(LoadingSpinnerContext)
 
   const [newItem, setNewItem] = useState(blankItem);
 
-  const [showSelectParentModal, setShowSelectParentModal] = useState(false);
+  const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
@@ -60,22 +60,19 @@ export default function AddListRow({ blankItem, humanKey, endpoint, addItemToLis
       <td><Form.Control type="text" id="title" value={newItem.title} onChange={e => { updateNewItem({ title: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="description" value={newItem.description} onChange={e => { updateNewItem({ description: e.target.value }) }} /></td>
       <td><Button variant="primary" onClick={() => {
-        setShowSelectParentModal(true)
+        setShowUpdateMany2Many(true)
       }}>{newItem.root ? newItem.rootObject.key : "Set elements"}</Button></td>
       <td><Button variant="success" onClick={() => addItem()}>Add</Button></td>
-      {showSelectParentModal ? <SelectParentModal id="parent"
-        itemId={newItem.id}
-        humanKey={newItem.title}
-        show={showSelectParentModal}
-        setShow={setShowSelectParentModal}
-        initialSelectedItem={newItem.parentId}
-        endpoint={"topics"}
-        updateItem={updateNewItem}
-        updateIdField={"root"}
-        updateObjectField={"rootObject"}
-        checkCircle={false}
-        columns={["key", "title"]}
-      ></SelectParentModal> : null}
+      {showUpdateMany2Many ? <SelectMany
+          humanKey={newItem.title}
+          show={showUpdateMany2Many}
+          setShow={setShowUpdateMany2Many}
+          initialSelectedItems={newItem.topics}
+          endpoint="topics"
+          columns={["key", "title"]}
+          updateKey={"topics"}
+          updateItem={updateNewItem}
+        ></SelectMany> : null}
     </tr>
   );
 }

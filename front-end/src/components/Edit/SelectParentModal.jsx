@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import { SearchField, inSearchField } from '../MiniComponents';
 import { Alert, Col, Container, Form, ProgressBar, Row, Table } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
-import { API, UserContext, handleErrorMessage } from '../../static';
+import { API, LoadingSpinnerDialogContext, NotificationToastContext, handleErrorMessage } from '../../static';
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 import { protectedResources } from '../../authConfig';
 
@@ -16,8 +16,8 @@ import { protectedResources } from '../../authConfig';
 export default function SelectParentModal(props) {
   const { itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns } = props
 
-  const { setNotificationToastHandler } = useContext(UserContext)
-  const { setShowSpinner } = useContext(UserContext)
+  const { setNotificationToastHandler } = useContext(NotificationToastContext)
+  const { setShowDialogSpinner } = useContext(LoadingSpinnerDialogContext)
 
   const [search, setSearch] = useState("");
 
@@ -34,7 +34,7 @@ export default function SelectParentModal(props) {
 
   const [data, setData] = useState(null);
 
-  useEffect(() => { setShowSpinner(!data) }, [data]);
+  useEffect(() => { setShowDialogSpinner(!data) }, [data]);
 
   useEffect(() => {
     if (!data) {
@@ -111,7 +111,7 @@ export default function SelectParentModal(props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          Add {updateObjectField} to <code>{humanKey ? humanKey : "new item"}</code>
+          Select {updateObjectField} for <code>{humanKey ? humanKey : "new item"}</code>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

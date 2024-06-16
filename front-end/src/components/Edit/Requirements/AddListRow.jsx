@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
-import { API, UserContext, handleErrorMessage } from "../../../static";
+import { API, LoadingSpinnerContext, NotificationToastContext, handleErrorMessage } from "../../../static";
 import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
@@ -14,8 +14,8 @@ import { protectedResources } from "../../../authConfig";
  */
 export default function AddListRow({ blankItem, humanKey, endpoint, addItemToList }) {
 
-  const { setNotificationToastHandler } = useContext(UserContext)
-  const { setShowSpinner } = useContext(UserContext)
+  const { setNotificationToastHandler } = useContext(NotificationToastContext)
+  const { setShowSpinner } = useContext(LoadingSpinnerContext)
 
   const [newItem, setNewItem] = useState(blankItem);
 

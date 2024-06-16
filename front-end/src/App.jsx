@@ -2,15 +2,13 @@ import './App.css';
 import { MsalProvider, AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
 import { loginRequest } from './authConfig';
 
-import { UserContext } from "./static";
 import { useEffect, useState } from 'react';
 
 import { Router, LoginRouter } from './components/Router';
+import { NotificationToastContextProvider, LoadingSpinnerContextProvider, LoadingSpinnerDialogContextProvider } from './components/Providers';
 
 const MainContent = () => {
 
-  const [notificationToastHandler, setNotificationToastHandler] = useState(["", "", false])
-  const [showSpinner, setShowSpinner] = useState(false)
   const [darkMode, setDarkMode] = useState(JSON.parse(localStorage.getItem('darkMode')) || false)
 
   useEffect(() => {
@@ -27,8 +25,8 @@ const MainContent = () => {
   if (!activeAccount) {
     instance.setActiveAccount(instance);
     instance.loginRedirect({
-        ...loginRequest,
-        prompt: 'login',
+      ...loginRequest,
+      prompt: 'login',
     });
   }
 
@@ -39,16 +37,20 @@ const MainContent = () => {
    * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
    */
   return (
-    <UserContext.Provider value={{ notificationToastHandler, setNotificationToastHandler, showSpinner, setShowSpinner }}>
-      <AuthenticatedTemplate>
-        {activeAccount ? (
-          <Router showSpinner={showSpinner} setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} darkMode={darkMode} setDarkMode={setDarkMode} />
-        ) : null}
-      </AuthenticatedTemplate>
-      <UnauthenticatedTemplate>
-        <LoginRouter showSpinner={showSpinner} setShowSpinner={setShowSpinner} notificationToastHandler={notificationToastHandler} setNotificationToastHandler={setNotificationToastHandler} darkMode={darkMode} setDarkMode={setDarkMode} />
-      </UnauthenticatedTemplate>
-    </UserContext.Provider>
+    <NotificationToastContextProvider>
+      <LoadingSpinnerContextProvider>
+        <LoadingSpinnerDialogContextProvider>
+          <AuthenticatedTemplate>
+            {activeAccount ? (
+              <Router darkMode={darkMode} setDarkMode={setDarkMode} />
+            ) : null}
+          </AuthenticatedTemplate>
+          <UnauthenticatedTemplate>
+            <LoginRouter darkMode={darkMode} setDarkMode={setDarkMode} />
+          </UnauthenticatedTemplate>
+        </LoadingSpinnerDialogContextProvider>
+      </LoadingSpinnerContextProvider>
+    </NotificationToastContextProvider>
   );
 };
 

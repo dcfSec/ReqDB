@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import { SearchField, inSearchField } from '../MiniComponents';
 import { Alert, Col, Container, Form, ProgressBar, Row, Table } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
-import { API, UserContext, handleErrorMessage } from '../../static';
+import { API, LoadingSpinnerDialogContext, NotificationToastContext, handleErrorMessage } from '../../static';
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 import { protectedResources } from '../../authConfig';
 
@@ -15,8 +15,8 @@ import { protectedResources } from '../../authConfig';
  */
 export default function SelectMany({ humanKey, show, setShow, initialSelectedItems = [], endpoint, columns, updateKey, updateItem }) {
 
-  const { setNotificationToastHandler } = useContext(UserContext)
-  const { setShowSpinner } = useContext(UserContext)
+  const { setNotificationToastHandler } = useContext(NotificationToastContext)
+  const { setShowDialogSpinner } = useContext(LoadingSpinnerDialogContext)
   const [search, setSearch] = useState("");
 
   const initialSelectedItemIds = initialSelectedItems.map((item) => (item.id))
@@ -28,7 +28,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
 
   const [data, setData] = useState(null);
 
-  useEffect(() => { setShowSpinner(!data) }, [data]);
+  useEffect(() => { setShowDialogSpinner(!data) }, [data]);
 
   useEffect(() => {
     if (!data) {

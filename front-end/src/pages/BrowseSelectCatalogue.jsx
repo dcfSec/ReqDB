@@ -1,7 +1,7 @@
 import { Alert, Col, Container, ListGroup, ProgressBar, Row, Stack } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 import { useContext, useEffect, useState } from "react";
-import { API, UserContext, handleErrorMessage } from "../static";
+import { API, LoadingSpinnerContext, handleErrorMessage } from "../static";
 import SelecttCatalogueItem from "../components/Browse/SelectCatalogueItem";
 
 import { protectedResources } from "../authConfig";
@@ -20,7 +20,7 @@ export default function BrowseSelectCatalogue() {
   ]
   document.title = `${title} | ReqDB - Requirement Database`;
 
-  const { setShowSpinner } = useContext(UserContext)
+  const { setShowSpinner } = useContext(LoadingSpinnerContext)
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
