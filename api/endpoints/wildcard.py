@@ -1,12 +1,10 @@
-from flask_restful import Resource
-from flask_jwt_extended import jwt_required
+from api.endpoints.base import BaseRessource
 
 
-class Wildcard(Resource):
+class Wildcard(BaseRessource):
     """
     Base class for the API. It just returns a 404.
     """
-    method_decorators = [jwt_required()]
 
     def get(self, path="/"):
         return {

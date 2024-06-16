@@ -1,4 +1,3 @@
-from flask_restful import Resource
 from flask import request, abort
 
 from marshmallow.exceptions import ValidationError
@@ -8,20 +7,18 @@ from api import db
 from api.models import Topic as TopicModel
 from api.schemas import TopicSchema, TopicUpdateSchema, \
     TopicOnlyIDAndTitleSchema
-from api.endpoints.base import BaseRessources
+from api.endpoints.base import BaseRessource, BaseRessources
 
 
 from api.helper import checkAccess
 
-from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt
 
 
-class Topic(Resource):
+class Topic(BaseRessource):
     """
     Topic class. This class represents a topic object in the API
     """
-    method_decorators = [jwt_required()]
 
     def get(self, id: int):
         """
@@ -144,29 +141,12 @@ class Topics(BaseRessources):
     Topics class, represents the Topics API to fetch all or add a
     topic item
     """
-    method_decorators = [jwt_required()]
     addSchemaClass = TopicUpdateSchema
     dumpSchemaClass = TopicSchema
+    model = TopicModel
 
-    def get(self):
-        """Get all topic elements
-
-        Required roles:
-            - Reader
-            - Writer
-
-        :return list: All topic elements
-        """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
-        # if request.args.get('root') is not None:
-        #     topics = TopicModel.query.filter_by(parentId=None)
-        # else:
-        topics = TopicModel.query.all()
+    def args(self):
         if request.args.get('minimal') is not None:
-            schema = TopicOnlyIDAndTitleSchema(many=True)
+            return TopicOnlyIDAndTitleSchema
         else:
-            schema = TopicSchema(many=True)
-        return {
-            'status': 200,
-            'data': schema.dump(topics)
-        }
+            return TopicSchema

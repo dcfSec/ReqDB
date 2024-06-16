@@ -1,20 +1,14 @@
-from flask_restful import Resource
-from flask import request, abort
-
-from marshmallow.exceptions import ValidationError
-from sqlalchemy.exc import IntegrityError
-
 from api.helper import checkAccess
 
-from flask_jwt_extended import jwt_required
+from api.endpoints.base import BaseRessource, BaseRessources
+
 from flask_jwt_extended import get_jwt
 
 
-class Coffee(Resource):
+class Coffee(BaseRessource):
     """
     Catalogue class. This class represents a catalogue object in the API
     """
-    method_decorators = [jwt_required()]
 
     def get(self):
         """

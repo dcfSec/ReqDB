@@ -1,4 +1,3 @@
-from flask_restful import Resource
 from flask import request, abort
 
 from marshmallow.exceptions import ValidationError
@@ -7,19 +6,17 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import Topic, Requirement as RequirementModel
 from api.schemas import RequirementSchema, RequirementUpdateSchema
-from api.endpoints.base import BaseRessources
+from api.endpoints.base import BaseRessource, BaseRessources
 
 from api.helper import checkAccess
 
-from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt
 
 
-class Requirement(Resource):
+class Requirement(BaseRessource):
     """
     Requirement class. This class represents a requirement object in the API
     """
-    method_decorators = [jwt_required()]
 
     def get(self, id: int):
         """
@@ -138,23 +135,7 @@ class Requirements(BaseRessources):
     """
     addSchemaClass = RequirementUpdateSchema
     dumpSchemaClass = RequirementSchema
-
-    def get(self):
-        """Get all requirement elements
-
-        Required roles:
-            - Reader
-            - Writer
-
-        :return list: All requirement elements
-        """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
-        requirements = RequirementModel.query.all()
-        schema = RequirementSchema(many=True)
-        return {
-            'status': 200,
-            'data': schema.dump(requirements)
-        }
+    model = RequirementModel
 
     def check(self, object):
         if object.parentId is not None:

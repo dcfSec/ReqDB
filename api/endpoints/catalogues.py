@@ -1,4 +1,3 @@
-from flask_restful import Resource
 from flask import request, abort
 
 from marshmallow.exceptions import ValidationError
@@ -9,17 +8,15 @@ from api.helper import checkAccess
 from api.models import Catalogue as CatalogueModel
 from api.schemas import CatalogueExtendedSchema, CatalogueSchema, \
     CatalogueLightNestedSchema, CatalogueUpdateSchema
-from api.endpoints.base import BaseRessources
+from api.endpoints.base import BaseRessource, BaseRessources
 
-from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt
 
 
-class Catalogue(Resource):
+class Catalogue(BaseRessource):
     """
     Catalogue class. This class represents a catalogue object in the API
     """
-    method_decorators = [jwt_required()]
 
     def get(self, id: int):
         """
@@ -134,31 +131,12 @@ class Catalogues(BaseRessources):
     """
     addSchemaClass = CatalogueUpdateSchema
     dumpSchemaClass = CatalogueLightNestedSchema
+    model = CatalogueModel
 
-    def get(self):
-        """Get all catalogue elements
-
-        If the argument "nested" is provided the topics will be nested with
-        title and ID.
-
-        If the argument "extended" is provided all children will be provided.
-        Including topics, requirements, extra entries and tags.
-
-        Required roles:
-            - Reader
-            - Writer
-
-        :return list: All catalogue elements
-        """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
-        catalogues = CatalogueModel.query.all()
+    def args(self):
         if request.args.get('nested') is not None:
-            schema = CatalogueLightNestedSchema(many=True)
+            return CatalogueLightNestedSchema
         elif request.args.get('extend') is not None:
-            schema = CatalogueExtendedSchema(many=True)
+            return CatalogueExtendedSchema
         else:
-            schema = CatalogueSchema(many=True)
-        return {
-            'status': 200,
-            'data': schema.dump(catalogues)
-        }
+            return CatalogueSchema

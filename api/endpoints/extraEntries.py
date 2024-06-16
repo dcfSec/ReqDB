@@ -1,4 +1,3 @@
-from flask_restful import Resource
 from flask import request, abort
 
 from marshmallow.exceptions import ValidationError
@@ -7,19 +6,17 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import ExtraEntry as ExtraEntryModel
 from api.schemas import ExtraEntrySchema, ExtraEntryUpdateSchema
-from api.endpoints.base import BaseRessources
+from api.endpoints.base import BaseRessource, BaseRessources
 
 from api.helper import checkAccess
 
-from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt
 
 
-class ExtraEntry(Resource):
+class ExtraEntry(BaseRessource):
     """
     ExtraEntry class. This class represents an extra entry object in the API
     """
-    method_decorators = [jwt_required()]
 
     def get(self, id: int):
         """
@@ -115,20 +112,4 @@ class ExtraEntries(BaseRessources):
     """
     addSchemaClass = ExtraEntryUpdateSchema
     dumpSchemaClass = ExtraEntrySchema
-
-    def get(self):
-        """Get all extra entries elements
-
-        Required roles:
-            - Reader
-            - Writer
-
-        :return list: All extra entries elements
-        """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
-        extraEntries = ExtraEntryModel.query.all()
-        schema = ExtraEntrySchema(many=True)
-        return {
-            'status': 200,
-            'data': schema.dump(extraEntries)
-        }
+    model = ExtraEntryModel
