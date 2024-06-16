@@ -11,7 +11,7 @@ from flask_jwt_extended import get_jwt
 
 
 class BaseRessource(Resource):
-    pass
+    method_decorators = [jwt_required()]
 
 
 class BaseRessources(Resource):
@@ -19,6 +19,24 @@ class BaseRessources(Resource):
 
     addSchemaClass = None
     dumpSchemaClass = None
+    model = None
+
+    def get(self):
+        """Get all elements
+
+        Required roles:
+            - Reader
+            - Writer
+
+        :return list: All elements
+        """
+        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        data = self.model.query.all()
+        schema = self.args()(many=True)
+        return {
+            'status': 200,
+            'data': schema.dump(data)
+        }
 
     def post(self):
         """
@@ -58,3 +76,6 @@ class BaseRessources(Resource):
 
     def check(self, object):
         pass
+
+    def args(self):
+        return self.dumpSchemaClass

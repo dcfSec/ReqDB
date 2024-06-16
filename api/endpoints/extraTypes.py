@@ -1,4 +1,3 @@
-from flask_restful import Resource
 from flask import request, abort
 
 from marshmallow.exceptions import ValidationError
@@ -7,19 +6,17 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import ExtraType as ExtraTypeModel
 from api.schemas import ExtraTypeSchema
-from api.endpoints.base import BaseRessources
+from api.endpoints.base import BaseRessource, BaseRessources
 
 from api.helper import checkAccess
 
-from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt
 
 
-class ExtraType(Resource):
+class ExtraType(BaseRessource):
     """
     ExtraType class. This class represents an extra type object in the API
     """
-    method_decorators = [jwt_required()]
 
     def get(self, id: int):
         """
@@ -121,20 +118,4 @@ class ExtraTypes(BaseRessources):
     """
     addSchemaClass = ExtraTypeSchema
     dumpSchemaClass = ExtraTypeSchema
-
-    def get(self):
-        """Get all extra type elements
-
-        Required roles:
-            - Reader
-            - Writer
-
-        :return list: All extra type elements
-        """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
-        extraTypes = ExtraTypeModel.query.all()
-        schema = ExtraTypeSchema(many=True)
-        return {
-            'status': 200,
-            'data': schema.dump(extraTypes)
-        }
+    model = ExtraTypeModel

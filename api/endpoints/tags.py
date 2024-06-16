@@ -1,4 +1,3 @@
-from flask_restful import Resource
 from flask import request, abort
 
 from marshmallow.exceptions import ValidationError
@@ -7,19 +6,17 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import Tag as TagModel
 from api.schemas import TagSchema, TagUpdateSchema, TagMinimalSchema
-from api.endpoints.base import BaseRessources
+from api.endpoints.base import BaseRessource, BaseRessources
 
 from api.helper import checkAccess
 
-from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt
 
 
-class Tag(Resource):
+class Tag(BaseRessource):
     """
     Tag class. This class represents a tag object in the API
     """
-    method_decorators = [jwt_required()]
 
     def get(self, id: int):
         """
@@ -123,23 +120,10 @@ class Tags(BaseRessources):
     """
     addSchemaClass = TagSchema
     dumpSchemaClass = TagSchema
+    model = TagModel
 
-    def get(self):
-        """Get all tag elements
-
-        Required roles:
-            - Reader
-            - Writer
-
-        :return list: All tag elements
-        """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
-        tags = TagModel.query.all()
+    def args(self):
         if request.args.get('minimal') is not None:
-            schema = TagMinimalSchema(many=True)
+            return TagMinimalSchema
         else:
-            schema = TagSchema(many=True)
-        return {
-            'status': 200,
-            'data': schema.dump(tags)
-        }
+            return TagSchema
