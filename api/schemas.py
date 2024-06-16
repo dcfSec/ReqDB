@@ -67,6 +67,7 @@ class RequirementUpdateSchema(ma.SQLAlchemySchema):
     parentId = ma.auto_field()
     title = ma.auto_field()
     visible = ma.auto_field()
+    tags = ma.List(fields.Nested(nested='TagSchema', only=['id']))
 
 
 class TagSchema(ma.SQLAlchemyAutoSchema):
