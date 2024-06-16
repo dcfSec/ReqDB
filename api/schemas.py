@@ -182,6 +182,22 @@ class CatalogueLightNestedSchema(ma.SQLAlchemyAutoSchema):
                            many=True)
 
 
+class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
+    """
+    Catalogue schema with topics (id, title) as nested elements
+    """
+    class Meta:
+        model = Catalogue
+        include_relationships = True
+        load_instance = True
+        include_fk = True
+        unknown = EXCLUDE
+
+    title = ma.auto_field(validate=validate.Length(min=1))
+    topics = fields.Nested(nested='TopicSchema', only=['id'],
+                           many=True)
+
+
 class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
     """
     Catalogue schema with all nested elements
