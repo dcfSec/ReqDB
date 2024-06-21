@@ -1,11 +1,11 @@
 from api.helper import checkAccess
 
-from api.endpoints.base import BaseRessource, BaseRessources
+from api.endpoints.base import BaseResource, BaseResources
 
 from flask_jwt_extended import get_jwt
 
 
-class Coffee(BaseRessource):
+class Coffee(BaseResource):
     """
     Catalogue class. This class represents a catalogue object in the API
     """

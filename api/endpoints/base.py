@@ -10,11 +10,11 @@ from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt
 
 
-class BaseRessource(Resource):
+class BaseResource(Resource):
     method_decorators = [jwt_required()]
 
 
-class BaseRessources(Resource):
+class BaseResources(Resource):
     method_decorators = [jwt_required()]
 
     addSchemaClass = None

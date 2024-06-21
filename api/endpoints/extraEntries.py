@@ -6,14 +6,14 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import ExtraEntry as ExtraEntryModel
 from api.schemas import ExtraEntrySchema, ExtraEntryUpdateSchema
-from api.endpoints.base import BaseRessource, BaseRessources
+from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess
 
 from flask_jwt_extended import get_jwt
 
 
-class ExtraEntry(BaseRessource):
+class ExtraEntry(BaseResource):
     """
     ExtraEntry class. This class represents an extra entry object in the API
     """
@@ -105,7 +105,7 @@ class ExtraEntry(BaseRessource):
             }, 400
 
 
-class ExtraEntries(BaseRessources):
+class ExtraEntries(BaseResources):
     """
     ExtraEntries class, represents the extraEntries API to fetch all or add an
     extraEntries item

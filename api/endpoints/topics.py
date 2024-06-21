@@ -7,7 +7,7 @@ from api import db
 from api.models import Topic as TopicModel
 from api.schemas import TopicSchema, TopicUpdateSchema, \
     TopicOnlyIDAndTitleSchema
-from api.endpoints.base import BaseRessource, BaseRessources
+from api.endpoints.base import BaseResource, BaseResources
 
 
 from api.helper import checkAccess
@@ -15,7 +15,7 @@ from api.helper import checkAccess
 from flask_jwt_extended import get_jwt
 
 
-class Topic(BaseRessource):
+class Topic(BaseResource):
     """
     Topic class. This class represents a topic object in the API
     """
@@ -136,7 +136,7 @@ class Topic(BaseRessource):
             }, 400
 
 
-class Topics(BaseRessources):
+class Topics(BaseResources):
     """
     Topics class, represents the Topics API to fetch all or add a
     topic item

@@ -1,7 +1,7 @@
-from api.endpoints.base import BaseRessource
+from api.endpoints.base import BaseResource
 
 
-class Wildcard(BaseRessource):
+class Wildcard(BaseResource):
     """
     Base class for the API. It just returns a 404.
     """
