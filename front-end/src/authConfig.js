@@ -58,7 +58,6 @@ export const msalConfig = {
  */
 export const protectedResources = {
   ReqDB: {
-    endpoint: "http://localhost:3000/",
     scopes:  [`api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Reader`, `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Writer`]
     
   }
