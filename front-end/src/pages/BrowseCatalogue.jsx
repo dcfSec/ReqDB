@@ -1,7 +1,8 @@
 import { Alert, Button, Col, Container, Dropdown, ProgressBar, Row, Stack } from "react-bootstrap";
 import { MainBreadcrumb, SearchField } from "../components/MiniComponents";
 import { useContext, useEffect, useState } from "react";
-import { API, LoadingSpinnerContext, handleErrorMessage } from "../static";
+import { LoadingSpinnerContext } from "../components/Providers";
+import { ErrorMessage } from '../components/MiniComponents'
 import DataTable from "../components/DataTable";
 import BrowseRow from "../components/Browse/BrowseRow";
 import { CheckboxDropdown } from "../components/CheckboxDropdown";
@@ -48,7 +49,7 @@ export default function BrowseCatalogue() {
 
   useEffect(() => {
     if (!catalogueData) {
-      execute("GET", `${API}/catalogues/${id}?extended`).then((response) => {
+      execute("GET", `catalogues/${id}?extended`).then((response) => {
         setCatalogueData(response);
       });
     }
@@ -93,7 +94,7 @@ export default function BrowseCatalogue() {
         body = <DataTable headers={["", ...headers, ...extraHeaders]} markAll={true} markAllCallback={handleCheckboxChangeAll} markAllChecked={allMarkRowChecked}>{rows.map((row, index) => (<BrowseRow key={index} index={index} extraHeaders={extraHeaders} row={row} search={search} tags={tagFilterItems} topicFiltered={topicFiltered} tagFiltered={tagFiltered} extraHeaderTypes={extraHeaderTypes} markRowCallback={handleSelectCheckboxChange} markRowChecked={markRowChecked}></BrowseRow>))}</DataTable>
       }
     } else if (catalogueData && catalogueData.status !== 200) {
-      body = <Alert variant="danger">{handleErrorMessage(catalogueData.message)}</Alert>
+      body = <Alert variant="danger">{ErrorMessage(catalogueData.message)}</Alert>
     }
   }
 

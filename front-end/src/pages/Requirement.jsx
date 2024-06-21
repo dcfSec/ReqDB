@@ -1,7 +1,8 @@
 import { Alert, Badge, Card, Col, Container, ProgressBar, Row } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 import { useContext, useEffect, useState } from "react";
-import { API, LoadingSpinnerContext, handleErrorMessage } from "../static";
+import { LoadingSpinnerContext } from "../components/Providers";
+import { ErrorMessage } from '../components/MiniComponents'
 
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
@@ -34,7 +35,7 @@ export default function Requirement() {
 
   useEffect(() => {
     if (!requirementData) {
-      execute("GET", `${API}/requirements/${id}`).then((response) => {
+      execute("GET", `requirements/${id}`).then((response) => {
         setCatalogueData(response);
       });
     }
@@ -90,7 +91,7 @@ export default function Requirement() {
         </Row>
       </Container>
     } else if (requirementData && requirementData.status !== 200) {
-      body = <Alert variant="danger">{handleErrorMessage(requirementData.message)}</Alert>
+      body = <Alert variant="danger">{ErrorMessage(requirementData.message)}</Alert>
     }
   }
 

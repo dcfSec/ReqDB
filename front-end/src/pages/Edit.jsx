@@ -4,7 +4,8 @@ import DataTable from '../components/DataTable';
 
 import { Alert, ProgressBar } from 'react-bootstrap';
 import { useContext } from 'react';
-import { API, LoadingSpinnerContext, NotificationToastContext, handleErrorMessage } from '../static';
+import { LoadingSpinnerContext, NotificationToastContext } from "../components/Providers";
+import { ErrorMessage } from '../components/MiniComponents'
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { protectedResources } from '../authConfig';
 
@@ -56,7 +57,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
 
   useEffect(() => {
     if (!data) {
-      execute("GET", `${API}/${endpoint}?${parameters.join("&")}`).then((response) => {
+      execute("GET", `${endpoint}?${parameters.join("&")}`).then((response) => {
         setData(response);
       });
     }
@@ -77,7 +78,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
       </DataTable>
     } else if (data && data.status !== 200) {
       setNotificationToastHandler([data.error, data.message, true])
-      body = <Alert variant="danger">{handleErrorMessage(data.message)}</Alert>
+      body = <Alert variant="danger">{ErrorMessage(data.message)}</Alert>
     }
   }
 

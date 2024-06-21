@@ -5,7 +5,7 @@ import { Col, Container, Image, OverlayTrigger, Row, Tooltip } from "react-boots
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { brands } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { useContext } from 'react';
-import { NotificationToastContext } from '../static';
+import { NotificationToastContext } from "../components/Providers";
 
 /**
  * Parent component for all views
