@@ -6,14 +6,14 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import ExtraType as ExtraTypeModel
 from api.schemas import ExtraTypeSchema
-from api.endpoints.base import BaseRessource, BaseRessources
+from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess
 
 from flask_jwt_extended import get_jwt
 
 
-class ExtraType(BaseRessource):
+class ExtraType(BaseResource):
     """
     ExtraType class. This class represents an extra type object in the API
     """
@@ -111,7 +111,7 @@ class ExtraType(BaseRessource):
             }, 400
 
 
-class ExtraTypes(BaseRessources):
+class ExtraTypes(BaseResources):
     """
     ExtraTypes class, represents the extraTypes API to fetch all or add an
     extraType item

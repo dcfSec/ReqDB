@@ -8,12 +8,12 @@ from api.helper import checkAccess
 from api.models import Catalogue as CatalogueModel
 from api.schemas import CatalogueExtendedSchema, CatalogueSchema, \
     CatalogueLightNestedSchema, CatalogueUpdateSchema
-from api.endpoints.base import BaseRessource, BaseRessources
+from api.endpoints.base import BaseResource, BaseResources
 
 from flask_jwt_extended import get_jwt
 
 
-class Catalogue(BaseRessource):
+class Catalogue(BaseResource):
     """
     Catalogue class. This class represents a catalogue object in the API
     """
@@ -124,7 +124,7 @@ class Catalogue(BaseRessource):
             }, 400
 
 
-class Catalogues(BaseRessources):
+class Catalogues(BaseResources):
     """
     Catalogues class, represents the catalogues API to fetch all or add a
     catalogue item

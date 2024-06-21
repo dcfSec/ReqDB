@@ -6,14 +6,14 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import Topic, Requirement as RequirementModel
 from api.schemas import RequirementSchema, RequirementUpdateSchema
-from api.endpoints.base import BaseRessource, BaseRessources
+from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess
 
 from flask_jwt_extended import get_jwt
 
 
-class Requirement(BaseRessource):
+class Requirement(BaseResource):
     """
     Requirement class. This class represents a requirement object in the API
     """
@@ -128,7 +128,7 @@ class Requirement(BaseRessource):
             }, 400
 
 
-class Requirements(BaseRessources):
+class Requirements(BaseResources):
     """
     Requirements class, represents the Requirements API to fetch all or add a
     Requirement item

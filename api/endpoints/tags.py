@@ -6,14 +6,14 @@ from sqlalchemy.exc import IntegrityError
 from api import db
 from api.models import Tag as TagModel
 from api.schemas import TagSchema, TagUpdateSchema, TagMinimalSchema
-from api.endpoints.base import BaseRessource, BaseRessources
+from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess
 
 from flask_jwt_extended import get_jwt
 
 
-class Tag(BaseRessource):
+class Tag(BaseResource):
     """
     Tag class. This class represents a tag object in the API
     """
@@ -113,7 +113,7 @@ class Tag(BaseRessource):
             }, 400
 
 
-class Tags(BaseRessources):
+class Tags(BaseResources):
     """
     Tags class, represents the Tags API to fetch all or add a
     tag item
