@@ -1,9 +1,9 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { SearchField, inSearchField } from '../MiniComponents';
+import { SearchField, inSearchField, ErrorMessage } from '../MiniComponents';
 import { Alert, Col, Container, Form, ProgressBar, Row, Table } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
-import { API, LoadingSpinnerDialogContext, NotificationToastContext, handleErrorMessage } from '../../static';
+import { LoadingSpinnerDialogContext, NotificationToastContext } from '../Providers';
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 import { protectedResources } from '../../authConfig';
 
@@ -32,7 +32,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
 
   useEffect(() => {
     if (!data) {
-      execute("GET", `${API}/${endpoint}`).then((response) => {
+      execute("GET", `${endpoint}`).then((response) => {
         setData(response);
       });
     }
@@ -59,7 +59,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
       </Form>
     } else if (data && data.status !== 200) {
       setNotificationToastHandler([data.error, data.message, true])
-      body = <Alert variant="danger">{handleErrorMessage(data.message)}</Alert>
+      body = <Alert variant="danger">{ErrorMessage(data.message)}</Alert>
     }
   }
 

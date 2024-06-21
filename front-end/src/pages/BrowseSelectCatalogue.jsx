@@ -1,7 +1,8 @@
 import { Alert, Col, Container, ListGroup, ProgressBar, Row, Stack } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 import { useContext, useEffect, useState } from "react";
-import { API, LoadingSpinnerContext, handleErrorMessage } from "../static";
+import { LoadingSpinnerContext } from "../components/Providers";
+import { ErrorMessage } from '../components/MiniComponents'
 import SelecttCatalogueItem from "../components/Browse/SelectCatalogueItem";
 
 import { protectedResources } from "../authConfig";
@@ -32,7 +33,7 @@ export default function BrowseSelectCatalogue() {
 
   useEffect(() => {
     if (!catalogueData) {
-      execute("GET", `${API}/catalogues`).then((response) => {
+      execute("GET", `catalogues`).then((response) => {
         setCatalogueData(response);
       });
     }
@@ -59,7 +60,7 @@ export default function BrowseSelectCatalogue() {
         }).map((catalogue, index) => (<SelecttCatalogueItem key={index} catalogue={catalogue} />))}
       </ListGroup></Stack>
     } else if (catalogueData && catalogueData.status !== 200) {
-      body = <Alert variant="danger">{handleErrorMessage(catalogueData.message)}</Alert>
+      body = <Alert variant="danger">{ErrorMessage(catalogueData.message)}</Alert>
     }
   }
 

@@ -1,5 +1,9 @@
-import { useState, useMemo } from 'react';
-import { NotificationToastContext,LoadingSpinnerContext, LoadingSpinnerDialogContext } from '../static'
+import { useState, useMemo, createContext } from 'react';
+
+// Global states
+export const NotificationToastContext = createContext({});
+export const LoadingSpinnerContext = createContext({});
+export const LoadingSpinnerDialogContext = createContext({});
 
 export function NotificationToastContextProvider({ children }) {
   const [notificationToastHandler, setNotificationToastHandler] = useState(["", "", false])

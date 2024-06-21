@@ -52,9 +52,9 @@ const useFetchWithMsal = (msalRequest) => {
                 setIsLoading(true);
 
                 if (json) {
-                    response = await (await fetch(endpoint, options)).json();
+                    response = await (await fetch(`/api/${endpoint}`, options)).json();
                 } else {
-                    response = await fetch(endpoint, options);
+                    response = await fetch(`/api/${endpoint}`, options);
                 }
                 setData(response);
 

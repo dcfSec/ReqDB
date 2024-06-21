@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
 import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
-import { API, LoadingSpinnerContext, NotificationToastContext, handleErrorMessage } from "../../../static";
+import { LoadingSpinnerContext, NotificationToastContext } from "../../Providers";
+import { ErrorMessage } from '../../MiniComponents'
 import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../../authConfig";
@@ -32,14 +33,14 @@ export default function AddListRow({ blankItem, humanKey, endpoint, addItemToLis
   }
 
   function addItem() {
-    execute("POST", `${API}/${endpoint}`, newItem).then(
+    execute("POST", `${endpoint}`, newItem).then(
       (response) => {
         if (response.status === 200) {
           addItemToList(response.data)
           setNotificationToastHandler([`Item created`, `Item "${response.data[humanKey]}" created.`, true])
           setNewItem(blankItem)
         } else {
-          setNotificationToastHandler([response.error, handleErrorMessage(response.message), true])
+          setNotificationToastHandler([response.error, ErrorMessage(response.message), true])
         }
         setShowSpinner(false)
       },

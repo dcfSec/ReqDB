@@ -2,7 +2,8 @@ import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import { inSearchField } from "../../MiniComponents";
 import { useContext, useState } from "react";
-import { API, LoadingSpinnerContext, NotificationToastContext, handleErrorMessage } from "../../../static";
+import { LoadingSpinnerContext, NotificationToastContext } from "../../Providers";
+import { ErrorMessage } from '../../MiniComponents'
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import SelectParentModal from "../SelectParentModal";
 import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
@@ -48,7 +49,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
   }
 
   function saveItem() {
-    execute("PUT", `${API}/${endpoint}/${originalItem.id}?minimal`, item).then(
+    execute("PUT", `${endpoint}/${originalItem.id}?minimal`, item).then(
       (response) => {
         if (response.status === 200) {
           setItem(response.data)
@@ -56,7 +57,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
           setItem(response.data)
           setNotificationToastHandler([<>Item <code>{response.data[humanKey]}</code> edited</>, "Item successfully edited", true])
         } else {
-          setNotificationToastHandler([response.error, handleErrorMessage(response.message), true])
+          setNotificationToastHandler([response.error, ErrorMessage(response.message), true])
         }
         setShowSpinner(false)
       },
@@ -72,7 +73,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
     if (force) {
       parameters.push("force")
     }
-    execute("DELETE", `${API}/${endpoint}/${originalItem.id}?${parameters.join("&")}`, null, false).then(
+    execute("DELETE", `${endpoint}/${originalItem.id}?${parameters.join("&")}`, null, false).then(
       (response) => {
         if (response.status === 204) {
           setEdit(false)
@@ -82,7 +83,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, d
           setItem(null)
         } else {
           response.json().then((r) => {
-            setNotificationToastHandler([r.error, handleErrorMessage(r.message), true])
+            setNotificationToastHandler([r.error, ErrorMessage(r.message), true])
           }
           );
         }
