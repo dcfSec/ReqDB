@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useMsal } from "@azure/msal-react";
 import { useEffect, useState } from "react";
 import { appRoles } from "../authConfig";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { homeTitle, preMOTD, postMOTD } from "../static";
 
 /**
  * Container for the main view when logged in
@@ -42,7 +44,8 @@ export default function Home() {
     <Row>
       <Col>
         <Stack gap={2} className="col-md-3 mx-auto">
-          <h2>Welcome to ReqDB</h2>
+          <h2>{homeTitle}</h2>
+          <ReactMarkdown>{preMOTD}</ReactMarkdown>
           <Button as={Link} to="Browse" variant="outline-secondary">Browse Catalogues</Button>
           {roles.includes(appRoles.Writer) ?
             <Dropdown className="d-inline-block">
@@ -58,6 +61,7 @@ export default function Home() {
                 <Dropdown.Item as={Link} to="/Edit/ExtraEntries">ExtraEntries</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown> : null}
+            <ReactMarkdown>{postMOTD}</ReactMarkdown>
         </Stack>
       </Col>
     </Row>
