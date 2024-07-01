@@ -10,6 +10,8 @@ import { PublicClientApplication, EventType } from "@azure/msal-browser";
 
 import { msalConfig } from "./authConfig.js";
 
+import store from './store'
+import { Provider } from 'react-redux'
 
 /**
  * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.
@@ -38,7 +40,9 @@ msalInstance.addEventCallback((event) => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App instance={msalInstance} />
+    <Provider store={store}>
+      <App instance={msalInstance} />
+    </Provider>
   </React.StrictMode>
 );
 

@@ -1,6 +1,6 @@
 import { useState, lazy, useEffect } from 'react';
 import EditorLayout from '../components/Edit/EditLayout';
-import DataTable from '../components/DataTable';
+import EditTable from '../components/Edit/EditTable';
 
 import { Alert, ProgressBar } from 'react-bootstrap';
 import { useContext } from 'react';
@@ -70,12 +70,12 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
   } else {
     if (data && data.status === 200) {
       items = data.data
-      body = <DataTable headers={headers} search={search} endpoint={endpoint} setItems={setItems}>
+      body = <EditTable headers={headers}>
         <AddListRow addItemToList={addItem} endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} tag={AddListRow} updateParent={updateParent}></AddListRow>
         {items.map((item, index) => (
           renderItem(item, index)
         ))}
-      </DataTable>
+      </EditTable>
     } else if (data && data.status !== 200) {
       setNotificationToastHandler([data.error, data.message, true])
       body = <Alert variant="danger">{ErrorMessage(data.message)}</Alert>

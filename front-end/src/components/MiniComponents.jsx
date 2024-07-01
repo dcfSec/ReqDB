@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { useContext } from 'react';
 import {  LoadingSpinnerContext, LoadingSpinnerDialogContext } from './Providers';
+import { useSelector, useDispatch } from 'react-redux'
 
 /**
  * Component for the main logo which is replaced by a spinner if something is loading
@@ -13,9 +14,9 @@ import {  LoadingSpinnerContext, LoadingSpinnerDialogContext } from './Providers
  * @returns Logo/Spinner component
  */
 export function MainLogoSpinner() {
-  const { showSpinner } = useContext(LoadingSpinnerContext)
+  const visible = useSelector(state => state.mainLogoSpinner.visible)
   const { showDialogSpinner } = useContext(LoadingSpinnerDialogContext)
-  if (showSpinner || showDialogSpinner) {
+  if (visible || showDialogSpinner) {
     return <><Spinner animation="grow" size="sm" />{'  '}</>
   } else {
     return <><FontAwesomeIcon icon={solid("database")} />{'  '}</>
