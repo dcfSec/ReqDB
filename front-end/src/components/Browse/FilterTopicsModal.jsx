@@ -4,6 +4,7 @@ import { SearchField } from '../MiniComponents';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useState } from 'react';
 import FilterTopicEntry from './FilterTopicEntry';
+import { useSelector, useDispatch } from 'react-redux'
 
 /**
  * Component for the filter modal for topics in the brows view
@@ -11,9 +12,11 @@ import FilterTopicEntry from './FilterTopicEntry';
  * @param {object} param0 Props for this component: show, setShow, topics, setFilteredTopics, filteredTopics
  * @returns Returns a modal for filtering topics in the browse view
  */
-export default function FilterTopicsModal({ show, setShow, topics, setFilteredTopics, filteredTopics }) {
+export default function FilterTopicsModal({ show, setShow }) {
 
   const [search, setSearch] = useState("");
+
+  const topics = useSelector(state => state.browse.data).topics
 
   function reset() {
     setShow(false)
@@ -44,7 +47,7 @@ export default function FilterTopicsModal({ show, setShow, topics, setFilteredTo
             <Col><SearchField title="topic" search={search} onSearch={setSearch}></SearchField></Col>
           </Row>
           <Row>
-            <ul><FilterTopicEntry topic={all} filteredTopics={filteredTopics} setFilteredTopics={setFilteredTopics} search={search} root={true} /></ul>
+            <ul><FilterTopicEntry topic={all} search={search} root={true} /></ul>
           </Row>
         </Container>
       </Modal.Body>

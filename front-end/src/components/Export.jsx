@@ -2,13 +2,29 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import ExcelJS from "exceljs";
 import YAML from 'yaml';
 
+import { useSelector } from 'react-redux'
+
+
 /**
  * Exports the browse table in different formats
  * 
  * @param {object} props Props for the component: headers, dataToExport
  * @returns Returns a dropdown for export selection
  */
-export function ExportTable({ max, headers, dataToExport }) {
+export function ExportTable() {
+
+  const selected = useSelector(state => state.browse.rows.selected)
+  const visible = useSelector(state => state.browse.rows.visible)
+  const dataToExport = [...useSelector(state => state.browse.rows.items).filter(function (v) { return selected[v.id] === true; })]
+
+  const headers = [
+    "Tags",
+    "Topics",
+    "Key",
+    "Title",
+    "Description",
+    ...Object.keys(useSelector(state => state.browse.extraHeaders))
+  ]
 
   function exportExcel() {
 
@@ -52,7 +68,7 @@ export function ExportTable({ max, headers, dataToExport }) {
   return (
     <Dropdown>
       <Dropdown.Toggle variant="success" id="export-dropdown">
-        Export {dataToExport.length}/{max} rows
+        Export {dataToExport.length}/{Object.values(visible).reduce((a, item) => a + item, 0)} rows
       </Dropdown.Toggle>
       <Dropdown.Menu>
         <Dropdown.Item onClick={exportExcel}>As Excel</Dropdown.Item>
