@@ -4,7 +4,7 @@ import { Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { useContext } from 'react';
-import {  LoadingSpinnerContext, LoadingSpinnerDialogContext } from './Providers';
+import { LoadingSpinnerDialogContext } from './Providers';
 import { useSelector, useDispatch } from 'react-redux'
 
 /**
