@@ -170,14 +170,22 @@ export const browseSlice = createSlice({
       });
       state.topics.filterItems = [...tmp]
     },
-    setTopicFilterSelected: (state, action) => {
+    addTopicFilterSelected: (state, action) => {
       state.topics.filterSelected = [
-        ...action.payload,
+        ...state.topics.filterSelected,
+        ...action.payload.filter(n => !state.topics.filterSelected.includes(n)),
       ]
+      console.log(state.topics.filterSelected)
+    },
+    removeTopicFilterSelected: (state, action) => {
+      state.topics.filterSelected = [
+        ...state.topics.filterSelected.filter(n => !action.payload.includes(n))
+      ]
+      console.log(state.topics.filterSelected)
     },
   },
 })
 
-export const { reset, setData, addRow, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, setTopicFilterSelected } = browseSlice.actions
+export const { reset, setData, addRow, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected } = browseSlice.actions
 
 export default browseSlice.reducer

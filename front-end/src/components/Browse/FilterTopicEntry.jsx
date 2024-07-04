@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { inFilterField } from '../MiniComponents';
 
 import { useSelector, useDispatch } from 'react-redux'
-import { setTopicFilterSelected } from '../../stateSlices/BrowseSlice';
+import { addTopicFilterSelected, removeTopicFilterSelected } from '../../stateSlices/BrowseSlice';
 
 /**
  * Component for an item in the list for the topics filter modal
@@ -11,9 +11,9 @@ import { setTopicFilterSelected } from '../../stateSlices/BrowseSlice';
  * @param {object} props Props for the component: topic, filteredTopics, setFilteredTopics, search, root
  * @returns Returns a entry in the modal to filter topics
  */
-export default function FilterTopicEntry({ topic, search, root = false }) {
+export default function FilterTopicEntry({ topic, search, parents = [], root = false }) {
 
-  
+
   const dispatch = useDispatch()
   const filteredTopics = useSelector(state => state.browse.topics.filterSelected)
 
@@ -21,7 +21,14 @@ export default function FilterTopicEntry({ topic, search, root = false }) {
 
   const [allChecked, setAllChecked] = useState(true);
 
-  useEffect(() => { includesAll(filteredTopics, allChildren) ? setAllChecked(true) : setAllChecked(false) }, [filteredTopics]);
+  useEffect(() => {
+    if (includesAll(filteredTopics, allChildren)) {
+      setAllChecked(true)
+    } else {
+      setAllChecked(false)
+      //dispatch(removeTopicFilterSelected([`${topic.key} ${topic.title}`]));
+    }
+  }, [filteredTopics]);
 
   function getAllChildren(t, arr) {
     arr.push(`${t.key} ${t.title}`)
@@ -33,17 +40,18 @@ export default function FilterTopicEntry({ topic, search, root = false }) {
 
   function toggleAll(changeEvent) {
     const { checked } = changeEvent.target;
+    console.log(parents)
 
     if (checked === true) {
-      dispatch(setTopicFilterSelected([...filteredTopics, ...allChildren]));
+      dispatch(addTopicFilterSelected([...allChildren]));
     } else {
-      dispatch(setTopicFilterSelected(filteredTopics.filter(n => !allChildren.includes(n))));
+      dispatch(removeTopicFilterSelected([...allChildren, ...parents]));
     }
   }
 
   function includesAll(a, b) {
     if (topic.children.length === 0) {
-      return b.every(r => a.includes(r))
+      return a.includes(`${topic.key} ${topic.title}`)
     } else {
       return b.filter(n => n !== `${topic.key} ${topic.title}`).every(r => a.includes(r))
     }
@@ -52,6 +60,6 @@ export default function FilterTopicEntry({ topic, search, root = false }) {
   return (search === "" || inFilterField(search, allChildren)) ?
     <li className='no-bullets'>
       <Form.Check key={`${topic.key} ${topic.title}`} id={`${topic.key} ${topic.title}`} type="switch" label={root ? `${topic.title}` : `${topic.key} - ${topic.title}`} style={{ paddingLeft: "1.5em" }} onChange={toggleAll} checked={allChecked} />
-      <ul>{topic.children.map((child, index) => ((search === "" || inFilterField(search, getAllChildren(child, []))) ? <FilterTopicEntry key={index} topic={child} search={search} /> : null))}</ul>
+      <ul>{topic.children.map((child, index) => ((search === "" || inFilterField(search, getAllChildren(child, []))) ? <FilterTopicEntry key={index} topic={child} parents={[...parents, `${topic.key} ${topic.title}`]}search={search} /> : null))}</ul>
     </li> : null
 }
