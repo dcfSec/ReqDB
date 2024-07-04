@@ -39,7 +39,7 @@ export default function BrowseRow({ index, row }) {
   function isVisible() {
     const isVisible = inSearchField(search, Object.keys(row), row)
       && (/* tagFilterSelected.length === 0 || */ row.Tags.some(r => tagFilterSelected.indexOf(r) >= 0) || (row.Tags.length === 0 && tagFilterSelected.indexOf("No Tags") >= 0))
-      && row.Topics.every(r => topicFilterSelected.indexOf(`${r.key} ${r.title}`) >= 0 )
+      && row.Topics.some(r => topicFilterSelected.indexOf(`${r.key} ${r.title}`) >= 0 )
     return isVisible
   }
 

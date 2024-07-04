@@ -14,7 +14,7 @@ import { ExportTable } from "../components/Export";
 
 import { useSelector, useDispatch } from 'react-redux'
 import { show } from "../stateSlices/MainLogoSpinnerSlice";
-import { reset, setData, addRow, sortRows, setTagFilterItems, addTopicFilterItems, sortTopicFilterItems, addExtraHeader, setTopicFilterSelected } from '../stateSlices/BrowseSlice';
+import { reset, setData, addRow, sortRows, setTagFilterItems, addTopicFilterItems, sortTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 
 /**
  * View to browse a
@@ -55,7 +55,7 @@ export default function BrowseCatalogue() {
     execute("GET", `catalogues/${id}?extended`).then((response) => {
       if (response && response.status === 200) {
         let tagFilterItemsTmp = []
-        //dispatch(reset())
+
         buildRows(extraHeaders, tagFilterItemsTmp, [], { children: response.data.topics })
         dispatch(setTagFilterItems(tagFilterItemsTmp))
         dispatch(sortRows())
