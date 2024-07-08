@@ -5,8 +5,7 @@ from sqlalchemy.exc import IntegrityError
 
 from api import db
 from api.models import Topic as TopicModel
-from api.schemas import TopicSchema, TopicUpdateSchema, \
-    TopicOnlyIDAndTitleSchema
+from api.schemas import TopicSchema, TopicUpdateSchema, TopicOnlyIDAndTitleSchema
 from api.endpoints.base import BaseResource, BaseResources
 
 
@@ -31,13 +30,10 @@ class Topic(BaseResource):
         :param int id: The object id to use in the query
         :return dict: Topic ressource or 404
         """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        checkAccess(get_jwt(), ["Reader", "Writer"])
         topic = TopicModel.query.get_or_404(id)
         schema = TopicSchema()
-        return {
-            'status': 200,
-            'data': schema.dump(topic)
-        }
+        return {"status": 200, "data": schema.dump(topic)}
 
     def put(self, id: int):
         """
@@ -49,61 +45,56 @@ class Topic(BaseResource):
         :param int id: Item id
         :return dict: Updated topic ressource
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ["Writer"])
         topic = TopicModel.query.get_or_404(id)
         updateSchema = TopicUpdateSchema()
         schema = TopicSchema()
         try:
-            topic = updateSchema.load(request.json, instance=topic,
-                                      partial=True, session=db.session)
+            topic = updateSchema.load(
+                request.json, instance=topic, partial=True, session=db.session
+            )
             if topic.id == topic.parentId:
                 return {
-                    'status': 400,
-                    'error': 'ValidationError',
-                    'message': ['Parent id can\'t be item id']
-                    }, 400
+                    "status": 400,
+                    "error": "ValidationError",
+                    "message": ["Parent id can't be item id"],
+                }, 400
 
-            if topic.parentId is not None \
-                    and TopicModel.query.get(topic.parentId) is None:
+            if (
+                topic.parentId is not None
+                and TopicModel.query.get(topic.parentId) is None
+            ):
                 return {
-                'status': 400,
-                    'error': 'ValidationError',
-                    'message': [f'Parent with id {topic.parentId} not found']
-                    }, 400
+                    "status": 400,
+                    "error": "ValidationError",
+                    "message": [f"Parent with id {topic.parentId} not found"],
+                }, 400
             if topic.children != [] and topic.requirements != []:
                 return {
-                'status': 400,
-                    'error': 'ValidationError',
-                    'message': [
-                        'Topics can\'t have children and requirements'
-                    ]}, 400
+                    "status": 400,
+                    "error": "ValidationError",
+                    "message": ["Topics can't have children and requirements"],
+                }, 400
             if topic.parentId is not None:
                 parent = TopicModel.query.get_or_404(topic.parentId)
                 if parent.requirements != []:
                     return {
-                        'status': 400,
-                        'error': 'ValidationError',
-                        'message': [
+                        "status": 400,
+                        "error": "ValidationError",
+                        "message": [
                             "Parent Topic can't have children and requirements"
-                        ]}, 400
+                        ],
+                    }, 400
             db.session.commit()
-            return {
-                'status': 200,
-                'data': schema.dump(topic)
-            }
+            return {"status": 200, "data": schema.dump(topic)}
         except ValidationError as e:
             return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
+                "status": 400,
+                "error": "ValidationError",
+                "message": e.messages,
             }, 400
         except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400
+            return {"status": 400, "error": "IntegrityError", "message": e.args}, 400
 
     def delete(self, id: int):
         """
@@ -115,33 +106,31 @@ class Topic(BaseResource):
         :param int id: Item id
         :return dict: Empty (204) if successfull, else error message
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ["Writer"])
         topic = TopicModel.query.get_or_404(id)
-        if ((len(topic.requirements) > 0) or len(topic.children) > 0) and \
-                request.args.get('force') is None:
+        if (
+            (len(topic.requirements) > 0) or len(topic.children) > 0
+        ) and request.args.get("force") is None:
             return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': ['Topic has requirements or children.',
-                            'Use ?force to delete anyway']
-                }, 400
+                "status": 400,
+                "error": "ValidationError",
+                "message": [
+                    "Topic has requirements or children.",
+                    "Use ?force to delete anyway",
+                ],
+            }, 400
         try:
             db.session.delete(topic)
             db.session.commit()
             return {}, 204
         except ValidationError as e:
             return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
+                "status": 400,
+                "error": "ValidationError",
+                "message": e.messages,
             }, 400
         except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400
+            return {"status": 400, "error": "IntegrityError", "message": e.args}, 400
 
 
 class Topics(BaseResources):
@@ -149,12 +138,13 @@ class Topics(BaseResources):
     Topics class, represents the Topics API to fetch all or add a
     topic item
     """
+
     addSchemaClass = TopicUpdateSchema
     dumpSchemaClass = TopicSchema
     model = TopicModel
 
     def args(self):
-        if request.args.get('minimal') is not None:
+        if request.args.get("minimal") is not None:
             return TopicOnlyIDAndTitleSchema
         else:
             return TopicSchema
