@@ -89,11 +89,12 @@ class Tag(BaseResource):
         checkAccess(get_jwt(), ['Writer'])
         tag = TagModel.query.get_or_404(id)
         if len(tag.requirement) > 0 and request.args.get('force') is None:
-            abort(400, {
+            return {
+                'status': 400,
                 'error': 'ValidationError',
                 'message': [
                     'Tag has requirements. Use ?force to delete anyway'
-                ]})
+                ]}, 400
         try:
             db.session.delete(tag)
             db.session.commit()

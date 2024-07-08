@@ -57,29 +57,35 @@ class Topic(BaseResource):
             topic = updateSchema.load(request.json, instance=topic,
                                       partial=True, session=db.session)
             if topic.id == topic.parentId:
-                abort(400, {
+                return {
+                    'status': 400,
                     'error': 'ValidationError',
-                    'message': ['Parent id can\'t be item id']})
+                    'message': ['Parent id can\'t be item id']
+                    }, 400
 
             if topic.parentId is not None \
                     and TopicModel.query.get(topic.parentId) is None:
-                abort(400, {
+                return {
+                'status': 400,
                     'error': 'ValidationError',
-                    'message': [f'Parent with id {topic.parentId} not found']})
+                    'message': [f'Parent with id {topic.parentId} not found']
+                    }, 400
             if topic.children != [] and topic.requirements != []:
-                abort(400, {
+                return {
+                'status': 400,
                     'error': 'ValidationError',
                     'message': [
                         'Topics can\'t have children and requirements'
-                    ]})
+                    ]}, 400
             if topic.parentId is not None:
                 parent = TopicModel.query.get_or_404(topic.parentId)
                 if parent.requirements != []:
-                    abort(400, {
+                    return {
+                        'status': 400,
                         'error': 'ValidationError',
                         'message': [
                             "Parent Topic can't have children and requirements"
-                        ]})
+                        ]}, 400
             db.session.commit()
             return {
                 'status': 200,
@@ -113,10 +119,12 @@ class Topic(BaseResource):
         topic = TopicModel.query.get_or_404(id)
         if ((len(topic.requirements) > 0) or len(topic.children) > 0) and \
                 request.args.get('force') is None:
-            abort(400, {
+            return {
+                'status': 400,
                 'error': 'ValidationError',
                 'message': ['Topic has requirements or children.',
-                            'Use ?force to delete anyway']})
+                            'Use ?force to delete anyway']
+                }, 400
         try:
             db.session.delete(topic)
             db.session.commit()

@@ -87,11 +87,12 @@ class ExtraType(BaseResource):
         extraType = ExtraTypeModel.query.get_or_404(id)
         if (len(extraType.children) > 0) \
                 and request.args.get('force') is None:
-            abort(400, {
+            return {
+                'status': 400,
                 'error': 'ValidationError',
                 'message': [
                     'Requirement has extras. Use ?force to delete anyway'
-                ]})
+                ]}, 400
         try:
             db.session.delete(extraType)
             db.session.commit()
