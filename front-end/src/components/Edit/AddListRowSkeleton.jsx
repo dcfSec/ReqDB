@@ -1,5 +1,4 @@
 import { useState, lazy, Suspense } from "react";
-import { ErrorMessage } from "../MiniComponents";
 import useFetchWithMsal from "../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../authConfig";
 
@@ -44,7 +43,7 @@ export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, edit
           dispatch(toast({ header: "Item created", body: `Item "${response.data[humanKey]}" created.` }))
           setNewItem(blankItem)
         } else {
-          dispatch(toast({ header: response.error, body: ErrorMessage(response.message) }))
+          dispatch(toast({ header: response.error, body: response.message }))
         }
         dispatch(showSpinner(false))
       },

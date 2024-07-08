@@ -1,6 +1,5 @@
 import { Button } from "react-bootstrap";
-import Form from 'react-bootstrap/Form';
-import { inSearchField, ErrorMessage } from "../MiniComponents";
+import { inSearchField } from "../MiniComponents";
 import { useState } from "react";
 import useFetchWithMsal from "../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../authConfig";
@@ -60,7 +59,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, s
                     dispatch(updateItem({ index, item: response.data })) // Do we need to update the main list (unnecessary rerender)?
                     dispatch(toast({ header: "Item successfully edited", body: `Item "${response.data[humanKey]}" edited` }))
                 } else {
-                    dispatch(toast({ header: response.error, body: ErrorMessage(response.message) }))
+                    dispatch(toast({ header: response.error, body: response.message }))
                 }
                 dispatch(showSpinner(false))
             },
@@ -85,7 +84,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, s
                     dispatch(removeItem(index))
                 } else {
                     response.json().then((r) => {
-                        dispatch(toast({ header: r.error, body: ErrorMessage(r.message) }))
+                        dispatch(toast({ header: r.error, body: r.message }))
                     }
                     );
                 }

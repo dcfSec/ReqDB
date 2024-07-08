@@ -1,13 +1,5 @@
-import { useState } from "react";
 import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
-import { ErrorMessage } from '../../MiniComponents'
-import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
-import { protectedResources } from "../../../authConfig";
-
-import { useDispatch } from 'react-redux'
-import { showSpinner } from "../../../stateSlices/MainLogoSpinnerSlice";
-import { toast } from "../../../stateSlices/NotificationToastSlice";
 
 /**
  * Component to add a item in the editor table
