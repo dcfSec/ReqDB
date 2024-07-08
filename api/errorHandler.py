@@ -89,7 +89,7 @@ def userLookupError(jwt_header, jwt_payload):
 def tokenVerificationFailed(jwt_header, jwt_payload):
     return jsonify({
         "status": 401,
-        "name": "TokenVerificationFailed",
+        "error": "TokenVerificationFailed",
         "message": "User claims verification failed"
     }), 401
 
@@ -98,6 +98,6 @@ def tokenVerificationFailed(jwt_header, jwt_payload):
 def internal(e):
     return jsonify({
         "status": e.code,
-        "name": "InternalError",
+        "error": "InternalError",
         "message": e.description
     }), 500
