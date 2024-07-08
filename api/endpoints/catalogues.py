@@ -98,13 +98,6 @@ class Catalogue(BaseResource):
         """
         checkAccess(get_jwt(), ['Writer'])
         catalogue = CatalogueModel.query.get_or_404(id)
-        if (len(catalogue.extras) > 0) \
-                and request.args.get('force') is None:
-            abort(400, {
-                'error': 'ValidationError',
-                'message': [
-                    'Catalogue has extras. Use ?force to delete anyway'
-                ]})
         try:
             db.session.delete(catalogue)
             db.session.commit()
