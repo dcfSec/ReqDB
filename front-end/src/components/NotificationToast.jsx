@@ -3,6 +3,7 @@ import ToastContainer from 'react-bootstrap/ToastContainer';
 
 import { useSelector, useDispatch } from 'react-redux'
 import { showToast } from "../stateSlices/NotificationToastSlice";
+import { ErrorMessage } from './MiniComponents';
 
 
 /**
@@ -18,14 +19,7 @@ export default function NotificationToast() {
 
   let htmlBody = <></>
 
-  if (Array.isArray(body)) {
-    htmlBody = <>{body.map((item, index) => (
-      <p key={index}>{item}</p>
-    ))}</>
-  } else {
-    htmlBody = <>{body}</>
-
-  }
+  htmlBody = ErrorMessage(body)
 
   function close() {
     dispatch(showToast(false))
