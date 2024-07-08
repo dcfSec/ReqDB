@@ -49,7 +49,6 @@ export default function BrowseRow({ index, row }) {
     } else if (extraHeaders[extraType] === 2) {
       return <ReactMarkdown>{item}</ReactMarkdown>
     } else if (extraHeaders[extraType] === 3) {
-      console.log(item)
       return item ? item.split(";").map((badge) => (<span key={"extraFieldBade" + ++badgeIdExtrafieldRunner}><Badge bg="secondary">{badge}</Badge><br /></span>)) : null
     }
   }

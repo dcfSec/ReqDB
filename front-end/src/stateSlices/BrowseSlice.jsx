@@ -175,13 +175,11 @@ export const browseSlice = createSlice({
         ...state.topics.filterSelected,
         ...action.payload.filter(n => !state.topics.filterSelected.includes(n)),
       ]
-      console.log(state.topics.filterSelected)
     },
     removeTopicFilterSelected: (state, action) => {
       state.topics.filterSelected = [
         ...state.topics.filterSelected.filter(n => !action.payload.includes(n))
       ]
-      console.log(state.topics.filterSelected)
     },
   },
 })

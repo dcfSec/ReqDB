@@ -40,7 +40,6 @@ export default function FilterTopicEntry({ topic, search, parents = [], root = f
 
   function toggleAll(changeEvent) {
     const { checked } = changeEvent.target;
-    console.log(parents)
 
     if (checked === true) {
       dispatch(addTopicFilterSelected([...allChildren]));
