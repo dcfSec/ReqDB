@@ -6,12 +6,12 @@ export const mainLogoSpinnerSlice = createSlice({
     visible: false
   },
   reducers: {
-    show: (state, action) => {
+    showSpinner: (state, action) => {
       state.visible = action.payload
     },
   }
 })
 
-export const { show, hide } = mainLogoSpinnerSlice.actions
+export const { showSpinner } = mainLogoSpinnerSlice.actions
 
 export default mainLogoSpinnerSlice.reducer

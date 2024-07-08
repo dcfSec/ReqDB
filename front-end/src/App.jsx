@@ -5,7 +5,7 @@ import { loginRequest } from './authConfig';
 import { useEffect, useState } from 'react';
 
 import { Router, LoginRouter } from './components/Router';
-import { NotificationToastContextProvider, LoadingSpinnerContextProvider, LoadingSpinnerDialogContextProvider } from './components/Providers';
+import { LoadingSpinnerContextProvider, LoadingSpinnerDialogContextProvider } from './components/Providers';
 
 const MainContent = () => {
 
@@ -37,7 +37,6 @@ const MainContent = () => {
    * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
    */
   return (
-    <NotificationToastContextProvider>
       <LoadingSpinnerContextProvider>
         <LoadingSpinnerDialogContextProvider>
           <AuthenticatedTemplate>
@@ -50,7 +49,6 @@ const MainContent = () => {
           </UnauthenticatedTemplate>
         </LoadingSpinnerDialogContextProvider>
       </LoadingSpinnerContextProvider>
-    </NotificationToastContextProvider>
   );
 };
 

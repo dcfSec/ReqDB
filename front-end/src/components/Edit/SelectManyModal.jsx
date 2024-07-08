@@ -2,10 +2,13 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { SearchField, inSearchField, ErrorMessage } from '../MiniComponents';
 import { Alert, Col, Container, Form, ProgressBar, Row, Table } from 'react-bootstrap';
-import { useContext, useEffect, useState } from 'react';
-import { LoadingSpinnerDialogContext, NotificationToastContext } from '../Providers';
+import { useEffect, useState } from 'react';
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 import { protectedResources } from '../../authConfig';
+
+import { useDispatch } from 'react-redux'
+import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
+import { toast } from "../../stateSlices/NotificationToastSlice";
 
 /**
  * Component for a modal to select many elements to link to this object
@@ -14,9 +17,8 @@ import { protectedResources } from '../../authConfig';
  * @returns Returns a modal to select many
  */
 export default function SelectMany({ humanKey, show, setShow, initialSelectedItems = [], endpoint, columns, updateKey, updateItem }) {
+  const dispatch = useDispatch()
 
-  const { setNotificationToastHandler } = useContext(NotificationToastContext)
-  const { setShowDialogSpinner } = useContext(LoadingSpinnerDialogContext)
   const [search, setSearch] = useState("");
 
   const initialSelectedItemIds = initialSelectedItems.map((item) => (item.id))
@@ -28,7 +30,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
 
   const [data, setData] = useState(null);
 
-  useEffect(() => { setShowDialogSpinner(!data) }, [data]);
+  useEffect(() => { dispatch(showSpinner(!data)) }, [data]);
 
   useEffect(() => {
     if (!data) {
@@ -58,7 +60,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
         </Table>
       </Form>
     } else if (data && data.status !== 200) {
-      setNotificationToastHandler([data.error, data.message, true])
+      dispatch(toast({header: data.error, body: data.message}))
       body = <Alert variant="danger">{ErrorMessage(data.message)}</Alert>
     }
   }

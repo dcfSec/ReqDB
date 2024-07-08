@@ -1,12 +1,14 @@
 import { Alert, Col, Container, ListGroup, ProgressBar, Row, Stack } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
-import { useContext, useEffect, useState } from "react";
-import { LoadingSpinnerContext } from "../components/Providers";
+import { useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
 import SelecttCatalogueItem from "../components/Browse/SelectCatalogueItem";
 
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
+import { useSelector, useDispatch } from 'react-redux'
+import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
+import { set, reset, sort } from "../stateSlices/CatalogueDataSlice";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -14,6 +16,11 @@ import useFetchWithMsal from '../hooks/useFetchWithMsal';
  * @returns View to select a catalogue
  */
 export default function BrowseSelectCatalogue() {
+  const dispatch = useDispatch()
+  const catalogueData = useSelector(state => state.catalogueData.items)
+  
+  const [fetched, setFetched] = useState(false);
+  const [APIError, setAPIError] = useState(null);
 
   const title = "Browse - Select Requirement Catalogue"
   const breadcrumbs = [
@@ -21,47 +28,36 @@ export default function BrowseSelectCatalogue() {
   ]
   document.title = `${title} | ReqDB - Requirement Database`;
 
-  const { setShowSpinner } = useContext(LoadingSpinnerContext)
-
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
   });
 
-  const [catalogueData, setCatalogueData] = useState(null);
-
-  useEffect(() => { setShowSpinner(!catalogueData) }, [catalogueData]);
+  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   useEffect(() => {
-    if (!catalogueData) {
+    dispatch(reset());
       execute("GET", `catalogues`).then((response) => {
-        setCatalogueData(response);
+        if (response && response.status === 200) {
+          dispatch(set(response.data));
+          dispatch(sort());
+          setFetched(true);
+        } else if (response && response.status !== 200) {
+          setAPIError(response.message)
+          setFetched(true);
+        }
       });
-    }
-  }, [execute, catalogueData])
-
+  }, [execute])
 
   let body = <ProgressBar animated now={100} />
 
   if (error) {
     body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
-  } else {
-    if (catalogueData && catalogueData.status === 200) {
-      body = <Stack gap={2} className="col-md-5 mx-auto"><ListGroup>
-        {catalogueData.data.sort((a, b) => {
-          const nameA = a.title.toUpperCase();
-          const nameB = b.title.toUpperCase();
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-          return 0;
-        }).map((catalogue, index) => (<SelecttCatalogueItem key={index} catalogue={catalogue} />))}
+  } else if (APIError) {
+    body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
+  } else if (fetched) {
+    body = <Stack gap={2} className="col-md-5 mx-auto"><ListGroup>
+        {catalogueData.map((catalogue, index) => (<SelecttCatalogueItem key={index} catalogue={catalogue} />))}
       </ListGroup></Stack>
-    } else if (catalogueData && catalogueData.status !== 200) {
-      body = <Alert variant="danger">{ErrorMessage(catalogueData.message)}</Alert>
-    }
   }
 
   return (
