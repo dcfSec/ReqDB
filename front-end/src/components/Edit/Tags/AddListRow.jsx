@@ -20,8 +20,6 @@ export function TagAddListRow({ newItem, updateNewItem, postItem, updateParent }
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
 
-  console.log(updateParent)
-
   return (
     <tr>
       <td></td>
