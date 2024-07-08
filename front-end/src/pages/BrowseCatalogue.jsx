@@ -10,10 +10,9 @@ import FilterTopicModal from "../components/Browse/FilterTopicsModal";
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from "../hooks/useFetchWithMsal";
 import { ExportTable } from "../components/Export";
-//import { buildRows } from "../components/Browse/Helper";
 
 import { useSelector, useDispatch } from 'react-redux'
-import { show } from "../stateSlices/MainLogoSpinnerSlice";
+import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { reset, setData, addRow, sortRows, setTagFilterItems, addTopicFilterItems, sortTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 
 /**
@@ -27,8 +26,7 @@ export default function BrowseCatalogue() {
   const tagFilterItems = useSelector(state => state.browse.tags.filterItems)
   const topicFilterItems = useSelector(state => state.browse.topics.filterItems)
   const extraHeaders = useSelector(state => state.browse.extraHeaders)
-
-  const topicFilterSelected = useSelector(state => state.browse.topics.filterSelected)
+  const APIData = useSelector(state => state.browse.data)
 
   const title = "Browse"
   const breadcrumbs = [
@@ -46,9 +44,8 @@ export default function BrowseCatalogue() {
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
-  const [APIData, setAPIData] = useState(null);
 
-  useEffect(() => { dispatch(show(!fetched)) }, [fetched]);
+  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   useEffect(() => {
     dispatch(reset());
@@ -62,7 +59,6 @@ export default function BrowseCatalogue() {
         dispatch(sortTopicFilterItems())
         dispatch(setData(response.data))
 
-        setAPIData(response.data)
         setFetched(true);
       } else if (response && response.status !== 200) {
         setAPIError(response.message)
@@ -84,7 +80,6 @@ export default function BrowseCatalogue() {
     errorMessage = ErrorMessage(APIError)
   }
 
-  const [topicFiltered, setTopicFiltered] = useState([]);
   const [showFilterModal, setShowFilterModal] = useState(false);
 
   if (init) {
@@ -137,7 +132,7 @@ export default function BrowseCatalogue() {
         </Row>
         <Row>
           <Col>
-            {APIError || error ? <Alert variant="danger">{ErrorMessage(APIError)}</Alert> : <ProgressBar animated now={100} />}
+            {APIError || error ? <Alert variant="danger">{errorMessage}</Alert> : <ProgressBar animated now={100} />}
           </Col>
         </Row>
       </Container>

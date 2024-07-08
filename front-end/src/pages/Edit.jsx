@@ -1,13 +1,18 @@
-import { useState, lazy, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import EditorLayout from '../components/Edit/EditLayout';
 import EditTable from '../components/Edit/EditTable';
 
 import { Alert, ProgressBar } from 'react-bootstrap';
-import { useContext } from 'react';
-import { LoadingSpinnerContext, NotificationToastContext } from "../components/Providers";
 import { ErrorMessage } from '../components/MiniComponents'
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { protectedResources } from '../authConfig';
+
+import { useSelector, useDispatch } from 'react-redux'
+import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
+import { toast } from "../stateSlices/NotificationToastSlice";
+import { addItem, setItems } from "../stateSlices/EditSlice";
+import AddListRowSkeleton from "../components/Edit/AddListRowSkeleton";
+import EditListRowSkeleton from "../components/Edit/EditListRowSkeleton";
 
 /**
  * Component for the parent view of the editor pages
@@ -16,15 +21,12 @@ import { protectedResources } from '../authConfig';
  * @returns Parent component for all editor views
  */
 function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [], needsParent = false }) {
+  const dispatch = useDispatch()
+  const items = useSelector(state => state.edit.items)
 
-  const EditListRow = lazy(() => import(`../components/Edit/${editPageName}/EditListRow.jsx`));
-  const AddListRow = lazy(() => import(`../components/Edit/${editPageName}/AddListRow.jsx`));
+  document.title = `${editPageName} | ReqDB - Requirement Database`;
 
   const [search, setSearch] = useState("");
-  let [items, setItems] = useState([]);
-  
-  const { setNotificationToastHandler } = useContext(NotificationToastContext)
-  const { setShowSpinner } = useContext(LoadingSpinnerContext)
 
   const [updateIdField, setUpdateIdField] = useState("");
   const [updateObjectField, setUpdateObjectField] = useState("");
@@ -45,48 +47,43 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
     needed: needsParent
   }
 
+
+  const [fetched, setFetched] = useState(false);
+  const [APIError, setAPIError] = useState(null);
+
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
   });
 
-  document.title = `${editPageName} | ReqDB - Requirement Database`;
-
-
-  const [data, setData] = useState(null);
-  useEffect(() => { setShowSpinner(!data) }, [data]);
+  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   useEffect(() => {
-    if (!data) {
-      execute("GET", `${endpoint}?${parameters.join("&")}`).then((response) => {
-        setData(response);
-      });
-    }
-  }, [execute, data])
+    execute("GET", `${endpoint}?${parameters.join("&")}`).then((response) => {
+      if (response && response.status === 200) {
+        dispatch(setItems(response.data))
+        setFetched(true);
+      } else if (response && response.status !== 200) {
+        dispatch(toast({ header: response.error, body: response.message }));
+        setAPIError(response.message);
+        setFetched(true);
+      }
+    });
+  }, [execute])
 
   let body = <ProgressBar animated now={100} />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data</Alert>
-  } else {
-    if (data && data.status === 200) {
-      items = data.data
-      body = <EditTable headers={headers}>
-        <AddListRow addItemToList={addItem} endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} tag={AddListRow} updateParent={updateParent}></AddListRow>
-        {items.map((item, index) => (
-          renderItem(item, index)
-        ))}
-      </EditTable>
-    } else if (data && data.status !== 200) {
-      setNotificationToastHandler([data.error, data.message, true])
-      body = <Alert variant="danger">{ErrorMessage(data.message)}</Alert>
-    }
+    body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
+  } else if (APIError) {
+    body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
+  } else if (fetched) {
+    body = <EditTable headers={headers}>
+      <AddListRowSkeleton endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} editPageName={editPageName} updateParent={updateParent}/>
+      {items.map((item, index) => (
+        renderItem(item, index)
+      ))}
+    </EditTable>
   }
-
-  function addItem(item) {
-    items.push(item)
-    setItems(items)
-  }
-
   function onSearch(s) {
     setSearch(s)
   }
@@ -94,17 +91,19 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
   function updateItem(index, newItem) {
     const tempItems = [...items]
     tempItems[index] = newItem
-    setItems(tempItems)
+    // setItems(tempItems)
   }
 
   function deleteItem(index) {
-    items.splice(index, 1);
-    setItems(items)
+    let tmp = items
+    tmp.splice(index, 1);
+    // setItems(tmp)
   }
 
   function renderItem(item, index) {
     if (item) {
-      return <EditListRow
+      return <EditListRowSkeleton
+        editPageName={editPageName}
         key={item.id}
         humanKey={humanKey}
         originalItem={item}
@@ -113,17 +112,23 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
         updateItem={updateItem}
         search={search}
         endpoint={endpoint}
-        tag={EditListRow}
         searchFields={searchFields}
         updateParent={updateParent}
         parentEndpoint={parentEndpoint}
         setParentEndpoint={setParentEndpoint}
         needsParent={true}
-        needsMany2Many={true} ></EditListRow>
+        needsMany2Many={true} ></EditListRowSkeleton>
     } else {
       return null
     }
   }
+
+  // body = <EditTable headers={headers}>
+  //   <AddListRow addItemToList={addItem} endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} tag={AddListRow} updateParent={updateParent}></AddListRow>
+  //   {items.map((item, index) => (
+  //     renderItem(item, index)
+  //   ))}
+  // </EditTable>
 
   return (<>
     <EditorLayout title={editPageName} search={search} onSearch={onSearch}>
@@ -175,7 +180,6 @@ export function Catalogues() {
     blankItem={{
       title: "",
       description: "",
-      maxDepth: 1,
       root: null
     }}
     searchFields={[

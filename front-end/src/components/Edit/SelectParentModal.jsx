@@ -2,11 +2,13 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { SearchField, inSearchField, ErrorMessage } from '../MiniComponents';
 import { Alert, Col, Container, Form, ProgressBar, Row, Table } from 'react-bootstrap';
-import { useContext, useEffect, useState } from 'react';
-import { LoadingSpinnerDialogContext } from '../Providers';
-import { NotificationToastContext } from '../Providers'
+import { useEffect, useState } from 'react';
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 import { protectedResources } from '../../authConfig';
+
+import { useDispatch } from 'react-redux'
+import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
+import { toast } from "../../stateSlices/NotificationToastSlice";
 
 /**
  * Component to show the option to select a parent model
@@ -14,11 +16,8 @@ import { protectedResources } from '../../authConfig';
  * @param {object} props Props for the component: itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns
  * @returns A modal to select a parent model
  */
-export default function SelectParentModal(props) {
-  const { itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns } = props
-
-  const { setNotificationToastHandler } = useContext(NotificationToastContext)
-  const { setShowDialogSpinner } = useContext(LoadingSpinnerDialogContext)
+export default function SelectParentModal({ itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns }) {
+  const dispatch = useDispatch()
 
   const [search, setSearch] = useState("");
 
@@ -35,7 +34,7 @@ export default function SelectParentModal(props) {
 
   const [data, setData] = useState(null);
 
-  useEffect(() => { setShowDialogSpinner(!data) }, [data]);
+  useEffect(() => { dispatch(showSpinner(!data)) }, [data]);
 
   useEffect(() => {
     if (!data) {
@@ -68,7 +67,7 @@ export default function SelectParentModal(props) {
         </Table>
       </Form>
     } else if (data && data.status !== 200) {
-      setNotificationToastHandler([data.error, data.message, true])
+      dispatch(toast({header: data.error, body: data.message}))
       body = <Alert variant="danger">{ErrorMessage(data.message)}</Alert>
     }
   }
