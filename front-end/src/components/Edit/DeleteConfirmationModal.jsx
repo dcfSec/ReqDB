@@ -23,7 +23,7 @@ export default function DeleteConfirmationModal(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-          <p>Are you shure you want to delete "{item}"?</p>
+          <p>Are you sure you want to delete "{item}"?</p>
       </Modal.Body>
       <Modal.Footer>
       <Form.Check

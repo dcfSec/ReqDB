@@ -57,20 +57,22 @@ class Requirement(BaseResource):
                 partial=True, session=db.session)
             if requirement.parentId is not None \
                     and Topic.query.get(requirement.parentId) is None:
-                abort(400, {
+                return {
+                    'status': 400,
                     'error': 'ValidationError',
                     'message': [
                         f'Parent with id {requirement.parentId} not found'
                     ]
-                })
+                }, 400
             if requirement.parentId is not None:
                 parent = Topic.query.get_or_404(requirement.parentId)
                 if parent.children != []:
-                    abort(400, {
+                    return {
+                        'status': 400,
                         'error': 'ValidationError',
                         'message': [
                             "Parent Topic can't have children and requirements"
-                        ]})
+                        ]}, 400
             db.session.commit()
             return {
                 'status': 200,
@@ -104,11 +106,12 @@ class Requirement(BaseResource):
         requirement = RequirementModel.query.get_or_404(id)
         if (len(requirement.extras) > 0) \
                 and request.args.get('force') is None:
-            abort(400, {
+            return {
+                'status': 400,
                 'error': 'ValidationError',
                 'message': [
                     'Requirement has extras. Use ?force to delete anyway'
-                ]})
+                ]}, 400
         try:
             db.session.delete(requirement)
             db.session.commit()
@@ -141,8 +144,9 @@ class Requirements(BaseResources):
         if object.parentId is not None:
             parent = Topic.query.get_or_404(object.parentId)
             if parent.children != []:
-                abort(400, {
+                return {
+                    'status': 400,
                     'error': 'ValidationError',
                     'message': [
                         "Parent Topic can't have children and requirements"
-                    ]})
+                    ]}, 400
