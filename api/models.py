@@ -36,6 +36,9 @@ class Requirement(Base):
     )
     visible = db.Column(db.Boolean, unique=False, default=True)
 
+    comments = db.relationship(
+        'Comment', backref='requirement', lazy="joined")
+    
     def __repr__(self):
         return f'<Requirement "{self.title}">'
 
@@ -107,3 +110,14 @@ class Catalogue(Base):
 
     def __repr__(self):
         return f'<Catalogue "{self.title}">'
+
+
+class Comment(Base):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    comment = db.Column(db.Text)
+    requirementId = db.Column(
+        db.Integer, db.ForeignKey('requirement.id'), nullable=False)
+    author = db.Column(db.String(200), nullable=False)
+
+    def __repr__(self):
+        return f'<Comment "{self.author}: {self.comment[:20]}">'

@@ -28,7 +28,7 @@ class Topic(BaseResource):
             - Writer
 
         :param int id: The object id to use in the query
-        :return dict: Topic ressource or 404
+        :return dict: Topic resource or 404
         """
         checkAccess(get_jwt(), ["Reader", "Writer"])
         topic = TopicModel.query.get_or_404(id)
@@ -43,7 +43,7 @@ class Topic(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Updated topic ressource
+        :return dict: Updated topic resource
         """
         checkAccess(get_jwt(), ["Writer"])
         topic = TopicModel.query.get_or_404(id)
@@ -104,7 +104,7 @@ class Topic(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Empty (204) if successfull, else error message
+        :return dict: Empty (204) if successful, else error message
         """
         checkAccess(get_jwt(), ["Writer"])
         topic = TopicModel.query.get_or_404(id)

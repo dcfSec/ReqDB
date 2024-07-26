@@ -27,7 +27,7 @@ class Tag(BaseResource):
             - Writer
 
         :param int id: The object id to use in the query
-        :return dict: Tag ressource or 404
+        :return dict: Tag resource or 404
         """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         tag = TagModel.query.get_or_404(id)
@@ -45,7 +45,7 @@ class Tag(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Updated tag ressource
+        :return dict: Updated tag resource
         """
         checkAccess(get_jwt(), ['Writer'])
         tag = TagModel.query.get_or_404(id)
@@ -84,7 +84,7 @@ class Tag(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Empty (204) if successfull, else error message
+        :return dict: Empty (204) if successful, else error message
         """
         checkAccess(get_jwt(), ['Writer'])
         tag = TagModel.query.get_or_404(id)
