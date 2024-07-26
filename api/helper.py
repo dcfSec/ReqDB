@@ -8,6 +8,6 @@ def checkAccess(jwt, neededRoles):
             "name": "AuthorizationError",
             "data": {
                 "error": "NotPermitted",
-                "message": "User is not permitted to access this ressource"
+                "message": "User is not permitted to access this resource"
             },
         }), 401

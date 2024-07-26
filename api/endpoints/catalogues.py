@@ -33,7 +33,7 @@ class Catalogue(BaseResource):
             - Writer
 
         :param int id: The object id to use in the query
-        :return dict: Catalogue ressource or 404
+        :return dict: Catalogue resource or 404
         """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         catalogue = CatalogueModel.query.get_or_404(id)
@@ -56,7 +56,7 @@ class Catalogue(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Updated catalogue ressource
+        :return dict: Updated catalogue resource
         """
         checkAccess(get_jwt(), ['Writer'])
         catalogue = CatalogueModel.query.get_or_404(id)
@@ -94,7 +94,7 @@ class Catalogue(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Empty if successfull, else error message
+        :return dict: Empty if successful, else error message
         """
         checkAccess(get_jwt(), ['Writer'])
         catalogue = CatalogueModel.query.get_or_404(id)

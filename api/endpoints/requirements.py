@@ -27,7 +27,7 @@ class Requirement(BaseResource):
             - Writer
 
         :param int id: The object id to use in the query
-        :return dict: Requirement ressource or 404
+        :return dict: Requirement resource or 404
         """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         requirement = RequirementModel.query.get_or_404(id)
@@ -45,7 +45,7 @@ class Requirement(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Updated requirement ressource
+        :return dict: Updated requirement resource
         """
         checkAccess(get_jwt(), ['Writer'])
         requirement = RequirementModel.query.get_or_404(id)
@@ -100,7 +100,7 @@ class Requirement(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Empty (204) if successfull, else error message
+        :return dict: Empty (204) if successful, else error message
         """
         checkAccess(get_jwt(), ['Writer'])
         requirement = RequirementModel.query.get_or_404(id)

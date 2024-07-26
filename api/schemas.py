@@ -2,7 +2,7 @@ from marshmallow import EXCLUDE, validate
 from api import ma
 from marshmallow_sqlalchemy import fields
 
-from api.models import ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue
+from api.models import ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue, Comment
 
 
 class ExtraEntrySchema(ma.SQLAlchemyAutoSchema):
@@ -177,7 +177,7 @@ class CatalogueLightNestedSchema(ma.SQLAlchemyAutoSchema):
         unknown = EXCLUDE
 
     title = ma.auto_field(validate=validate.Length(min=1))
-    topics = fields.Nested(nested="TopicSchema", only=["id", "title"], many=True)
+    topics = fields.Nested(nested="TopicSchema", only=["id", "title"], many=True, unknown=EXCLUDE)
 
 
 class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
@@ -193,7 +193,7 @@ class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
         unknown = EXCLUDE
 
     title = ma.auto_field(validate=validate.Length(min=1))
-    topics = fields.Nested(nested="TopicSchema", only=["id"], many=True)
+    topics = fields.Nested(nested="TopicSchema", only=["id"], many=True, unknown=EXCLUDE)
 
 
 class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
@@ -209,3 +209,26 @@ class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
 
     title = ma.auto_field(validate=validate.Length(min=1))
     topics = fields.Nested(nested="TopicSchema", many=True)
+
+
+class CommentSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Comment
+        include_relationships = True
+        load_instance = True
+        include_fk = True
+
+    requirement = fields.Nested(
+        nested="RequirementSchema", exclude=["parent", "comments"]
+    )
+
+
+class CommentUpdateSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Comment
+        include_relationships = True
+        load_instance = True
+        include_fk = True
+        unknown = EXCLUDE
+
+    comment = ma.auto_field(validate=validate.Length(min=1))

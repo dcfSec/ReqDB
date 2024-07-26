@@ -4,8 +4,8 @@ from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 from api import db
-from api.models import ExtraEntry as ExtraEntryModel
-from api.schemas import ExtraEntrySchema, ExtraEntryUpdateSchema
+from api.models import Comment as CommentModel
+from api.schemas import CommentSchema, CommentUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess
@@ -13,9 +13,9 @@ from api.helper import checkAccess
 from flask_jwt_extended import get_jwt
 
 
-class ExtraEntry(BaseResource):
+class Comment(BaseResource):
     """
-    ExtraEntry class. This class represents an extra entry object in the API
+    Comment class. This class represents an extra entry object in the API
     """
 
     def get(self, id: int):
@@ -27,14 +27,14 @@ class ExtraEntry(BaseResource):
             - Writer
 
         :param int id: The object id to use in the query
-        :return dict: ExtraEntry resource or 404
+        :return dict: Comment resource or 404
         """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
-        extraEntry = ExtraEntryModel.query.get_or_404(id)
-        schema = ExtraEntrySchema()
+        comment = CommentModel.query.get_or_404(id)
+        schema = CommentSchema()
         return {
             'status': 200,
-            'data': schema.dump(extraEntry)
+            'data': schema.dump(comment)
         }
 
     def put(self, id: int):
@@ -48,17 +48,17 @@ class ExtraEntry(BaseResource):
         :return dict: Updated extra entry resource
         """
         checkAccess(get_jwt(), ['Writer'])
-        extraEntry = ExtraEntryModel.query.get_or_404(id)
-        updateSchema = ExtraEntryUpdateSchema()
-        schema = ExtraEntrySchema()
+        comment = CommentModel.query.get_or_404(id)
+        updateSchema = CommentUpdateSchema()
+        schema = CommentSchema()
         try:
-            extraEntry = updateSchema.load(
-                request.json, instance=extraEntry,
+            comment = updateSchema.load(
+                request.json, instance=comment,
                 partial=True, session=db.session)
             db.session.commit()
             return {
                 'status': 200,
-                'data': schema.dump(extraEntry)
+                'data': schema.dump(comment)
             }
         except ValidationError as e:
             return {
@@ -85,9 +85,9 @@ class ExtraEntry(BaseResource):
         :return dict: Empty (204) if successful, else error message
         """
         checkAccess(get_jwt(), ['Writer'])
-        extraEntry = ExtraEntryModel.query.get_or_404(id)
+        comment = CommentModel.query.get_or_404(id)
         try:
-            db.session.delete(extraEntry)
+            db.session.delete(comment)
             db.session.commit()
             return {}, 204
         except ValidationError as e:
@@ -105,11 +105,11 @@ class ExtraEntry(BaseResource):
             }, 400
 
 
-class ExtraEntries(BaseResources):
+class Comments(BaseResources):
     """
-    ExtraEntries class, represents the extraEntries API to fetch all or add an
-    extraEntries item
+    Comments class, represents the comments API to fetch all or add an
+    comments item
     """
-    addSchemaClass = ExtraEntryUpdateSchema
-    dumpSchemaClass = ExtraEntrySchema
-    model = ExtraEntryModel
+    addSchemaClass = CommentUpdateSchema
+    dumpSchemaClass = CommentSchema
+    model = CommentModel

@@ -7,6 +7,7 @@ Maps classes to the API paths
 from api import api
 
 from api.endpoints.catalogues import Catalogue, Catalogues
+from api.endpoints.comments import Comment, Comments
 from api.endpoints.extraEntries import ExtraEntry, ExtraEntries
 from api.endpoints.extraTypes import ExtraType, ExtraTypes
 from api.endpoints.requirements import Requirement, Requirements
@@ -17,6 +18,9 @@ from api.endpoints.wildcard import Wildcard
 
 api.add_resource(Catalogues, '/catalogues')
 api.add_resource(Catalogue, '/catalogues/<int:id>')
+
+api.add_resource(Comments, '/comments')
+api.add_resource(Comment, '/comments/<int:id>')
 
 api.add_resource(ExtraEntries, '/extraEntries')
 api.add_resource(ExtraEntry, '/extraEntries/<int:id>')

@@ -27,7 +27,7 @@ class ExtraType(BaseResource):
             - Writer
 
         :param int id: The object id to use in the query
-        :return dict: ExtraType ressource or 404
+        :return dict: ExtraType resource or 404
         """
         checkAccess(get_jwt(), ['Reader', 'Writer'])
         extraType = ExtraTypeModel.query.get_or_404(id)
@@ -45,7 +45,7 @@ class ExtraType(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Updated extra type ressource
+        :return dict: Updated extra type resource
         """
         checkAccess(get_jwt(), ['Writer'])
         extraType = ExtraTypeModel.query.get_or_404(id)
@@ -81,7 +81,7 @@ class ExtraType(BaseResource):
             - Writer
 
         :param int id: Item id
-        :return dict: Empty (204) if successfull, else error message
+        :return dict: Empty (204) if successful, else error message
         """
         checkAccess(get_jwt(), ['Writer'])
         extraType = ExtraTypeModel.query.get_or_404(id)
