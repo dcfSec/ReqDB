@@ -102,7 +102,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, s
         buttons = <><Button variant="success" onClick={() => saveItem()}>Save</Button>{' '}<Button variant="danger" onClick={() => { setEdit(false); resetTempItem() }}>Cancel</Button></>
     }
 
-    if (inSearchField(search, searchFields, item)) {
+    if (inSearchField(search, searchFields, item) || edit) {
         let body = <></>
         switch (editPageName) {
             case "Catalogues":
