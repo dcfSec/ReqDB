@@ -1,6 +1,8 @@
 import Dropdown from 'react-bootstrap/Dropdown';
 import ExcelJS from "exceljs";
 import YAML from 'yaml';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 import { useSelector } from 'react-redux'
 
@@ -46,7 +48,7 @@ export function ExportTable() {
       saveAs(blob, "ReqDB-Export.xlsx");
     })
       .catch(err => {
-        console.log(err.message);
+        console.error(err.message)
       });
   }
 
@@ -54,7 +56,7 @@ export function ExportTable() {
     const fileType = 'data:text/json;charset=utf-8;';
     const json = JSON.stringify(dataToExport, null, 2);
     const blob = new Blob([json], { type: fileType });
-    saveAs(blob, "ReqDB-Export.json");    
+    saveAs(blob, "ReqDB-Export.json");
   }
 
   function exportYaml() {
@@ -62,14 +64,27 @@ export function ExportTable() {
     const doc = new YAML.Document();
     doc.contents = dataToExport;
     const blob = new Blob([doc.toString()], { type: fileType });
-    saveAs(blob, "ReqDB-Export.yaml");    
+    saveAs(blob, "ReqDB-Export.yaml");
   }
+
+  const renderTooltip = (props) => (
+    dataToExport.length === 0 ?
+    <Tooltip id="export-tooltip" {...props}>
+      First select the rows you want to export 
+    </Tooltip> : <></>
+  );
 
   return (
     <Dropdown>
-      <Dropdown.Toggle variant="success" id="export-dropdown">
-        Export {dataToExport.length}/{Object.values(visible).reduce((a, item) => a + item, 0)} rows
-      </Dropdown.Toggle>
+      <OverlayTrigger
+        placement="top"
+        delay={{ show: 250, hide: 400 }}
+        overlay={renderTooltip}
+      >
+        <Dropdown.Toggle variant="success" id="export-dropdown">
+          Export {dataToExport.length}/{Object.values(visible).reduce((a, item) => a + item, 0)} rows
+        </Dropdown.Toggle>
+      </OverlayTrigger>
       <Dropdown.Menu>
         <Dropdown.Item onClick={exportExcel}>As Excel</Dropdown.Item>
         <Dropdown.Item onClick={exportJson}>As JSON</Dropdown.Item>
@@ -78,7 +93,6 @@ export function ExportTable() {
     </Dropdown>
   );
 }
-
 
 /** 
  * Save blob as file (See https://github.com/eligrey/FileSaver.js/issues/774)
@@ -95,7 +109,7 @@ function saveAs(blob, name) {
 
   a.click()
   URL.revokeObjectURL(a.href)
-  
+
   // setTimeout(() => URL.revokeObjectURL(a.href), 40 /* sec */ * 1000)
   // setTimeout(() => a.click(), 0)
 }
