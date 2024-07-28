@@ -1,5 +1,5 @@
 from api import db
-
+from sqlalchemy.sql import functions
 
 class Base(db.Model):
     __abstract__ = True
@@ -118,6 +118,7 @@ class Comment(Base):
     requirementId = db.Column(
         db.Integer, db.ForeignKey('requirement.id'), nullable=False)
     author = db.Column(db.String(200), nullable=False)
+    created = db.Column(db.TIMESTAMP(timezone=True), server_default=functions.now())
 
     def __repr__(self):
         return f'<Comment "{self.author}: {self.comment[:20]}">'

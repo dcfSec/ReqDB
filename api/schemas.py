@@ -51,6 +51,7 @@ class RequirementSchema(ma.SQLAlchemyAutoSchema):
 
     tags = ma.List(fields.Nested(nested="TagSchema", exclude=["requirement"]))
     extras = ma.List(fields.Nested(nested="ExtraEntrySchema", exclude=["requirement"]))
+    comments = ma.List(fields.Nested(nested="CommentSchema", exclude=["requirement"]))
     parent = fields.Nested(nested="TopicSchema", exclude=["requirements"])
 
 
@@ -223,7 +224,7 @@ class CommentSchema(ma.SQLAlchemyAutoSchema):
     )
 
 
-class CommentUpdateSchema(ma.SQLAlchemyAutoSchema):
+class CommentUpdateSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Comment
         include_relationships = True
@@ -231,4 +232,6 @@ class CommentUpdateSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         unknown = EXCLUDE
 
-    comment = ma.auto_field(validate=validate.Length(min=1))
+    comment = ma.auto_field(validate=validate.Length(min=1), required=False)
+    requirementId = ma.auto_field(required=False)
+    author = ma.auto_field(required=False)

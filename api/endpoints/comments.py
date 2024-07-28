@@ -4,13 +4,13 @@ from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 from api import db
-from api.models import Comment as CommentModel
+from api.models import Requirement, Comment as CommentModel
 from api.schemas import CommentSchema, CommentUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess
 
-from flask_jwt_extended import get_jwt
+from flask_jwt_extended import get_jwt, get_jwt_identity
 
 
 class Comment(BaseResource):
@@ -23,13 +23,13 @@ class Comment(BaseResource):
         Returns a single extra entry object or a 404
 
         Required roles:
-            - Reader
-            - Writer
+            - Requirements.Reader
+            - Requirements.Writer
 
         :param int id: The object id to use in the query
         :return dict: Comment resource or 404
         """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        checkAccess(get_jwt(), ['Comments.Reader'])
         comment = CommentModel.query.get_or_404(id)
         schema = CommentSchema()
         return {
@@ -42,12 +42,12 @@ class Comment(BaseResource):
         Updates an extra entry item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Updated extra entry resource
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Comments.Writer'])
         comment = CommentModel.query.get_or_404(id)
         updateSchema = CommentUpdateSchema()
         schema = CommentSchema()
@@ -79,12 +79,12 @@ class Comment(BaseResource):
         Deletes an extra entry item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Empty (204) if successful, else error message
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Comments.Moderator'])
         comment = CommentModel.query.get_or_404(id)
         try:
             db.session.delete(comment)
@@ -110,6 +110,14 @@ class Comments(BaseResources):
     Comments class, represents the comments API to fetch all or add an
     comments item
     """
+    neededPostAccess = ['Comments.Writer']
+
     addSchemaClass = CommentUpdateSchema
     dumpSchemaClass = CommentSchema
     model = CommentModel
+
+    def checkRequest(self, data):
+        data["author"] = get_jwt()["upn"]
+        if "created" in data:
+            del data["created"]
+        return data
