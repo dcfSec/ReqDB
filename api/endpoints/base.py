@@ -17,6 +17,9 @@ class BaseResource(Resource):
 class BaseResources(Resource):
     method_decorators = [jwt_required()]
 
+    neededPostAccess = ['Requirements.Writer']
+    neededGetAccess = ['Requirements.Reader']
+
     addSchemaClass = None
     dumpSchemaClass = None
     model = None
@@ -25,12 +28,12 @@ class BaseResources(Resource):
         """Get all elements
 
         Required roles:
-            - Reader
-            - Writer
+            - Requirements.Reader
+            - Requirements.Writer
 
         :return list: All elements
         """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        checkAccess(get_jwt(), self.neededGetAccess)
         data = self.model.query.all()
         schema = self.args()(many=True)
         return {
@@ -43,15 +46,16 @@ class BaseResources(Resource):
         Adds a new item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :return dict: The new item
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), self.neededPostAccess)
         try:
             if "id" in request.json:
                 del request.json["id"]
-            object = self.addSchemaClass().load(request.json,
+            data = self.checkRequest(request.json)
+            object = self.addSchemaClass().load(data,
                                                 session=db.session)
             self.check(object)
             db.session.add(object)
@@ -79,3 +83,6 @@ class BaseResources(Resource):
 
     def args(self):
         return self.dumpSchemaClass
+    
+    def checkRequest(self, data):
+        return data

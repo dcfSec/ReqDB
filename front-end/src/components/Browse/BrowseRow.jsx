@@ -5,11 +5,13 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { inSearchField } from "../MiniComponents";
-
+import Stack from 'react-bootstrap/Stack';
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleSelectRow, setVisibleRow } from '../../stateSlices/BrowseSlice';
+import { appRoles } from '../../authConfig';
 
 import { useEffect, useState } from "react";
+import CommentModal from "./CommentModal";
 
 
 /**
@@ -23,18 +25,20 @@ export default function BrowseRow({ index, row }) {
   const dispatch = useDispatch()
   const selected = useSelector(state => state.browse.rows.selected)
   const extraHeaders = useSelector(state => state.browse.extraHeaders)
+  const roles = useSelector(state => state.user.roles)
 
   const tagFilterSelected = useSelector(state => state.browse.tags.filterSelected)
   const topicFilterSelected = useSelector(state => state.browse.topics.filterSelected)
   const search = useSelector(state => state.browse.search)
 
   const [visible, setVisible] = useState(true)
+  const [showComments, setShowComments] = useState(false)
 
   useEffect(() => { dispatch(setVisibleRow({ id: row.id, visible })) }, [visible]);
   useEffect(() => { setVisible(isVisible()) }, [topicFilterSelected, tagFilterSelected, search]);
 
   const topicMaxlength = 40
-  let badgeIdExtrafieldRunner = 0
+  let badgeIdExtraFieldRunner = 0
   
   function isVisible() {
     const isVisible = inSearchField(search, Object.keys(row), row)
@@ -49,12 +53,18 @@ export default function BrowseRow({ index, row }) {
     } else if (extraHeaders[extraType] === 2) {
       return <ReactMarkdown>{item}</ReactMarkdown>
     } else if (extraHeaders[extraType] === 3) {
-      return item ? item.split(";").map((badge) => (<span key={"extraFieldBade" + ++badgeIdExtrafieldRunner}><Badge bg="secondary">{badge}</Badge><br /></span>)) : null
+      return item ? item.split(";").map((badge) => (<span key={"extraFieldBade" + ++badgeIdExtraFieldRunner}><Badge bg="secondary">{badge}</Badge><br /></span>)) : null
     }
   }
 
   let renderRow = <tr key={row.Key}>
-    <td className="vertical-middle"><Button className="eye-button" variant="primary" href={`/Browse/Requirement/${row.id}`}><FontAwesomeIcon icon={solid("link")} /></Button></td>
+    <td className="vertical-middle">
+      <Stack gap={1}>
+        <Button className="eye-button" variant="primary" href={`/Browse/Requirement/${row.id}`}><FontAwesomeIcon icon={solid("link")} /></Button>
+        <Button className="eye-button" variant="primary" onClick={() => { setShowComments(true) }} style={{ position: "relative" }}><FontAwesomeIcon icon={solid("comment")} />
+        { roles.includes(appRoles.Comments.Reader) ? row.Comments.length > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1em'}}>{row.Comments.length}</Badge><span className="visually-hidden">comments</span></> : null : null }</Button>
+      </Stack>
+    </td>
     <td>{row.Tags.map((tag) => (<span key={row.Key + " " + tag}><Badge bg="info">{tag}</Badge><br /></span>))}</td>
     <td>{row.Topics.map((topic) => (
       <span key={row.Key + " " + topic.key}>
@@ -69,6 +79,7 @@ export default function BrowseRow({ index, row }) {
     <td><ReactMarkdown>{row.Description}</ReactMarkdown></td>
     {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}>{renderExtraField(row[extraHeader], extraHeader)}</td>))}
     <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectRow(row.id)) }} checked={selected[row.id]} /></td>
+    { roles.includes(appRoles.Comments.Reader) ? <CommentModal index={index} show={showComments} setShow={setShowComments}></CommentModal> : null }
   </tr>
 
   return (visible ? renderRow : null )
