@@ -10,6 +10,8 @@ import { useParams } from "react-router-dom";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { useDispatch } from 'react-redux'
+import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -17,13 +19,12 @@ import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
  * @returns View to select a catalogue
  */
 export default function Requirement() {
+  const dispatch = useDispatch()
 
   const params = useParams();
   const id = params.requirementId
   let title = "View Requirement"
   document.title = `${title} | ReqDB - Requirement Database`;
-
-  const { setShowSpinner } = useContext(LoadingSpinnerContext)
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
@@ -31,7 +32,7 @@ export default function Requirement() {
 
   const [requirementData, setCatalogueData] = useState(null);
 
-  useEffect(() => { setShowSpinner(!requirementData) }, [requirementData]);
+  useEffect(() => { dispatch(showSpinner(!requirementData)) }, [requirementData]);
 
   useEffect(() => {
     if (!requirementData) {
