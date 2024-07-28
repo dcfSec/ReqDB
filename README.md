@@ -1,11 +1,13 @@
 # ReqDB
 ReqDB is a lightweight web application for managing requirements. ReqDB helps to efficiently manage, edit and view requirement catalogues.
 
-ReqDB is built in Flask and React. Authentication and Authorization is done via oauth and Azure Entra is currenctly supported as IDP.
+ReqDB is built in Flask and React. Authentication and Authorization is done via oauth and Azure Entra is currently supported as IDP.
 
-Each *requirement* is the children of a *topic*. A *topic* can have again a *topic* as a parent. For viewing the *requirements* the *topics* are bundled into *cataloges*. For filtering and *tags* are available. *Tags* can be assigned to any *requirement*. *Requirements* can have *extraFields*
+Each *requirement* is the children of a *topic*. A *topic* can have again a *topic* as a parent. For viewing the *requirements* the *topics* are bundled into *catalogues*. For filtering and *tags* are available. *Tags* can be assigned to any *requirement*. *Requirements* can have *extraFields*
 
-The selected requirements can be exported as (currently) an excel file.
+When a user has the `Comments.Writer` they can add comments to requirements in the browse view.
+
+The selected requirements can be exported as (currently) an excel, json or yaml file.
 
 ## Screenshots
 
