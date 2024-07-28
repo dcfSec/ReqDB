@@ -232,6 +232,6 @@ class CommentUpdateSchema(ma.SQLAlchemySchema):
         include_fk = True
         unknown = EXCLUDE
 
-    comment = ma.auto_field(validate=validate.Length(min=1), required=False)
-    requirementId = ma.auto_field(required=False)
-    author = ma.auto_field(required=False)
+    comment = ma.auto_field(validate=validate.Length(min=1), required=True)
+    requirementId = ma.auto_field(required=True)
+    author = ma.auto_field(required=True)
