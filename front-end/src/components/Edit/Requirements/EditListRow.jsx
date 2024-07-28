@@ -2,7 +2,7 @@ import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import SelectMany from "../SelectManyModal";
 import { useState } from "react";
-import DeleteConfirmationModal from "../DeleteConfirmationModal";
+import DeleteConfirmationModal from "../../DeleteConfirmationModal";
 import SelectParentModal from "../SelectParentModal";
 
 /**

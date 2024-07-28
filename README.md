@@ -64,13 +64,19 @@ The application in Azure Entra needs to be configured to allow users to access i
 
 ### Expose an API
 
-* `api://<APP-ID>/ReqDB.Reader` -> Read access to the API
-* `api://<APP-ID>/ReqDB.Writer` -> Write access to the API
+* `api://<APP-ID>/ReqDB.Requirements.Reader` -> Read access to the requirements APIs
+* `api://<APP-ID>/ReqDB.Requirements.Writer` -> Write access to the requirements APIs
+* `api://<APP-ID>/ReqDB.Comments.Reader` -> Read access to the comments API
+* `api://<APP-ID>/ReqDB.Comments.Writer` -> Write (add) access to the comments API
+* `api://<APP-ID>/ReqDB.Comments.Moderator` -> Write (edit, delete) access to the comments API
 
 ### App Roles
 
-* `Reader` -> Read access to the front-end
-* `Writer` -> Write access to the front-end
+* `Requirements.Reader` -> Read access to the requirements front-end
+* `Requirements.Writer` -> Write access to the requirements front-end
+* `Comments.Reader` -> Read access to the comment front-end
+* `Comments.Writer` -> Write (add) access to the comment front-end
+* `Comments.Moderator` -> Write (edit, delete) access to the comment front-end
 
 ## Deployment
 

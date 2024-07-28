@@ -23,13 +23,13 @@ class Tag(BaseResource):
         Returns a single tag object or a 404
 
         Required roles:
-            - Reader
-            - Writer
+            - Requirements.Reader
+            - Requirements.Writer
 
         :param int id: The object id to use in the query
         :return dict: Tag resource or 404
         """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        checkAccess(get_jwt(), ['Requirements.Reader'])
         tag = TagModel.query.get_or_404(id)
         schema = TagSchema()
         return {
@@ -42,12 +42,12 @@ class Tag(BaseResource):
         Updates a tag item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Updated tag resource
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         tag = TagModel.query.get_or_404(id)
         updateSchema = TagUpdateSchema()
         if request.args.get('minimal') is not None:
@@ -81,12 +81,12 @@ class Tag(BaseResource):
         Deletes a tag item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Empty (204) if successful, else error message
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         tag = TagModel.query.get_or_404(id)
         if len(tag.requirement) > 0 and request.args.get('force') is None:
             return {

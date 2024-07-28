@@ -23,13 +23,13 @@ class ExtraType(BaseResource):
         Returns a single extra type object or a 404
 
         Required roles:
-            - Reader
-            - Writer
+            - Requirements.Reader
+            - Requirements.Writer
 
         :param int id: The object id to use in the query
         :return dict: ExtraType resource or 404
         """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        checkAccess(get_jwt(), ['Requirements.Reader'])
         extraType = ExtraTypeModel.query.get_or_404(id)
         schema = ExtraTypeSchema()
         return {
@@ -42,12 +42,12 @@ class ExtraType(BaseResource):
         Updates an extra type item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Updated extra type resource
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         extraType = ExtraTypeModel.query.get_or_404(id)
         schema = ExtraTypeSchema()
         try:
@@ -78,12 +78,12 @@ class ExtraType(BaseResource):
         Deletes an extra type item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Empty (204) if successful, else error message
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         extraType = ExtraTypeModel.query.get_or_404(id)
         if (len(extraType.children) > 0) \
                 and request.args.get('force') is None:

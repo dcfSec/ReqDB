@@ -47,7 +47,7 @@ export default function Home() {
           <h2>{homeTitle}</h2>
           <ReactMarkdown>{preMOTD}</ReactMarkdown>
           <Button as={Link} to="Browse" variant="outline-secondary">Browse Catalogues</Button>
-          {roles.includes(appRoles.Writer) ?
+          {roles.includes(appRoles.Requirements.Writer) ?
             <Dropdown className="d-inline-block">
               <Dropdown.Toggle as={Button} variant="outline-secondary" id="dropdown-edit" className="mx-auto w-100">
                 Edit

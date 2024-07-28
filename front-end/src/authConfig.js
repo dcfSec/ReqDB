@@ -58,8 +58,13 @@ export const msalConfig = {
  */
 export const protectedResources = {
   ReqDB: {
-    scopes:  [`api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Reader`, `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Writer`]
-    
+    scopes: [
+      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Requirements.Reader`,
+      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Requirements.Writer`,
+      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Reader`,
+      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Writer`,
+    ]
+
   }
 }
 
@@ -74,6 +79,6 @@ export const loginRequest = {
 };
 
 export const appRoles = {
-  Reader: "Reader",
-  Writer: "Writer"
+  Requirements: { Reader: "Requirements.Reader", Writer: "Requirements.Writer" },
+  Comments: { Reader: "Requirements.Reader", Writer: "Requirements.Writer" },
 }

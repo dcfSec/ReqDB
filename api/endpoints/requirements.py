@@ -23,13 +23,13 @@ class Requirement(BaseResource):
         Returns a single requirement object or a 404
 
         Required roles:
-            - Reader
-            - Writer
+            - Requirements.Reader
+            - Requirements.Writer
 
         :param int id: The object id to use in the query
         :return dict: Requirement resource or 404
         """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        checkAccess(get_jwt(), ['Requirements.Reader'])
         requirement = RequirementModel.query.get_or_404(id)
         schema = RequirementSchema()
         return {
@@ -42,12 +42,12 @@ class Requirement(BaseResource):
         Updates a requirement item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Updated requirement resource
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         requirement = RequirementModel.query.get_or_404(id)
         updateSchema = RequirementUpdateSchema()
         schema = RequirementSchema()
@@ -97,12 +97,12 @@ class Requirement(BaseResource):
         Deletes a requirement item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Empty (204) if successful, else error message
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         requirement = RequirementModel.query.get_or_404(id)
         if (len(requirement.extras) > 0) \
                 and request.args.get('force') is None:

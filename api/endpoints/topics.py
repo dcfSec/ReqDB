@@ -24,13 +24,13 @@ class Topic(BaseResource):
         Returns a single topic object or a 404
 
         Required roles:
-            - Reader
-            - Writer
+            - Requirements.Reader
+            - Requirements.Writer
 
         :param int id: The object id to use in the query
         :return dict: Topic resource or 404
         """
-        checkAccess(get_jwt(), ["Reader", "Writer"])
+        checkAccess(get_jwt(), ["Requirements.Reader", "Requirements.Writer"])
         topic = TopicModel.query.get_or_404(id)
         schema = TopicSchema()
         return {"status": 200, "data": schema.dump(topic)}
@@ -40,12 +40,12 @@ class Topic(BaseResource):
         Updates a topic item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Updated topic resource
         """
-        checkAccess(get_jwt(), ["Writer"])
+        checkAccess(get_jwt(), ["Requirements.Writer"])
         topic = TopicModel.query.get_or_404(id)
         updateSchema = TopicUpdateSchema()
         schema = TopicSchema()
@@ -101,12 +101,12 @@ class Topic(BaseResource):
         Deletes a topic item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Empty (204) if successful, else error message
         """
-        checkAccess(get_jwt(), ["Writer"])
+        checkAccess(get_jwt(), ["Requirements.Writer"])
         topic = TopicModel.query.get_or_404(id)
         if (
             (len(topic.requirements) > 0) or len(topic.children) > 0

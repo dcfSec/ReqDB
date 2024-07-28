@@ -4,17 +4,19 @@ import NotificationToast from "../components/NotificationToast";
 import { Col, Container, Image, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { brands } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { useSelector } from 'react-redux'
 
 /**
  * Parent component for all views
  * 
- * @param {object} props Props for this component: darkMode, setDarkMode
  * @returns Main layout
  */
-export default function Layout({ darkMode, setDarkMode }) {
+export default function Layout() {
+  const darkMode = useSelector(state => state.user.darkMode)
+
   return (
     <>
-      <MainNavbar darkMode={darkMode} setDarkMode={setDarkMode}></MainNavbar>
+      <MainNavbar />
       <Outlet />
       <Container fluid className="bg-footer">
         <Row className="justify-content-md-center bg-body-tertiary footer">

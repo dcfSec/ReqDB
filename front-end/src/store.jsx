@@ -4,6 +4,7 @@ import BrowseReducer from './stateSlices/BrowseSlice'
 import catalogueDataReducer from './stateSlices/CatalogueDataSlice'
 import NotificationToastReducer from './stateSlices/NotificationToastSlice'
 import EditReducer from './stateSlices/EditSlice'
+import UserReducer from './stateSlices/UserSlice'
 
 export default configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export default configureStore({
     catalogueData: catalogueDataReducer,
     notificationToast: NotificationToastReducer,
     edit: EditReducer,
+    user: UserReducer,
   }
 })

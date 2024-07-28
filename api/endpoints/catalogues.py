@@ -29,13 +29,13 @@ class Catalogue(BaseResource):
         Including topics, requirements, extra entries and tags.
 
         Required roles:
-            - Reader
-            - Writer
+            - Requirements.Reader
+            - Requirements.Writer
 
         :param int id: The object id to use in the query
         :return dict: Catalogue resource or 404
         """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        checkAccess(get_jwt(), ['Requirements.Reader'])
         catalogue = CatalogueModel.query.get_or_404(id)
         if request.args.get('nested') is not None:
             schema = CatalogueLightNestedSchema()
@@ -53,12 +53,12 @@ class Catalogue(BaseResource):
         Updates a catalogue item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Updated catalogue resource
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         catalogue = CatalogueModel.query.get_or_404(id)
         updateSchema = CatalogueLightNestedSchema()
         schema = CatalogueExtendedSchema()
@@ -91,12 +91,12 @@ class Catalogue(BaseResource):
         Deletes a catalogue item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Empty if successful, else error message
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         catalogue = CatalogueModel.query.get_or_404(id)
         try:
             db.session.delete(catalogue)
