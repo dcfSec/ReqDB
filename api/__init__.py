@@ -9,7 +9,7 @@ from api.config import Config, getAzureJWTKeys
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-
+from flask_migrate import Migrate
 
 class ReqDBApi(Api):
     def handle_error(self, e):
@@ -31,6 +31,7 @@ db.init_app(app)
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 api = ReqDBApi(api_bp)
 
+migrate = Migrate(app, db)
 
 @jwt.decode_key_loader
 def getDecodeKey(header, payload):
