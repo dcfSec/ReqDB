@@ -111,6 +111,7 @@ class Comments(BaseResources):
     comments item
     """
     neededPostAccess = ['Comments.Writer']
+    neededGetAccess = ['Comments.Reader']
 
     addSchemaClass = CommentUpdateSchema
     dumpSchemaClass = CommentSchema
