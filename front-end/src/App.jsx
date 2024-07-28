@@ -2,19 +2,18 @@ import './App.css';
 import { MsalProvider, AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
 import { loginRequest } from './authConfig';
 
-import { useEffect, useState } from 'react';
-
 import { Router, LoginRouter } from './components/Router';
-import { LoadingSpinnerContextProvider, LoadingSpinnerDialogContextProvider } from './components/Providers';
+
+import { useSelector, useDispatch } from 'react-redux'
+import { setAccount, setRoles, setName } from "./stateSlices/UserSlice";
+
 
 const MainContent = () => {
 
-  const [darkMode, setDarkMode] = useState(JSON.parse(localStorage.getItem('darkMode')) || false)
+  const dispatch = useDispatch()
 
-  useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
-    document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
+  const darkMode = useSelector(state => state.user.darkMode)
+  document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", darkMode ? "dark" : "light");
 
   /**
    * useMsal is a hook that returns the PublicClientApplication instance.
@@ -30,25 +29,31 @@ const MainContent = () => {
     });
   }
 
+  if (activeAccount) {
+    dispatch(setAccount(activeAccount));
+    if (activeAccount.idTokenClaims['roles']) {
+      dispatch(setRoles(activeAccount.idTokenClaims['roles']));
+    }
+    if (activeAccount.username) {
+      dispatch(setName(activeAccount.username));
+    }
+  }
   /**
    * Most applications will need to conditionally render certain components based on whether a user is signed in or not.
    * msal-react provides 2 easy ways to do this. AuthenticatedTemplate and UnauthenticatedTemplate components will
    * only render their children if a user is authenticated or unauthenticated, respectively. For more, visit:
    * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
    */
-  return (
-      <LoadingSpinnerContextProvider>
-        <LoadingSpinnerDialogContextProvider>
-          <AuthenticatedTemplate>
-            {activeAccount ? (
-              <Router darkMode={darkMode} setDarkMode={setDarkMode} />
-            ) : null}
-          </AuthenticatedTemplate>
-          <UnauthenticatedTemplate>
-            <LoginRouter darkMode={darkMode} setDarkMode={setDarkMode} />
-          </UnauthenticatedTemplate>
-        </LoadingSpinnerDialogContextProvider>
-      </LoadingSpinnerContextProvider>
+  return (<>
+    <AuthenticatedTemplate>
+      {activeAccount ? (
+        <Router />
+      ) : null}
+    </AuthenticatedTemplate>
+    <UnauthenticatedTemplate>
+      <LoginRouter />
+    </UnauthenticatedTemplate>
+  </>
   );
 };
 

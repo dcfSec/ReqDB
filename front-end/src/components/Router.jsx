@@ -14,37 +14,36 @@ import Requirement from "../pages/Requirement";
 /**
  * Main Router for the web app
  * 
- * @param {object} props Props for the component: darkMode, setDarkMode
  * @returns Returns the router for the app
  */
-export function Router({ darkMode, setDarkMode }) {
+export function Router() {
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Home"><Layout darkMode={darkMode} setDarkMode={setDarkMode} /></RouteGuard>}>
-          <Route index element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Home"><Home /></RouteGuard>} />
-          <Route path="Browse" element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Browse"><BrowseSelectCatalogue /></RouteGuard>} />
-          <Route path="Browse/:catalogueId" element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Browse"><BrowseCatalogue /></RouteGuard>} />
-          <Route path="Browse/Requirement/:requirementId" element={<RouteGuard roles={[appRoles.Reader, appRoles.Writer]} title="Requirement"><Requirement /></RouteGuard>} />
+        <Route path="/" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Home"><Layout /></RouteGuard>}>
+          <Route index element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Home"><Home /></RouteGuard>} />
+          <Route path="Browse" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Browse"><BrowseSelectCatalogue /></RouteGuard>} />
+          <Route path="Browse/:catalogueId" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Browse"><BrowseCatalogue /></RouteGuard>} />
+          <Route path="Browse/Requirement/:requirementId" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Requirement"><Requirement /></RouteGuard>} />
           <Route path="Edit" >
             <Route path="Tags" element={
-              <RouteGuard roles={[appRoles.Writer]} title="Tags"><Tags /></RouteGuard>
+              <RouteGuard requiredRoles={[appRoles.Requirements.Writer]} title="Tags"><Tags /></RouteGuard>
             } />
             <Route path="Catalogues" element={
-              <RouteGuard roles={[appRoles.Writer]} title="Catalogues"><Catalogues /></RouteGuard>
+              <RouteGuard requiredRoles={[appRoles.Requirements.Writer]} title="Catalogues"><Catalogues /></RouteGuard>
             } />
             <Route path="Topics" element={
-              <RouteGuard roles={[appRoles.Writer]} title="Topics"><Topics /></RouteGuard>
+              <RouteGuard requiredRoles={[appRoles.Requirements.Writer]} title="Topics"><Topics /></RouteGuard>
             } />
             <Route path="Requirements" element={
-              <RouteGuard roles={[appRoles.Writer]} title="Requirements"><Requirements /></RouteGuard>
+              <RouteGuard requiredRoles={[appRoles.Requirements.Writer]} title="Requirements"><Requirements /></RouteGuard>
             } />
             <Route path="ExtraTypes" element={
-              <RouteGuard roles={[appRoles.Writer]} title="ExtraTypes"><ExtraTypes /></RouteGuard>
+              <RouteGuard requiredRoles={[appRoles.Requirements.Writer]} title="ExtraTypes"><ExtraTypes /></RouteGuard>
             } />
             <Route path="ExtraEntries" element={
-              <RouteGuard roles={[appRoles.Writer]} title="ExtraEntries"><ExtraEntries /></RouteGuard>
+              <RouteGuard requiredRoles={[appRoles.Requirements.Writer]} title="ExtraEntries"><ExtraEntries /></RouteGuard>
             } />
           </Route>
           <Route path="*" element={<NoPage />} />
@@ -57,15 +56,14 @@ export function Router({ darkMode, setDarkMode }) {
 /**
  * Router for a non-logged in user
  * 
- * @param {object} props Props for the component: darkMode, setDarkMode
  * @returns Returns the login router
  */
-export function LoginRouter({ darkMode, setDarkMode }) {
+export function LoginRouter() {
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout darkMode={darkMode} setDarkMode={setDarkMode} />}>
+        <Route path="/" element={<Layout />}>
           <Route index element={<Login />} />
           <Route path="*" element={<Login />} />
         </Route>

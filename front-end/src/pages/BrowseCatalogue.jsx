@@ -161,6 +161,7 @@ export default function BrowseCatalogue() {
             Key: requirement.key,
             Title: requirement.title,
             Description: requirement.description,
+            Comments: requirement.comments,
           }
           const extraColumns = {}
           requirement.extras.forEach(extra => {

@@ -181,9 +181,24 @@ export const browseSlice = createSlice({
         ...state.topics.filterSelected.filter(n => !action.payload.includes(n))
       ]
     },
+    addComment: (state, action) => {
+      let row = {
+        ...state.rows.items[action.payload.index]
+      }
+      row.Comments.push(action.payload.comment)
+      state.rows.items = [
+        ...state.rows.items,
+        row,
+      ]
+    },
+    removeComment: (state, action) => {
+      let tmp = [...state.rows.items]
+      tmp[action.payload.index].Comments.splice(action.payload.comment, 1);
+      state.rows.items = [...tmp]
+    },
   },
 })
 
-export const { reset, setData, addRow, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected } = browseSlice.actions
+export const { reset, setData, addRow, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, addComment, removeComment } = browseSlice.actions
 
 export default browseSlice.reducer

@@ -23,13 +23,13 @@ class ExtraEntry(BaseResource):
         Returns a single extra entry object or a 404
 
         Required roles:
-            - Reader
-            - Writer
+            - Requirements.Reader
+            - Requirements.Writer
 
         :param int id: The object id to use in the query
         :return dict: ExtraEntry resource or 404
         """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        checkAccess(get_jwt(), ['Requirements.Reader'])
         extraEntry = ExtraEntryModel.query.get_or_404(id)
         schema = ExtraEntrySchema()
         return {
@@ -42,12 +42,12 @@ class ExtraEntry(BaseResource):
         Updates an extra entry item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Updated extra entry resource
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         extraEntry = ExtraEntryModel.query.get_or_404(id)
         updateSchema = ExtraEntryUpdateSchema()
         schema = ExtraEntrySchema()
@@ -79,12 +79,12 @@ class ExtraEntry(BaseResource):
         Deletes an extra entry item
 
         Required roles:
-            - Writer
+            - Requirements.Writer
 
         :param int id: Item id
         :return dict: Empty (204) if successful, else error message
         """
-        checkAccess(get_jwt(), ['Writer'])
+        checkAccess(get_jwt(), ['Requirements.Writer'])
         extraEntry = ExtraEntryModel.query.get_or_404(id)
         try:
             db.session.delete(extraEntry)

@@ -1,45 +1,24 @@
-import { useMsal } from "@azure/msal-react";
-import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { MainBreadcrumb } from "./MiniComponents";
+import { useSelector } from 'react-redux'
 
 /**
- * Route guard to protect protected ressources
+ * Route guard to protect protected resources
  * 
  * @param {object} props Props for this component: roles, title, children
  * @returns Route gard container for the jwt secured routes
  */
-export default function RouteGuard(props) {
-  const { instance } = useMsal();
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const onLoad = async () => {
-    const currentAccount = instance.getActiveAccount();
-
-    if (currentAccount && currentAccount.idTokenClaims['roles']) {
-      let intersection = props.roles.filter((role) => currentAccount.idTokenClaims['roles'].includes(role));
-
-      if (intersection.length > 0) {
-        setIsAuthorized(true);
-      }
-      setIsLoading(false)
-    }
-  };
-
-  useEffect(() => {
-    onLoad();
-  }, [instance]);
+export default function RouteGuard({ requiredRoles, title, children }) {
+  const roles = useSelector(state => state.user.roles)
+  const isAuthorized = (requiredRoles.filter((role) => roles.includes(role)).length > 0);
 
   const breadcrumbs = [
-    { href: "", title: props.title, active: true }
+    { href: "", title: title, active: true }
   ]
 
   return (
     <>
-      {isAuthorized ? (
-        props.children
-      ) : (!isLoading ?
+      {isAuthorized ? (children) :
         <Container fluid className="bg-body">
           <Row>
             <Col><MainBreadcrumb items={breadcrumbs}></MainBreadcrumb></Col>
@@ -51,12 +30,12 @@ export default function RouteGuard(props) {
             <Col>
               <p>You are missing the role(s):</p>
               <ul>
-                {props.roles.map((role) => (<li key={role}><code>{role}</code></li>))}
+                {requiredRoles.map((role) => (<li key={role}><code>{role}</code></li>))}
               </ul>
             </Col>
           </Row>
-        </Container> : null
-      )}
+        </Container>
+      }
     </>
   );
 };

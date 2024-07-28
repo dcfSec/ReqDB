@@ -15,12 +15,12 @@ class Coffee(BaseResource):
         Returns 418 when coffee is requested
 
         Required roles:
-            - Reader
-            - Writer
+            - Requirements.Reader
+            - Requirements.Writer
 
         :return dict: I'm a teapot
         """
-        checkAccess(get_jwt(), ['Reader', 'Writer'])
+        checkAccess(get_jwt(), ['Requirements.Reader'])
 
         return {
             'status': 418,

@@ -10,38 +10,25 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { Link } from 'react-router-dom';
 
 import { useMsal } from "@azure/msal-react";
-import { useEffect, useState } from 'react';
 import { appRoles } from '../authConfig';
+
+import { useSelector, useDispatch } from 'react-redux'
+import { toggleDarkMode } from "../stateSlices/UserSlice";
 
 /**
  * Component for the main navigation bar
  * 
- * @param {object} props Props for the component: darkMode, setDarkMode
  * @returns Returns the main navigation bar container
  */
-export default function MainNavbar({ darkMode, setDarkMode }) {
+export default function MainNavbar() {
 
-  function setDarkModeSwitch() {
-    document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", !darkMode ? "dark" : "light");
-    setDarkMode(!darkMode);
-    localStorage.setItem('darkMode', JSON.stringify(!darkMode));
-  }
+  const dispatch = useDispatch()
+  const darkMode = useSelector(state => state.user.darkMode)
+  const roles = useSelector(state => state.user.roles)
+  const name = useSelector(state => state.user.name)
+  const account = useSelector(state => state.user.account)
 
   const { instance } = useMsal();
-  const account = instance.getActiveAccount();
-  const [roles, setRoles] = useState([]);
-
-  const onLoad = async () => {
-    const currentAccount = instance.getActiveAccount();
-
-    if (currentAccount && currentAccount.idTokenClaims['roles']) {
-      setRoles(currentAccount.idTokenClaims['roles']);
-    }
-  };
-
-  useEffect(() => {
-    onLoad();
-  }, [instance]);
 
   return (
     <Navbar className="bg-body-tertiary">
@@ -54,8 +41,8 @@ export default function MainNavbar({ darkMode, setDarkMode }) {
           navbarScroll
         >
           <Nav.Link as={Link} to="/">Home</Nav.Link>
-          { roles.includes(appRoles.Reader) || roles.includes(appRoles.Writer) ? <Nav.Link as={Link} to="/browse">Browse</Nav.Link> : null }
-          { roles.includes(appRoles.Writer) ? 
+          { roles.includes(appRoles.Requirements.Reader) ? <Nav.Link as={Link} to="/browse">Browse</Nav.Link> : null }
+          { roles.includes(appRoles.Requirements.Writer) ? 
           <NavDropdown title="Edit" id="navbarScrollingDropdown">
             <NavDropdown.Item as={Link} to="/Edit/Tags">Tags</NavDropdown.Item>
             <NavDropdown.Item as={Link} to="/Edit/Catalogues">Catalogues</NavDropdown.Item>
@@ -68,9 +55,9 @@ export default function MainNavbar({ darkMode, setDarkMode }) {
         </Nav>
       </Navbar.Collapse>
       <Navbar.Collapse className="justify-content-end">
-      <Navbar.Text className="justify-content-end"><Button variant="outline-secondary" onClick={setDarkModeSwitch}><FontAwesomeIcon icon={darkMode ? solid("sun") : solid("moon")} /></Button></Navbar.Text>
+      <Navbar.Text className="justify-content-end"><Button variant="outline-secondary" onClick={() => {dispatch(toggleDarkMode())}}><FontAwesomeIcon icon={darkMode ? solid("sun") : solid("moon")} /></Button></Navbar.Text>
         <Navbar.Text className='navbar-signed-in-text'>Signed in as:</Navbar.Text>
-          <NavDropdown title={ account ? account.username : "Nobody"} id="accountDropdown">
+          <NavDropdown title={name} id="accountDropdown">
           { account ? <NavDropdown.Item onClick={() => {instance.logoutRedirect()}}>Logout</NavDropdown.Item> : <NavDropdown.Item onClick={() => {instance.loginRedirect()}}>Login</NavDropdown.Item> }
           </NavDropdown>
         </Navbar.Collapse>
