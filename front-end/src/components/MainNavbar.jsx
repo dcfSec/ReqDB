@@ -14,6 +14,8 @@ import { appRoles } from '../authConfig';
 
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleDarkMode } from "../stateSlices/UserSlice";
+import { useState } from 'react';
+import RolesModal from './RolesModal';
 
 /**
  * Component for the main navigation bar
@@ -27,6 +29,8 @@ export default function MainNavbar() {
   const roles = useSelector(state => state.user.roles)
   const name = useSelector(state => state.user.name)
   const account = useSelector(state => state.user.account)
+
+  const [showRoles, setShowRoles] = useState(false)
 
   const { instance } = useMsal();
 
@@ -58,10 +62,11 @@ export default function MainNavbar() {
       <Navbar.Text className="justify-content-end"><Button variant="outline-secondary" onClick={() => {dispatch(toggleDarkMode())}}><FontAwesomeIcon icon={darkMode ? solid("sun") : solid("moon")} /></Button></Navbar.Text>
         <Navbar.Text className='navbar-signed-in-text'>Signed in as:</Navbar.Text>
           <NavDropdown title={name} id="accountDropdown">
-          { account ? <NavDropdown.Item onClick={() => {instance.logoutRedirect()}}>Logout</NavDropdown.Item> : <NavDropdown.Item onClick={() => {instance.loginRedirect()}}>Login</NavDropdown.Item> }
+          { account ? <><NavDropdown.Item onClick={() => {setShowRoles(true)}}>My Roles</NavDropdown.Item><NavDropdown.Item onClick={() => {instance.logoutRedirect()}}>Logout</NavDropdown.Item></> : <NavDropdown.Item onClick={() => {instance.loginRedirect()}}>Login</NavDropdown.Item> }
           </NavDropdown>
         </Navbar.Collapse>
       </Container>
+      <RolesModal show={showRoles} setShow={setShowRoles}/>
     </Navbar>
   );
 }
