@@ -182,13 +182,12 @@ export const browseSlice = createSlice({
       ]
     },
     addComment: (state, action) => {
-      let row = {
-        ...state.rows.items[action.payload.index]
-      }
-      row.Comments.push(action.payload.comment)
+      const tmp = [
+        ...state.rows.items
+      ]
+      tmp[action.payload.index].Comments.push(action.payload.comment)
       state.rows.items = [
-        ...state.rows.items,
-        row,
+        ...tmp
       ]
     },
     removeComment: (state, action) => {
