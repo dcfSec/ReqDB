@@ -118,7 +118,7 @@ class Comment(Base):
     requirementId = db.Column(
         db.Integer, db.ForeignKey('requirement.id'), nullable=False)
     author = db.Column(db.String(200), nullable=False)
-    created = db.Column(db.TIMESTAMP(timezone=True), server_default=functions.now())
+    created = db.Column(db.DateTime(timezone=True), server_default=functions.now())
 
     def __repr__(self):
         return f'<Comment "{self.author}: {self.comment[:20]}">'
