@@ -63,6 +63,7 @@ export const protectedResources = {
       `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Requirements.Writer`,
       `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Reader`,
       `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Writer`,
+      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Moderator`,
     ]
 
   }
@@ -80,5 +81,5 @@ export const loginRequest = {
 
 export const appRoles = {
   Requirements: { Reader: "Requirements.Reader", Writer: "Requirements.Writer" },
-  Comments: { Reader: "Requirements.Reader", Writer: "Requirements.Writer" },
+  Comments: { Reader: "Comments.Reader", Writer: "Comments.Writer", Moderator: "Comments.Moderator" },
 }
