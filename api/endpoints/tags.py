@@ -5,7 +5,8 @@ from sqlalchemy.exc import IntegrityError
 
 from api import db
 from api.models import Tag as TagModel
-from api.schemas import TagSchema, TagUpdateSchema, TagMinimalSchema
+from api.schemas import TagSchema, TagMinimalSchema
+from api.updateSchemas import TagUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess
@@ -123,7 +124,7 @@ class Tags(BaseResources):
     dumpSchemaClass = TagSchema
     model = TagModel
 
-    def args(self):
+    def getDynamicSchema(self):
         if request.args.get('minimal') is not None:
             return TagMinimalSchema
         else:

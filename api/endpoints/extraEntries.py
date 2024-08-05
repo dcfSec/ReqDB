@@ -5,7 +5,8 @@ from sqlalchemy.exc import IntegrityError
 
 from api import db
 from api.models import ExtraEntry as ExtraEntryModel
-from api.schemas import ExtraEntrySchema, ExtraEntryUpdateSchema
+from api.schemas import ExtraEntrySchema
+from api.updateSchemas import ExtraEntryUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess

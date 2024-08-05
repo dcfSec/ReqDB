@@ -18,15 +18,6 @@ class ExtraEntrySchema(ma.SQLAlchemyAutoSchema):
     extraType = fields.Nested(nested="ExtraTypeSchema", exclude=["children"])
 
 
-class ExtraEntryUpdateSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = ExtraEntry
-        include_relationships = True
-        load_instance = True
-        include_fk = True
-        unknown = EXCLUDE
-
-
 class ExtraTypeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = ExtraType
@@ -51,11 +42,10 @@ class RequirementSchema(ma.SQLAlchemyAutoSchema):
 
     tags = ma.List(fields.Nested(nested="TagSchema", exclude=["requirement"]))
     extras = ma.List(fields.Nested(nested="ExtraEntrySchema", exclude=["requirement"]))
-    comments = ma.List(fields.Nested(nested="CommentSchema", exclude=["requirement"]))
     parent = fields.Nested(nested="TopicSchema", exclude=["requirements"])
 
 
-class RequirementUpdateSchema(ma.SQLAlchemySchema):
+class RequirementCommentsSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Requirement
         include_relationships = True
@@ -63,12 +53,10 @@ class RequirementUpdateSchema(ma.SQLAlchemySchema):
         include_fk = True
         unknown = EXCLUDE
 
-    description = ma.auto_field()
-    key = ma.auto_field()
-    parentId = ma.auto_field()
-    title = ma.auto_field()
-    visible = ma.auto_field()
-    tags = ma.List(fields.Nested(nested="TagSchema", only=["id"], unknown=EXCLUDE))
+    tags = ma.List(fields.Nested(nested="TagSchema", exclude=["requirement"]))
+    extras = ma.List(fields.Nested(nested="ExtraEntrySchema", exclude=["requirement"]))
+    comments = ma.List(fields.Nested(nested="CommentSchema", exclude=["requirement"]))
+    parent = fields.Nested(nested="TopicSchema", exclude=["requirements"])
 
 
 class TagSchema(ma.SQLAlchemyAutoSchema):
@@ -93,18 +81,6 @@ class TagMinimalSchema(ma.SQLAlchemyAutoSchema):
     requirement = fields.Nested(nested="RequirementSchema", only=["id"], many=True)
 
 
-class TagUpdateSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Tag
-        include_relationships = True
-        include_fk = True
-        load_instance = True
-        unknown = EXCLUDE
-
-    name = ma.auto_field(validate=validate.Length(min=1))
-    requirement = fields.Nested(nested="RequirementSchema", only=["id"], many=True)
-
-
 class TopicSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Topic
@@ -119,24 +95,28 @@ class TopicSchema(ma.SQLAlchemyAutoSchema):
     parentId = ma.auto_field(required=False)
     children = ma.List(fields.Nested(nested="TopicSchema"))
     requirements = fields.Nested(
-        nested="RequirementSchema", exclude=["parent"], many=True
+        nested="RequirementSchema", exclude=["parent", "comments"], many=True
     )
     parent = fields.Nested(nested="TopicSchema", exclude=["requirements", "children"])
 
 
-class TopicUpdateSchema(ma.SQLAlchemySchema):
+class TopicCommentsSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Topic
         include_relationships = True
         load_instance = True
         include_fk = True
-        unknown = EXCLUDE
 
+    id = ma.auto_field()
     title = ma.auto_field(required=True)
     key = ma.auto_field(required=True)
     description = ma.auto_field(required=True)
     parentId = ma.auto_field(required=False)
-
+    children = ma.List(fields.Nested(nested="TopicCommentsSchema"))
+    requirements = fields.Nested(
+        nested="RequirementCommentsSchema", exclude=["parent"], many=True
+    )
+    parent = fields.Nested(nested="TopicCommentsSchema", exclude=["requirements", "children"])
 
 class TopicOnlyIDAndTitleSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -181,22 +161,6 @@ class CatalogueLightNestedSchema(ma.SQLAlchemyAutoSchema):
     topics = fields.Nested(nested="TopicSchema", only=["id", "title"], many=True, unknown=EXCLUDE)
 
 
-class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
-    """
-    Catalogue schema with topics (id, title) as nested elements
-    """
-
-    class Meta:
-        model = Catalogue
-        include_relationships = True
-        load_instance = True
-        include_fk = True
-        unknown = EXCLUDE
-
-    title = ma.auto_field(validate=validate.Length(min=1))
-    topics = fields.Nested(nested="TopicSchema", only=["id"], many=True, unknown=EXCLUDE)
-
-
 class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
     """
     Catalogue schema with all nested elements
@@ -212,6 +176,20 @@ class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
     topics = fields.Nested(nested="TopicSchema", many=True)
 
 
+class CatalogueExtendedCommentsSchema(ma.SQLAlchemyAutoSchema):
+    """
+    Catalogue schema with all nested elements
+    """
+
+    class Meta:
+        model = Catalogue
+        include_relationships = True
+        load_instance = True
+        include_fk = True
+
+    title = ma.auto_field(validate=validate.Length(min=1))
+    topics = fields.Nested(nested="TopicCommentsSchema", many=True)
+
 class CommentSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Comment
@@ -220,18 +198,5 @@ class CommentSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
 
     requirement = fields.Nested(
-        nested="RequirementSchema", exclude=["parent", "comments"]
+        nested="RequirementSchema", only=["id", "title"]
     )
-
-
-class CommentUpdateSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = Comment
-        include_relationships = True
-        load_instance = True
-        include_fk = True
-        unknown = EXCLUDE
-
-    comment = ma.auto_field(validate=validate.Length(min=1), required=True)
-    requirementId = ma.auto_field(required=True)
-    author = ma.auto_field(required=True)

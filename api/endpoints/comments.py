@@ -5,7 +5,8 @@ from sqlalchemy.exc import IntegrityError
 
 from api import db
 from api.models import Requirement, Comment as CommentModel
-from api.schemas import CommentSchema, CommentUpdateSchema
+from api.schemas import CommentSchema
+from api.updateSchemas import CommentUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess
