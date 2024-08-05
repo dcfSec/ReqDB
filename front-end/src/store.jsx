@@ -6,7 +6,7 @@ import NotificationToastReducer from './stateSlices/NotificationToastSlice'
 import EditReducer from './stateSlices/EditSlice'
 import UserReducer from './stateSlices/UserSlice'
 
-export default configureStore({
+const store = configureStore({
   reducer: {
     mainLogoSpinner: mainLogoSpinnerReducer,
     browse: BrowseReducer,
@@ -16,3 +16,5 @@ export default configureStore({
     user: UserReducer,
   }
 })
+
+export default store;
