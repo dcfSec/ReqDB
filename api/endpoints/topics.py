@@ -5,7 +5,8 @@ from sqlalchemy.exc import IntegrityError
 
 from api import db
 from api.models import Topic as TopicModel
-from api.schemas import TopicSchema, TopicUpdateSchema, TopicOnlyIDAndTitleSchema
+from api.schemas import TopicSchema, TopicOnlyIDAndTitleSchema, TopicCommentsSchema
+from api.updateSchemas import TopicUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
 
 
@@ -143,8 +144,18 @@ class Topics(BaseResources):
     dumpSchemaClass = TopicSchema
     model = TopicModel
 
-    def args(self):
+    def getDynamicSchema(self):
         if request.args.get("minimal") is not None:
             return TopicOnlyIDAndTitleSchema
         else:
-            return TopicSchema
+            if 'Comments.Reader' in get_jwt()['roles']:
+                return TopicCommentsSchema
+            else:
+                return TopicSchema
+
+
+    def getDynamicSchema(self):
+        if 'Comments.Reader' in get_jwt()['roles']:
+            return RequirementCommentsSchema()
+        else:
+            return RequirementSchema()

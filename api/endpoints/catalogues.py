@@ -7,7 +7,8 @@ from api import db
 from api.helper import checkAccess
 from api.models import Catalogue as CatalogueModel
 from api.schemas import CatalogueExtendedSchema, CatalogueSchema, \
-    CatalogueLightNestedSchema, CatalogueUpdateSchema
+    CatalogueLightNestedSchema, CatalogueExtendedCommentsSchema
+from api.updateSchemas import CatalogueUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
 
 from flask_jwt_extended import get_jwt
@@ -40,7 +41,10 @@ class Catalogue(BaseResource):
         if request.args.get('nested') is not None:
             schema = CatalogueLightNestedSchema()
         elif request.args.get('extended') is not None:
-            schema = CatalogueExtendedSchema()
+            if 'Comments.Reader' in get_jwt()['roles']:
+                schema = CatalogueExtendedCommentsSchema()
+            else:
+                schema = CatalogueExtendedSchema()
         else:
             schema = CatalogueSchema()
         return {
@@ -126,10 +130,13 @@ class Catalogues(BaseResources):
     dumpSchemaClass = CatalogueLightNestedSchema
     model = CatalogueModel
 
-    def args(self):
+    def getDynamicSchema(self):
         if request.args.get('nested') is not None:
             return CatalogueLightNestedSchema
         elif request.args.get('extend') is not None:
-            return CatalogueExtendedSchema
+            if 'Comments.Reader' in get_jwt()['roles']:
+                return CatalogueExtendedCommentsSchema
+            else:
+                return CatalogueExtendedSchema
         else:
             return CatalogueSchema

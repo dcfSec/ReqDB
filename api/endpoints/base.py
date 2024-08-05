@@ -35,7 +35,7 @@ class BaseResources(Resource):
         """
         checkAccess(get_jwt(), self.neededGetAccess)
         data = self.model.query.all()
-        schema = self.args()(many=True)
+        schema = self.getDynamicSchema()(many=True)
         return {
             'status': 200,
             'data': schema.dump(data)
@@ -81,7 +81,7 @@ class BaseResources(Resource):
     def check(self, object):
         pass
 
-    def args(self):
+    def getDynamicSchema(self):
         return self.dumpSchemaClass
     
     def checkRequest(self, data):

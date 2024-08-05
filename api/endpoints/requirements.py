@@ -5,7 +5,8 @@ from sqlalchemy.exc import IntegrityError
 
 from api import db
 from api.models import Topic, Requirement as RequirementModel
-from api.schemas import RequirementSchema, RequirementUpdateSchema
+from api.schemas import RequirementSchema, RequirementCommentsSchema
+from api.updateSchemas import RequirementUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
 
 from api.helper import checkAccess
@@ -31,7 +32,10 @@ class Requirement(BaseResource):
         """
         checkAccess(get_jwt(), ['Requirements.Reader'])
         requirement = RequirementModel.query.get_or_404(id)
-        schema = RequirementSchema()
+        if 'Comments.Reader' in get_jwt()['roles']:
+            schema = RequirementCommentsSchema()
+        else:
+            schema = RequirementSchema()
         return {
             'status': 200,
             'data': schema.dump(requirement)
@@ -150,3 +154,9 @@ class Requirements(BaseResources):
                     'message': [
                         "Parent Topic can't have children and requirements"
                     ]}, 400
+
+    def getDynamicSchema(self):
+        if 'Comments.Reader' in get_jwt()['roles']:
+            return RequirementCommentsSchema
+        else:
+            return RequirementSchema
