@@ -1,8 +1,10 @@
 import { Alert, Badge, Card, Col, Container, ProgressBar, Row } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
-import { useContext, useEffect, useState } from "react";
-import { LoadingSpinnerContext } from "../components/Providers";
+import CommentEntry from "../components/Comments/CommentEntry";
+import AddComment from "../components/Comments/AddComment";
+import {  useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
+import { appRoles } from '../authConfig';
 
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
@@ -10,7 +12,7 @@ import { useParams } from "react-router-dom";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 
 /**
@@ -20,6 +22,8 @@ import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
  */
 export default function Requirement() {
   const dispatch = useDispatch()
+
+  const roles = useSelector(state => state.user.roles)
 
   const params = useParams();
   const id = params.requirementId
@@ -86,6 +90,17 @@ export default function Requirement() {
               <Card.Header as="h3">Extras</Card.Header>
               <Card.Body>
                 {requirement.extras.map(extra => (<span key={extra.id} ><Card.Title>{extra.extraType.title}</Card.Title>{printExtraWithType(extra.extraType.extraType, extra.content)}</span>))}
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Card>
+              <Card.Header as="h3">Comments</Card.Header>
+              <Card.Body>
+                { roles.includes(appRoles.Comments.Reader) ? requirement["comments"].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry rowIndex={null} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} />) : null}
+                { roles.includes(appRoles.Comments.Writer) ? <><Card.Title>Add Comment</Card.Title><AddComment index={null} requirementId={requirement["id"]} /></> : null }
               </Card.Body>
             </Card>
           </Col>
