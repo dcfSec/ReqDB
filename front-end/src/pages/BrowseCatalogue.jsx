@@ -1,7 +1,7 @@
 import { Alert, Button, Col, Container, Dropdown, ProgressBar, Row, Stack } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 import { useEffect, useState } from "react";
-import { ErrorMessage } from '../components/MiniComponents'
+import { ErrorMessage, buildRows } from '../components/MiniComponents'
 import RequirementsTable from "../components/Browse/RequirementsTable";
 import Search from "../components/Browse/Search";
 import { CheckboxDropdown } from "../components/CheckboxDropdown";
@@ -137,53 +137,6 @@ export default function BrowseCatalogue() {
         </Row>
       </Container>
     )
-  }
-
-  function buildRows(extraHeaders, tagFilterItems, topics, item) {
-
-    if ('requirements' in item) {
-      item.requirements.forEach(requirement => {
-        const tags = []
-        if (requirement.visible === true) {
-          if (requirement.tags.length == 0 && !tagFilterItems.includes("No Tags")) {
-            tagFilterItems.push("No Tags")
-          }
-          requirement.tags.forEach(tag => {
-            tags.push(tag.name)
-            if (!tagFilterItems.includes(tag.name)) {
-              tagFilterItems.push(tag.name)
-            }
-          });
-          const base = {
-            id: requirement.id,
-            Tags: tags,
-            Topics: [...topics],
-            Key: requirement.key,
-            Title: requirement.title,
-            Description: requirement.description,
-            Comments: requirement.comments,
-          }
-          const extraColumns = {}
-          requirement.extras.forEach(extra => {
-            extraColumns[extra.extraType.title] = extra.content
-            if (!Object.keys(extraHeaders).includes(extra.extraType.title)) {
-              const header = {}
-              header[extra.extraType.title] = extra.extraType.extraType
-              dispatch(addExtraHeader(header))
-            }
-          });
-          dispatch(addRow({ ...base, ...extraColumns }))
-        }
-      });
-    }
-    if ('children' in item) {
-      item.children.forEach(topic => {
-        if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
-          dispatch(addTopicFilterItems(`${topic.key} ${topic.title}`))
-        }
-        buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic)
-      });
-    }
   }
 
 }

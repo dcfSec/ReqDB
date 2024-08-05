@@ -6,6 +6,8 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { useContext } from 'react';
 import { LoadingSpinnerDialogContext } from './Providers';
 import { useSelector, useDispatch } from 'react-redux'
+import { addRow, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
+import store from '../store'
 
 /**
  * Component for the main logo which is replaced by a spinner if something is loading
@@ -78,7 +80,7 @@ export function inSearchField(search, fields, item) {
 /**
  * Returns an array of filtered items
  * 
- * @param {string} search Searchstring for filter
+ * @param {string} search Search string for filter
  * @param {Array} item Items to filter
  * @returns Array of filtered items
  */
@@ -90,7 +92,7 @@ export function inFilterField(search = "", item) {
  * Parses the error message from the API and returns it as readable HTML
  * 
  * @param {string|array|object} message Message from the API
- * @returns Error message HTML formated
+ * @returns Error message HTML formatted
  */
 export function ErrorMessage(message) {
   let errorLines = null
@@ -114,4 +116,62 @@ export function ErrorMessage(message) {
     errorLines = <p>{JSON.stringify(message)}</p>
   }
   return errorLines
+}
+
+/**
+ * Builds an array with rows containing the requirements for the Browse views.
+ * The array is stored in the Browse state
+ * 
+ * @param {Object} extraHeaders Object containing the extra headers
+ * @param {Array} tagFilterItems Array containing a list with the tags of the requirements
+ * @param {Object} topics Object containing the topics of the requirements
+ * @param {Object} item A requirement
+ */
+export function buildRows(extraHeaders, tagFilterItems, topics, item) {
+  const dispatch = store.dispatch
+  const topicFilterItems = store.getState().browse.topics.filterItems
+
+  if ('requirements' in item) {
+    item.requirements.forEach(requirement => {
+      const tags = []
+      if (requirement.visible === true) {
+        if (requirement.tags.length == 0 && !tagFilterItems.includes("No Tags")) {
+          tagFilterItems.push("No Tags")
+        }
+        requirement.tags.forEach(tag => {
+          tags.push(tag.name)
+          if (!tagFilterItems.includes(tag.name)) {
+            tagFilterItems.push(tag.name)
+          }
+        });
+        const base = {
+          id: requirement.id,
+          Tags: tags,
+          Topics: [...topics],
+          Key: requirement.key,
+          Title: requirement.title,
+          Description: requirement.description,
+          Comments: ('comments' in requirement) ? requirement.comments : [],
+        }
+        const extraColumns = {}
+        requirement.extras.forEach(extra => {
+          extraColumns[extra.extraType.title] = extra.content
+          if (!Object.keys(extraHeaders).includes(extra.extraType.title)) {
+            const header = {}
+            header[extra.extraType.title] = extra.extraType.extraType
+            dispatch(addExtraHeader(header))
+          }
+        });
+        dispatch(addRow({ ...base, ...extraColumns }))
+      }
+    });
+  }
+  if ('children' in item) {
+    item.children.forEach(topic => {
+      if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
+        dispatch(addTopicFilterItems(`${topic.key} ${topic.title}`))
+      }
+      buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic)
+    });
+  }
 }
