@@ -3,8 +3,8 @@ import Modal from 'react-bootstrap/Modal';
 import { Col, Container, Row } from 'react-bootstrap';
 
 import { useSelector } from 'react-redux'
-import CommentEntry from "../Comment/CommentEntry"
-import AddComment from "../Comment/AddComment"
+import CommentEntry from "../Comments/CommentEntry"
+import AddComment from "../Comments/AddComment"
 import { appRoles } from '../../authConfig';
 
 import Stack from 'react-bootstrap/Stack';
