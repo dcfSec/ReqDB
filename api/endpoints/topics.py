@@ -152,10 +152,3 @@ class Topics(BaseResources):
                 return TopicCommentsSchema
             else:
                 return TopicSchema
-
-
-    def getDynamicSchema(self):
-        if 'Comments.Reader' in get_jwt()['roles']:
-            return RequirementCommentsSchema()
-        else:
-            return RequirementSchema()
