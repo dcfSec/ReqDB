@@ -10,6 +10,7 @@ import RouteGuard from "./RouteGuard";
 import { appRoles } from "../authConfig";
 import Login from "../pages/Login";
 import Requirement from "../pages/Requirement";
+import Comments from "../pages/Comments";
 
 /**
  * Main Router for the web app
@@ -26,6 +27,7 @@ export function Router() {
           <Route path="Browse" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Browse"><BrowseSelectCatalogue /></RouteGuard>} />
           <Route path="Browse/:catalogueId" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Browse"><BrowseCatalogue /></RouteGuard>} />
           <Route path="Browse/Requirement/:requirementId" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Requirement"><Requirement /></RouteGuard>} />
+          <Route path="Comments" element={<RouteGuard requiredRoles={[appRoles.Comments.Reader]} title="Comments"><Comments /></RouteGuard>} />
           <Route path="Edit" >
             <Route path="Tags" element={
               <RouteGuard requiredRoles={[appRoles.Requirements.Writer]} title="Tags"><Tags /></RouteGuard>

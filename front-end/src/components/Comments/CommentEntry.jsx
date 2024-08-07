@@ -17,6 +17,7 @@ import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { removeComment } from '../../stateSlices/BrowseSlice';
+import { removeCommentFromRequirement } from '../../stateSlices/RequirementSlice';
 
 
 /**
@@ -25,7 +26,7 @@ import { removeComment } from '../../stateSlices/BrowseSlice';
  * @param {object} props Props for this component: author, comment, timestamp
  * @returns A comment entry
  */
-export default function CommentEntry({ rowIndex, commentIndex, comment }) {
+export default function CommentEntry({ view, rowIndex, commentIndex, comment }) {
   const dispatch = useDispatch()
 
   const roles = useSelector(state => state.user.roles)
@@ -41,13 +42,18 @@ export default function CommentEntry({ rowIndex, commentIndex, comment }) {
     dispatch(toast({ header: "UnhandledError", body: error.message }))
     dispatch(showSpinner(false))
   }
-  function deleteComment() {
 
+  function deleteComment() {
+    dispatch(showSpinner(true))
     execute("DELETE", `comments/${comment.id}`, null, false).then(
       (response) => {
         if (response.status === 204) {
           dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
-          dispatch(removeComment({ index: rowIndex, comment: commentIndex }))
+          if (view == "browse") {
+            dispatch(removeComment({ index: rowIndex, comment: commentIndex }))
+          } else if (view == "requirement") {
+            dispatch(removeCommentFromRequirement({ comment: commentIndex }))
+          }
         } else {
           response.json().then((r) => {
             dispatch(toast({ header: r.error, body: r.message }))

@@ -3,9 +3,7 @@ import { Form } from 'react-bootstrap';
 import { Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
-import { useContext } from 'react';
-import { LoadingSpinnerDialogContext } from './Providers';
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { addRow, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 import store from '../store'
 
@@ -17,8 +15,7 @@ import store from '../store'
  */
 export function MainLogoSpinner() {
   const visible = useSelector(state => state.mainLogoSpinner.visible)
-  const { showDialogSpinner } = useContext(LoadingSpinnerDialogContext)
-  if (visible || showDialogSpinner) {
+  if (visible) {
     return <><Spinner animation="grow" size="sm" />{'  '}</>
   } else {
     return <><FontAwesomeIcon icon={solid("database")} />{'  '}</>
@@ -68,9 +65,13 @@ export function inSearchField(search, fields, item) {
   if (search === "") {
     return true
   }
+  const resolvePath = (object, path, defaultValue) => path
+    .split('.')
+    .reduce((o, p) => o ? o[p] : defaultValue, object)
+
   let r = false
   fields.forEach(field => {
-    if (String(item[field]).toLocaleLowerCase().includes(search.toLocaleLowerCase())) {
+    if (String(resolvePath(item, field)).toLocaleLowerCase().includes(search.toLocaleLowerCase())) {
       r = true
     }
   });

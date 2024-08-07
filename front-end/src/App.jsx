@@ -7,6 +7,8 @@ import { Router, LoginRouter } from './components/Router';
 import { useSelector, useDispatch } from 'react-redux'
 import { setAccount, setRoles, setName } from "./stateSlices/UserSlice";
 
+import { useEffect } from "react";
+
 
 const MainContent = () => {
 
@@ -29,15 +31,20 @@ const MainContent = () => {
     });
   }
 
-  if (activeAccount) {
-    dispatch(setAccount(activeAccount));
-    if (activeAccount.idTokenClaims['roles']) {
-      dispatch(setRoles(activeAccount.idTokenClaims['roles']));
+  useEffect(() => {
+    if (activeAccount) {
+      dispatch(setAccount(activeAccount));
+      if (activeAccount.idTokenClaims['roles']) {
+        dispatch(setRoles(activeAccount.idTokenClaims['roles']));
+      }
+      if (activeAccount.username) {
+        dispatch(setName(activeAccount.username));
+      }
     }
-    if (activeAccount.username) {
-      dispatch(setName(activeAccount.username));
-    }
-  }
+  }, [activeAccount]);
+
+
+
   /**
    * Most applications will need to conditionally render certain components based on whether a user is signed in or not.
    * msal-react provides 2 easy ways to do this. AuthenticatedTemplate and UnauthenticatedTemplate components will

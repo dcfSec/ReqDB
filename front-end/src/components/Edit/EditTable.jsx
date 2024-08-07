@@ -9,7 +9,7 @@ import Table from 'react-bootstrap/Table';
  */
 export default function EditTable({ headers, children }) {
   return (
-    <Table responsive id="EditTable">
+    <Table responsive id="EditTable" striped>
       <Suspense fallback={null}>
         <thead>
           <tr>

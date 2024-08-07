@@ -4,10 +4,10 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux'
 
 /**
- * Component for the filter modal for topics in the brows view
+ * Component for showing the own roles
  * 
- * @param {object} param0 Props for this component: show, setShow, topics, setFilteredTopics, filteredTopics
- * @returns Returns a modal for filtering topics in the browse view
+ * @param {object} param Props for this component: show, setShow
+ * @returns Returns a modal for viewing the own roles
  */
 export default function RolesModal({ show, setShow }) {
   const roles = useSelector(state => state.user.roles)

@@ -1,11 +1,10 @@
 import { Button, Col, Container, Dropdown, Row, Stack } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 import { Link } from "react-router-dom";
-import { useMsal } from "@azure/msal-react";
-import { useEffect, useState } from "react";
 import { appRoles } from "../authConfig";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { homeTitle, preMOTD, postMOTD } from "../static";
+import { useSelector } from 'react-redux'
 
 /**
  * Container for the main view when logged in
@@ -19,20 +18,7 @@ export default function Home() {
   ]
   document.title = `${title} | ReqDB - Requirement Database`;
 
-  const { instance } = useMsal();
-  const [roles, setRoles] = useState([]);
-
-  const onLoad = async () => {
-    const currentAccount = instance.getActiveAccount();
-
-    if (currentAccount && currentAccount.idTokenClaims['roles']) {
-      setRoles(currentAccount.idTokenClaims['roles']);
-    }
-  };
-
-  useEffect(() => {
-    onLoad();
-  }, [instance]);
+  const roles = useSelector(state => state.user.roles)
 
   return <Container fluid className="bg-body">
     <Row>
@@ -47,6 +33,9 @@ export default function Home() {
           <h2>{homeTitle}</h2>
           <ReactMarkdown>{preMOTD}</ReactMarkdown>
           <Button as={Link} to="Browse" variant="outline-secondary">Browse Catalogues</Button>
+          {roles.includes(appRoles.Comments.Moderator) ?
+            <Button as={Link} to="Comments" variant="outline-secondary">Comments</Button>
+            : null}
           {roles.includes(appRoles.Requirements.Writer) ?
             <Dropdown className="d-inline-block">
               <Dropdown.Toggle as={Button} variant="outline-secondary" id="dropdown-edit" className="mx-auto w-100">
@@ -61,7 +50,7 @@ export default function Home() {
                 <Dropdown.Item as={Link} to="/Edit/ExtraEntries">ExtraEntries</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown> : null}
-            <ReactMarkdown>{postMOTD}</ReactMarkdown>
+          <ReactMarkdown>{postMOTD}</ReactMarkdown>
         </Stack>
       </Col>
     </Row>

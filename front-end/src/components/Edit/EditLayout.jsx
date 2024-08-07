@@ -9,8 +9,7 @@ import { MainBreadcrumb, SearchField } from '../MiniComponents';
  * @param {object} props Props for this component: title, children, search, onSearch
  * @returns Returns a container for the main editor layout
  */
-export default function EditorLayout(props) {
-  const { title, children, search, onSearch } = props
+export default function EditorLayout({ title, children, search, onSearch }) {
   const breadcrumbs = [
     { href: "", title: "Edit", active: true },
     { href: "", title: title, active: true }

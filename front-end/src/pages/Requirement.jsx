@@ -2,7 +2,7 @@ import { Alert, Badge, Card, Col, Container, ProgressBar, Row } from "react-boot
 import { MainBreadcrumb } from "../components/MiniComponents";
 import CommentEntry from "../components/Comments/CommentEntry";
 import AddComment from "../components/Comments/AddComment";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
 import { appRoles } from '../authConfig';
 
@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { useDispatch, useSelector } from 'react-redux'
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
+import { reset, setRequirement } from "../stateSlices/RequirementSlice";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -24,6 +25,10 @@ export default function Requirement() {
   const dispatch = useDispatch()
 
   const roles = useSelector(state => state.user.roles)
+  const requirement = useSelector(state => state.requirement.requirement)
+
+  const [fetched, setFetched] = useState(false);
+  const [APIError, setAPIError] = useState(null);
 
   const params = useParams();
   const id = params.requirementId
@@ -34,25 +39,28 @@ export default function Requirement() {
     scopes: protectedResources.ReqDB.scopes,
   });
 
-  const [requirementData, setCatalogueData] = useState(null);
-
-  useEffect(() => { dispatch(showSpinner(!requirementData)) }, [requirementData]);
+  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   useEffect(() => {
-    if (!requirementData) {
+    dispatch(reset());
       execute("GET", `requirements/${id}`).then((response) => {
-        setCatalogueData(response);
+        if (response && response.status === 200) {
+          dispatch(setRequirement(response.data))
+          setFetched(true);
+        } else if (response && response.status !== 200) {
+          setAPIError(response.message)
+          setFetched(true);
+        }
       });
-    }
-  }, [execute, requirementData])
+  }, [execute])
 
   let body = <ProgressBar animated now={100} />
 
   if (error) {
     body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
-  } else {
-    if (requirementData && requirementData.status === 200) {
-      const requirement = requirementData.data
+  } else if (APIError) {
+    body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
+  } else if (fetched) {
       title = `${requirement.key} - ${requirement.title}`
       document.title = `${title} | ReqDB - Requirement Database`;
       body = <Container>
@@ -61,7 +69,7 @@ export default function Requirement() {
             <Card>
               <Card.Header as="h3">Tags</Card.Header>
               <Card.Body>
-                <Card.Text>{requirement.tags.map(tag => (<span key={tag.id}><Badge bg="secondary">{tag.name}</Badge>{' '}</span>))}</Card.Text>
+                <Card.Text>{[...requirement.tags].map(tag => (<span key={tag.id}><Badge bg="secondary">{tag.name}</Badge>{' '}</span>))}</Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -69,7 +77,7 @@ export default function Requirement() {
             <Card>
               <Card.Header as="h3">Topics</Card.Header>
               <Card.Body>
-                <Card.Text>{buildTopicsList(requirement.parent).map(topic => (<span key={topic}>{' '}<FontAwesomeIcon icon={solid("arrow-right")} />{' '}<Badge bg="secondary">{topic}</Badge></span>))}</Card.Text>
+                <Card.Text>{buildTopicsList({...requirement.parent}).map(topic => (<span key={topic}>{' '}<FontAwesomeIcon icon={solid("arrow-right")} />{' '}<Badge bg="secondary">{topic}</Badge></span>))}</Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -89,26 +97,25 @@ export default function Requirement() {
             <Card>
               <Card.Header as="h3">Extras</Card.Header>
               <Card.Body>
-                {requirement.extras.map(extra => (<span key={extra.id} ><Card.Title>{extra.extraType.title}</Card.Title>{printExtraWithType(extra.extraType.extraType, extra.content)}</span>))}
+                {[...requirement.extras].map(extra => (<span key={extra.id} ><Card.Title>{extra.extraType.title}</Card.Title>{printExtraWithType(extra.extraType.extraType, extra.content)}</span>))}
               </Card.Body>
             </Card>
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <Card>
-              <Card.Header as="h3">Comments</Card.Header>
-              <Card.Body>
-                { roles.includes(appRoles.Comments.Reader) ? requirement["comments"].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry rowIndex={null} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} />) : null}
-                { roles.includes(appRoles.Comments.Writer) ? <><Card.Title>Add Comment</Card.Title><AddComment index={null} requirementId={requirement["id"]} /></> : null }
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+        {roles.includes(appRoles.Comments.Reader) || roles.includes(appRoles.Comments.Writer) ?
+          <Row>
+            <Col>
+              <Card>
+                <Card.Header as="h3">Comments</Card.Header>
+                <Card.Body>
+                  {roles.includes(appRoles.Comments.Reader) ? [...requirement.comments].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"requirement"} rowIndex={null} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} />) : null}
+                  {roles.includes(appRoles.Comments.Writer) ? <><Card.Title>Add Comment</Card.Title><AddComment view={"requirement"} index={null} requirementId={requirement["id"]} /></> : null}
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row> : null
+        }
       </Container>
-    } else if (requirementData && requirementData.status !== 200) {
-      body = <Alert variant="danger">{ErrorMessage(requirementData.message)}</Alert>
-    }
   }
 
   function buildTopicsList(topic) {
