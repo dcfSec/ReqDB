@@ -59,7 +59,7 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
         <td>{comment.id}</td>
         <td>{comment.comment}</td>
         <td>{comment.author}</td>
-        <td><Button variant="primary" as={Link} to={`/Browse/Requirement/${comment.requirement.id}`}>{comment.requirement.title}</Button></td>
+        <td><Button variant="primary" size="sm" as={Link} to={`/Browse/Requirement/${comment.requirement.id}`}>{comment.requirement.title}</Button></td>
         <td><Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button></td>
         {showDeleteModal ? <DeleteConfirmationModal
           show={showDeleteModal}
