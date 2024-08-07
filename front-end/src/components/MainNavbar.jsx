@@ -46,6 +46,7 @@ export default function MainNavbar() {
         >
           <Nav.Link as={Link} to="/">Home</Nav.Link>
           { roles.includes(appRoles.Requirements.Reader) ? <Nav.Link as={Link} to="/browse">Browse</Nav.Link> : null }
+          { roles.includes(appRoles.Comments.Moderator) ? <Nav.Link as={Link} to="/Comments">Comments</Nav.Link> : null }
           { roles.includes(appRoles.Requirements.Writer) ? 
           <NavDropdown title="Edit" id="navbarScrollingDropdown">
             <NavDropdown.Item as={Link} to="/Edit/Tags">Tags</NavDropdown.Item>

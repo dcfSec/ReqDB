@@ -3,8 +3,8 @@ import Modal from 'react-bootstrap/Modal';
 import { Col, Container, Row } from 'react-bootstrap';
 
 import { useSelector } from 'react-redux'
-import CommentEntry from "../Comments/CommentEntry"
-import AddComment from "../Comments/AddComment"
+import CommentEntry from "./CommentEntry"
+import AddComment from "./AddComment"
 import { appRoles } from '../../authConfig';
 
 import Stack from 'react-bootstrap/Stack';
@@ -40,11 +40,11 @@ export default function CommentModal({ index, show, setShow }) {
       <Modal.Body>
         <Container>
           <Row>
-            <Col>{[...row["Comments"]].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry rowIndex={index} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} />)}</Col>
+            <Col>{[...row["Comments"]].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"browse"} rowIndex={index} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} />)}</Col>
           </Row>
           <Row>
             <Col>
-            { roles.includes(appRoles.Comments.Writer) ? <AddComment index={index} requirementId={row["id"]} /> : null }
+            { roles.includes(appRoles.Comments.Writer) ? <AddComment view={"browse"} index={index} requirementId={row["id"]} /> : null }
             </Col>
           </Row>
         </Container>

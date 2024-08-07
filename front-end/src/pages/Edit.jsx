@@ -303,7 +303,9 @@ export function ExtraEntries() {
       parent: null,
     }}
     searchFields={[
-      "content"
+      "content",
+      "extraType.title",
+      "requirement.key"
     ]}
     endpoint="extraEntries"
     parameters={[]}

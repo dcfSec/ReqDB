@@ -9,9 +9,10 @@ import Stack from 'react-bootstrap/Stack';
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleSelectRow, setVisibleRow } from '../../stateSlices/BrowseSlice';
 import { appRoles } from '../../authConfig';
+import { Link } from "react-router-dom";
 
 import { useEffect, useState } from "react";
-import CommentModal from "./CommentModal";
+import CommentModal from "../Comments/CommentModal";
 
 
 /**
@@ -60,7 +61,7 @@ export default function BrowseRow({ index, row }) {
   let renderRow = <tr key={row.Key}>
     <td className="vertical-middle">
       <Stack gap={1}>
-        <Button className="eye-button" variant="primary" href={`/Browse/Requirement/${row.id}`}><FontAwesomeIcon icon={solid("link")} /></Button>
+        <Button className="eye-button" variant="primary" as={Link} to={`/Browse/Requirement/${row.id}`}><FontAwesomeIcon icon={solid("link")} /></Button>
         <Button className="eye-button" variant="primary" onClick={() => { setShowComments(true) }} style={{ position: "relative" }}><FontAwesomeIcon icon={solid("comment")} />
         { roles.includes(appRoles.Comments.Reader) ? row.Comments.length > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1em'}}>{row.Comments.length}</Badge><span className="visually-hidden">comments</span></> : null : null }</Button>
       </Stack>

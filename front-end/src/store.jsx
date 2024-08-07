@@ -5,6 +5,8 @@ import catalogueDataReducer from './stateSlices/CatalogueDataSlice'
 import NotificationToastReducer from './stateSlices/NotificationToastSlice'
 import EditReducer from './stateSlices/EditSlice'
 import UserReducer from './stateSlices/UserSlice'
+import RequirementReducer from './stateSlices/RequirementSlice'
+import CommentReducer from './stateSlices/CommentSlice'
 
 const store = configureStore({
   reducer: {
@@ -14,6 +16,8 @@ const store = configureStore({
     notificationToast: NotificationToastReducer,
     edit: EditReducer,
     user: UserReducer,
+    requirement: RequirementReducer,
+    comment: CommentReducer,
   }
 })
 

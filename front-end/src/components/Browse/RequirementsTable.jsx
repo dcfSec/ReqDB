@@ -30,7 +30,7 @@ export default function RequirementsTable({ rows }) {
   ]
 
   return (
-    <Table responsive id="RequirementsTable">
+    <Table responsive id="RequirementsTable" striped>
       <Suspense fallback={null}>
         <thead>
           <tr>

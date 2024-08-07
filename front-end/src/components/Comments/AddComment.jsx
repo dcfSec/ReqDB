@@ -4,6 +4,8 @@ import { Form } from 'react-bootstrap';
 import { useState } from "react";
 import { useDispatch } from 'react-redux'
 import { addComment } from '../../stateSlices/BrowseSlice';
+import { addCommentToRequirement } from '../../stateSlices/RequirementSlice';
+
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 
@@ -19,7 +21,7 @@ import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
  * @param {object} props Props for this component: index, requirementId
  * @returns A comment entry
  */
-export default function AddComment({ index, requirementId }) {
+export default function AddComment({ view, index, requirementId }) {
   const dispatch = useDispatch()
 
   const [newComment, setNewComment] = useState("")
@@ -37,7 +39,11 @@ export default function AddComment({ index, requirementId }) {
     execute("POST", `comments`, { comment: newComment, requirementId }).then(
       (response) => {
         if (response.status === 200) {
-          dispatch(addComment({ index, comment: response.data }))
+          if (view == "browse") {
+            dispatch(addComment({ index, comment: response.data }))
+          } else if (view == "requirement") {
+            dispatch(addCommentToRequirement({ comment: response.data }))
+          }
           dispatch(toast({ header: "Comment added", body: "Comment successfully added" }))
           setNewComment("")
         } else {
