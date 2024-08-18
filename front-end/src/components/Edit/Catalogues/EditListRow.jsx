@@ -24,7 +24,7 @@ export function CatalogueEditListRow({ index, item, humanKey, buttons, updateTem
         }}>Set elements</Button></td>
         <td>{buttons}</td>
         {showUpdateMany2Many ? <SelectMany
-          humanKey={item.name}
+          humanKey={item.title}
           show={showUpdateMany2Many}
           setShow={setShowUpdateMany2Many}
           initialSelectedItems={item.topics}
@@ -32,6 +32,7 @@ export function CatalogueEditListRow({ index, item, humanKey, buttons, updateTem
           columns={["key", "title"]}
           updateKey={"topics"}
           updateItem={updateTempItem}
+          name="topic"
         ></SelectMany> : null}
         {showDeleteModal ? <DeleteConfirmationModal
           show={showDeleteModal}

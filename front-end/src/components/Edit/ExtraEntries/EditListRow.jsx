@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { useState } from "react";
 import DeleteConfirmationModal from "../../DeleteConfirmationModal";
 import SelectParentModal from "../SelectParentModal";
+import { truncate } from "../../MiniComponents";
 
 
 /**
@@ -29,7 +30,7 @@ export function ExtraEntryEditListRow({ index, item, humanKey, buttons, updateTe
         <td>{buttons}</td>
         {showSelectParentModal ? <SelectParentModal id="parent"
           itemId={item.id}
-          humanKey={item.title}
+          humanKey={`[${truncate(item.content, 12)}]`}
           show={showSelectParentModal}
           setShow={setShowSelectParentModal}
           initialSelectedItem={item.parentId}
@@ -42,7 +43,7 @@ export function ExtraEntryEditListRow({ index, item, humanKey, buttons, updateTe
         ></SelectParentModal> : null}
         {showSelectExtraModal ? <SelectParentModal id="extra"
           itemId={item.id}
-          humanKey={item.id}
+          humanKey={`[${truncate(item.content, 12)}]`}
           show={showSelectExtraModal}
           setShow={setShowSelectExtraModal}
           initialSelectedItem={item.extraTypeId}

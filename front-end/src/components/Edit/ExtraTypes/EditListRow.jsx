@@ -38,6 +38,7 @@ export function ExtraTypeEditListRow({ index, item, humanKey, buttons, updateTem
           columns={["name"]}
           updateKey={"tags"}
           updateItem={updateTempItem}
+          name="tag"
         ></SelectMany> : null}
         {showDeleteModal ? <DeleteConfirmationModal
           show={showDeleteModal}

@@ -16,7 +16,7 @@ import { toast } from "../../stateSlices/NotificationToastSlice";
  * @param {object} props Props for this component: humanKey, show, setShow, initialSelectedItems, endpoint, columns, updateKey, updateItem
  * @returns Returns a modal to select many
  */
-export default function SelectMany({ humanKey, show, setShow, initialSelectedItems = [], endpoint, columns, updateKey, updateItem }) {
+export default function SelectMany({ humanKey, show, setShow, initialSelectedItems = [], endpoint, columns, updateKey, updateItem, name }) {
   const dispatch = useDispatch()
 
   const [search, setSearch] = useState("");
@@ -109,13 +109,13 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          Add parent to <code>{humanKey}</code>
+          Add {name} to <code>{humanKey}</code>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Container>
           <Row>
-            <Col><SearchField title="parent" search={search} onSearch={setSearch}></SearchField></Col>
+            <Col><SearchField title={name} search={search} onSearch={setSearch}></SearchField></Col>
           </Row>
           <Row>
             {body}

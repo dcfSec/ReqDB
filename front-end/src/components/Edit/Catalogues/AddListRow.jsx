@@ -31,6 +31,7 @@ export function CatalogueAddListRow({ newItem, updateNewItem, postItem }) {
           columns={["key", "title"]}
           updateKey={"topics"}
           updateItem={updateNewItem}
+          name="topic"
         ></SelectMany> : null}
     </tr>
   );

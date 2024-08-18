@@ -36,6 +36,7 @@ export function TopicEditListRow({ index, item, humanKey, buttons, updateTempIte
         columns={["key", "title"]}
         updateKey={"requirement"}
         updateItem={updateTempItem}
+        name="topic"
       ></SelectMany> : null}
       {showDeleteModal ? <DeleteConfirmationModal
         show={showDeleteModal}
