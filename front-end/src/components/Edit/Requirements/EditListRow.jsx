@@ -40,6 +40,7 @@ export function RequirementEditListRow({ index, item, humanKey, buttons, updateT
         columns={["name"]}
         updateKey={"tags"}
         updateItem={updateTempItem}
+        name="tag"
       ></SelectMany> : null}
       {showDeleteModal ? <DeleteConfirmationModal
         show={showDeleteModal}

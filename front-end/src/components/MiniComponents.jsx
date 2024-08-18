@@ -6,6 +6,7 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { useSelector } from 'react-redux'
 import { addRow, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 import store from '../store'
+import { internals } from '@azure/msal-browser';
 
 /**
  * Component for the main logo which is replaced by a spinner if something is loading
@@ -176,3 +177,13 @@ export function buildRows(extraHeaders, tagFilterItems, topics, item) {
     });
   }
 }
+
+/**
+ * 
+ * @param {string} str String to truncate
+ * @param {int} n Length of the string to truncate after
+ * @returns {string} String with '...' added when truncated
+ */
+export function truncate(str, n){
+  return (str.length > n) ? str.slice(0, n-1) + "..." : str;
+};

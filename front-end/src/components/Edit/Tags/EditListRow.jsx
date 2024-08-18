@@ -31,6 +31,7 @@ export function TagEditListRow({ index, item, humanKey, buttons, updateTempItem,
         columns={["key", "title"]}
         updateKey={"requirement"}
         updateItem={updateTempItem}
+        name="requirement"
       ></SelectMany> : null}
       {showDeleteModal ? <DeleteConfirmationModal
         show={showDeleteModal}
