@@ -29,13 +29,10 @@ class ExtraType(BaseResource):
         :param int id: The object id to use in the query
         :return dict: ExtraType resource or 404
         """
-        checkAccess(get_jwt(), ['Requirements.Reader'])
+        checkAccess(get_jwt(), ["Requirements.Reader"])
         extraType = ExtraTypeModel.query.get_or_404(id)
         schema = ExtraTypeSchema()
-        return {
-            'status': 200,
-            'data': schema.dump(extraType)
-        }
+        return {"status": 200, "data": schema.dump(extraType)}
 
     def put(self, id: int):
         """
@@ -47,31 +44,23 @@ class ExtraType(BaseResource):
         :param int id: Item id
         :return dict: Updated extra type resource
         """
-        checkAccess(get_jwt(), ['Requirements.Writer'])
+        checkAccess(get_jwt(), ["Requirements.Writer"])
         extraType = ExtraTypeModel.query.get_or_404(id)
         schema = ExtraTypeSchema()
         try:
             extraType = schema.load(
-                request.json, instance=extraType,
-                partial=True, session=db.session)
+                request.json, instance=extraType, partial=True, session=db.session
+            )
             db.session.commit()
-            return {
-                'status': 200,
-                'data': schema.dump(extraType)
-            }
+            return {"status": 200, "data": schema.dump(extraType)}
         except ValidationError as e:
             return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
+                "status": 400,
+                "error": "ValidationError",
+                "message": e.messages,
             }, 400
         except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400
+            return {"status": 400, "error": "IntegrityError", "message": e.args}, 400
 
     def delete(self, id: int):
         """
@@ -83,33 +72,28 @@ class ExtraType(BaseResource):
         :param int id: Item id
         :return dict: Empty (204) if successful, else error message
         """
-        checkAccess(get_jwt(), ['Requirements.Writer'])
+        checkAccess(get_jwt(), ["Requirements.Writer"])
         extraType = ExtraTypeModel.query.get_or_404(id)
-        if (len(extraType.children) > 0) \
-                and request.args.get('force') is None:
+        if (len(extraType.children) > 0) and request.args.get("force") is None:
             return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': [
-                    'Requirement has extras. Use ?force to delete anyway'
-                ]}, 400
+                "status": 400,
+                "error": "ValidationError",
+                "message": [
+                    "ExtraType has ExtraEntries. Use ?force to delete anyway (This will delete the ExtraEntries)"
+                ],
+            }, 400
         try:
             db.session.delete(extraType)
             db.session.commit()
             return {}, 204
         except ValidationError as e:
             return {
-                'status': 400,
-                'error': 'ValidationError',
-                'message': e.messages
+                "status": 400,
+                "error": "ValidationError",
+                "message": e.messages,
             }, 400
         except IntegrityError as e:
-            return {
-                'status': 400,
-                'error':
-                'IntegrityError',
-                'message': e.args
-            }, 400
+            return {"status": 400, "error": "IntegrityError", "message": e.args}, 400
 
 
 class ExtraTypes(BaseResources):
@@ -117,6 +101,7 @@ class ExtraTypes(BaseResources):
     ExtraTypes class, represents the extraTypes API to fetch all or add an
     extraType item
     """
+
     addSchemaClass = ExtraTypeSchema
     dumpSchemaClass = ExtraTypeSchema
     model = ExtraTypeModel

@@ -14,7 +14,7 @@ class ExtraEntryUpdateSchema(ma.SQLAlchemyAutoSchema):
         unknown = EXCLUDE
 
 
-class RequirementUpdateSchema(ma.SQLAlchemySchema):
+class RequirementUpdateSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Requirement
         include_relationships = True
@@ -42,7 +42,7 @@ class TagUpdateSchema(ma.SQLAlchemyAutoSchema):
     requirement = fields.Nested(nested="RequirementUpdateSchema", only=["id"], many=True)
 
 
-class TopicUpdateSchema(ma.SQLAlchemySchema):
+class TopicUpdateSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Topic
         include_relationships = True
@@ -72,7 +72,7 @@ class CatalogueUpdateSchema(ma.SQLAlchemyAutoSchema):
     topics = fields.Nested(nested="TopicUpdateSchema", only=["id"], many=True, unknown=EXCLUDE)
 
 
-class CommentUpdateSchema(ma.SQLAlchemySchema):
+class CommentUpdateSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Comment
         include_relationships = True
