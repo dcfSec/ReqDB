@@ -64,7 +64,7 @@ class Catalogue(BaseResource):
         """
         checkAccess(get_jwt(), ['Requirements.Writer'])
         catalogue = CatalogueModel.query.get_or_404(id)
-        updateSchema = CatalogueLightNestedSchema()
+        updateSchema = CatalogueUpdateSchema()
         schema = CatalogueExtendedSchema()
         try:
             catalogue = updateSchema.load(

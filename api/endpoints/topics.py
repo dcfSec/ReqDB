@@ -1,4 +1,4 @@
-from flask import request, abort
+from flask import request
 
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
@@ -109,15 +109,22 @@ class Topic(BaseResource):
         """
         checkAccess(get_jwt(), ["Requirements.Writer"])
         topic = TopicModel.query.get_or_404(id)
-        if (
-            (len(topic.requirements) > 0) or len(topic.children) > 0
-        ) and request.args.get("force") is None:
+        if len(topic.children) > 0 and request.args.get("force") is None:
             return {
                 "status": 400,
                 "error": "ValidationError",
                 "message": [
-                    "Topic has requirements or children.",
-                    "Use ?force to delete anyway",
+                    "Topic has children.",
+                    "Use ?force to delete anyway.",
+                ],
+            }, 400
+        if len(topic.requirements) > 0 and request.args.get("force") is None:
+            return {
+                "status": 400,
+                "error": "ValidationError",
+                "message": [
+                    "Topic has requirements.",
+                    "Use ?force to delete anyway (This will delete the requirements)",
                 ],
             }, 400
         try:
@@ -148,7 +155,7 @@ class Topics(BaseResources):
         if request.args.get("minimal") is not None:
             return TopicOnlyIDAndTitleSchema
         else:
-            if 'Comments.Reader' in get_jwt()['roles']:
+            if "Comments.Reader" in get_jwt()["roles"]:
                 return TopicCommentsSchema
             else:
                 return TopicSchema
