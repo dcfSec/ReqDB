@@ -7,10 +7,10 @@ import DeleteConfirmationModal from "../../DeleteConfirmationModal";
 /**
  * Component for a row to edit an object
  * 
- * @param {object} props Props for this component: index, item, humanKey, buttons, updateTempItem, edit, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem
+ * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function TagEditListRow({ index, item, humanKey, buttons, updateTempItem, edit, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem }) {
+export function TagEditListRow({ index, item, buttons, updateTempItem, edit }) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
 
@@ -33,12 +33,6 @@ export function TagEditListRow({ index, item, humanKey, buttons, updateTempItem,
         updateItem={updateTempItem}
         name="requirement"
       ></SelectMany> : null}
-      {showDeleteModal ? <DeleteConfirmationModal
-        show={showDeleteModal}
-        item={item[humanKey]}
-        onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()}
-        onForceChange={e => setForce(e)}
-      ></DeleteConfirmationModal> : null}
     </tr>
   );
 }

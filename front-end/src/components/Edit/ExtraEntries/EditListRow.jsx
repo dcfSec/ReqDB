@@ -1,7 +1,6 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import { useState } from "react";
-import DeleteConfirmationModal from "../../DeleteConfirmationModal";
 import SelectParentModal from "../SelectParentModal";
 import { truncate } from "../../MiniComponents";
 
@@ -9,10 +8,10 @@ import { truncate } from "../../MiniComponents";
 /**
  * Component for a row to edit an object
  * 
- * @param {object} props Props for this component: index, item, humanKey, buttons, updateTempItem, edit, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem
+ * @param {object} props Props for this component: index, item,  buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function ExtraEntryEditListRow({ index, item, humanKey, buttons, updateTempItem, edit, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem }) {
+export function ExtraEntryEditListRow({ index, item,  buttons, updateTempItem, edit }) {
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
   const [showSelectExtraModal, setShowSelectExtraModal] = useState(false);
@@ -54,12 +53,6 @@ export function ExtraEntryEditListRow({ index, item, humanKey, buttons, updateTe
           checkCircle={false}
           columns={["title"]}
         ></SelectParentModal> : null}
-        {showDeleteModal ? <DeleteConfirmationModal
-          show={showDeleteModal}
-          item={item[humanKey]}
-          onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()}
-          onForceChange={e => setForce(e)}
-        ></DeleteConfirmationModal> : null}
       </tr>
     );
 }

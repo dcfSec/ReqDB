@@ -20,7 +20,7 @@ import { TopicAddListRow } from "./Topics/AddListRow"
  * @param {object} props Props for the component: blankItem, humanKey, endpoint, editPageName, updateParent
  * @returns A table row to add an item
  */
-export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, editPageName, updateParent }) {
+export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, editPageName }) {
 
   const dispatch = useDispatch()
 
@@ -59,30 +59,20 @@ export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, edit
     setNewItem(tempItem)
   }
 
-
-  let body = <></>
   switch (editPageName) {
     case "Catalogues":
-      body = <CatalogueAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem}/>
-      break;
+      return <CatalogueAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem}/>
     case "ExtraEntries":
-      body = <ExtraEntryAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
-      break;
+      return <ExtraEntryAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
     case "ExtraTypes":
-      body = <ExtraTypeAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
-      break;
+      return <ExtraTypeAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
     case "Requirements":
-      body = <RequirementAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
-      break;
+      return <RequirementAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
     case "Tags":
-      body = <TagAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} updateParent={updateParent} />
-      break;
+      return <TagAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
     case "Topics":
-      body = <TopicAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
-      break;
+      return <TopicAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
     default:
-      break;
+      return <></>
   }
-
-  return body
 }
