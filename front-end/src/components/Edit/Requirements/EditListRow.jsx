@@ -2,16 +2,15 @@ import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import SelectMany from "../SelectManyModal";
 import { useState } from "react";
-import DeleteConfirmationModal from "../../DeleteConfirmationModal";
 import SelectParentModal from "../SelectParentModal";
 
 /**
  * Component for a row to edit an object
  * 
- * @param {object} props Props for this component: index, item, humanKey, buttons, updateTempItem, edit, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem
+ * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function RequirementEditListRow({ index, item, humanKey, buttons, updateTempItem, edit, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem }) {
+export function RequirementEditListRow({ index, item, buttons, updateTempItem, edit }) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
@@ -42,12 +41,6 @@ export function RequirementEditListRow({ index, item, humanKey, buttons, updateT
         updateItem={updateTempItem}
         name="tag"
       ></SelectMany> : null}
-      {showDeleteModal ? <DeleteConfirmationModal
-        show={showDeleteModal}
-        item={item[humanKey]}
-        onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()}
-        onForceChange={e => setForce(e)}
-      ></DeleteConfirmationModal> : null}
       {showSelectParentModal ?
         <SelectParentModal
           humanKey={item.title}

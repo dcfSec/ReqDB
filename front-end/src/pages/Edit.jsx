@@ -10,43 +10,23 @@ import { protectedResources } from '../authConfig';
 import { useSelector, useDispatch } from 'react-redux'
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../stateSlices/NotificationToastSlice";
-import { addItem, setItems } from "../stateSlices/EditSlice";
+import { setItems } from "../stateSlices/EditSlice";
 import AddListRowSkeleton from "../components/Edit/AddListRowSkeleton";
 import EditListRowSkeleton from "../components/Edit/EditListRowSkeleton";
 
 /**
  * Component for the parent view of the editor pages
  * 
- * @param {object} props Props for the component: editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters, needsParent, setNotificationToastHandler, setShowSpinner
+ * @param {object} props Props for the component: editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters
  * @returns Parent component for all editor views
  */
-function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [], needsParent = false }) {
+function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [] }) {
   const dispatch = useDispatch()
   const items = useSelector(state => state.edit.items)
 
   document.title = `${editPageName} | ReqDB - Requirement Database`;
 
   const [search, setSearch] = useState("");
-
-  const [updateIdField, setUpdateIdField] = useState("");
-  const [updateObjectField, setUpdateObjectField] = useState("");
-  const [checkCircle, setCheckCircle] = useState(true);
-  const [columns, setColumns] = useState([
-    "key",
-    "title"
-  ]);
-
-  const [parentEndpoint, setParentEndpoint] = useState("")
-
-  const updateParent = {
-    updateIdField: updateIdField, setUpdateIdField: setUpdateIdField,
-    updateObjectField: updateObjectField, setUpdateObjectField: setUpdateObjectField,
-    checkCircle: checkCircle, setCheckCircle: setCheckCircle,
-    columns: columns, setColumns: setColumns,
-    endpoint: parentEndpoint, setEndpoint: setParentEndpoint,
-    needed: needsParent
-  }
-
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
@@ -78,7 +58,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
     body = <EditTable headers={headers}>
-      <AddListRowSkeleton endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} editPageName={editPageName} updateParent={updateParent}/>
+      <AddListRowSkeleton endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} editPageName={editPageName} />
       {items.map((item, index) => (
         renderItem(item, index)
       ))}
@@ -88,47 +68,22 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
     setSearch(s)
   }
 
-  function updateItem(index, newItem) {
-    const tempItems = [...items]
-    tempItems[index] = newItem
-    // setItems(tempItems)
-  }
-
-  function deleteItem(index) {
-    let tmp = items
-    tmp.splice(index, 1);
-    // setItems(tmp)
-  }
-
   function renderItem(item, index) {
     if (item) {
       return <EditListRowSkeleton
-        editPageName={editPageName}
         key={item.id}
-        humanKey={humanKey}
-        originalItem={item}
         index={index}
-        deleteItemInList={deleteItem}
-        updateItem={updateItem}
-        search={search}
         endpoint={endpoint}
+        originalItem={item}
+        search={search}
         searchFields={searchFields}
-        updateParent={updateParent}
-        parentEndpoint={parentEndpoint}
-        setParentEndpoint={setParentEndpoint}
-        needsParent={true}
-        needsMany2Many={true} ></EditListRowSkeleton>
+        editPageName={editPageName}
+        humanKey={humanKey}
+        ></EditListRowSkeleton>
     } else {
       return null
     }
   }
-
-  // body = <EditTable headers={headers}>
-  //   <AddListRow addItemToList={addItem} endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} tag={AddListRow} updateParent={updateParent}></AddListRow>
-  //   {items.map((item, index) => (
-  //     renderItem(item, index)
-  //   ))}
-  // </EditTable>
 
   return (<>
     <EditorLayout title={editPageName} search={search} onSearch={onSearch}>

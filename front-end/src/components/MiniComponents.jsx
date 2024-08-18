@@ -6,7 +6,8 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { useSelector } from 'react-redux'
 import { addRow, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 import store from '../store'
-import { internals } from '@azure/msal-browser';
+import { Button } from "react-bootstrap";
+
 
 /**
  * Component for the main logo which is replaced by a spinner if something is loading
@@ -184,6 +185,20 @@ export function buildRows(extraHeaders, tagFilterItems, topics, item) {
  * @param {int} n Length of the string to truncate after
  * @returns {string} String with '...' added when truncated
  */
-export function truncate(str, n){
-  return (str.length > n) ? str.slice(0, n-1) + "..." : str;
+export function truncate(str, n) {
+  return (str.length > n) ? str.slice(0, n - 1) + "..." : str;
 };
+
+/**
+ * 
+ * @param {object} props Props for this component: saveItem, edit, setEdit, resetTempItem, setShowDeleteModal
+ * @returns 2 Buttons for an edit row
+ */
+export function EditButtons(props) {
+  const { saveItem, edit, setEdit, resetTempItem, setShowDeleteModal } = props
+  if (edit) {
+    return <><Button variant="success" onClick={() => saveItem()}>Save</Button>{' '}<Button variant="danger" onClick={() => { setEdit(false); resetTempItem() }}>Cancel</Button></>
+  } else {
+    return <><Button variant="success" onClick={() => setEdit(true)}>Edit</Button>{' '}<Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button></>
+  }
+}

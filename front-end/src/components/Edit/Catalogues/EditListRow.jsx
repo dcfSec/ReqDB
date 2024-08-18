@@ -1,16 +1,15 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import { useState } from "react";
-import DeleteConfirmationModal from "../../DeleteConfirmationModal";
 import SelectMany from "../SelectManyModal";
 
 /**
  * Component for a row to edit an object
  * 
- * @param {object} props Props for this component: index, item, humanKey, buttons, updateTempItem, edit, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem
+ * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function CatalogueEditListRow({ index, item, humanKey, buttons, updateTempItem, edit, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem }) {
+export function CatalogueEditListRow({ index, item, buttons, updateTempItem, edit }) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
 
@@ -34,12 +33,6 @@ export function CatalogueEditListRow({ index, item, humanKey, buttons, updateTem
           updateItem={updateTempItem}
           name="topic"
         ></SelectMany> : null}
-        {showDeleteModal ? <DeleteConfirmationModal
-          show={showDeleteModal}
-          item={item[humanKey]}
-          onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()}
-          onForceChange={e => setForce(e)}
-        ></DeleteConfirmationModal> : null}
       </tr>
     );
 }
