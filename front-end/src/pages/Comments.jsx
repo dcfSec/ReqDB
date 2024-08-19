@@ -4,6 +4,7 @@ import { appRoles } from "../authConfig";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { ErrorMessage } from '../components/MiniComponents'
 import EditTable from '../components/Edit/EditTable';
+import Form from 'react-bootstrap/Form';
 
 
 import { protectedResources } from "../authConfig";
@@ -40,12 +41,14 @@ export default function Comments() {
     "#",
     "Comment",
     "Author",
+    "Completed",
     "Requirement",
     "Action"
   ]
 
 
   const [search, setSearch] = useState("");
+  const [hideCompleted, setHideCompleted] = useState(false);
 
   const roles = useSelector(state => state.user.roles)
 
@@ -82,7 +85,7 @@ export default function Comments() {
     searchBar = <Col><SearchField title={title} search={search} onSearch={setSearch}></SearchField></Col>
     table = <EditTable headers={headers}>
       { comments.length > 0 ? comments.map((item, index) => (
-        <CommentRow key={index} index={index} search={search} searchFields={searchFields} comment={item} showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} setForce={setForce} />
+        <CommentRow key={index} index={index} search={search} searchFields={searchFields} comment={item} showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} setForce={setForce} hideCompleted={hideCompleted}/>
       )) : <tr><td colSpan={5} style={{textAlign: 'center'}}>No comments</td></tr> }
     </EditTable>
   }
@@ -97,6 +100,9 @@ export default function Comments() {
       </Row>
       <Row>
         {searchBar}
+      </Row>
+      <Row>
+        <Col><Form.Check type="switch" id="completed" defaultChecked={hideCompleted} onChange={e => { setHideCompleted(e.target.checked) }} label="Hide completed" reverse/></Col>
       </Row>
       <Row>
         {table}

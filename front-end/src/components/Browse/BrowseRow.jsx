@@ -58,12 +58,13 @@ export default function BrowseRow({ index, row }) {
     }
   }
 
+  const commentCount = [...row.Comments].filter((el) => el.completed == false).length
   let renderRow = <tr key={row.Key}>
     <td className="vertical-middle">
       <Stack gap={1}>
         <Button className="eye-button" variant="primary" as={Link} to={`/Browse/Requirement/${row.id}`}><FontAwesomeIcon icon={solid("link")} /></Button>
         <Button className="eye-button" variant="primary" onClick={() => { setShowComments(true) }} style={{ position: "relative" }}><FontAwesomeIcon icon={solid("comment")} />
-        { roles.includes(appRoles.Comments.Reader) ? row.Comments.length > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1em'}}>{row.Comments.length}</Badge><span className="visually-hidden">comments</span></> : null : null }</Button>
+        { roles.includes(appRoles.Comments.Reader) ? commentCount > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1.5em', marginLeft: '-0.5em'}}>{commentCount}</Badge><span className="visually-hidden">comments</span></> : null : null }</Button>
       </Stack>
     </td>
     <td>{row.Tags.map((tag) => (<span key={row.Key + " " + tag}><Badge bg="info">{tag}</Badge><br /></span>))}</td>

@@ -1,11 +1,12 @@
 import { Button } from "react-bootstrap";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { inSearchField } from "../MiniComponents";
-import { removeComment } from "../../stateSlices/CommentSlice";
+import { removeComment, updateComment } from "../../stateSlices/CommentSlice";
 import { useDispatch } from 'react-redux'
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { Link } from "react-router-dom";
+import Form from 'react-bootstrap/Form';
 
 import { protectedResources } from "../../authConfig";
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
@@ -17,7 +18,7 @@ import useFetchWithMsal from '../../hooks/useFetchWithMsal';
  * @param {object} props Props for this component: comment, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem
  * @returns Table row for editing an object
  */
-export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, setForce }) {
+export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, setForce, hideCompleted }) {
   const dispatch = useDispatch()
 
   const { error, execute } = useFetchWithMsal({
@@ -53,12 +54,37 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
     )
   }
 
-  if (inSearchField(search, searchFields, comment)) {
+  function updateCompleted(completed) {
+    dispatch(showSpinner(true))
+    execute("PUT", `comments/${comment.id}`, { ...comment, completed: completed }).then(
+      (response) => {
+        if (response.status === 200) {
+          dispatch(toast({ header: "Comment marked as completed updated", body: "Comment successfully updated marked as completed" }))
+          dispatch(updateComment({ index, comment: response.data }))
+        } else {
+          response.json().then((r) => {
+            dispatch(toast({ header: r.error, body: r.message }))
+          }
+          );
+        }
+        dispatch(showSpinner(false))
+        setShowDeleteModal(false)
+      },
+      (error) => {
+        dispatch(toast({ header: "UnhandledError", body: error.message }))
+        dispatch(showSpinner(false))
+        setShowDeleteModal(false)
+      }
+    )
+  }
+
+  if (inSearchField(search, searchFields, comment) && ((hideCompleted && comment.completed) || !hideCompleted)) {
     return (
       <tr>
         <td>{comment.id}</td>
-        <td>{comment.comment}</td>
+        <td style={{whiteSpace: "pre-line"}}>{comment.comment}</td>
         <td>{comment.author}</td>
+        <td><Form.Check type="switch" id="completed" defaultChecked={comment.completed} onChange={e => { updateCompleted(e.target.checked) }} /></td>
         <td><Button variant="primary" size="sm" as={Link} to={`/Browse/Requirement/${comment.requirement.id}`}>{comment.requirement.title}</Button></td>
         <td><Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button></td>
         {showDeleteModal ? <DeleteConfirmationModal

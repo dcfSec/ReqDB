@@ -23,9 +23,14 @@ export const requirementSlice = createSlice({
       tmp.splice(action.payload.comment, 1);
       state.requirement.comments = [...tmp]
     },
+    updateCommentInRequirement: (state, action) => {
+      let tmp = [...state.requirement.comments]
+      tmp[action.payload.index] = action.payload.comment
+      state.requirement.comments = [...tmp]
+    },
   },
 })
 
-export const { reset, setRequirement, addCommentToRequirement, removeCommentFromRequirement } = requirementSlice.actions
+export const { reset, setRequirement, addCommentToRequirement, removeCommentFromRequirement, updateCommentInRequirement } = requirementSlice.actions
 
 export default requirementSlice.reducer

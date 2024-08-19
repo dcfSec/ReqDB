@@ -60,7 +60,7 @@ export default function AddComment({ view, index, requirementId }) {
 
   return (
     <Stack direction="horizontal" gap={3}>
-      <Form.Control type="text" className="me-auto" id="description" value={newComment} onChange={e => { setNewComment(e.target.value) }}></Form.Control>
+      <Form.Control as="textarea" className="me-auto" id="description" value={newComment} onChange={e => { setNewComment(e.target.value) }}></Form.Control>
       <Button variant="primary" onClick={() => postComment()}><FontAwesomeIcon icon={solid("paper-plane")} /></Button>
     </Stack>
   );
