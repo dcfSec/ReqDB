@@ -149,6 +149,7 @@ class Comment(Base):
     )
     author = db.Column(db.String(200), nullable=False)
     created = db.Column(db.DateTime(timezone=True), server_default=functions.now())
+    completed = db.Column(db.Boolean, unique=False, default=False)
 
     def __repr__(self):
         return f'<Comment "{self.author}: {self.comment[:20]}">'
