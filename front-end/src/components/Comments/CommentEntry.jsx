@@ -16,8 +16,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
-import { removeComment } from '../../stateSlices/BrowseSlice';
-import { removeCommentFromRequirement } from '../../stateSlices/RequirementSlice';
+import { removeComment, updateComment } from '../../stateSlices/BrowseSlice';
+import { removeCommentFromRequirement, updateCommentInRequirement } from '../../stateSlices/RequirementSlice';
 
 
 /**
@@ -71,39 +71,71 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment }) 
     )
   }
 
-  return (
-    <>
-      <Card style={{ marginBottom: '0.5em', lineHeight: '1em' }}>
-        <Card.Header style={{ padding: '0em' }}>
-          <Stack direction="horizontal" gap={2}>
-            <span className="p-2">From <span style={{ fontStyle: 'italic' }}>{comment.author}</span></span>
-            <span className="ms-auto text-muted" style={{ justifyContent: 'left' }}>at {new Date(comment.created).toLocaleString()}</span>
-            {roles.includes(appRoles.Comments.Moderator) ?
-              <>
-                <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="delete-tooltip">Delete comment</Tooltip>}>
-                  <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0em' }} size='sm' onClick={() => { setShowDeleteModal(true) }}><FontAwesomeIcon icon={solid("eraser")} /></Button>
-                </OverlayTrigger>
-                <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">Edit comment</Tooltip>}>
-                  <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' disabled><FontAwesomeIcon icon={solid("pen")} /></Button>
-                </OverlayTrigger>
-              </> : null}
-            <span></span>
-          </Stack>
-
-        </Card.Header>
-        <Card.Body style={{ padding: '0.5em' }}>
-          <Card.Text>{comment.comment}</Card.Text>
-        </Card.Body>
-      </Card>
-      {
-        showDeleteModal ? <DeleteConfirmationModal
-          show={showDeleteModal}
-          titleItem="the selected comment"
-          item={comment.comment}
-          onCancel={() => setShowDeleteModal(false)} onConfirm={() => deleteComment()}
-          onForceChange={e => setForce(e)}
-        ></DeleteConfirmationModal> : null
+  function markAsCompleted() {
+    dispatch(showSpinner(true))
+    execute("PUT", `comments/${comment.id}`, { ...comment, completed: true }).then(
+      (response) => {
+        if (response.status === 200) {
+          dispatch(toast({ header: "Comment marked as completed", body: "Comment successfully marked as completed" }))
+          if (view == "browse") {
+            dispatch(updateComment({ index: rowIndex, commentIndex, comment: response.data }))
+          } else if (view == "requirement") {
+            dispatch(updateCommentInRequirement({ comment: response.data }))
+          }
+        } else {
+          response.json().then((r) => {
+            dispatch(toast({ header: r.error, body: r.message }))
+          }
+          );
+        }
+        dispatch(showSpinner(false))
+        setShowDeleteModal(false)
+      },
+      (error) => {
+        dispatch(toast({ header: "UnhandledError", body: error.message }))
+        dispatch(showSpinner(false))
+        setShowDeleteModal(false)
       }
-    </>
-  );
+    )
+  }
+
+  if (!comment.completed) {
+    return (
+      <>
+        <Card style={{ marginBottom: '0.5em', lineHeight: '1em' }}>
+          <Card.Header style={{ padding: '0em' }}>
+            <Stack direction="horizontal" gap={2}>
+              <span className="p-2">From <span style={{ fontStyle: 'italic' }}>{comment.author}</span></span>
+              <span className="ms-auto text-muted" style={{ justifyContent: 'left' }}>at {new Date(comment.created).toLocaleString()}</span>
+              {roles.includes(appRoles.Comments.Moderator) ?
+                <>
+                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="delete-tooltip">Delete comment</Tooltip>}>
+                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0em' }} size='sm' onClick={() => { setShowDeleteModal(true) }}><FontAwesomeIcon icon={solid("eraser")} /></Button>
+                  </OverlayTrigger>
+                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">Edit comment</Tooltip>}>
+                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' disabled><FontAwesomeIcon icon={solid("pen")} /></Button>
+                  </OverlayTrigger>
+                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">Mark as completed</Tooltip>}>
+                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { markAsCompleted() }}><FontAwesomeIcon icon={solid("check")} /></Button>
+                  </OverlayTrigger>
+                </> : null}
+              <span></span>
+            </Stack>
+          </Card.Header>
+          <Card.Body style={{ padding: '0.5em' }}>
+            <Card.Text style={{whiteSpace: "pre-line"}}>{comment.comment}</Card.Text>
+          </Card.Body>
+        </Card>
+        {
+          showDeleteModal ? <DeleteConfirmationModal
+            show={showDeleteModal}
+            titleItem="the selected comment"
+            item={comment.comment}
+            onCancel={() => setShowDeleteModal(false)} onConfirm={() => deleteComment()}
+            onForceChange={e => setForce(e)}
+          ></DeleteConfirmationModal> : null
+        }
+      </>
+    );
+  }
 }
