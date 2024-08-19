@@ -83,3 +83,4 @@ class CommentUpdateSchema(ma.SQLAlchemyAutoSchema):
     comment = ma.auto_field(validate=validate.Length(min=1), required=True)
     requirementId = ma.auto_field(required=True)
     author = ma.auto_field(required=True)
+    completed = ma.auto_field()
