@@ -1,11 +1,12 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row, Form } from 'react-bootstrap';
 
 import { useSelector } from 'react-redux'
 import CommentEntry from "./CommentEntry"
 import AddComment from "./AddComment"
 import { appRoles } from '../../authConfig';
+import { useState } from "react";
 
 import Stack from 'react-bootstrap/Stack';
 
@@ -20,9 +21,13 @@ export default function CommentModal({ index, show, setShow }) {
   const row = useSelector(state => state.browse.rows.items)[index]
   const roles = useSelector(state => state.user.roles)
 
+  const [showCompleted, setShowCompleted] = useState(false);
+
   function close() {
     setShow(false)
   }
+
+  const completedCount = [...row.Comments].filter((el) => el.completed == true).length
 
   return (
     <Modal
@@ -39,8 +44,12 @@ export default function CommentModal({ index, show, setShow }) {
       </Modal.Header>
       <Modal.Body>
         <Container>
+          { completedCount > 0 ?
           <Row>
-            <Col>{[...row["Comments"]].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"browse"} rowIndex={index} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} />)}</Col>
+            <Col><Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label={`${completedCount} comments completed. Show completed`} reverse/></Col>
+          </Row> : null}
+          <Row>
+            <Col>{[...row["Comments"]].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"browse"} rowIndex={index} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} showCompleted={showCompleted}/>)}</Col>
           </Row>
           <Row>
             <Col>

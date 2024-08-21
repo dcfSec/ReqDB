@@ -1,4 +1,4 @@
-import { Alert, Badge, Card, Col, Container, ProgressBar, Row } from "react-bootstrap";
+import { Alert, Badge, Card, Col, Container, ProgressBar, Row, Form } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 import CommentEntry from "../components/Comments/CommentEntry";
 import AddComment from "../components/Comments/AddComment";
@@ -29,6 +29,8 @@ export default function Requirement() {
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
+  
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const params = useParams();
   const id = params.requirementId
@@ -63,6 +65,7 @@ export default function Requirement() {
   } else if (fetched) {
       title = `${requirement.key} - ${requirement.title}`
       document.title = `${title} | ReqDB - Requirement Database`;
+      const completedCount = [...requirement.comments].filter((el) => el.completed == true).length
       body = <Container>
         <Row>
           <Col>
@@ -108,7 +111,8 @@ export default function Requirement() {
               <Card>
                 <Card.Header as="h3">Comments</Card.Header>
                 <Card.Body>
-                  {roles.includes(appRoles.Comments.Reader) ? [...requirement.comments].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"requirement"} rowIndex={null} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} />) : null}
+                  { completedCount > 0 ? <Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label={`${completedCount} comments completed. Show completed`} reverse/>: null}
+                  {roles.includes(appRoles.Comments.Reader) ? [...requirement.comments].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"requirement"} rowIndex={null} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} showCompleted={showCompleted}/>) : null}
                   {roles.includes(appRoles.Comments.Writer) ? <><Card.Title>Add Comment</Card.Title><AddComment view={"requirement"} index={null} requirementId={requirement["id"]} /></> : null}
                 </Card.Body>
               </Card>
