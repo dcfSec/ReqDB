@@ -78,7 +78,7 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
     )
   }
 
-  if (inSearchField(search, searchFields, comment) && ((hideCompleted && comment.completed) || !hideCompleted)) {
+  if (inSearchField(search, searchFields, comment) && (!comment.completed || !hideCompleted)) {
     return (
       <tr>
         <td>{comment.id}</td>
