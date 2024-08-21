@@ -73,7 +73,7 @@ export function inSearchField(search, fields, item) {
 
   let r = false
   fields.forEach(field => {
-    if (String(resolvePath(item, field)).toLocaleLowerCase().includes(search.toLocaleLowerCase())) {
+    if (String(resolvePath(item, field)).toLocaleLowerCase().includes(search.toLocaleLowerCase().trim())) {
       r = true
     }
   });
