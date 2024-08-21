@@ -26,7 +26,7 @@ import { removeCommentFromRequirement, updateCommentInRequirement } from '../../
  * @param {object} props Props for this component: author, comment, timestamp
  * @returns A comment entry
  */
-export default function CommentEntry({ view, rowIndex, commentIndex, comment }) {
+export default function CommentEntry({ view, rowIndex, commentIndex, comment, showCompleted }) {
   const dispatch = useDispatch()
 
   const roles = useSelector(state => state.user.roles)
@@ -99,10 +99,10 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment }) 
     )
   }
 
-  if (!comment.completed) {
+  if (!comment.completed || showCompleted) {
     return (
       <>
-        <Card style={{ marginBottom: '0.5em', lineHeight: '1em' }}>
+        <Card style={{ marginBottom: '0.5em', lineHeight: '1em' }} border={comment.completed ? "danger" : null}>
           <Card.Header style={{ padding: '0em' }}>
             <Stack direction="horizontal" gap={2}>
               <span className="p-2">From <span style={{ fontStyle: 'italic' }}>{comment.author}</span></span>
