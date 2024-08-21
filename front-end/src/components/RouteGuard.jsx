@@ -34,6 +34,14 @@ export default function RouteGuard({ requiredRoles, title, children }) {
               </ul>
             </Col>
           </Row>
+          <Row>
+            <Col>
+              <p>Your role(s) are:</p>
+              <ul>
+                {roles.map((role) => (<li key={role}><code>{role}</code></li>))}
+              </ul>
+            </Col>
+          </Row>
         </Container>
       }
     </>
