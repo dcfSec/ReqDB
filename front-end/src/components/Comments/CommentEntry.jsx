@@ -71,16 +71,16 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
     )
   }
 
-  function markAsCompleted() {
+  function toggleComplete() {
     dispatch(showSpinner(true))
-    execute("PUT", `comments/${comment.id}`, { ...comment, completed: true }).then(
+    execute("PUT", `comments/${comment.id}`, { ...comment, completed: !comment.completed }).then(
       (response) => {
         if (response.status === 200) {
           dispatch(toast({ header: "Comment marked as completed", body: "Comment successfully marked as completed" }))
           if (view == "browse") {
             dispatch(updateComment({ index: rowIndex, commentIndex, comment: response.data }))
           } else if (view == "requirement") {
-            dispatch(updateCommentInRequirement({ comment: response.data }))
+            dispatch(updateCommentInRequirement({ index: commentIndex, comment: response.data }))
           }
         } else {
           response.json().then((r) => {
@@ -115,8 +115,8 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
                   <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">Edit comment</Tooltip>}>
                     <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' disabled><FontAwesomeIcon icon={solid("pen")} /></Button>
                   </OverlayTrigger>
-                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">Mark as completed</Tooltip>}>
-                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { markAsCompleted() }}><FontAwesomeIcon icon={solid("check")} /></Button>
+                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">Mark as {comment.completed ? "to do" : "completed"}</Tooltip>}>
+                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { toggleComplete() }}><FontAwesomeIcon icon={solid("check")} /></Button>
                   </OverlayTrigger>
                 </> : null}
               <span></span>
