@@ -1,6 +1,6 @@
 import json
 
-from api import db
+from api.appDefinition import db
 from api.models import Tag, Topic, Requirement, ExtraEntry, ExtraType, \
     Catalogue
 

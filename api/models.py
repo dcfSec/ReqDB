@@ -1,4 +1,4 @@
-from api import db
+from api.appDefinition import db
 from sqlalchemy.sql import functions
 
 
@@ -9,14 +9,14 @@ class Base(db.Model):
 
 class RequirementTag(Base):
     __tablename__ = "RequirementTag"
-    requirementId = db.Column(db.Integer, db.ForeignKey("requirement.id"), index=True)
-    tagId = db.Column(db.Integer, db.ForeignKey("tag.id"), index=True)
+    requirementId = db.Column(db.Integer, db.ForeignKey("requirement.id", name="fk_requirement"), index=True)
+    tagId = db.Column(db.Integer, db.ForeignKey("tag.id", name="fk_tag"), index=True)
 
 
 class CatalogueTopic(Base):
     __tablename__ = "CatalogueTopic"
-    catalogueId = db.Column(db.Integer, db.ForeignKey("catalogue.id"))
-    topicId = db.Column(db.Integer, db.ForeignKey("topic.id"))
+    catalogueId = db.Column(db.Integer, db.ForeignKey("catalogue.id", name="fk_catalogue"), index=True)
+    topicId = db.Column(db.Integer, db.ForeignKey("topic.id", name="fk_topic"), index=True)
 
 
 class Requirement(Base):
@@ -25,7 +25,7 @@ class Requirement(Base):
     description = db.Column(db.Text, nullable=False)
     parentId = db.Column(
         db.Integer,
-        db.ForeignKey("topic.id", ondelete="CASCADE"),
+        db.ForeignKey("topic.id", name="fk_topic", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -75,7 +75,7 @@ class Topic(Base):
     description = db.Column(db.Text, nullable=False)
     parentId = db.Column(
         db.Integer,
-        db.ForeignKey("topic.id", ondelete="CASCADE"),
+        db.ForeignKey("topic.id", name="fk_topic", ondelete="CASCADE"),
         nullable=True,
         index=True,
     )
@@ -121,13 +121,13 @@ class ExtraEntry(Base):
     content = db.Column(db.Text)
     extraTypeId = db.Column(
         db.Integer,
-        db.ForeignKey("extra_type.id", ondelete="CASCADE"),
+        db.ForeignKey("extra_type.id", name="fk_extra_type", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
     requirementId = db.Column(
         db.Integer,
-        db.ForeignKey("requirement.id", ondelete="CASCADE"),
+        db.ForeignKey("requirement.id", name="fk_requirement", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -158,7 +158,7 @@ class Comment(Base):
     comment = db.Column(db.Text)
     requirementId = db.Column(
         db.Integer,
-        db.ForeignKey("requirement.id", ondelete="CASCADE"),
+        db.ForeignKey("requirement.id", name="fk_requirement", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )

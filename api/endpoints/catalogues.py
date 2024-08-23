@@ -3,7 +3,7 @@ from flask import request, abort
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
-from api import db
+from api.appDefinition import db
 from api.helper import checkAccess
 from api.models import Catalogue as CatalogueModel
 from api.schemas import CatalogueExtendedSchema, CatalogueSchema, \

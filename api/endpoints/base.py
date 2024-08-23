@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 
-from api import db
+from api.appDefinition import db
 from api.helper import checkAccess
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError

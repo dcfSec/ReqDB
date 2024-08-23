@@ -2,7 +2,8 @@ __version__ = '0.1.0'
 
 from flask import send_from_directory
 
-from api import db, app, api_bp, errorHandler, endpoints
+from api.appDefinition import db, app, api_bp
+from api import errorHandler, endpoints
 
 
 with app.app_context():

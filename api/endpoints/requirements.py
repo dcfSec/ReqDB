@@ -3,7 +3,7 @@ from flask import request, abort
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
-from api import db
+from api.appDefinition import db
 from api.models import Topic, Requirement as RequirementModel
 from api.schemas import RequirementSchema, RequirementCommentsSchema
 from api.updateSchemas import RequirementUpdateSchema
