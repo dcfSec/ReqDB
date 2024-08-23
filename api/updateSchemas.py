@@ -1,5 +1,5 @@
 from marshmallow import EXCLUDE, validate
-from api import ma
+from api.appDefinition import ma
 from marshmallow_sqlalchemy import fields
 
 from api.models import ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue, Comment

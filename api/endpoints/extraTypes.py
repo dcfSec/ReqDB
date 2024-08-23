@@ -3,7 +3,7 @@ from flask import request, abort
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
-from api import db
+from api.appDefinition import db
 from api.models import ExtraType as ExtraTypeModel
 from api.schemas import ExtraTypeSchema
 from api.endpoints.base import BaseResource, BaseResources

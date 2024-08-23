@@ -4,7 +4,7 @@ Path mapping for the API.
 Maps classes to the API paths
 """
 
-from api import api
+from api.appDefinition import api
 
 from api.endpoints.catalogues import Catalogue, Catalogues
 from api.endpoints.comments import Comment, Comments

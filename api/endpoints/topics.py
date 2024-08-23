@@ -3,7 +3,7 @@ from flask import request
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
-from api import db
+from api.appDefinition import db
 from api.models import Topic as TopicModel
 from api.schemas import TopicSchema, TopicOnlyIDAndTitleSchema, TopicCommentsSchema
 from api.updateSchemas import TopicUpdateSchema

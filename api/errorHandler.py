@@ -2,7 +2,7 @@
 Error handler for the API. Errors are returned as json.
 """
 
-from api import api_bp, jwt
+from api.appDefinition import api_bp, jwt
 from flask import jsonify
 
 from werkzeug.exceptions import HTTPException
