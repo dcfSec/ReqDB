@@ -18,7 +18,7 @@ import useFetchWithMsal from '../../hooks/useFetchWithMsal';
  * @param {object} props Props for this component: comment, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem
  * @returns Table row for editing an object
  */
-export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, setForce, hideCompleted }) {
+export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, setForce, showCompleted }) {
   const dispatch = useDispatch()
 
   const { error, execute } = useFetchWithMsal({
@@ -78,7 +78,7 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
     )
   }
 
-  if (inSearchField(search, searchFields, comment) && (!comment.completed || !hideCompleted)) {
+  if (inSearchField(search, searchFields, comment) && (!comment.completed || showCompleted)) {
     return (
       <tr>
         <td>{comment.id}</td>
