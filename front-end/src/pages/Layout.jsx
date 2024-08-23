@@ -1,10 +1,8 @@
 import { Outlet } from "react-router-dom";
 import MainNavbar from '../components/MainNavbar';
 import NotificationToast from "../components/NotificationToast";
-import { Col, Container, Image, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { brands } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { useSelector } from 'react-redux'
+import Footer from "../components/Footer";
 
 /**
  * Parent component for all views
@@ -18,11 +16,7 @@ export default function Layout() {
     <>
       <MainNavbar />
       <Outlet />
-      <Container fluid className="bg-footer">
-        <Row className="justify-content-md-center bg-body-tertiary footer">
-          <Col><p className="footer-col text-center"><a href="https://github.com/dcfSec/ReqDB">made by <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip-dcfSec">dcfSec</Tooltip>}><Image className="smallLogo" src={darkMode ? "/dcfSecLogoInverse.svg" : "/dcfSecLogo.svg"} /></OverlayTrigger> code on <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip-github">GitHub</Tooltip>}><FontAwesomeIcon icon={brands("github")} /></OverlayTrigger></a></p></Col>
-        </Row>
-      </Container>
+      <Footer/>
       <NotificationToast />
     </>
   )
