@@ -9,8 +9,8 @@ class Base(db.Model):
 
 class RequirementTag(Base):
     __tablename__ = "RequirementTag"
-    requirementId = db.Column(db.Integer, db.ForeignKey("requirement.id"))
-    tagId = db.Column(db.Integer, db.ForeignKey("tag.id"))
+    requirementId = db.Column(db.Integer, db.ForeignKey("requirement.id"), index=True)
+    tagId = db.Column(db.Integer, db.ForeignKey("tag.id"), index=True)
 
 
 class CatalogueTopic(Base):
@@ -24,7 +24,10 @@ class Requirement(Base):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
     parentId = db.Column(
-        db.Integer, db.ForeignKey("topic.id", ondelete="CASCADE"), nullable=False
+        db.Integer,
+        db.ForeignKey("topic.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
 
     extras = db.relationship(
@@ -71,7 +74,10 @@ class Topic(Base):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
     parentId = db.Column(
-        db.Integer, db.ForeignKey("topic.id", ondelete="CASCADE"), nullable=True
+        db.Integer,
+        db.ForeignKey("topic.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
     )
     parent = db.relationship(
         "Topic",
@@ -114,10 +120,16 @@ class ExtraEntry(Base):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     content = db.Column(db.Text)
     extraTypeId = db.Column(
-        db.Integer, db.ForeignKey("extra_type.id", ondelete="CASCADE"), nullable=False
+        db.Integer,
+        db.ForeignKey("extra_type.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     requirementId = db.Column(
-        db.Integer, db.ForeignKey("requirement.id", ondelete="CASCADE"), nullable=False
+        db.Integer,
+        db.ForeignKey("requirement.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
 
     def __repr__(self):
@@ -145,7 +157,10 @@ class Comment(Base):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     comment = db.Column(db.Text)
     requirementId = db.Column(
-        db.Integer, db.ForeignKey("requirement.id", ondelete="CASCADE"), nullable=False
+        db.Integer,
+        db.ForeignKey("requirement.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     author = db.Column(db.String(200), nullable=False)
     created = db.Column(db.DateTime(timezone=True), server_default=functions.now())
