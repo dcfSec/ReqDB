@@ -20,7 +20,7 @@ export default function Layout() {
           <Col><MainBreadcrumb /></Col>
         </Row>
         <Outlet />
-      </Container>;
+      </Container>
       <Footer />
       <NotificationToast />
     </>
