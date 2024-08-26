@@ -15,7 +15,7 @@ import { toggleSelectAll, setVisibleRow } from '../../stateSlices/BrowseSlice';
  * @param {object} props Props for the component: headers, children, markAll, markAllCallback, markAllChecked
  * @returns Returns a data table with default header
  */
-export default function RequirementsTable({ rows }) {
+export default function RequirementsTable({ children }) {
 
   const dispatch = useDispatch()
   const allSelected = useSelector(state => state.browse.rows.allSelected)
@@ -39,8 +39,7 @@ export default function RequirementsTable({ rows }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, index) => (
-            <BrowseRow key={index} index={index} row={row}></BrowseRow>))}
+          {children}
         </tbody>
       </Suspense>
     </Table>

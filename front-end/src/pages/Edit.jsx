@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import EditorLayout from '../components/Edit/EditLayout';
 import EditTable from '../components/Edit/EditTable';
 
-import { Alert, ProgressBar } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { ErrorMessage } from '../components/MiniComponents'
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { protectedResources } from '../authConfig';
@@ -13,6 +13,7 @@ import { toast } from "../stateSlices/NotificationToastSlice";
 import { setItems } from "../stateSlices/EditSlice";
 import AddListRowSkeleton from "../components/Edit/AddListRowSkeleton";
 import EditListRowSkeleton from "../components/Edit/EditListRowSkeleton";
+import LoadingBar from '../components/LoadingBar';
 
 /**
  * Component for the parent view of the editor pages
@@ -50,7 +51,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
     });
   }, [execute])
 
-  let body = <ProgressBar animated now={100} />
+  let body = <LoadingBar />
 
   if (error) {
     body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
