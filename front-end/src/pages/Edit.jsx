@@ -14,6 +14,8 @@ import { setItems } from "../stateSlices/EditSlice";
 import AddListRowSkeleton from "../components/Edit/AddListRowSkeleton";
 import EditListRowSkeleton from "../components/Edit/EditListRowSkeleton";
 import LoadingBar from '../components/LoadingBar';
+import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
+
 
 /**
  * Component for the parent view of the editor pages
@@ -25,7 +27,10 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
   const dispatch = useDispatch()
   const items = useSelector(state => state.edit.items)
 
-  document.title = `${editPageName} | ReqDB - Requirement Database`;
+  useEffect(() => {
+    dispatch(setPageTitle(editPageName))
+    dispatch(setBreadcrumbs([{ href: "", title: "Edit", active: true }, { href: "", title: editPageName, active: true }]))
+  }, []);
 
   const [search, setSearch] = useState("");
 
@@ -80,7 +85,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
         searchFields={searchFields}
         editPageName={editPageName}
         humanKey={humanKey}
-        ></EditListRowSkeleton>
+      ></EditListRowSkeleton>
     } else {
       return null
     }
