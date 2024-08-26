@@ -16,6 +16,7 @@ import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { useDispatch, useSelector } from 'react-redux'
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { reset, setRequirement } from "../stateSlices/RequirementSlice";
+import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -25,18 +26,21 @@ import { reset, setRequirement } from "../stateSlices/RequirementSlice";
 export default function Requirement() {
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    dispatch(setPageTitle("View Requirement"))
+    dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: "View Requirement", active: true }]))
+  }, []);
+
   const roles = useSelector(state => state.user.roles)
   const requirement = useSelector(state => state.requirement.requirement)
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
-  
+
   const [showCompleted, setShowCompleted] = useState(false);
 
   const params = useParams();
   const id = params.requirementId
-  let title = "View Requirement"
-  document.title = `${title} | ReqDB - Requirement Database`;
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
@@ -46,15 +50,17 @@ export default function Requirement() {
 
   useEffect(() => {
     dispatch(reset());
-      execute("GET", `requirements/${id}`).then((response) => {
-        if (response && response.status === 200) {
-          dispatch(setRequirement(response.data))
-          setFetched(true);
-        } else if (response && response.status !== 200) {
-          setAPIError(response.message)
-          setFetched(true);
-        }
-      });
+    execute("GET", `requirements/${id}`).then((response) => {
+      if (response && response.status === 200) {
+        dispatch(setRequirement(response.data))
+        dispatch(setPageTitle(`${requirement.key} - ${requirement.title}`))
+        dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: `${requirement.key} - ${requirement.title}`, active: true }]))
+        setFetched(true);
+      } else if (response && response.status !== 200) {
+        setAPIError(response.message)
+        setFetched(true);
+      }
+    });
   }, [execute])
 
   let body = <LoadingBar />
@@ -64,63 +70,61 @@ export default function Requirement() {
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
-      title = `${requirement.key} - ${requirement.title}`
-      document.title = `${title} | ReqDB - Requirement Database`;
-      const completedCount = [...requirement.comments].filter((el) => el.completed == true).length
-      body = <Container>
+    const completedCount = [...requirement.comments].filter((el) => el.completed == true).length
+    body = <Container>
+      <Row>
+        <Col>
+          <Card>
+            <Card.Header as="h3">Tags</Card.Header>
+            <Card.Body>
+              <Card.Text>{[...requirement.tags].map(tag => (<span key={tag.id}><Badge bg="secondary">{tag.name}</Badge>{' '}</span>))}</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col>
+          <Card>
+            <Card.Header as="h3">Topics</Card.Header>
+            <Card.Body>
+              <Card.Text>{buildTopicsList({ ...requirement.parent }).map(topic => (<span key={topic}>{' '}<FontAwesomeIcon icon={solid("arrow-right")} />{' '}<Badge bg="secondary">{topic}</Badge></span>))}</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Card>
+            <Card.Header as="h3">Description</Card.Header>
+            <Card.Body>
+              <ReactMarkdown className="card-text">{requirement.description}</ReactMarkdown>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Card>
+            <Card.Header as="h3">Extras</Card.Header>
+            <Card.Body>
+              {[...requirement.extras].map(extra => (<span key={extra.id} ><Card.Title>{extra.extraType.title}</Card.Title>{printExtraWithType(extra.extraType.extraType, extra.content)}</span>))}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      {roles.includes(appRoles.Comments.Reader) || roles.includes(appRoles.Comments.Writer) ?
         <Row>
           <Col>
             <Card>
-              <Card.Header as="h3">Tags</Card.Header>
+              <Card.Header as="h3">Comments</Card.Header>
               <Card.Body>
-                <Card.Text>{[...requirement.tags].map(tag => (<span key={tag.id}><Badge bg="secondary">{tag.name}</Badge>{' '}</span>))}</Card.Text>
+                {completedCount > 0 ? <Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label={`${completedCount} comments completed. Show completed`} reverse /> : null}
+                {roles.includes(appRoles.Comments.Reader) ? [...requirement.comments].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"requirement"} rowIndex={null} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} showCompleted={showCompleted} />) : null}
+                {roles.includes(appRoles.Comments.Writer) ? <><Card.Title>Add Comment</Card.Title><AddComment view={"requirement"} index={null} requirementId={requirement["id"]} /></> : null}
               </Card.Body>
             </Card>
           </Col>
-          <Col>
-            <Card>
-              <Card.Header as="h3">Topics</Card.Header>
-              <Card.Body>
-                <Card.Text>{buildTopicsList({...requirement.parent}).map(topic => (<span key={topic}>{' '}<FontAwesomeIcon icon={solid("arrow-right")} />{' '}<Badge bg="secondary">{topic}</Badge></span>))}</Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Card>
-              <Card.Header as="h3">Description</Card.Header>
-              <Card.Body>
-                <ReactMarkdown className="card-text">{requirement.description}</ReactMarkdown>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Card>
-              <Card.Header as="h3">Extras</Card.Header>
-              <Card.Body>
-                {[...requirement.extras].map(extra => (<span key={extra.id} ><Card.Title>{extra.extraType.title}</Card.Title>{printExtraWithType(extra.extraType.extraType, extra.content)}</span>))}
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-        {roles.includes(appRoles.Comments.Reader) || roles.includes(appRoles.Comments.Writer) ?
-          <Row>
-            <Col>
-              <Card>
-                <Card.Header as="h3">Comments</Card.Header>
-                <Card.Body>
-                  { completedCount > 0 ? <Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label={`${completedCount} comments completed. Show completed`} reverse/>: null}
-                  {roles.includes(appRoles.Comments.Reader) ? [...requirement.comments].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"requirement"} rowIndex={null} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} showCompleted={showCompleted}/>) : null}
-                  {roles.includes(appRoles.Comments.Writer) ? <><Card.Title>Add Comment</Card.Title><AddComment view={"requirement"} index={null} requirementId={requirement["id"]} /></> : null}
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row> : null
-        }
-      </Container>
+        </Row> : null
+      }
+    </Container>
   }
 
   function buildTopicsList(topic) {

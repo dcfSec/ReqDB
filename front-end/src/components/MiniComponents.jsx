@@ -30,12 +30,12 @@ export function MainLogoSpinner() {
  * @param {object} props Props for the component: items
  * @returns Breadcrumbs of the page
  */
-export function MainBreadcrumb(props) {
-  const { items } = props
+export function MainBreadcrumb() {
+  const breadcrumbs = useSelector(state => state.layout.breadcrumbs)
   return (
     <Breadcrumb>
       <Breadcrumb.Item active={true}>ReqDB</Breadcrumb.Item>
-      {items.map(({ title, href, active }, index) => (
+      {breadcrumbs.map(({ title, href, active }, index) => (
         <Breadcrumb.Item key={index} href={href} active={active}>{title}</Breadcrumb.Item>
       ))}
     </Breadcrumb>
@@ -45,7 +45,7 @@ export function MainBreadcrumb(props) {
 /**
  * Component for the searchfield
  * 
- * @param {object} props Props for the component: tilte, search, onsearch
+ * @param {object} props Props for the component: title, search, onsearch
  * @returns Searchfield component
  */
 export function SearchField(props) {

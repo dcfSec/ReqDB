@@ -7,6 +7,7 @@ import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { Link } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
+import { useState } from "react";
 
 import { protectedResources } from "../../authConfig";
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
@@ -15,11 +16,13 @@ import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 /**
  * Component for a row to edit an object
  * 
- * @param {object} props Props for this component: comment, showDeleteModal, setShowDeleteModal, setForce, handleDeleteItem
+ * @param {object} props Props for this component: comment, showDeleteModal, setShowDeleteModal, handleDeleteItem
  * @returns Table row for editing an object
  */
-export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, setForce, showCompleted }) {
+export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, showCompleted }) {
   const dispatch = useDispatch()
+
+  const [force, setForce] = useState(false);
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,

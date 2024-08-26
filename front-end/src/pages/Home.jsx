@@ -1,10 +1,11 @@
-import { Button, Col, Container, Dropdown, Row, Stack } from "react-bootstrap";
-import { MainBreadcrumb } from "../components/MiniComponents";
+import { Button, Col, Dropdown, Row, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { appRoles } from "../authConfig";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { homeTitle, preMOTD, postMOTD } from "../static";
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
+import { useEffect } from "react";
 
 /**
  * Container for the main view when logged in
@@ -12,18 +13,16 @@ import { useSelector } from 'react-redux'
  * @returns Container for the home view
  */
 export default function Home() {
-  const title = "Home"
-  const breadcrumbs = [
-    { href: "", title: title, active: true }
-  ]
-  document.title = `${title} | ReqDB - Requirement Database`;
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(setBreadcrumbs([{ href: "", title: "Home", active: true }]))
+    dispatch(setPageTitle("Home"))
+  }, []);
 
   const roles = useSelector(state => state.user.roles)
 
-  return <Container fluid className="bg-body">
-    <Row>
-      <Col><MainBreadcrumb items={breadcrumbs}></MainBreadcrumb></Col>
-    </Row>
+  return <>
     <Row>
       <Col><h1>ReqDB</h1></Col>
     </Row>
@@ -54,5 +53,5 @@ export default function Home() {
         </Stack>
       </Col>
     </Row>
-  </Container>;
+  </>;
 };

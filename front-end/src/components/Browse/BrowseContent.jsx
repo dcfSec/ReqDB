@@ -12,7 +12,8 @@ import Search from "./Search"
 
 import { useSelector, useDispatch } from 'react-redux'
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
-import { reset, setData, addRow, sortRows, setTagFilterItems, addTopicFilterItems, sortTopicFilterItems, addExtraHeader, setStatus, setTitle, trace } from '../../stateSlices/BrowseSlice';
+import { reset, setData, sortRows, setTagFilterItems, sortTopicFilterItems, setStatus } from '../../stateSlices/BrowseSlice';
+import { setPageTitle } from "../../stateSlices/LayoutSlice";
 
 import { Suspense, startTransition, useDeferredValue } from "react";
 import BrowseRow from "./BrowseRow";
@@ -53,7 +54,7 @@ export default function BrowseContent({ id }) {
         dispatch(sortRows())
         dispatch(sortTopicFilterItems())
         dispatch(setData(response.data))
-        dispatch(setTitle(response.data.title))
+        dispatch(setPageTitle(response.data.title))
         dispatch(showSpinner(false))
         dispatch(setStatus("ok"));
         });

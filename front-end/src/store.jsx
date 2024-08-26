@@ -7,6 +7,7 @@ import EditReducer from './stateSlices/EditSlice'
 import UserReducer from './stateSlices/UserSlice'
 import RequirementReducer from './stateSlices/RequirementSlice'
 import CommentReducer from './stateSlices/CommentSlice'
+import LayoutReducer from './stateSlices/LayoutSlice'
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     user: UserReducer,
     requirement: RequirementReducer,
     comment: CommentReducer,
+    layout: LayoutReducer,
   }
 })
 

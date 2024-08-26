@@ -10,15 +10,9 @@ import { MainBreadcrumb, SearchField } from '../MiniComponents';
  * @returns Returns a container for the main editor layout
  */
 export default function EditorLayout({ title, children, search, onSearch }) {
-  const breadcrumbs = [
-    { href: "", title: "Edit", active: true },
-    { href: "", title: title, active: true }
-  ]
+
   return (
-    <Container fluid className="bg-body">
-      <Row>
-        <Col><MainBreadcrumb items={breadcrumbs}></MainBreadcrumb></Col>
-      </Row>
+    <>
       <Row>
         <Col><h2>{title}</h2></Col>
       </Row>
@@ -28,6 +22,6 @@ export default function EditorLayout({ title, children, search, onSearch }) {
       <Row>
         {children}
       </Row>
-    </Container>
+    </>
   );
 }
