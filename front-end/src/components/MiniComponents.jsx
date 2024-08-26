@@ -4,7 +4,7 @@ import { Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { useSelector } from 'react-redux'
-import { addRow, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
+import { addRows, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 import store from '../store'
 import { Button } from "react-bootstrap";
 
@@ -130,7 +130,7 @@ export function ErrorMessage(message) {
  * @param {Object} topics Object containing the topics of the requirements
  * @param {Object} item A requirement
  */
-export function buildRows(extraHeaders, tagFilterItems, topics, item) {
+export async function buildRows(extraHeaders, tagFilterItems, topics, item, requirements = [], selected = {}, visible = {}, root = true) {
   const dispatch = store.dispatch
   const topicFilterItems = store.getState().browse.topics.filterItems
 
@@ -165,7 +165,9 @@ export function buildRows(extraHeaders, tagFilterItems, topics, item) {
             dispatch(addExtraHeader(header))
           }
         });
-        dispatch(addRow({ ...base, ...extraColumns }))
+        requirements.push({ ...base, ...extraColumns })
+        selected[requirement.id] = false
+        visible[requirement.id] = true
       }
     });
   }
@@ -174,9 +176,10 @@ export function buildRows(extraHeaders, tagFilterItems, topics, item) {
       if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
         dispatch(addTopicFilterItems(`${topic.key} ${topic.title}`))
       }
-      buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic)
+      buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic, requirements, selected, visible, false)
     });
   }
+  if (root) dispatch(addRows({ requirements, selected, visible }))
 }
 
 /**
@@ -201,4 +204,10 @@ export function EditButtons(props) {
   } else {
     return <><Button variant="success" onClick={() => setEdit(true)}>Edit</Button>{' '}<Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button></>
   }
+}
+
+export function isVisible(state, row) {
+  return state.rows.visible[row.id] = inSearchField(state.search, Object.keys(row), row)
+    && (/* tagFilterSelected.length === 0 || */ row.Tags.some(r => state.tags.filterSelected.indexOf(r) >= 0) || (row.Tags.length === 0 && state.tags.filterSelected.indexOf("No Tags") >= 0))
+    && row.Topics.some(r => state.topics.filterSelected.indexOf(`${r.key} ${r.title}`) >= 0)
 }

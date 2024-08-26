@@ -16,7 +16,7 @@ export default function FilterTopicsModal({ show, setShow }) {
 
   const [search, setSearch] = useState("");
 
-  const topics = useSelector(state => state.browse.data).topics
+  const topics = useSelector(state => state.browse.data.topics)
 
   function reset() {
     setShow(false)

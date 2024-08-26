@@ -11,7 +11,7 @@ import { toggleSelectRow, setVisibleRow } from '../../stateSlices/BrowseSlice';
 import { appRoles } from '../../authConfig';
 import { Link } from "react-router-dom";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import CommentModal from "../Comments/CommentModal";
 
 
@@ -21,32 +21,20 @@ import CommentModal from "../Comments/CommentModal";
  * @param {object} props Props for this component: index, extraHeaders, row, search, tags, tagFiltered, topicFiltered, markRowCallback, markRowChecked
  * @returns A row for the browse view
  */
-export default function BrowseRow({ index, row }) {
+export default memo(function BrowseRow({ index, row }) {
 
   const dispatch = useDispatch()
   const selected = useSelector(state => state.browse.rows.selected)
   const extraHeaders = useSelector(state => state.browse.extraHeaders)
   const roles = useSelector(state => state.user.roles)
 
-  const tagFilterSelected = useSelector(state => state.browse.tags.filterSelected)
-  const topicFilterSelected = useSelector(state => state.browse.topics.filterSelected)
-  const search = useSelector(state => state.browse.search)
+  const visible = useSelector(state => state.browse.rows.visible)[row.id]
 
-  const [visible, setVisible] = useState(true)
+  //const [visible, setVisible] = useState(true)
   const [showComments, setShowComments] = useState(false)
-
-  useEffect(() => { dispatch(setVisibleRow({ id: row.id, visible })) }, [visible]);
-  useEffect(() => { setVisible(isVisible()) }, [topicFilterSelected, tagFilterSelected, search]);
 
   const topicMaxlength = 40
   let badgeIdExtraFieldRunner = 0
-  
-  function isVisible() {
-    const isVisible = inSearchField(search, Object.keys(row), row)
-      && (/* tagFilterSelected.length === 0 || */ row.Tags.some(r => tagFilterSelected.indexOf(r) >= 0) || (row.Tags.length === 0 && tagFilterSelected.indexOf("No Tags") >= 0))
-      && row.Topics.some(r => topicFilterSelected.indexOf(`${r.key} ${r.title}`) >= 0 )
-    return isVisible
-  }
 
   function renderExtraField(item, extraType) {
     if (extraHeaders[extraType] === 1) {
@@ -86,4 +74,4 @@ export default function BrowseRow({ index, row }) {
 
   return (visible ? renderRow : null )
 
-}
+})

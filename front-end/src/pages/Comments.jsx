@@ -1,10 +1,9 @@
-import { Button, Col, Container, ProgressBar, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import { MainBreadcrumb, SearchField } from '../components/MiniComponents';
-import { appRoles } from "../authConfig";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { ErrorMessage } from '../components/MiniComponents'
 import EditTable from '../components/Edit/EditTable';
 import Form from 'react-bootstrap/Form';
+import LoadingBar from "../components/LoadingBar";
 
 
 import { protectedResources } from "../authConfig";
@@ -72,7 +71,7 @@ export default function Comments() {
     });
   }, [execute])
 
-  let searchBar = <ProgressBar animated now={100} />
+  let searchBar = <LoadingBar/>
   let table = <></>
 
   if (error) {

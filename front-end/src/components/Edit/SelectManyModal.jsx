@@ -1,7 +1,7 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { SearchField, inSearchField, ErrorMessage } from '../MiniComponents';
-import { Alert, Col, Container, Form, ProgressBar, Row, Table } from 'react-bootstrap';
+import { Alert, Col, Container, Form, Row, Table } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 import { protectedResources } from '../../authConfig';
@@ -9,6 +9,7 @@ import { protectedResources } from '../../authConfig';
 import { useDispatch } from 'react-redux'
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../../stateSlices/NotificationToastSlice";
+import LoadingBar from '../LoadingBar';
 
 /**
  * Component for a modal to select many elements to link to this object
@@ -40,7 +41,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
     }
   }, [execute, data])
 
-  let body = <ProgressBar animated now={100} />
+  let body = <LoadingBar />
 
   if (error) {
     body = <Alert variant="danger">Error: {error.message}</Alert>

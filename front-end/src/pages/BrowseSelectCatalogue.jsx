@@ -1,14 +1,15 @@
-import { Alert, Col, Container, ListGroup, ProgressBar, Row, Stack } from "react-bootstrap";
+import { Alert, Col, Container, ListGroup, Row, Stack } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 import { useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
-import SelecttCatalogueItem from "../components/Browse/SelectCatalogueItem";
+import SelectCatalogueItem from "../components/Browse/SelectCatalogueItem";
 
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { useSelector, useDispatch } from 'react-redux'
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { set, reset, sort } from "../stateSlices/CatalogueDataSlice";
+import LoadingBar from "../components/LoadingBar";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -48,7 +49,7 @@ export default function BrowseSelectCatalogue() {
       });
   }, [execute])
 
-  let body = <ProgressBar animated now={100} />
+  let body = <LoadingBar/>
 
   if (error) {
     body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
@@ -56,7 +57,7 @@ export default function BrowseSelectCatalogue() {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
     body = <Stack gap={2} className="col-md-5 mx-auto"><ListGroup>
-        {catalogueData.map((catalogue, index) => (<SelecttCatalogueItem key={index} catalogue={catalogue} />))}
+        {catalogueData.map((catalogue, index) => (<SelectCatalogueItem key={index} catalogue={catalogue} />))}
       </ListGroup></Stack>
   }
 

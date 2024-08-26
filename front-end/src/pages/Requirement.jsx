@@ -1,10 +1,11 @@
-import { Alert, Badge, Card, Col, Container, ProgressBar, Row, Form } from "react-bootstrap";
+import { Alert, Badge, Card, Col, Container, Row, Form } from "react-bootstrap";
 import { MainBreadcrumb } from "../components/MiniComponents";
 import CommentEntry from "../components/Comments/CommentEntry";
 import AddComment from "../components/Comments/AddComment";
 import { useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
 import { appRoles } from '../authConfig';
+import LoadingBar from "../components/LoadingBar";
 
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
@@ -56,7 +57,7 @@ export default function Requirement() {
       });
   }, [execute])
 
-  let body = <ProgressBar animated now={100} />
+  let body = <LoadingBar />
 
   if (error) {
     body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>

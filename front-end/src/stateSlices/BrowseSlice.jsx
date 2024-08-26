@@ -1,7 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { isVisible } from '../components/MiniComponents'
 
 const initialState = {
   data: {},
+  title: "Loading...",
+  status: "nothing",
   search: "",
   rows: {
     items: [],
@@ -33,6 +36,9 @@ export const browseSlice = createSlice({
     },
     setSearch: (state, action) => {
       state.search = action.payload
+      state.rows.items.forEach((row) => {
+        state.rows.visible[row.id] = isVisible(state, row)
+      })
     },
     addRow: (state, action) => {
       state.rows.items = [
@@ -50,6 +56,20 @@ export const browseSlice = createSlice({
       state.rows.visible = {
         ...state.rows.visible,
         ...newVisible
+      }
+    },
+    addRows: (state, action) => {
+      state.rows.items = [
+        ...state.rows.items,
+        ...action.payload.requirements
+      ]
+      state.rows.selected = {
+        ...state.rows.selected,
+        ...action.payload.selected
+      }
+      state.rows.visible = {
+        ...state.rows.visible,
+        ...action.payload.visible
       }
     },
     setVisibleRow: (state, action) => {
@@ -127,6 +147,9 @@ export const browseSlice = createSlice({
         ]
       }
       state.tags.allSelected = JSON.stringify([...state.tags.filterSelected].sort()) === JSON.stringify([...state.tags.filterItems].sort());
+      state.rows.items.forEach((row) => {
+        state.rows.visible[row.id] = isVisible(state, row)
+      });
     },
     toggleTagFilterSelectedAll: (state, action) => {
       if (action.payload === true) {
@@ -138,6 +161,10 @@ export const browseSlice = createSlice({
         ]
       }
       state.tags.allSelected = JSON.stringify([...state.tags.filterSelected].sort()) === JSON.stringify([...state.tags.filterItems].sort());
+
+      state.rows.items.forEach((row) => {
+        state.rows.visible[row.id] = isVisible(state, row)
+      });
     },
     addExtraHeader: (state, action) => {
       state.extraHeaders = {
@@ -175,11 +202,19 @@ export const browseSlice = createSlice({
         ...state.topics.filterSelected,
         ...action.payload.filter(n => !state.topics.filterSelected.includes(n)),
       ]
+
+      state.rows.items.forEach((row) => {
+        state.rows.visible[row.id] = isVisible(state, row)
+      })
     },
     removeTopicFilterSelected: (state, action) => {
       state.topics.filterSelected = [
         ...state.topics.filterSelected.filter(n => !action.payload.includes(n))
       ]
+
+      state.rows.items.forEach((row) => {
+        state.rows.visible[row.id] = isVisible(state, row)
+      })
     },
     addComment: (state, action) => {
       const tmp = [
@@ -200,9 +235,18 @@ export const browseSlice = createSlice({
       tmp[action.payload.index].Comments[action.payload.commentIndex] = action.payload.comment
       state.comments = [...tmp]
     },
+    setTitle: (state, action) => {
+      state.title = action.payload
+    },
+    setStatus: (state, action) => {
+      state.status = action.payload
+    },
+    trace: (state, action) => {
+      console.log(action.payload)
+    }
   },
 })
 
-export const { reset, setData, addRow, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, addComment, removeComment, updateComment } = browseSlice.actions
+export const { setVisibleRows, trace, reset, setData, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, addComment, removeComment, updateComment, setTitle, setStatus } = browseSlice.actions
 
 export default browseSlice.reducer
