@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
 import LoadingBar from "../components/LoadingBar";
 import BrowseContent from "../components/Browse/BrowseContent";
-import { setBreadcrumbs } from "../stateSlices/LayoutSlice";
+import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { useEffect } from "react";
 
 /**
@@ -19,6 +19,7 @@ export default function BrowseCatalogue() {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    dispatch(setPageTitle("Loading..."))
     dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: title, active: true }]))
   }, []);
 
