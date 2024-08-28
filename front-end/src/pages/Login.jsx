@@ -3,6 +3,7 @@ import { useMsal } from "@azure/msal-react";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
+import { homeTitle, preMOTD, postMOTD } from "../static";
 
 /**
  * View to display the button to login with the oauth provider
@@ -27,8 +28,10 @@ export default function Login() {
     <Row>
       <Col>
         <Stack gap={2} className="col-md-3 mx-auto">
-          <h2>Welcome to ReqDB</h2>
+          <h2>{homeTitle}</h2>
+          <ReactMarkdown>{preMOTD}</ReactMarkdown>
           <Button onClick={() => { instance.loginRedirect(); }} variant="outline-secondary">Login with Azure Entra</Button>
+          <ReactMarkdown>{postMOTD}</ReactMarkdown>
         </Stack>
       </Col>
     </Row>
