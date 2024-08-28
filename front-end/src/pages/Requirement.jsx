@@ -27,12 +27,13 @@ export default function Requirement() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(setPageTitle("View Requirement"))
+    dispatch(setPageTitle("View Requirement - Loading..."))
     dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: "View Requirement", active: true }]))
   }, []);
 
   const roles = useSelector(state => state.user.roles)
   const requirement = useSelector(state => state.requirement.requirement)
+  const title = useSelector(state => state.layout.pageTitle)
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
@@ -53,8 +54,8 @@ export default function Requirement() {
     execute("GET", `requirements/${id}`).then((response) => {
       if (response && response.status === 200) {
         dispatch(setRequirement(response.data))
-        dispatch(setPageTitle(`${requirement.key} - ${requirement.title}`))
-        dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: `${requirement.key} - ${requirement.title}`, active: true }]))
+        dispatch(setPageTitle(`${response.data.key} - ${response.data.title}`))
+        dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: `${response.data.key} - ${response.data.title}`, active: true }]))
         setFetched(true);
       } else if (response && response.status !== 200) {
         setAPIError(response.message)
@@ -147,16 +148,8 @@ export default function Requirement() {
     }
   }
 
-  const breadcrumbs = [
-    { href: "/Browse", title: "Browse", active: false },
-    { href: "", title: title, active: true }
-  ]
-
   return (
-    <Container fluid className="bg-body">
-      <Row>
-        <Col><MainBreadcrumb items={breadcrumbs}></MainBreadcrumb></Col>
-      </Row>
+    <>
       <Row>
         <Col><h2>{title}</h2></Col>
       </Row>
@@ -165,6 +158,6 @@ export default function Requirement() {
           {body}
         </Col>
       </Row>
-    </Container>
+    </>
   );
 }
