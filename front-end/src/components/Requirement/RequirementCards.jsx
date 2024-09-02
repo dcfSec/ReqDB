@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import { useState } from "react";
 import CommentEntry from "../Comments/CommentEntry";
 import AddComment from "../Comments/AddComment";
+import ExtraField from "../Browse/ExtraField";
 
 
 /**
@@ -83,23 +84,11 @@ export function ExtraCard() {
 
   const requirement = useSelector(state => state.requirement.requirement)
 
-  function printExtraWithType(extraType, content) {
-    if (extraType === 1) {
-      return <p>{content}</p>
-    } else if (extraType === 2) {
-      return <ReactMarkdown>{content}</ReactMarkdown>
-    } else if (extraType === 3) {
-      return <p>{content}</p>
-    } else {
-      return <></>
-    }
-  }
-
   return (
     <Card>
       <Card.Header as="h3">Extras</Card.Header>
       <Card.Body>
-        {[...requirement.extras].map(extra => (<span key={extra.id} ><Card.Title>{extra.extraType.title}</Card.Title>{printExtraWithType(extra.extraType.extraType, extra.content)}</span>))}
+        {[...requirement.extras].map(extra => (<span key={extra.id} ><Card.Title>{extra.extraType.title}</Card.Title><ExtraField index={0} extraType={extra.extraType.extraType} item={extra.content}/></span>))}
       </Card.Body>
     </Card>
   )

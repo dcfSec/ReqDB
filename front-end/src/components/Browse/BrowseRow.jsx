@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 
 import { useEffect, useState, memo } from "react";
 import CommentModal from "../Comments/CommentModal";
+import ExtraField from "./ExtraField";
 
 
 /**
@@ -34,17 +35,6 @@ export default memo(function BrowseRow({ index, row }) {
   const [showComments, setShowComments] = useState(false)
 
   const topicMaxlength = 40
-  let badgeIdExtraFieldRunner = 0
-
-  function renderExtraField(item, extraType) {
-    if (extraHeaders[extraType] === 1) {
-      return item
-    } else if (extraHeaders[extraType] === 2) {
-      return <ReactMarkdown>{item}</ReactMarkdown>
-    } else if (extraHeaders[extraType] === 3) {
-      return item ? item.split(";").map((badge) => (<span key={"extraFieldBade" + ++badgeIdExtraFieldRunner}><Badge bg="secondary">{badge}</Badge><br /></span>)) : null
-    }
-  }
 
   const commentCount = [...row.Comments].filter((el) => el.completed == false).length
   let renderRow = <tr key={row.Key}>
@@ -67,7 +57,7 @@ export default memo(function BrowseRow({ index, row }) {
     <td>{row.Key}</td>
     <td>{row.Title}</td>
     <td><ReactMarkdown>{row.Description}</ReactMarkdown></td>
-    {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}>{renderExtraField(row[extraHeader], extraHeader)}</td>))}
+    {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader]}/></td>))}
     <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectRow(row.id)) }} checked={selected[row.id]} /></td>
     { roles.includes(appRoles.Comments.Reader) ? <CommentModal index={index} show={showComments} setShow={setShowComments}></CommentModal> : null }
   </tr>
