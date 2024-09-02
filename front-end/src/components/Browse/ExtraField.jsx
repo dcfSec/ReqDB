@@ -8,7 +8,7 @@ import { ReactMarkdown } from "react-markdown/lib/react-markdown";
  * @param {object} props Props for this component: index, extraType, item
  * @returns An extra field
  */
-export default function ExtraField({ index, extraType, item }) {
+export default function ExtraField({ index, extraType, item, lineBreak = false }) {
 
   let badgeIdExtraFieldRunner = 0
 
@@ -17,6 +17,6 @@ export default function ExtraField({ index, extraType, item }) {
   } else if (extraType === 2) {
     return <ReactMarkdown>{item}</ReactMarkdown>
   } else if (extraType === 3) {
-    return item ? item.split(";").map((badge) => (<span key={"extraFieldBade" + index + "-" + ++badgeIdExtraFieldRunner}><Badge bg="secondary">{badge}</Badge><br /></span>)) : null
+    return item ? item.split(";").map((badge) => (<span key={"extraFieldBade" + index + "-" + ++badgeIdExtraFieldRunner}><Badge bg="secondary">{badge}</Badge>{lineBreak ? <br/> : ' '}</span>)) : null
   }
 }

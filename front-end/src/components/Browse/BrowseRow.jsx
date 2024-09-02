@@ -57,7 +57,7 @@ export default memo(function BrowseRow({ index, row }) {
     <td>{row.Key}</td>
     <td>{row.Title}</td>
     <td><ReactMarkdown>{row.Description}</ReactMarkdown></td>
-    {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader]}/></td>))}
+    {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader]} lineBreak={true}/></td>))}
     <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectRow(row.id)) }} checked={selected[row.id]} /></td>
     { roles.includes(appRoles.Comments.Reader) ? <CommentModal index={index} show={showComments} setShow={setShowComments}></CommentModal> : null }
   </tr>
