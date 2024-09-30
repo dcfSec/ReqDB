@@ -4,10 +4,9 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
-import { inSearchField } from "../MiniComponents";
 import Stack from 'react-bootstrap/Stack';
 import { useSelector, useDispatch } from 'react-redux'
-import { toggleSelectRow, setVisibleRow } from '../../stateSlices/BrowseSlice';
+import { toggleSelectRow } from '../../stateSlices/BrowseSlice';
 import { appRoles } from '../../authConfig';
 import { Link } from "react-router-dom";
 
@@ -41,8 +40,8 @@ export default memo(function BrowseRow({ index, row }) {
     <td className="vertical-middle">
       <Stack gap={1}>
         <Button className="eye-button" variant="primary" as={Link} to={`/Browse/Requirement/${row.id}`}><FontAwesomeIcon icon={solid("link")} /></Button>
-        <Button className="eye-button" variant="primary" onClick={() => { setShowComments(true) }} style={{ position: "relative" }}><FontAwesomeIcon icon={solid("comment")} />
-        { roles.includes(appRoles.Comments.Reader) ? commentCount > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1.5em', marginLeft: '-0.5em'}}>{commentCount}</Badge><span className="visually-hidden">comments</span></> : null : null }</Button>
+        { roles.includes(appRoles.Comments.Reader) ? <Button className="eye-button" variant="primary" onClick={() => { setShowComments(true) }} style={{ position: "relative" }}><FontAwesomeIcon icon={solid("comment")} />
+        { commentCount > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1.5em', marginLeft: '-0.5em'}}>{commentCount}</Badge><span className="visually-hidden">comments</span></> : null }</Button> : null }
       </Stack>
     </td>
     <td>{row.Tags.map((tag) => (<span key={row.Key + " " + tag}><Badge bg="info">{tag}</Badge><br /></span>))}</td>
