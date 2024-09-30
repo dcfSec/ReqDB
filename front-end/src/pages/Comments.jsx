@@ -1,4 +1,4 @@
-import { Col, Row } from "react-bootstrap";
+import { Alert, Col, Row } from "react-bootstrap";
 import { SearchField } from '../components/MiniComponents';
 import { ErrorMessage } from '../components/MiniComponents'
 import EditTable from '../components/Edit/EditTable';
