@@ -9,6 +9,6 @@ cd front-end
 npm run build
 cd ..
 
-zip -r ReqDB.zip app.py requirements.txt api/ front-end/dist
+zip -r ReqDB.zip app.py requirements.txt api/ front-end/dist migrations/
 
 az webapp deploy --name $APP_SERVICE_NAME --resource-group $RESOURCE_GROUP_NAME --src-path ReqDB.zip
