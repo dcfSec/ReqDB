@@ -81,7 +81,7 @@ export default function Comments() {
     table = <EditTable headers={headers}>
       { comments.length > 0 ? comments.map((item, index) => (
         <CommentRow key={index} index={index} search={search} searchFields={searchFields} comment={item} showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} showCompleted={showCompleted}/>
-      )) : <tr><td colSpan={5} style={{textAlign: 'center'}}>No comments</td></tr> }
+      )) : <tr><td colSpan={6} style={{textAlign: 'center'}}>No comments</td></tr> }
     </EditTable>
   }
 
