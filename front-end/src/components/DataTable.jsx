@@ -7,9 +7,9 @@ import Table from 'react-bootstrap/Table';
  * @param {object} props Props for the component: headers, children
  * @returns Returns a edit table with headers
  */
-export default function EditTable({ headers, children }) {
+export default function DataTable({ headers, children }) {
   return (
-    <Table responsive id="EditTable" striped>
+    <Table responsive id="DataTable" striped>
       <Suspense fallback={null}>
         <thead>
           <tr>

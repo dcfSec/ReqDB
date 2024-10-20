@@ -15,6 +15,7 @@ from api.endpoints.tags import Tag, Tags
 from api.endpoints.topics import Topic, Topics
 from api.endpoints.coffee import Coffee
 from api.endpoints.wildcard import Wildcard
+from api.endpoints.audit import Audit
 
 api.add_resource(Catalogues, '/catalogues')
 api.add_resource(Catalogue, '/catalogues/<int:id>')
@@ -38,5 +39,7 @@ api.add_resource(Topics, '/topics')
 api.add_resource(Topic, '/topics/<int:id>')
 
 api.add_resource(Coffee, '/coffee')
+
+api.add_resource(Audit, '/audit/<string:object>/<int:id>', '/audit/<string:object>')
 
 api.add_resource(Wildcard, '', '/', '/<path:path>')

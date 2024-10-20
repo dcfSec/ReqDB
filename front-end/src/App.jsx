@@ -14,7 +14,7 @@ const MainContent = () => {
 
   const dispatch = useDispatch()
 
-  const darkMode = useSelector(state => state.user.darkMode)
+  const darkMode = useSelector(state => state.user.preferences.darkMode)
   document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", darkMode ? "dark" : "light");
 
   /**
@@ -25,10 +25,10 @@ const MainContent = () => {
   const activeAccount = instance.getActiveAccount();
   if (!activeAccount) {
     instance.setActiveAccount(instance);
-    instance.loginRedirect({
-      ...loginRequest,
-      prompt: 'login',
-    });
+    // instance.loginRedirect({
+    //   ...loginRequest,
+    //   prompt: 'login',
+    // });
   }
 
   useEffect(() => {

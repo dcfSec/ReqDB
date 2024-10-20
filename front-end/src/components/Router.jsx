@@ -5,6 +5,7 @@ import Home from '../pages/Home';
 import BrowseCatalogue from '../pages/BrowseCatalogue';
 import BrowseSelectCatalogue from '../pages/BrowseSelectCatalogue';
 import { Catalogues, ExtraEntries, ExtraTypes, Requirements, Tags, Topics } from '../pages/Edit';
+import { AuditCatalogues, AuditExtraEntries, AuditExtraTypes, AuditRequirements, AuditTags, AuditTopics, AuditComments } from '../pages/Audit';
 import NoPage from '../pages/NoPage';
 import RouteGuard from "./RouteGuard";
 import { appRoles } from "../authConfig";
@@ -22,7 +23,7 @@ export function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Home"><Layout /></RouteGuard>}>
+        <Route path="/" element={/*<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Home">*/<Layout />/*</RouteGuard>*/}>
           <Route index element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Home"><Home /></RouteGuard>} />
           <Route path="Browse" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Browse"><BrowseSelectCatalogue /></RouteGuard>} />
           <Route path="Browse/:catalogueId" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Browse"><BrowseCatalogue /></RouteGuard>} />
@@ -46,6 +47,29 @@ export function Router() {
             } />
             <Route path="ExtraEntries" element={
               <RouteGuard requiredRoles={[appRoles.Requirements.Writer]} title="ExtraEntries"><ExtraEntries /></RouteGuard>
+            } />
+          </Route>
+          <Route path="Audit" >
+            <Route path="Tags" element={
+              <RouteGuard requiredRoles={[appRoles.Requirements.Auditor]} title="Tags"><AuditTags /></RouteGuard>
+            } />
+            <Route path="Catalogues" element={
+              <RouteGuard requiredRoles={[appRoles.Requirements.Auditor]} title="Catalogues"><AuditCatalogues /></RouteGuard>
+            } />
+            <Route path="Topics" element={
+              <RouteGuard requiredRoles={[appRoles.Requirements.Auditor]} title="Topics"><AuditTopics /></RouteGuard>
+            } />
+            <Route path="Requirements" element={
+              <RouteGuard requiredRoles={[appRoles.Requirements.Auditor]} title="Requirements"><AuditRequirements /></RouteGuard>
+            } />
+            <Route path="ExtraTypes" element={
+              <RouteGuard requiredRoles={[appRoles.Requirements.Auditor]} title="ExtraTypes"><AuditExtraTypes /></RouteGuard>
+            } />
+            <Route path="ExtraEntries" element={
+              <RouteGuard requiredRoles={[appRoles.Requirements.Auditor]} title="ExtraEntries"><AuditExtraEntries /></RouteGuard>
+            } />
+            <Route path="Comments" element={
+              <RouteGuard requiredRoles={[appRoles.Comments.Auditor]} title="Comments"><AuditComments /></RouteGuard>
             } />
           </Route>
           <Route path="*" element={<NoPage />} />

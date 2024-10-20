@@ -9,6 +9,8 @@ import { protectedResources } from "../../authConfig";
 import useFetchWithMsal from "../../hooks/useFetchWithMsal";
 import { ExportTable } from "../Export";
 import Search from "./Search"
+import { toggleTagFilterSelected, toggleTagFilterSelectedAll } from '../../stateSlices/BrowseSlice';
+
 
 import { useSelector, useDispatch } from 'react-redux'
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
@@ -31,6 +33,9 @@ export default function BrowseContent({ id }) {
   const extraHeaders = useSelector(state => state.browse.extraHeaders)
   const APIData = useSelector(state => state.browse.data)
   const status = useSelector(state => state.browse.status)
+
+  const selected = useSelector(state => state.browse.tags.filterSelected)
+  const allSelected = useSelector(state => state.browse.tags.allSelected)
 
   const deferredRows = useDeferredValue(rows);
 
@@ -87,7 +92,7 @@ export default function BrowseContent({ id }) {
             <Col>
               <Dropdown className="d-inline">
                 <Dropdown.Toggle id="tag-dropdown">Filter Tags</Dropdown.Toggle>
-                <Dropdown.Menu as={CheckboxDropdown}>
+                <Dropdown.Menu as={CheckboxDropdown} target="tag" toggleChangeAll={toggleTagFilterSelectedAll} toggleChange={toggleTagFilterSelected}>
                   {[...tagFilterItems].sort().map((tag, index) => (<Dropdown.Item key={index} eventKey={tag}>{tag}</Dropdown.Item>))}
                 </Dropdown.Menu>
               </Dropdown>
