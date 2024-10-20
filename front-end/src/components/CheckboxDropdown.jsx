@@ -1,9 +1,8 @@
-import { Children, forwardRef, useEffect, useState } from 'react';
+import { Children, forwardRef, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 
 import { useSelector, useDispatch } from 'react-redux'
-import { toggleTagFilterSelected, toggleTagFilterSelectedAll } from '../stateSlices/BrowseSlice';
 
 /**
  * Component for a custom dropdown menu with a checkbox
@@ -11,22 +10,30 @@ import { toggleTagFilterSelected, toggleTagFilterSelectedAll } from '../stateSli
  * @param {object} props Props for the component: index, children, style, className, labeledBy
  * @returns Returns dropdown menu with checkboxes
  */
-export const CheckboxDropdown = forwardRef(({ index, children, style, className, 'aria-labelledby': labeledBy }, ref) => {
+export const CheckboxDropdown = forwardRef(({ index, children, style, className, 'aria-labelledby': labeledBy , target, toggleChangeAll, toggleChange}, ref) => {
   const [value, setValue] = useState('');
 
+  let selected 
+  let allSelected
+
   const dispatch = useDispatch()
-  const selected = useSelector(state => state.browse.tags.filterSelected)
-  const allSelected = useSelector(state => state.browse.tags.allSelected)
+  if (target == "tag") {
+    selected = useSelector(state => state.browse.tags.filterSelected)
+    allSelected = useSelector(state => state.browse.tags.allSelected)
+  } else if (target == "action") {
+    selected = useSelector(state => state.audit.action.filterSelected)
+    allSelected = useSelector(state => state.audit.action.allSelected)
+  }
 
 
   function handleCheckboxChange(changeEvent) {
     const { id } = changeEvent.target;
-    dispatch(toggleTagFilterSelected(id))
+    dispatch(toggleChange(id))
   };
 
   function handleCheckboxChangeAll(changeEvent) {
     const { checked } = changeEvent.target;
-    dispatch(toggleTagFilterSelectedAll(checked))
+    dispatch(toggleChangeAll(checked))
   };
 
   return (

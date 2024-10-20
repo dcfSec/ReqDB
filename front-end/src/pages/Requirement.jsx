@@ -1,4 +1,4 @@
-import { Alert, Col, Container, Row } from "react-bootstrap";
+import { Alert, Button, Col, Container, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
 import LoadingBar from "../components/LoadingBar";
@@ -11,6 +11,9 @@ import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { reset, setRequirement } from "../stateSlices/RequirementSlice";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { CommentCard, DescriptionCard, ExtraCard, TagsCard, TopicsCard } from "../components/Requirement/RequirementCards";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -62,6 +65,9 @@ export default function Requirement() {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
     body = <Container>
+      <Row>
+        <Col><Button><FontAwesomeIcon icon={solid("code-compare")} /></Button></Col>
+      </Row>
       <Row>
         <Col>
           <TagsCard />

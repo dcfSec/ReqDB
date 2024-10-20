@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux'
  * @returns Main layout
  */
 export default function Footer() {
-  const darkMode = useSelector(state => state.user.darkMode)
+  const darkMode = useSelector(state => state.user.preferences.darkMode)
 
   return (
     <>

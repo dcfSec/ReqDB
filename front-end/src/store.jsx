@@ -8,6 +8,7 @@ import UserReducer from './stateSlices/UserSlice'
 import RequirementReducer from './stateSlices/RequirementSlice'
 import CommentReducer from './stateSlices/CommentSlice'
 import LayoutReducer from './stateSlices/LayoutSlice'
+import AuditReducer from './stateSlices/AuditSlice'
 
 const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ const store = configureStore({
     requirement: RequirementReducer,
     comment: CommentReducer,
     layout: LayoutReducer,
+    audit: AuditReducer,
   }
 })
 

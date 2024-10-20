@@ -1,7 +1,7 @@
 import { Alert, Col, Row } from "react-bootstrap";
 import { SearchField } from '../components/MiniComponents';
 import { ErrorMessage } from '../components/MiniComponents'
-import EditTable from '../components/Edit/EditTable';
+import DataTable from '../components/DataTable';
 import Form from 'react-bootstrap/Form';
 import LoadingBar from "../components/LoadingBar";
 
@@ -78,11 +78,11 @@ export default function Comments() {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
     searchBar = <Col><SearchField title="Comments" search={search} onSearch={setSearch}></SearchField></Col>
-    table = <EditTable headers={headers}>
+    table = <Row><Col><DataTable headers={headers}>
       { comments.length > 0 ? comments.map((item, index) => (
         <CommentRow key={index} index={index} search={search} searchFields={searchFields} comment={item} showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} showCompleted={showCompleted}/>
       )) : <tr><td colSpan={6} style={{textAlign: 'center'}}>No comments</td></tr> }
-    </EditTable>
+    </DataTable></Col></Row>
   }
 
   return (
@@ -96,9 +96,7 @@ export default function Comments() {
       <Row>
         <Col><Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label="Show completed" reverse/></Col>
       </Row>
-      <Row>
-        {table}
-      </Row>
+      {table}
     </>
   )
 };

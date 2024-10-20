@@ -1,5 +1,5 @@
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { Form } from 'react-bootstrap';
+import { Badge, Form } from 'react-bootstrap';
 import { Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
@@ -210,4 +210,16 @@ export function isVisible(state, row) {
   return state.rows.visible[row.id] = inSearchField(state.search, Object.keys(row), row)
     && (/* tagFilterSelected.length === 0 || */ row.Tags.some(r => state.tags.filterSelected.indexOf(r) >= 0) || (row.Tags.length === 0 && state.tags.filterSelected.indexOf("No Tags") >= 0))
     && row.Topics.some(r => state.topics.filterSelected.indexOf(`${r.key} ${r.title}`) >= 0)
+}
+
+export function getActionBadge(action) {
+  if (action == "INSERT") {
+    return <Badge bg="success">INSERT</Badge>
+  }
+  else if (action == "UPDATE") {
+    return <Badge bg="warning">UPDATE</Badge>
+  }
+  else if (action == "DELETE") {
+    return <Badge bg="danger">DELETE</Badge>
+  }
 }

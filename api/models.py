@@ -1,22 +1,41 @@
 from api.appDefinition import db
 from sqlalchemy.sql import functions
+from sqlalchemy.orm import configure_mappers
+from sqlalchemy_continuum.plugins import FlaskPlugin
+from sqlalchemy_continuum import make_versioned
+from api.helper import getUserUPN
 
+make_versioned(plugins=[FlaskPlugin(current_user_id_factory=getUserUPN)])
+
+class User(db.Model):
+    id = db.Column(db.String(200), primary_key=True)
+    created = db.Column(db.DateTime(timezone=True), server_default=functions.now())
+
+    def __repr__(self):
+        return f'<User "{self.id}">'
 
 class Base(db.Model):
+    __versioned__ = {}
     __abstract__ = True
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
 
-class RequirementTag(Base):
+class RequirementTag(db.Model):
     __tablename__ = "RequirementTag"
-    requirementId = db.Column(db.Integer, db.ForeignKey("requirement.id", name="fk_requirement"), index=True)
-    tagId = db.Column(db.Integer, db.ForeignKey("tag.id", name="fk_tag"), index=True)
+    requirementId = db.Column(db.Integer, db.ForeignKey("requirement.id", name="fk_requirement"), index=True, primary_key=True)
+    tagId = db.Column(db.Integer, db.ForeignKey("tag.id", name="fk_tag"), index=True, primary_key=True)
+
+    def __repr__(self):
+        return f'<RequirementTag "{self.requirementId}" <-> "{self.tagId}">'
 
 
-class CatalogueTopic(Base):
+class CatalogueTopic(db.Model):
     __tablename__ = "CatalogueTopic"
-    catalogueId = db.Column(db.Integer, db.ForeignKey("catalogue.id", name="fk_catalogue"), index=True)
-    topicId = db.Column(db.Integer, db.ForeignKey("topic.id", name="fk_topic"), index=True)
+    catalogueId = db.Column(db.Integer, db.ForeignKey("catalogue.id", name="fk_catalogue"), index=True, primary_key=True)
+    topicId = db.Column(db.Integer, db.ForeignKey("topic.id", name="fk_topic"), index=True, primary_key=True)
+
+    def __repr__(self):
+        return f'<CatalogueTopic "{self.catalogueId}" <-> "{self.topicId}">'
 
 
 class Requirement(Base):
@@ -25,7 +44,7 @@ class Requirement(Base):
     description = db.Column(db.Text, nullable=False)
     parentId = db.Column(
         db.Integer,
-        db.ForeignKey("topic.id", name="fk_topic", ondelete="CASCADE"),
+        db.ForeignKey("topic.id", name="fk_topic"),
         nullable=False,
         index=True,
     )
@@ -75,7 +94,7 @@ class Topic(Base):
     description = db.Column(db.Text, nullable=False)
     parentId = db.Column(
         db.Integer,
-        db.ForeignKey("topic.id", name="fk_topic", ondelete="CASCADE"),
+        db.ForeignKey("topic.id", name="fk_topic"),
         nullable=True,
         index=True,
     )
@@ -168,3 +187,5 @@ class Comment(Base):
 
     def __repr__(self):
         return f'<Comment "{self.author}: {self.comment[:20]}">'
+
+configure_mappers()

@@ -61,9 +61,11 @@ export const protectedResources = {
     scopes: [
       `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Requirements.Reader`,
       `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Requirements.Writer`,
+      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Requirements.Auditor`,
       `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Reader`,
       `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Writer`,
       `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Moderator`,
+      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Auditor`,
     ]
 
   }
@@ -80,6 +82,6 @@ export const loginRequest = {
 };
 
 export const appRoles = {
-  Requirements: { Reader: "Requirements.Reader", Writer: "Requirements.Writer" },
-  Comments: { Reader: "Comments.Reader", Writer: "Comments.Writer", Moderator: "Comments.Moderator" },
+  Requirements: { Reader: "Requirements.Reader", Writer: "Requirements.Writer", Auditor: "Requirements.Auditor" },
+  Comments: { Reader: "Comments.Reader", Writer: "Comments.Writer", Moderator: "Comments.Moderator", Auditor: "Comments.Auditor" },
 }

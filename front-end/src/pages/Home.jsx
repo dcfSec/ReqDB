@@ -49,6 +49,25 @@ export default function Home() {
                 <Dropdown.Item as={Link} to="/Edit/ExtraEntries">ExtraEntries</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown> : null}
+          {roles.includes(appRoles.Requirements.Auditor) ||  roles.includes(appRoles.Comments.Auditor) ?
+            <Dropdown className="d-inline-block">
+              <Dropdown.Toggle as={Button} variant="outline-secondary" id="dropdown-edit" className="mx-auto w-100">
+                Audit
+              </Dropdown.Toggle>
+              <Dropdown.Menu className="mx-auto w-100">
+                {roles.includes(appRoles.Requirements.Auditor) ? <>
+                  <Dropdown.Item as={Link} to="/Audit/Tags">Tags</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/Catalogues">Catalogues</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/Topics">Topics</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/Requirements">Requirements</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/ExtraTypes">ExtraTypes</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/ExtraEntries">ExtraEntries</Dropdown.Item>
+                </> : null}
+                {roles.includes(appRoles.Comments.Auditor) ?
+                  <Dropdown.Item as={Link} to="/Audit/Comments">Comments</Dropdown.Item>
+                  : null}
+              </Dropdown.Menu>
+            </Dropdown> : null}
           <ReactMarkdown>{postMOTD}</ReactMarkdown>
         </Stack>
       </Col>

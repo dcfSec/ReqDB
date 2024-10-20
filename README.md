@@ -68,17 +68,21 @@ The application in Azure Entra needs to be configured to allow users to access i
 
 * `api://<APP-ID>/ReqDB.Requirements.Reader` -> Read access to the requirements APIs
 * `api://<APP-ID>/ReqDB.Requirements.Writer` -> Write access to the requirements APIs
+* `api://<APP-ID>/ReqDB.Requirements.Auditor` -> Read access to the history APIs to see requirement audit logs
 * `api://<APP-ID>/ReqDB.Comments.Reader` -> Read access to the comments API
 * `api://<APP-ID>/ReqDB.Comments.Writer` -> Write (add) access to the comments API
 * `api://<APP-ID>/ReqDB.Comments.Moderator` -> Write (edit, delete) access to the comments API
+* `api://<APP-ID>/ReqDB.Comments.Auditor` -> Read access to the history APIs to see comment audit logs
 
 ### App Roles
 
 * `Requirements.Reader` -> Read access to the requirements front-end
 * `Requirements.Writer` -> Write access to the requirements front-end
+* `Requirements.Auditor` -> Read access to view the requirement audit log front-end
 * `Comments.Reader` -> Read access to the comment front-end
 * `Comments.Writer` -> Write (add) access to the comment front-end
 * `Comments.Moderator` -> Write (edit, delete) access to the comment front-end
+* `Comments.Auditor` -> Read access to view the comment audit log front-end
 
 ## Deployment
 
