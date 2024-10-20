@@ -4,7 +4,11 @@ export const UserSlice = createSlice({
   name: 'User',
   initialState: {
     roles: [],
-    darkMode: JSON.parse(localStorage.getItem('darkMode')) || false,
+    preferences: {
+      darkMode: JSON.parse(localStorage.getItem('darkMode')) || false,
+      notificationMailOnCommentChain: false,
+      notificationMailOnRequirementComment: false,
+    },
     name: "Nobody",
     account: null
   },
@@ -19,14 +23,14 @@ export const UserSlice = createSlice({
       state.roles = [...action.payload]
     },
     setDarkMode: (state, action) => {
-      state.darkMode = action.payload
-      localStorage.setItem('darkMode', JSON.stringify(state.darkMode));
-      document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", state.darkMode ? "dark" : "light");
+      state.preferences.darkMode = action.payload
+      localStorage.setItem('darkMode', JSON.stringify(state.preferences.darkMode));
+      document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", state.preferences.darkMode ? "dark" : "light");
     },
     toggleDarkMode: (state) => {
-      state.darkMode = !state.darkMode
-      localStorage.setItem('darkMode', JSON.stringify(state.darkMode));
-      document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", state.darkMode ? "dark" : "light");
+      state.preferences.darkMode = !state.preferences.darkMode
+      localStorage.setItem('darkMode', JSON.stringify(state.preferences.darkMode));
+      document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", state.preferences.darkMode ? "dark" : "light");
     },
   }
 })
