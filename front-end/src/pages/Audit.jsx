@@ -88,7 +88,6 @@ function AuditParent({ auditPageName, headers, searchFields, endpoint }) {
   }
 
   function renderItem(item, index) {
-    console.log(item)
     if (item) {
       return <AuditRow
         key={item.transaction_id}
