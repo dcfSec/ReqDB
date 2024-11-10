@@ -9,13 +9,17 @@ When a user has the `Comments.Writer` they can add comments to requirements in t
 
 The selected requirements can be exported as (currently) an excel, json or yaml file.
 
+If you want to access and use the API programmatically you can use the official API client: [ReqDB-PyClient](https://github.com/dcfSec/ReqDB-PyClient)
+
+To kickstart the ReqDB you can use the [ReqDBContentCreator](https://github.com/dcfSec/ReqDBContentCreator) to add public standards to ReqDB.
+
 ## Screenshots
 
-### Browse Catalgue
+### Browse Catalogue
 
 ![Browse](docs/readme-screenshot-browse.png)
 
-### Browse Catalgue
+### Browse Catalogue
 
 ![Edit](docs/readme-screenshot-edit-requirements.png)
 
@@ -41,9 +45,9 @@ The base configuration is done  via environment variables:
 ```
 FLASK_APP="ReqDB"           # Name of the Flask app
 FLASK_ENV="production"      # Flask environment  production or development
-SECRET_KEY="CHANGEME"       # The secret key for flaks
+SECRET_KEY="CHANGEME"       # The secret key for flask
 
-DATABASE_URI="app.sqlite"   # Database URI for sqlalchemie (See https://docs.sqlalchemy.org/en/20/core/engines.html for details)
+DATABASE_URI="app.sqlite"   # Database URI for sqlalchemy (See https://docs.sqlalchemy.org/en/20/core/engines.html for details)
 
 OAUTH_APP_CLIENT_ID="xxx"   # Client ID for oauth (Azure Entra)
 OAUTH_APP_TENANT="xxx"      # Azure Tenant ID
@@ -58,7 +62,7 @@ VITE_APP_TENANT = "xxx"     # Azure Tenant ID (React)
 
 ## Azure Entra Configuration
 
-The application in Azure Entra needs to be configured to allow users to access it. The configuration below is the needed configuration (The section headers are the config menues in the Azure Portal)
+The application in Azure Entra needs to be configured to allow users to access it. The configuration below is the needed configuration (The section headers are the config menus in the Azure Portal)
 
 ### API Permissions
 
