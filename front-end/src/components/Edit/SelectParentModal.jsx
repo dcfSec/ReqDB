@@ -6,9 +6,17 @@ import { useEffect, useState } from 'react';
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 import { protectedResources } from '../../authConfig';
 
-import { useDispatch } from 'react-redux'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+
+import { useDispatch, useSelector } from 'react-redux'
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../../stateSlices/NotificationToastSlice";
+import { updateCache, cleanCache } from "../../stateSlices/EditSlice";
+
 import LoadingBar from '../LoadingBar';
 
 /**
@@ -19,6 +27,7 @@ import LoadingBar from '../LoadingBar';
  */
 export default function SelectParentModal({ itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns }) {
   const dispatch = useDispatch()
+  const cache = useSelector(state => state.edit.cache)
 
   const [search, setSearch] = useState("");
 
@@ -33,25 +42,39 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
     scopes: protectedResources.ReqDB.scopes,
   });
 
-  const [data, setData] = useState(null);
-
-  useEffect(() => { dispatch(showSpinner(!data)) }, [data]);
+  function reloadCache() {
+    dispatch(showSpinner(true))
+    dispatch(cleanCache({ endpoint }))
+    execute("GET", `${endpoint}`).then((response) => {
+      if (response && response.status === 200) {
+        dispatch(updateCache({ endpoint, response }))
+        dispatch(showSpinner(false))
+      }
+    });
+  }
 
   useEffect(() => {
-    if (!data) {
+    dispatch(showSpinner(true))
+    if (!(endpoint in cache) || cache[endpoint].time + 36000 < Date.now()) {
+      dispatch(cleanCache({ endpoint }))
       execute("GET", `${endpoint}`).then((response) => {
-        setData(response);
+        if (response && response.status === 200) {
+          dispatch(updateCache({ endpoint, response }))
+          dispatch(showSpinner(false))
+        }
       });
+    } else {
+      dispatch(showSpinner(false))
     }
-  }, [execute, data])
+  }, [execute])
 
-  let body = <LoadingBar/>
+  let body = <LoadingBar />
 
   if (error) {
     body = <Alert variant="danger">Error: {error.message}</Alert>
   } else {
-    if (data && data.status === 200) {
-      selectedItemObjects = data.data
+    if (endpoint in cache && cache[endpoint].data && cache[endpoint].data.status === 200) {
+      selectedItemObjects = cache[endpoint].data.data
       body = <Form onChange={(e) => onSelect(e.target.value)}>
         <Table responsive>
           <thead>
@@ -67,9 +90,9 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
           </tbody>
         </Table>
       </Form>
-    } else if (data && data.status !== 200) {
-      dispatch(toast({header: data.error, body: data.message}))
-      body = <Alert variant="danger">{ErrorMessage(data.message)}</Alert>
+    } else if (endpoint in cache && cache[endpoint].data.status !== 200) {
+      dispatch(toast({ header: cache[endpoint].data.error, body: cache[endpoint].data.message }))
+      body = <Alert variant="danger">{ErrorMessage(cache[endpoint].data.message)}</Alert>
     }
   }
 
@@ -119,6 +142,11 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
         <Container>
           <Row>
             <Col><SearchField title={updateObjectField} search={search} onSearch={setSearch}></SearchField></Col>
+            <Col xs={1}>
+              <OverlayTrigger overlay={<Tooltip id="refresh-tooltip">Refresh list</Tooltip>}>
+                <Button variant="outline-primary" onClick={() => reloadCache()}><FontAwesomeIcon icon={solid("arrows-rotate")} /></Button>
+              </OverlayTrigger>
+            </Col>
           </Row>
           <Row>
             {body}
