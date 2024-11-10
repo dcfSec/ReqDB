@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 
 
 const initialState = {
-  items: []
+  items: [],
+  cache: {}
 }
 
 export const editSlice = createSlice({
@@ -26,11 +27,21 @@ export const editSlice = createSlice({
       tmp[action.payload.index] = action.payload.item
       state.items = [...tmp]
     },
-
-
+    updateCache: (state, action) => {
+      const tmp = {
+        data: action.payload.response,
+        time: Date.now()
+      }
+      state.cache[action.payload.endpoint] = {...tmp}
+    },
+    cleanCache: (state, action) => {
+      const tmp = {...state.cache}
+      delete tmp[action.payload.endpoint]; 
+      state.cache = {...tmp}
+    },
   }
 })
 
-export const { setItems, addItem, removeItem, updateItem } = editSlice.actions
+export const { setItems, addItem, removeItem, updateItem, updateCache, cleanCache } = editSlice.actions
 
 export default editSlice.reducer
