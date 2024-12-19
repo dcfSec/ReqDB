@@ -1,4 +1,5 @@
-from marshmallow import EXCLUDE, validate
+from operator import itemgetter
+from marshmallow import EXCLUDE, post_load, validate
 from api.appDefinition import ma
 from marshmallow_sqlalchemy import fields
 
@@ -99,6 +100,16 @@ class TopicSchema(ma.SQLAlchemyAutoSchema):
     )
     parent = fields.Nested(nested="TopicSchema", exclude=["requirements", "children"])
 
+    @post_load
+    def sortRequirements(self, item):
+        item['requirements'] = sorted(item['requirements'], key=itemgetter('key'))
+        return item
+
+    @post_load
+    def sortTopics(self, item):
+        item['children'] = sorted(item['children'], key=itemgetter('key'))
+        return item
+
 
 class TopicCommentsSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -117,6 +128,16 @@ class TopicCommentsSchema(ma.SQLAlchemyAutoSchema):
         nested="RequirementCommentsSchema", exclude=["parent"], many=True
     )
     parent = fields.Nested(nested="TopicCommentsSchema", exclude=["requirements", "children"])
+
+    @post_load
+    def sortRequirements(self, item):
+        item['requirements'] = sorted(item['requirements'], key=itemgetter('key'))
+        return item
+
+    @post_load
+    def sortTopics(self, item):
+        item['children'] = sorted(item['children'], key=itemgetter('key'))
+        return item
 
 class TopicOnlyIDAndTitleSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -175,6 +196,11 @@ class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
     title = ma.auto_field(validate=validate.Length(min=1))
     topics = fields.Nested(nested="TopicSchema", many=True)
 
+    @post_load
+    def sortTopics(self, item):
+        item['topics'] = sorted(item['topics'], key=itemgetter('key'))
+        return item
+
 
 class CatalogueExtendedCommentsSchema(ma.SQLAlchemyAutoSchema):
     """
@@ -189,6 +215,11 @@ class CatalogueExtendedCommentsSchema(ma.SQLAlchemyAutoSchema):
 
     title = ma.auto_field(validate=validate.Length(min=1))
     topics = fields.Nested(nested="TopicCommentsSchema", many=True)
+
+    @post_load
+    def sortTopics(self, item):
+        item['topics'] = sorted(item['topics'], key=itemgetter('key'))
+        return item
 
 class CommentSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
