@@ -1,7 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Item as Catalogue } from '../types/API/Catalogues'
 
+interface CatalogueDataState {
+  items: Array<Catalogue>
+}
 
-const initialState = {
+const initialState: CatalogueDataState = {
   items: []
 }
 
@@ -10,11 +14,11 @@ export const catalogueDataSlice = createSlice({
   initialState,
   reducers: {
     reset: () => initialState,
-    set: (state, action) => {
+    set: (state, action: PayloadAction<Array<Catalogue>>) => {
       state.items = [...action.payload]
     },
     sort: state => {
-      let tmp = [...state.items]
+      const tmp = [...state.items]
       tmp.sort((a, b) => {
         const nameA = a.title.toUpperCase();
         const nameB = b.title.toUpperCase();

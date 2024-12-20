@@ -1,7 +1,12 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { isVisible } from '../components/MiniComponents'
+import { Item as Comment } from '../types/API/Comments';
+import { Row } from '../types/Generics';
+import { BrowseState } from '../types/Generics';
 
-const initialState = {
+
+
+const initialState: BrowseState = {
   data: {},
   title: "Loading...",
   status: "nothing",
@@ -23,7 +28,8 @@ const initialState = {
     filterSelected: [],
     allSelected: true
   },
-  extraHeaders: {}
+  extraHeaders: {},
+  comments: {}
 }
 
 export const browseSlice = createSlice({
@@ -34,31 +40,31 @@ export const browseSlice = createSlice({
     setData: (state, action) => {
       state.data = { ...action.payload }
     },
-    setSearch: (state, action) => {
+    setSearch: (state, action: PayloadAction<string>) => {
       state.search = action.payload
       state.rows.items.forEach((row) => {
         state.rows.visible[row.id] = isVisible(state, row)
       })
     },
-    addRow: (state, action) => {
+    addRow: (state, action: PayloadAction<Row>) => {
       state.rows.items = [
         ...state.rows.items,
         action.payload
       ]
-      const newSelected = {}
+      const newSelected: { [key: string]: boolean } = {}
       newSelected[action.payload.id] = false
       state.rows.selected = {
         ...state.rows.selected,
         ...newSelected
       }
-      const newVisible = {}
+      const newVisible: { [key: string]: boolean } = {}
       newVisible[action.payload.id] = true
       state.rows.visible = {
         ...state.rows.visible,
         ...newVisible
       }
     },
-    addRows: (state, action) => {
+    addRows: (state, action: PayloadAction<{ requirements: Array<Row>, selected: { [key: string]: boolean }, visible: { [key: string]: boolean } }>) => {
       state.rows.items = [
         ...state.rows.items,
         ...action.payload.requirements
@@ -72,16 +78,16 @@ export const browseSlice = createSlice({
         ...action.payload.visible
       }
     },
-    setVisibleRow: (state, action) => {
-      const newVisible = {}
+    setVisibleRow: (state, action: PayloadAction<{ id: number, visible: boolean }>) => {
+      const newVisible: { [key: string]: boolean } = {}
       newVisible[action.payload.id] = action.payload.visible
       state.rows.visible = {
         ...state.rows.visible,
         ...newVisible
       }
     },
-    toggleSelectRow: (state, action) => {
-      const newSelected = {}
+    toggleSelectRow: (state, action: PayloadAction<number>) => {
+      const newSelected: { [key: string]: boolean } = {}
       newSelected[action.payload] = !state.rows.selected[action.payload]
       state.rows.selected = {
         ...state.rows.selected,
@@ -93,7 +99,7 @@ export const browseSlice = createSlice({
         state.rows.allSelected = false;
       }
     },
-    toggleSelectAll: (state, action) => {
+    toggleSelectAll: state => {
       const newSelected = { ...state.rows.selected };
       const selectState = !state.rows.allSelected;
       Object.keys(newSelected).forEach((key) => {
@@ -101,10 +107,10 @@ export const browseSlice = createSlice({
           newSelected[key] = selectState
         }
       });
-      newSelected[action.payload] = !state.rows.selected[action.payload]
-      state.rows.selected = {
-        ...newSelected
-      }
+      // newSelected[action.payload] = !state.rows.selected[action.payload]
+      // state.rows.selected = {
+      //   ...newSelected
+      // }
       if (Object.values(state.rows.selected).every(r => r === true)) {
         state.rows.allSelected = true;
       } else {
@@ -112,7 +118,7 @@ export const browseSlice = createSlice({
       }
     },
     sortRows: state => {
-      let tmp = [...state.rows.items]
+      const tmp = [...state.rows.items]
       tmp.sort((a, b) => {
         const nameA = a.Key.toUpperCase();
         const nameB = b.Key.toUpperCase();
@@ -126,7 +132,7 @@ export const browseSlice = createSlice({
       });
       state.rows.items = [...tmp]
     },
-    setTagFilterItems: (state, action) => {
+    setTagFilterItems: (state, action: PayloadAction<Array<string>>) => {
       state.tags.filterItems = [
         ...action.payload
       ]
@@ -134,7 +140,7 @@ export const browseSlice = createSlice({
         ...state.tags.filterItems
       ]
     },
-    toggleTagFilterSelected: (state, action) => {
+    toggleTagFilterSelected: (state, action: PayloadAction<string>) => {
       if (state.tags.filterSelected.indexOf(action.payload) >= 0) {
         const tmp = state.tags.filterSelected.filter(function (v) { return v !== action.payload; });
         state.tags.filterSelected = [
@@ -151,7 +157,7 @@ export const browseSlice = createSlice({
         state.rows.visible[row.id] = isVisible(state, row)
       });
     },
-    toggleTagFilterSelectedAll: (state, action) => {
+    toggleTagFilterSelectedAll: (state, action: PayloadAction<boolean>) => {
       if (action.payload === true) {
         state.tags.filterSelected = [
           ...state.tags.filterItems
@@ -166,13 +172,13 @@ export const browseSlice = createSlice({
         state.rows.visible[row.id] = isVisible(state, row)
       });
     },
-    addExtraHeader: (state, action) => {
+    addExtraHeader: (state, action: PayloadAction<{ [key: string]: 1 | 2 | 3 }>) => {
       state.extraHeaders = {
         ...state.extraHeaders,
         ...action.payload
       }
     },
-    addTopicFilterItems: (state, action) => {
+    addTopicFilterItems: (state, action: PayloadAction<string>) => {
       state.topics.filterItems = [
         ...state.topics.filterItems,
         action.payload
@@ -182,8 +188,8 @@ export const browseSlice = createSlice({
         action.payload
       ]
     },
-    sortTopicFilterItems: (state) => {
-      let tmp = [...state.topics.filterItems]
+    sortTopicFilterItems: state => {
+      const tmp = [...state.topics.filterItems]
       tmp.sort((a, b) => {
         const nameA = a.toUpperCase();
         const nameB = b.toUpperCase();
@@ -197,7 +203,7 @@ export const browseSlice = createSlice({
       });
       state.topics.filterItems = [...tmp]
     },
-    addTopicFilterSelected: (state, action) => {
+    addTopicFilterSelected: (state, action: PayloadAction<Array<string>>) => {
       state.topics.filterSelected = [
         ...state.topics.filterSelected,
         ...action.payload.filter(n => !state.topics.filterSelected.includes(n)),
@@ -207,7 +213,7 @@ export const browseSlice = createSlice({
         state.rows.visible[row.id] = isVisible(state, row)
       })
     },
-    removeTopicFilterSelected: (state, action) => {
+    removeTopicFilterSelected: (state, action: PayloadAction<Array<string>>) => {
       state.topics.filterSelected = [
         ...state.topics.filterSelected.filter(n => !action.payload.includes(n))
       ]
@@ -216,7 +222,7 @@ export const browseSlice = createSlice({
         state.rows.visible[row.id] = isVisible(state, row)
       })
     },
-    addComment: (state, action) => {
+    addComment: (state, action: PayloadAction<{ index: number, comment: Comment }>) => {
       const tmp = [
         ...state.rows.items
       ]
@@ -225,28 +231,28 @@ export const browseSlice = createSlice({
         ...tmp
       ]
     },
-    removeComment: (state, action) => {
-      let tmp = [...state.rows.items]
+    removeComment: (state, action: PayloadAction<{ index: number, comment: number }>) => {
+      const tmp = [...state.rows.items]
       tmp[action.payload.index].Comments.splice(action.payload.comment, 1);
       state.rows.items = [...tmp]
     },
-    updateComment: (state, action) => {
-      let tmp = [...state.rows.items]
+    updateComment: (state, action: PayloadAction<{ index: number, commentIndex: number, comment: Comment }>) => {
+      const tmp = [...state.rows.items]
       tmp[action.payload.index].Comments[action.payload.commentIndex] = action.payload.comment
       state.comments = [...tmp]
     },
-    setTitle: (state, action) => {
+    setTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload
     },
-    setStatus: (state, action) => {
+    setStatus: (state, action: PayloadAction<string>) => {
       state.status = action.payload
     },
-    trace: (state, action) => {
+    trace: (state, action: PayloadAction<string>) => {
       console.log(action.payload)
     }
   },
 })
 
-export const { setVisibleRows, trace, reset, setData, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, addComment, removeComment, updateComment, setTitle, setStatus } = browseSlice.actions
+export const { trace, reset, setData, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, addComment, removeComment, updateComment, setTitle, setStatus } = browseSlice.actions
 
 export default browseSlice.reducer
