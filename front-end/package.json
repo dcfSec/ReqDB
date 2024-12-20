@@ -31,13 +31,14 @@
     "serve": "vite preview"
   },
   "eslintConfig": {
+    "plugins": [
+      "react"
+    ],
     "extends": [
       "react-app",
-      "react-app/jest"
-    ],
-    "rules": {
-      "react-hooks/exhaustive-deps": "off"
-    }
+      "react-app/jest",
+      "plugin:react/jsx-runtime"
+    ]
   },
   "browserslist": {
     "production": [

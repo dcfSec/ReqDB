@@ -7,7 +7,7 @@ import { useAppSelector } from '../hooks'
 import { addRows, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 import store from '../store'
 import { Button } from "react-bootstrap";
-import React from 'react';
+import { JSX } from 'react';
 import { Item as Topic} from '../types/API/Topics';
 import { BrowseState, Row } from '../types/Generics';
 
@@ -45,13 +45,20 @@ export function MainBreadcrumb() {
   );
 }
 
+
+type SearchFieldProps = {
+  title: string;
+  search: string;
+  onSearch: SearchFunction;
+}
+
 /**
  * Component for the searchfield
  * 
  * @param {object} props Props for the component: title, search, onsearch
  * @returns Searchfield component
  */
-export function SearchField(title: string, search: string, onSearch: SearchFunction) {
+export function SearchField({title, search, onSearch}: SearchFieldProps): JSX.Element {
   return (
     <Form.Control type="text" id="search" placeholder={`Search for ${title}`} value={search} onChange={e => { onSearch(e.target.value) }}></Form.Control>
   );

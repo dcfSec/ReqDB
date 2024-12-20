@@ -1,5 +1,11 @@
-import { Suspense } from "react";
+import { ReactNode, Suspense } from "react";
 import Table from 'react-bootstrap/Table';
+
+
+type Props = {
+  headers: Array<string>;
+  children: ReactNode;
+}
 
 /**
  * Component for the table for the edit pages
@@ -7,7 +13,7 @@ import Table from 'react-bootstrap/Table';
  * @param {object} props Props for the component: headers, children
  * @returns Returns a edit table with headers
  */
-export default function DataTable({ headers, children }) {
+export default function DataTable({ headers, children }: Props) {
   return (
     <Table responsive id="DataTable" striped>
       <Suspense fallback={null}>

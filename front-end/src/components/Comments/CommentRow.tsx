@@ -11,7 +11,17 @@ import { useState } from "react";
 
 import { protectedResources } from "../../authConfig";
 import useFetchWithMsal from '../../hooks/useFetchWithMsal';
+import { Item } from "../../types/API/Comments";
 
+type Props = {
+  index:number;
+   comment: Item;
+   search: string;
+   searchFields: Array<string>;
+   showDeleteModal: boolean;
+   setShowDeleteModal: (a: boolean) => void;
+   showCompleted: boolean
+}
 
 /**
  * Component for a row to edit an object
@@ -19,10 +29,10 @@ import useFetchWithMsal from '../../hooks/useFetchWithMsal';
  * @param {object} props Props for this component: comment, showDeleteModal, setShowDeleteModal, handleDeleteItem
  * @returns Table row for editing an object
  */
-export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, showCompleted }) {
+export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, showCompleted }: Props) {
   const dispatch = useDispatch()
 
-  const [force, setForce] = useState(false);
+  const [/*force*/, setForce] = useState(false);
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
@@ -41,7 +51,7 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
           dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
           dispatch(removeComment({ comment: index }))
         } else {
-          response.json().then((r) => {
+          response.json().then((r: {error: string, message: string}) => {
             dispatch(toast({ header: r.error, body: r.message }))
           }
           );
@@ -57,7 +67,7 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
     )
   }
 
-  function updateCompleted(completed) {
+  function updateCompleted(completed: boolean) {
     dispatch(showSpinner(true))
     execute("PUT", `comments/${comment.id}`, { ...comment, completed: completed }).then(
       (response) => {
@@ -65,7 +75,7 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
           dispatch(toast({ header: "Comment marked as completed updated", body: "Comment successfully updated marked as completed" }))
           dispatch(updateComment({ index, comment: response.data }))
         } else {
-          response.json().then((r) => {
+          response.json().then((r: {error: string, message: string}) => {
             dispatch(toast({ header: r.error, body: r.message }))
           }
           );
@@ -81,14 +91,14 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
     )
   }
 
-  if (inSearchField(search, searchFields, comment) && (!comment.completed || showCompleted)) {
+  if (inSearchField(search, searchFields, comment) && comment && (!comment.completed || showCompleted)) {
     return (
       <tr>
         <td>{comment.id}</td>
         <td style={{whiteSpace: "pre-line"}}>{comment.comment}</td>
         <td>{comment.author}</td>
         <td><Form.Check type="switch" id="completed" defaultChecked={comment.completed} onChange={e => { updateCompleted(e.target.checked) }} /></td>
-        <td><Button variant="primary" size="sm" as={Link} to={`/Browse/Requirement/${comment.requirement.id}`}>{comment.requirement.title}</Button></td>
+        <td><Link to={`/Browse/Requirement/${comment.requirement.id}`}><Button variant="primary" size="sm">{comment.requirement.title}</Button></Link></td>
         <td><Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button></td>
         {showDeleteModal ? <DeleteConfirmationModal
           show={showDeleteModal}

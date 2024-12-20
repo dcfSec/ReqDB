@@ -2,9 +2,9 @@ import { Button, Col, Container, Dropdown, Row, Stack } from "react-bootstrap";
 import { MainBreadcrumb } from "../MiniComponents";
 import { useEffect, useState } from "react";
 import { ErrorMessage, buildRows } from '../MiniComponents'
-import RequirementsTable from "../Browse/RequirementsTable";
-import { CheckboxDropdown } from "../CheckboxDropdown";
-import FilterTopicModal from "../Browse/FilterTopicsModal";
+import RequirementsTable from "./RequirementsTable";
+import CheckboxDropdown from "../CheckboxDropdown";
+import FilterTopicModal from "./FilterTopicsModal";
 import { protectedResources } from "../../authConfig";
 import useFetchWithMsal from "../../hooks/useFetchWithMsal";
 import { ExportTable } from "../Export";

@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { useMsal } from "@azure/msal-react";
 import { appRoles } from '../authConfig';
 
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppSelector, useAppDispatch } from "../hooks";
 import { toggleDarkMode } from "../stateSlices/UserSlice";
 import { useState } from 'react';
 import RolesModal from './RolesModal';
@@ -25,11 +25,11 @@ import Preferences from './Preferences';
  */
 export default function MainNavbar() {
 
-  const dispatch = useDispatch()
-  const darkMode = useSelector(state => state.user.preferences.darkMode)
-  const roles = useSelector(state => state.user.roles)
-  const name = useSelector(state => state.user.name)
-  const account = useSelector(state => state.user.account)
+  const dispatch = useAppDispatch()
+  const darkMode = useAppSelector(state => state.user.preferences.darkMode)
+  const roles = useAppSelector(state => state.user.roles)
+  const name = useAppSelector(state => state.user.name)
+  const account = useAppSelector(state => state.user.account)
 
   const [showRoles, setShowRoles] = useState(false)
   const [showPreferences, setShowPreferences] = useState(false)

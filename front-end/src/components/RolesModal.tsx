@@ -1,7 +1,13 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Col, Container, Row } from 'react-bootstrap';
-import { useSelector } from 'react-redux'
+import { useAppSelector } from "../hooks";
+
+
+type Props = {
+  show: boolean;
+  setShow: (a: boolean) => void;
+}
 
 /**
  * Component for showing the own roles
@@ -9,8 +15,8 @@ import { useSelector } from 'react-redux'
  * @param {object} param Props for this component: show, setShow
  * @returns Returns a modal for viewing the own roles
  */
-export default function RolesModal({ show, setShow }) {
-  const roles = useSelector(state => state.user.roles)
+export default function RolesModal({ show, setShow }: Props) {
+  const roles = useAppSelector(state => state.user.roles)
 
   return (
     <Modal

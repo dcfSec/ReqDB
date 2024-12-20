@@ -4,19 +4,24 @@ import { SearchField } from '../MiniComponents';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useState } from 'react';
 import FilterTopicEntry from './FilterTopicEntry';
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppSelector } from '../../hooks';
 
+
+type Props = {
+  show: boolean;
+  setShow: (a: boolean) => void;
+}
 /**
  * Component for the filter modal for topics in the brows view
  * 
  * @param {object} param0 Props for this component: show, setShow, topics, setFilteredTopics, filteredTopics
  * @returns Returns a modal for filtering topics in the browse view
  */
-export default function FilterTopicsModal({ show, setShow }) {
+export default function FilterTopicsModal({ show, setShow }: Props) {
 
   const [search, setSearch] = useState("");
 
-  const topics = useSelector(state => state.browse.data.topics)
+  const topics = useAppSelector(state => state.browse.data.topics)
 
   function reset() {
     setShow(false)

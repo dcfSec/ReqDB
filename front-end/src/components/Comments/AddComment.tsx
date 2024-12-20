@@ -15,13 +15,20 @@ import { protectedResources } from "../../authConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
+
+type Props = {
+  view: string;
+  index: number;
+  requirementId: number
+}
+
 /**
  * Component for a row in the brows view with the possible interactions
  * 
  * @param {object} props Props for this component: index, requirementId
  * @returns A comment entry
  */
-export default function AddComment({ view, index, requirementId }) {
+export default function AddComment({ view, index, requirementId }: Props) {
   const dispatch = useDispatch()
 
   const [newComment, setNewComment] = useState("")

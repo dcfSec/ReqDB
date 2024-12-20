@@ -10,7 +10,7 @@ import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { reset, setComments } from "../stateSlices/CommentSlice";
 import { CommentRow } from "../components/Comments/CommentRow";
@@ -23,14 +23,14 @@ import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
  * @returns Container for the home view
  */
 export default function Comments() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(setBreadcrumbs([{ href: "", title: "Comments", active: true }]))
     dispatch(setPageTitle("Comments"))
     }, []);
 
-  const comments = useSelector(state => state.comment.comments)
+  const comments = useAppSelector(state => state.comment.comments)
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -71,11 +71,12 @@ export default function Comments() {
 
   let searchBar = <LoadingBar/>
   let table = <></>
+  let body = <></>
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
+    body = <Row><Col><Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert></Col></Row>
   } else if (APIError) {
-    body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
+    body = <Row><Col><Alert variant="danger">{ErrorMessage(APIError)}</Alert></Col></Row>
   } else if (fetched) {
     searchBar = <Col><SearchField title="Comments" search={search} onSearch={setSearch}></SearchField></Col>
     table = <Row><Col><DataTable headers={headers}>
@@ -83,6 +84,15 @@ export default function Comments() {
         <CommentRow key={index} index={index} search={search} searchFields={searchFields} comment={item} showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} showCompleted={showCompleted}/>
       )) : <tr><td colSpan={6} style={{textAlign: 'center'}}>No comments</td></tr> }
     </DataTable></Col></Row>
+    body = (
+      <>
+        <Row>{searchBar}</Row>
+        <Row>
+          <Col><Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label="Show completed" reverse/></Col>
+        </Row>
+        {table}
+      </>
+    )
   }
 
   return (
@@ -90,13 +100,7 @@ export default function Comments() {
       <Row>
         <Col><h2>Comments</h2></Col>
       </Row>
-      <Row>
-        {searchBar}
-      </Row>
-      <Row>
-        <Col><Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label="Show completed" reverse/></Col>
-      </Row>
-      {table}
+      {body}
     </>
   )
 };

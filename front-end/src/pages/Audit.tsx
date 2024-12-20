@@ -1,33 +1,41 @@
 import { useState, useEffect } from 'react';
-import { Button, Col, Dropdown, Row } from "react-bootstrap";
+import { Col, Dropdown, Row } from "react-bootstrap";
 import DataLayout from '../components/DataLayout';
 import DataTable from '../components/DataTable';
 
-import { CheckboxDropdown } from "../components/CheckboxDropdown";
+import CheckboxDropdown from "../components/CheckboxDropdown";
 import { Alert } from 'react-bootstrap';
 import { ErrorMessage } from '../components/MiniComponents'
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { protectedResources } from '../authConfig';
 
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '../hooks';
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../stateSlices/NotificationToastSlice";
 import { setItems } from "../stateSlices/EditSlice";
 import LoadingBar from '../components/LoadingBar';
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import AuditRow from '../components/Audit/AuditRow';
+import { Item } from "../types/API/Audit";
 
 import { toggleActionFilterSelected, toggleActionFilterSelectedAll } from '../stateSlices/AuditSlice';
 
+
+type Props = {
+  auditPageName: string;
+  headers: Array<string>;
+  searchFields: Array<string>;
+  endpoint: string;
+}
 /**
  * Component for the parent view of the editor pages
  * 
  * @param {object} props Props for the component: auditPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters
  * @returns Parent component for all editor views
  */
-function AuditParent({ auditPageName, headers, searchFields, endpoint }) {
-  const dispatch = useDispatch()
-  const items = useSelector(state => state.edit.items)
+function AuditParent({ auditPageName, headers, searchFields, endpoint }: Props) {
+  const dispatch = useAppDispatch()
+  const items = useAppSelector(state => state.audit.items)
 
   useEffect(() => {
     dispatch(setPageTitle(auditPageName))
@@ -77,21 +85,21 @@ function AuditParent({ auditPageName, headers, searchFields, endpoint }) {
         </Col>
       </Row >
       <Row><Col><DataTable headers={["Timestamp", "User", "Action", ...headers, "Parent"]}>
-        {items.map((item, index) => (
-          renderItem(item, index)
+        {items.map((item, /*index*/) => (
+          renderItem(item, /*index*/)
         ))}
       </DataTable></Col></Row>
     </>
   }
-  function onSearch(s) {
+  function onSearch(s: string) {
     setSearch(s)
   }
 
-  function renderItem(item, index) {
+  function renderItem(item: Item, /*index: number*/) {
     if (item) {
       return <AuditRow
         key={item.transaction_id}
-        index={index}
+        /*index={index}*/
         item={item}
         search={search}
         searchFields={searchFields}
@@ -117,7 +125,7 @@ function AuditParent({ auditPageName, headers, searchFields, endpoint }) {
  * @returns Tags view for editing
  */
 export function AuditTags() {
-  return <AuditParent auditPageName="Tags" humanKey="name"
+  return <AuditParent auditPageName="Tags"
     headers={[
       "Tag ID",
       "Name",
@@ -137,7 +145,7 @@ export function AuditTags() {
  * @returns Catalogues view for editing
  */
 export function AuditCatalogues() {
-  return <AuditParent auditPageName="Catalogues" humanKey="title"
+  return <AuditParent auditPageName="Catalogues"
     headers={[
       "Catalogue ID",
       "Title",
@@ -150,7 +158,6 @@ export function AuditCatalogues() {
       "transaction.user_id"
     ]}
     endpoint="catalogues"
-    parameters={["nested"]}
   />
 }
 
@@ -160,7 +167,7 @@ export function AuditCatalogues() {
  * @returns Topics view for editing
  */
 export function AuditTopics() {
-  return <AuditParent auditPageName="Topics" humanKey="key"
+  return <AuditParent auditPageName="Topics"
     headers={[
       "Topic ID",
       "Key",
@@ -181,7 +188,7 @@ export function AuditTopics() {
  * @returns Requirements view for editing
  */
 export function AuditRequirements() {
-  return <AuditParent auditPageName="Requirements" humanKey="key"
+  return <AuditParent auditPageName="Requirements"
     headers={[
       "Requirement ID",
       "Key",
@@ -203,7 +210,7 @@ export function AuditRequirements() {
  * @returns ExtraTypes view for editing
  */
 export function AuditExtraTypes() {
-  return <AuditParent auditPageName="ExtraTypes" humanKey="title"
+  return <AuditParent auditPageName="ExtraTypes"
     headers={[
       "ExtraType ID",
       "Title",
@@ -224,7 +231,7 @@ export function AuditExtraTypes() {
  * @returns ExtraEntries view for editing
  */
 export function AuditExtraEntries() {
-  return <AuditParent auditPageName="ExtraEntries" humanKey="id"
+  return <AuditParent auditPageName="ExtraEntries"
     headers={[
       "ExtraEntry ID",
       "Content",
@@ -247,7 +254,7 @@ export function AuditExtraEntries() {
  * @returns ExtraEntries view for editing
  */
 export function AuditComments() {
-  return <AuditParent auditPageName="Comments" humanKey="id"
+  return <AuditParent auditPageName="Comments"
     headers={[
       "Comment ID",
       "Comment",

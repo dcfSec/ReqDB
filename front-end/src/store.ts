@@ -6,7 +6,7 @@ import NotificationToastReducer from './stateSlices/NotificationToastSlice'
 import EditReducer from './stateSlices/EditSlice'
 import UserReducer from './stateSlices/UserSlice'
 import RequirementReducer from './stateSlices/RequirementSlice'
-// import CommentReducer from './stateSlices/CommentSlice'
+import CommentReducer from './stateSlices/CommentSlice'
 import LayoutReducer from './stateSlices/LayoutSlice'
 import AuditReducer from './stateSlices/AuditSlice'
 
@@ -19,7 +19,7 @@ const store = configureStore({
     edit: EditReducer,
     user: UserReducer,
     requirement: RequirementReducer,
-    // comment: CommentReducer,
+    comment: CommentReducer,
     layout: LayoutReducer,
     audit: AuditReducer,
   }

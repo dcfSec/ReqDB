@@ -1,7 +1,6 @@
 import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from "../hooks";
 import LoadingBar from "../components/LoadingBar";
 import BrowseContent from "../components/Browse/BrowseContent";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
@@ -14,9 +13,9 @@ import { useEffect } from "react";
  */
 export default function BrowseCatalogue() {
 
-  const title = useSelector(state => state.layout.pageTitle)
+  const title = useAppSelector(state => state.layout.pageTitle)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(setPageTitle("Loading..."))

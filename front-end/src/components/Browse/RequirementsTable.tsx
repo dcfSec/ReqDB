@@ -1,13 +1,13 @@
-import { useEffect, useState, Suspense } from "react";
+import { ReactNode, Suspense } from "react";
 import { Form } from "react-bootstrap";
 import Table from 'react-bootstrap/Table';
-import BrowseRow from "./BrowseRow";
-import { inSearchField } from "../MiniComponents";
-
-import { useSelector, useDispatch } from 'react-redux'
-import { toggleSelectAll, setVisibleRow } from '../../stateSlices/BrowseSlice';
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { toggleSelectAll } from '../../stateSlices/BrowseSlice';
 
 
+type Props = {
+  children: ReactNode
+}
 
 /**
  * Component for a default data table
@@ -15,11 +15,11 @@ import { toggleSelectAll, setVisibleRow } from '../../stateSlices/BrowseSlice';
  * @param {object} props Props for the component: headers, children, markAll, markAllCallback, markAllChecked
  * @returns Returns a data table with default header
  */
-export default function RequirementsTable({ children }) {
+export default function RequirementsTable({ children }: Props) {
 
-  const dispatch = useDispatch()
-  const allSelected = useSelector(state => state.browse.rows.allSelected)
-  const extraHeaders = useSelector(state => state.browse.extraHeaders)
+  const dispatch = useAppDispatch()
+  const allSelected = useAppSelector(state => state.browse.rows.allSelected)
+  const extraHeaders = useAppSelector(state => state.browse.extraHeaders)
 
   const headers = [
     "Tags",

@@ -1,16 +1,24 @@
 import { Button } from "react-bootstrap";
 import { inSearchField } from "../MiniComponents";
-import { useSelector } from 'react-redux'
 import { getActionBadge } from "../MiniComponents"
+import { useAppSelector } from "../../hooks";
+import { Item } from "../../types/API/Audit";
+
+type Props = {
+  item: Item;
+  search: string;
+  searchFields: Array<string>;
+  auditPageName: string
+}
 
 /**
  * Component for a row to edit an object
  * 
- * @param {object} props Props for this component: index, item, search, searchFields, auditPageName
+ * @param {object} props Props for this component: item, search, searchFields, auditPageName
  * @returns Table row for editing an object
  */
-export default function AuditRow({ index, item, search, searchFields, auditPageName }) {
-  const selected = useSelector(state => state.audit.action.filterSelected)
+export default function AuditRow({ item, search, searchFields, auditPageName }: Props) {
+  const selected = useAppSelector(state => state.audit.action.filterSelected)
   let row = <></>
   if (inSearchField(search, searchFields, item) && selected.indexOf(item.verb) >= 0) {
     switch (auditPageName) {
@@ -43,13 +51,18 @@ export default function AuditRow({ index, item, search, searchFields, auditPageN
   }
 }
 
+type TypeProps = {
+  item: Item
+}
+
+
 /**
  * Component for a audit row for an object
  * 
- * @param {object} props Props for this component: index, item
+ * @param {object} props Props for this component: item
  * @returns Table row for audit of an object
  */
-export function TagAuditRow({ index, item }) {
+export function TagAuditRow({ item }: TypeProps) {
 
   return (
     <tr>
@@ -66,10 +79,10 @@ export function TagAuditRow({ index, item }) {
 /**
  * Component for a audit row for an object
  * 
- * @param {object} props Props for this component: index, item
+ * @param {object} props Props for this component: item
  * @returns Table row for audit of an object
  */
-export function CatalogueAuditRow({ index, item }) {
+export function CatalogueAuditRow({ item }: TypeProps) {
 
   return (
     <tr>
@@ -87,10 +100,10 @@ export function CatalogueAuditRow({ index, item }) {
 /**
  * Component for a audit row for an object
  * 
- * @param {object} props Props for this component: index, item
+ * @param {object} props Props for this component: item
  * @returns Table row for audit of an object
  */
-export function ExtraEntryAuditRow({ index, item }) {
+export function ExtraEntryAuditRow({ item }: TypeProps) {
 
   return (
     <tr>
@@ -108,10 +121,10 @@ export function ExtraEntryAuditRow({ index, item }) {
 /**
  * Component for a audit row for an object
  * 
- * @param {object} props Props for this component: index, item
+ * @param {object} props Props for this component: item
  * @returns Table row for audit of an object
  */
-export function ExtraTypeAuditRow({ index, item }) {
+export function ExtraTypeAuditRow({ item }: TypeProps) {
 
   return (
     <tr>
@@ -129,10 +142,10 @@ export function ExtraTypeAuditRow({ index, item }) {
 /**
  * Component for a audit row for an object
  * 
- * @param {object} props Props for this component: index, item
+ * @param {object} props Props for this component: item
  * @returns Table row for audit of an object
  */
-export function RequirementAuditRow({ index, item }) {
+export function RequirementAuditRow({ item }: TypeProps) {
 
   return (
     <tr>
@@ -153,10 +166,10 @@ export function RequirementAuditRow({ index, item }) {
 /**
  * Component for a audit row for an object
  * 
- * @param {object} props Props for this component: index, item
+ * @param {object} props Props for this component: item
  * @returns Table row for audit of an object
  */
-export function TopicAuditRow({ index, item }) {
+export function TopicAuditRow({ item }: TypeProps) {
 
   return (
     <tr>
@@ -174,10 +187,10 @@ export function TopicAuditRow({ index, item }) {
 /**
  * Component for a audit row for an object
  * 
- * @param {object} props Props for this component: index, item
+ * @param {object} props Props for this component: item
  * @returns Table row for audit of an object
  */
-export function CommentAuditRow({ index, item }) {
+export function CommentAuditRow({ item }: TypeProps) {
 
   return (
     <tr>
