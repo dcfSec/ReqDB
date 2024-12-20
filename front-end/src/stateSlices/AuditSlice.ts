@@ -1,7 +1,17 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { isVisible } from '../components/MiniComponents'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { RootState } from '../store'
 
-const initialState = {
+
+interface AuditState {
+  action: {
+    filterItems: Array<string>;
+    filterSelected: Array<string>;
+    allSelected: boolean;
+  }
+}
+
+
+const initialState: AuditState = {
   action: {
     filterItems: ["INSERT", "UPDATE", "DELETE"],
     filterSelected: ["INSERT", "UPDATE", "DELETE"],
@@ -14,7 +24,7 @@ export const auditSlice = createSlice({
   initialState,
   reducers: {
     reset: () => initialState,
-    toggleActionFilterSelected: (state, action) => {
+    toggleActionFilterSelected: (state, action: PayloadAction<string>) => {
       if (state.action.filterSelected.indexOf(action.payload) >= 0) {
         const tmp = state.action.filterSelected.filter(function (v) { return v !== action.payload; });
         state.action.filterSelected = [
@@ -28,7 +38,7 @@ export const auditSlice = createSlice({
       }
       state.action.allSelected = JSON.stringify([...state.action.filterSelected].sort()) === JSON.stringify([...state.action.filterItems].sort());
     },
-    toggleActionFilterSelectedAll: (state, action) => {
+    toggleActionFilterSelectedAll: (state, action: PayloadAction<boolean>) => {
       if (action.payload === true) {
         state.action.filterSelected = [
           ...state.action.filterItems
@@ -43,5 +53,7 @@ export const auditSlice = createSlice({
 })
 
 export const { toggleActionFilterSelected, toggleActionFilterSelectedAll } = auditSlice.actions
+
+export const action = (state: RootState) => state.audit.action
 
 export default auditSlice.reducer

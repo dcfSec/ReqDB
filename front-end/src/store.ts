@@ -6,7 +6,7 @@ import NotificationToastReducer from './stateSlices/NotificationToastSlice'
 import EditReducer from './stateSlices/EditSlice'
 import UserReducer from './stateSlices/UserSlice'
 import RequirementReducer from './stateSlices/RequirementSlice'
-import CommentReducer from './stateSlices/CommentSlice'
+// import CommentReducer from './stateSlices/CommentSlice'
 import LayoutReducer from './stateSlices/LayoutSlice'
 import AuditReducer from './stateSlices/AuditSlice'
 
@@ -19,10 +19,15 @@ const store = configureStore({
     edit: EditReducer,
     user: UserReducer,
     requirement: RequirementReducer,
-    comment: CommentReducer,
+    // comment: CommentReducer,
     layout: LayoutReducer,
     audit: AuditReducer,
   }
 })
 
 export default store;
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>
+// Inferred type: {mainLogoSpinner: mainLogoSpinnerState, browse: BrowseState, catalogueData: catalogueDataState, notificationToast: NotificationToastState, edit: EditState, user: UserState, requirement: RequirementState, comment: CommentState, layout: LayoutState, audit: AuditState}
+export type AppDispatch = typeof store.dispatch
