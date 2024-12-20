@@ -4,8 +4,7 @@ import YAML from 'yaml';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-import { useSelector } from 'react-redux'
-
+import { useAppSelector } from '../hooks';
 
 /**
  * Exports the browse table in different formats
@@ -15,9 +14,9 @@ import { useSelector } from 'react-redux'
  */
 export function ExportTable() {
 
-  const selected = useSelector(state => state.browse.rows.selected)
-  const visible = useSelector(state => state.browse.rows.visible)
-  const dataToExport = [...useSelector(state => state.browse.rows.items).filter(function (v) { return selected[v.id] === true; })]
+  const selected = useAppSelector(state => state.browse.rows.selected)
+  const visible = useAppSelector(state => state.browse.rows.visible)
+  const dataToExport = [...useAppSelector(state => state.browse.rows.items).filter(function (v) { return selected[v.id] === true; })]
 
   const headers = [
     "Tags",
@@ -25,7 +24,7 @@ export function ExportTable() {
     "Key",
     "Title",
     "Description",
-    ...Object.keys(useSelector(state => state.browse.extraHeaders))
+    ...Object.keys(useAppSelector(state => state.browse.extraHeaders))
   ]
 
   function exportExcel() {

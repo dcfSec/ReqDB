@@ -1,9 +1,9 @@
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { MainBreadcrumb } from "./MiniComponents";
-import { useSelector } from 'react-redux'
 import MainNavbar from "./MainNavbar";
 import Footer from "./Footer";
 import { useMsal } from "@azure/msal-react";
+import { useAppSelector } from "../hooks";
 
 /**
  * Route guard to protect protected resources
@@ -12,7 +12,7 @@ import { useMsal } from "@azure/msal-react";
  * @returns Route gard container for the jwt secured routes
  */
 export default function RouteGuard({ requiredRoles, title, children }) {
-  const roles = useSelector(state => state.user.roles)
+  const roles = useAppSelector(state => state.user.roles)
   const isAuthorized = (requiredRoles.filter((role) => roles.includes(role)).length > 0);
 
   const { instance } = useMsal();

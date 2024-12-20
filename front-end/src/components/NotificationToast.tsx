@@ -1,9 +1,9 @@
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
 
-import { useSelector, useDispatch } from 'react-redux'
 import { showToast } from "../stateSlices/NotificationToastSlice";
 import { ErrorMessage } from './MiniComponents';
+import { useAppSelector, useAppDispatch } from "../hooks";
 
 
 /**
@@ -12,10 +12,10 @@ import { ErrorMessage } from './MiniComponents';
  * @returns Returns a notification toast container
  */
 export default function NotificationToast() {
-  const dispatch = useDispatch()
-  const visible = useSelector(state => state.notificationToast.visible)
-  const header = useSelector(state => state.notificationToast.header)
-  const body = useSelector(state => state.notificationToast.body)
+  const dispatch = useAppDispatch()
+  const visible = useAppSelector(state => state.notificationToast.visible)
+  const header = useAppSelector(state => state.notificationToast.header)
+  const body = useAppSelector(state => state.notificationToast.body)
 
   let htmlBody = <></>
 

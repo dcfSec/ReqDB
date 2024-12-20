@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-import { InteractionType } from '@azure/msal-browser';
+import { InteractionType, PopupRequest } from '@azure/msal-browser';
 import { useMsal, useMsalAuthentication } from "@azure/msal-react";
 
 /**
@@ -8,15 +8,15 @@ import { useMsal, useMsalAuthentication } from "@azure/msal-react";
  * @param {PopupRequest} msalRequest 
  * @returns 
  */
-const useFetchWithMsal = (msalRequest) => {
+const useFetchWithMsal = (msalRequest: PopupRequest) => {
     const { instance } = useMsal();
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | null>(null);
     const [data, setData] = useState(null);
 
     const { result, error: msalError } = useMsalAuthentication(InteractionType.Redirect, {
         ...msalRequest,
-        account: instance.getActiveAccount(),
+        account: instance.getActiveAccount() || undefined,
         redirectUri: '/'
     });
 
@@ -27,7 +27,7 @@ const useFetchWithMsal = (msalRequest) => {
      * @param {Object} data: The data to send to the endpoint, if any 
      * @returns JSON response
      */
-    const execute = async (method, endpoint, data = null, json = true) => {
+    const execute = async (method: string, endpoint: string, data: object | null = null, json = true) => {
         if (msalError) {
             setError(msalError);
             return;
@@ -43,7 +43,7 @@ const useFetchWithMsal = (msalRequest) => {
 
                 if (data) headers.append('Content-Type', 'application/json');
 
-                let options = {
+                const options = {
                     method: method,
                     headers: headers,
                     body: data ? JSON.stringify(data) : null,
@@ -61,7 +61,7 @@ const useFetchWithMsal = (msalRequest) => {
                 setIsLoading(false);
                 return response;
             } catch (e) {
-                setError(e);
+                setError((e as Error));
                 setIsLoading(false);
                 throw e;
             }

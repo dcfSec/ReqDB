@@ -1,9 +1,8 @@
-import React from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { useSelector } from 'react-redux'
+import { useAppSelector } from '../hooks';
 
 export default function LoadingBar() {
-  const visible = useSelector(state => state.mainLogoSpinner.visible)
+  const visible = useAppSelector(state => state.mainLogoSpinner.visible)
 	if (visible) {
 		return (
 			<Row><Col style={{ textAlign: "center" }}>

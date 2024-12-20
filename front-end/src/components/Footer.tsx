@@ -1,7 +1,7 @@
 import { Col, Container, Image, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { brands } from "@fortawesome/fontawesome-svg-core/import.macro";
-import { useSelector } from 'react-redux'
+import { useAppSelector } from "../hooks";
 
 /**
  * Parent component for all views
@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux'
  * @returns Main layout
  */
 export default function Footer() {
-  const darkMode = useSelector(state => state.user.preferences.darkMode)
+  const darkMode = useAppSelector(state => state.user.preferences.darkMode)
 
   return (
     <>

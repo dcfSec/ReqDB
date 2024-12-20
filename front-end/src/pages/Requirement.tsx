@@ -6,7 +6,7 @@ import LoadingBar from "../components/LoadingBar";
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { reset, setRequirement } from "../stateSlices/RequirementSlice";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
@@ -21,14 +21,14 @@ import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
  * @returns View to select a catalogue
  */
 export default function Requirement() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(setPageTitle("View Requirement - Loading..."))
     dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: "View Requirement", active: true }]))
   }, []);
 
-  const title = useSelector(state => state.layout.pageTitle)
+  const title = useAppSelector(state => state.layout.pageTitle)
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);

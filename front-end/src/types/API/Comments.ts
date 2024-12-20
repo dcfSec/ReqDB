@@ -4,7 +4,7 @@ export interface Item {
   id: number;
   comment: string;
   requirementId: number;
-  requirement?: Requirement;
+  requirement: Requirement;
   author: string;
   created: string;
   completed: boolean

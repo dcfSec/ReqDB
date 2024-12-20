@@ -1,14 +1,19 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Col, Container, Row, Form } from 'react-bootstrap';
-
-import { useSelector } from 'react-redux'
+import { useAppSelector } from '../../hooks';
 import CommentEntry from "./CommentEntry"
 import AddComment from "./AddComment"
 import { appRoles } from '../../authConfig';
 import { useState } from "react";
-
 import Stack from 'react-bootstrap/Stack';
+
+
+type Props = {
+  index: number;
+  show: boolean;
+  setShow: (a: boolean) => void;
+}
 
 /**
  * Component for a modal to view and add comments
@@ -16,10 +21,10 @@ import Stack from 'react-bootstrap/Stack';
  * @param {object} props Props for this component: humanKey, show, setShow, initialSelectedItems, endpoint, columns, updateKey, updateItem
  * @returns Returns a modal to select many
  */
-export default function CommentModal({ index, show, setShow }) {
+export default function CommentModal({ index, show, setShow }: Props) {
 
-  const row = useSelector(state => state.browse.rows.items)[index]
-  const roles = useSelector(state => state.user.roles)
+  const row = useAppSelector(state => state.browse.rows.items)[index]
+  const roles = useAppSelector(state => state.user.roles)
 
   const [showCompleted, setShowCompleted] = useState(false);
 

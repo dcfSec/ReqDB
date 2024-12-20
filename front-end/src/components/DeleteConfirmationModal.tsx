@@ -2,13 +2,23 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
+
+type Props = {
+  titleItem?: string|null;
+  item: string;
+  show: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+  onForceChange: (a: boolean) => void;
+}
+
 /**
  * Component for a confirmation modal when deleting objects
  * 
  * @param {object} props Props for this component: item, show, onCancel, onConfirm, onForceChange
  * @returns A modal to confirm deletion
  */
-export default function DeleteConfirmationModal({ titleItem = null, item, show, onCancel, onConfirm, onForceChange }) {
+export default function DeleteConfirmationModal({ titleItem = null, item, show, onCancel, onConfirm, onForceChange }: Props) {
   if (titleItem === null) {
     titleItem = item
   }

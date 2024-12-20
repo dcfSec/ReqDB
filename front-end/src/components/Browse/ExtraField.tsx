@@ -2,13 +2,20 @@ import { Badge } from "react-bootstrap";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 
 
+type Props = {
+  index: number;
+  extraType: 1 | 2 | 3;
+  item: string;
+  lineBreak: boolean
+}
+
 /**
  * Component for an extra field view
  * 
  * @param {object} props Props for this component: index, extraType, item
  * @returns An extra field
  */
-export default function ExtraField({ index, extraType, item, lineBreak = false }) {
+export default function ExtraField({ index, extraType, item, lineBreak = false }: Props) {
 
   let badgeIdExtraFieldRunner = 0
 

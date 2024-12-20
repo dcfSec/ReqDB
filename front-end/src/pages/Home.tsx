@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { appRoles } from "../authConfig";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { homeTitle, preMOTD, postMOTD } from "../static";
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { useEffect } from "react";
 
@@ -13,14 +13,14 @@ import { useEffect } from "react";
  * @returns Container for the home view
  */
 export default function Home() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(setBreadcrumbs([{ href: "", title: "Home", active: true }]))
     dispatch(setPageTitle("Home"))
   }, []);
 
-  const roles = useSelector(state => state.user.roles)
+  const roles = useAppSelector(state => state.user.roles)
 
   return <>
     <Row>
@@ -31,9 +31,9 @@ export default function Home() {
         <Stack gap={2} className="col-md-3 mx-auto">
           <h2>{homeTitle}</h2>
           <ReactMarkdown>{preMOTD}</ReactMarkdown>
-          <Button as={Link} to="Browse" variant="outline-secondary">Browse Catalogues</Button>
+          <Link to="Browse"><Button variant="outline-secondary">Browse Catalogues</Button></Link>
           {roles.includes(appRoles.Comments.Moderator) ?
-            <Button as={Link} to="Comments" variant="outline-secondary">Comments</Button>
+             <Link to="Comments"><Button variant="outline-secondary">Comments</Button></Link>
             : null}
           {roles.includes(appRoles.Requirements.Writer) ?
             <Dropdown className="d-inline-block">

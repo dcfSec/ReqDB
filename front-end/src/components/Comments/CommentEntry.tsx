@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { useState } from "react";
-import { useDispatch, useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 
@@ -18,7 +18,15 @@ import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { removeComment, updateComment } from '../../stateSlices/BrowseSlice';
 import { removeCommentFromRequirement, updateCommentInRequirement } from '../../stateSlices/RequirementSlice';
+import { Item as Comment } from '../../types/API/Comments';
 
+type Props = {
+  view: string;
+  rowIndex: number;
+  commentIndex: number;
+  comment: Comment;
+  showCompleted: boolean;
+}
 
 /**
  * Component for a row in the brows view with the possible interactions
@@ -26,13 +34,13 @@ import { removeCommentFromRequirement, updateCommentInRequirement } from '../../
  * @param {object} props Props for this component: author, comment, timestamp
  * @returns A comment entry
  */
-export default function CommentEntry({ view, rowIndex, commentIndex, comment, showCompleted }) {
-  const dispatch = useDispatch()
+export default function CommentEntry({ view, rowIndex, commentIndex, comment, showCompleted }: Props) {
+  const dispatch = useAppDispatch()
 
-  const roles = useSelector(state => state.user.roles)
+  const roles = useAppSelector(state => state.user.roles)
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [force, setForce] = useState(false);
+  const [/*force*/, setForce] = useState(false);
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
@@ -55,7 +63,7 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
             dispatch(removeCommentFromRequirement({ comment: commentIndex }))
           }
         } else {
-          response.json().then((r) => {
+          response.json().then((r: {error: string, message: string}) => {
             dispatch(toast({ header: r.error, body: r.message }))
           }
           );
@@ -83,7 +91,7 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
             dispatch(updateCommentInRequirement({ index: commentIndex, comment: response.data }))
           }
         } else {
-          response.json().then((r) => {
+          response.json().then((r: {error: string, message: string}) => {
             dispatch(toast({ header: r.error, body: r.message }))
           }
           );
@@ -102,7 +110,7 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
   if (!comment.completed || showCompleted) {
     return (
       <>
-        <Card style={{ marginBottom: '0.5em', lineHeight: '1em' }} border={comment.completed ? "danger" : null}>
+        <Card style={{ marginBottom: '0.5em', lineHeight: '1em' }} border={comment.completed ? "danger" : undefined}>
           <Card.Header style={{ padding: '0em' }}>
             <Stack direction="horizontal" gap={2}>
               <span className="p-2">From <span style={{ fontStyle: 'italic' }}>{comment.author}</span></span>

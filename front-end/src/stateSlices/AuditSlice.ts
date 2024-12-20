@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
+import { Item } from '../types/API/Audit';
 
 
 interface AuditState {
@@ -7,7 +8,8 @@ interface AuditState {
     filterItems: Array<string>;
     filterSelected: Array<string>;
     allSelected: boolean;
-  }
+  };
+  items: Array<Item>;
 }
 
 
@@ -17,6 +19,7 @@ const initialState: AuditState = {
     filterSelected: ["INSERT", "UPDATE", "DELETE"],
     allSelected: true
   },
+  items: []
 }
 
 export const auditSlice = createSlice({
@@ -24,6 +27,17 @@ export const auditSlice = createSlice({
   initialState,
   reducers: {
     reset: () => initialState,
+    setItems: (state, action: PayloadAction<Array<Item>>) => {
+      state.items = [...action.payload]
+    },
+    addItem: (state, action: PayloadAction<Item>) => {
+      state.items = [action.payload, ...state.items]
+    },
+    removeItem: (state, action: PayloadAction<number>) => {
+      const tmp = [...state.items]
+      tmp.splice(action.payload, 1);
+      state.items = [...tmp]
+    },
     toggleActionFilterSelected: (state, action: PayloadAction<string>) => {
       if (state.action.filterSelected.indexOf(action.payload) >= 0) {
         const tmp = state.action.filterSelected.filter(function (v) { return v !== action.payload; });
@@ -52,7 +66,7 @@ export const auditSlice = createSlice({
   },
 })
 
-export const { toggleActionFilterSelected, toggleActionFilterSelectedAll } = auditSlice.actions
+export const { toggleActionFilterSelected, toggleActionFilterSelectedAll, setItems, addItem, removeItem } = auditSlice.actions
 
 export const action = (state: RootState) => state.audit.action
 
