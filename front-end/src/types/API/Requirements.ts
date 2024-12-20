@@ -3,7 +3,7 @@ import { Item as Tag } from "./Tags";
 import { Item as Comment } from "./Comments";
 import { Item as Topic } from "./Topics";
 
-export interface Item {
+export interface Item extends Record<string, unknown> {
   id: number;
   key: string;
   title: string;

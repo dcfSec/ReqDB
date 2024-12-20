@@ -5,30 +5,35 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import Stack from 'react-bootstrap/Stack';
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { toggleSelectRow } from '../../stateSlices/BrowseSlice';
 import { appRoles } from '../../authConfig';
-import { Link } from "react-router-dom";
+import {LinkContainer} from 'react-router-bootstrap'
 
-import { useEffect, useState, memo } from "react";
+import { useState, memo } from "react";
 import CommentModal from "../Comments/CommentModal";
 import ExtraField from "./ExtraField";
+import { Row } from "../../types/Generics";
 
 
+type Props = {
+  index: number;
+  row: Row;
+}
 /**
  * Component for a row in the brows view with the possible interactions
  * 
  * @param {object} props Props for this component: index, extraHeaders, row, search, tags, tagFiltered, topicFiltered, markRowCallback, markRowChecked
  * @returns A row for the browse view
  */
-export default memo(function BrowseRow({ index, row }) {
+export default memo(function BrowseRow({ index, row }: Props) {
 
-  const dispatch = useDispatch()
-  const selected = useSelector(state => state.browse.rows.selected)
-  const extraHeaders = useSelector(state => state.browse.extraHeaders)
-  const roles = useSelector(state => state.user.roles)
+  const dispatch = useAppDispatch()
+  const selected = useAppSelector(state => state.browse.rows.selected)
+  const extraHeaders = useAppSelector(state => state.browse.extraHeaders)
+  const roles = useAppSelector(state => state.user.roles)
 
-  const visible = useSelector(state => state.browse.rows.visible)[row.id]
+  const visible = useAppSelector(state => state.browse.rows.visible)[row.id]
 
   //const [visible, setVisible] = useState(true)
   const [showComments, setShowComments] = useState(false)
@@ -36,10 +41,10 @@ export default memo(function BrowseRow({ index, row }) {
   const topicMaxlength = 40
 
   const commentCount = [...row.Comments].filter((el) => el.completed == false).length
-  let renderRow = <tr key={row.Key}>
+  const renderRow = <tr key={row.Key}>
     <td className="vertical-middle">
       <Stack gap={1}>
-        <Button className="eye-button" variant="primary" as={Link} to={`/Browse/Requirement/${row.id}`}><FontAwesomeIcon icon={solid("link")} /></Button>
+        <LinkContainer to={`/Browse/Requirement/${row.id}`}><Button className="eye-button" variant="primary"><FontAwesomeIcon icon={solid("link")} /></Button></LinkContainer>
         { roles.includes(appRoles.Comments.Reader) ? <Button className="eye-button" variant="primary" onClick={() => { setShowComments(true) }} style={{ position: "relative" }}><FontAwesomeIcon icon={solid("comment")} />
         { commentCount > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1.5em', marginLeft: '-0.5em'}}>{commentCount}</Badge><span className="visually-hidden">comments</span></> : null }</Button> : null }
       </Stack>
@@ -56,7 +61,7 @@ export default memo(function BrowseRow({ index, row }) {
     <td>{row.Key}</td>
     <td>{row.Title}</td>
     <td><ReactMarkdown>{row.Description}</ReactMarkdown></td>
-    {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader]} lineBreak={true}/></td>))}
+    {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader] as string} lineBreak={true}/></td>))}
     <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectRow(row.id)) }} checked={selected[row.id]} /></td>
     { roles.includes(appRoles.Comments.Reader) ? <CommentModal index={index} show={showComments} setShow={setShowComments}></CommentModal> : null }
   </tr>

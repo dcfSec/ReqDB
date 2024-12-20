@@ -1,25 +1,24 @@
-import { Button, Col, Container, Row } from "react-bootstrap";
-import { MainBreadcrumb } from "./MiniComponents";
-import MainNavbar from "./MainNavbar";
-import Footer from "./Footer";
+import { Button, Col, Row } from "react-bootstrap";
 import { useMsal } from "@azure/msal-react";
 import { useAppSelector } from "../hooks";
+import { ReactNode } from "react";
 
+
+type Props = {
+  requiredRoles: Array<string>;
+  children: ReactNode;
+}
 /**
  * Route guard to protect protected resources
  * 
  * @param {object} props Props for this component: roles, title, children
  * @returns Route gard container for the jwt secured routes
  */
-export default function RouteGuard({ requiredRoles, title, children }) {
+export default function RouteGuard({ requiredRoles, children } : Props) {
   const roles = useAppSelector(state => state.user.roles)
   const isAuthorized = (requiredRoles.filter((role) => roles.includes(role)).length > 0);
 
   const { instance } = useMsal();
-
-  const breadcrumbs = [
-    { href: "", title: title, active: true }
-  ]
 
   return (
     <>

@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { inFilterField } from '../MiniComponents';
-
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { addTopicFilterSelected, removeTopicFilterSelected } from '../../stateSlices/BrowseSlice';
+import { MinimalItem as Topic } from '../../types/API/Topics';
+
+type Props = {
+  topic: Topic;
+  search: string;
+  parents?: Array<string>;
+  root?: boolean
+}
 
 /**
  * Component for an item in the list for the topics filter modal
@@ -11,13 +18,11 @@ import { addTopicFilterSelected, removeTopicFilterSelected } from '../../stateSl
  * @param {object} props Props for the component: topic, filteredTopics, setFilteredTopics, search, root
  * @returns Returns a entry in the modal to filter topics
  */
-export default function FilterTopicEntry({ topic, search, parents = [], root = false }) {
+export default function FilterTopicEntry({ topic, search, parents = [], root = false }: Props) {
+  const dispatch = useAppDispatch()
+  const filteredTopics = useAppSelector(state => state.browse.topics.filterSelected)
 
-
-  const dispatch = useDispatch()
-  const filteredTopics = useSelector(state => state.browse.topics.filterSelected)
-
-  let allChildren = getAllChildren(topic, [])
+  const allChildren = getAllChildren(topic, [])
 
   const [allChecked, setAllChecked] = useState(true);
 
@@ -30,7 +35,7 @@ export default function FilterTopicEntry({ topic, search, parents = [], root = f
     }
   }, [filteredTopics]);
 
-  function getAllChildren(t, arr) {
+  function getAllChildren(t: Topic, arr: Array<string>) {
     arr.push(`${t.key} ${t.title}`)
     t.children.forEach(child => {
       getAllChildren(child, arr)
@@ -38,7 +43,7 @@ export default function FilterTopicEntry({ topic, search, parents = [], root = f
     return arr
   }
 
-  function toggleAll(changeEvent) {
+  function toggleAll(changeEvent: React.ChangeEvent<HTMLInputElement>) {
     const { checked } = changeEvent.target;
 
     if (checked === true) {
@@ -48,7 +53,7 @@ export default function FilterTopicEntry({ topic, search, parents = [], root = f
     }
   }
 
-  function includesAll(a, b) {
+  function includesAll(a: Array<string>, b: Array<string>) {
     if (topic.children.length === 0) {
       return a.includes(`${topic.key} ${topic.title}`)
     } else {

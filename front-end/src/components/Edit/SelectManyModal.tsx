@@ -12,12 +12,28 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
-import { useDispatch, useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { updateCache, cleanCache } from "../../stateSlices/EditSlice";
-
 import LoadingBar from '../LoadingBar';
+
+import { Item as Topic } from '../../types/API/Topics';
+import { Item as Tag } from '../../types/API/Tags';
+import { Item as Requirement } from '../../types/API/Requirements';
+import { APIErrorData, APISuccessData, RowObject } from '../../types/Generics';
+
+type Props = {
+  humanKey: string;
+  show: boolean;
+  setShow: (a: boolean) => void;
+  initialSelectedItems?: Array<Topic|Tag|Requirement>;
+  endpoint: string;
+  columns: Array<string>;
+  updateKey: string;
+  updateItem: (a: object) => void;
+  name: string;
+}
 
 /**
  * Component for a modal to select many elements to link to this object
@@ -25,9 +41,9 @@ import LoadingBar from '../LoadingBar';
  * @param {object} props Props for this component: humanKey, show, setShow, initialSelectedItems, endpoint, columns, updateKey, updateItem
  * @returns Returns a modal to select many
  */
-export default function SelectMany({ humanKey, show, setShow, initialSelectedItems = [], endpoint, columns, updateKey, updateItem, name }) {
-  const dispatch = useDispatch()
-  const cache = useSelector(state => state.edit.cache)
+export default function SelectMany({ humanKey, show, setShow, initialSelectedItems = [], endpoint, columns, updateKey, updateItem, name }: Props) {
+  const dispatch = useAppDispatch()
+  const cache = useAppSelector(state => state.edit.cache)
 
   const [search, setSearch] = useState("");
 
@@ -79,13 +95,13 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
             </tr>
           </thead>
           <tbody>
-            {cache[endpoint].data.data.map((item, index) => (getRenderRow(item, index)))}
+            {(cache[endpoint].data as APISuccessData).data.map((item, index) => (getRenderRow(item as RowObject, index)))}
           </tbody>
         </Table>
       </Form>
     } else if (endpoint in cache && cache[endpoint].data.status !== 200) {
-      dispatch(toast({ header: cache[endpoint].data.error, body: cache[endpoint].data.message }))
-      body = <Alert variant="danger">{ErrorMessage(cache[endpoint].data.message)}</Alert>
+      dispatch(toast({ header: (cache[endpoint].data as APIErrorData).error, body: String((cache[endpoint].data as APIErrorData).message) }))
+      body = <Alert variant="danger">{ErrorMessage((cache[endpoint].data as APIErrorData).message)}</Alert>
     }
   }
 
@@ -94,7 +110,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
     setSearch("")
   }
 
-  function handleCheckboxChange(changeEvent) {
+  function handleCheckboxChange(changeEvent: React.ChangeEvent<HTMLInputElement>) {
     const { value, checked } = changeEvent.target;
 
     if (checked === true && !selectedItemIds.includes(Number(value))) {
@@ -107,18 +123,18 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
   };
 
   function updateParent() {
-    const updateItemObject = {}
+    const updateItemObject: Record<string, Array<object>> = {}
     const selectedItemObjects = selectedItemIds.map((key) => ({ id: key }))
     updateItemObject[updateKey] = [...selectedItemObjects]
     updateItem(updateItemObject)
     setShow(false)
   }
 
-  function getRenderRow(item, index) {
+  function getRenderRow(item: RowObject, index: number) {
     return (search === "" || inSearchField(search, ["title", "key"], item) || selectedItemIds.includes(item.id)) ?
       <tr key={index}>
-        <td style={{ width: "0.5em" }}><Form.Check name={item.id} type="checkbox" aria-label={item.id} reverse value={item.id} onChange={handleCheckboxChange} defaultChecked={initialSelectedItemIds.includes(item.id) && selectedItemIds.includes(item.id) ? true : false} /></td>
-        {columns.map((column, cIndex) => (<td key={cIndex}>{item[column]}</td>))}
+        <td style={{ width: "0.5em" }}><Form.Check name={String(item.id)} type="checkbox" aria-label={String(item.id)} reverse value={item.id} onChange={handleCheckboxChange} defaultChecked={initialSelectedItemIds.includes(item.id) && selectedItemIds.includes(item.id) ? true : false} /></td>
+        {columns.map((column, cIndex) => (<td key={cIndex}>{item[column] as string}</td>))}
       </tr>
       : null
   }

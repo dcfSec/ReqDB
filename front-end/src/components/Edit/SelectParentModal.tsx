@@ -11,30 +11,44 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
-
-import { useDispatch, useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { updateCache, cleanCache } from "../../stateSlices/EditSlice";
 
 import LoadingBar from '../LoadingBar';
+import { APIErrorData, APISuccessData, RowObject } from '../../types/Generics';
 
+
+type Props = {
+  itemId: number;
+  humanKey: string;
+  show: boolean;
+  setShow: (a: boolean) => void;
+  initialSelectedItem: number
+  updateItem: (a: object) => void;
+  updateIdField: string;
+  updateObjectField: string;
+  checkCircle: boolean;
+  endpoint: string;
+  columns: Array<string>;
+}
 /**
  * Component to show the option to select a parent model
  * 
  * @param {object} props Props for the component: itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns
  * @returns A modal to select a parent model
  */
-export default function SelectParentModal({ itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns }) {
-  const dispatch = useDispatch()
-  const cache = useSelector(state => state.edit.cache)
+export default function SelectParentModal({ itemId, humanKey, show, setShow, initialSelectedItem, updateItem, updateIdField, updateObjectField, checkCircle, endpoint, columns }: Props) {
+  const dispatch = useAppDispatch()
+  const cache = useAppSelector(state => state.edit.cache)
 
   const [search, setSearch] = useState("");
 
-  let selectedItemObjects = []
-  let selectedItemId = 0
+  let selectedItemObjects: Array<RowObject> = []
+  let selectedItemId: string = "0"
 
-  function onSelect(id) {
+  function onSelect(id: string) {
     selectedItemId = id
   }
 
@@ -74,8 +88,8 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
     body = <Alert variant="danger">Error: {error.message}</Alert>
   } else {
     if (endpoint in cache && cache[endpoint].data && cache[endpoint].data.status === 200) {
-      selectedItemObjects = cache[endpoint].data.data
-      body = <Form onChange={(e) => onSelect(e.target.value)}>
+      selectedItemObjects = (cache[endpoint].data as APISuccessData).data as Array<RowObject>
+      body = <Form onChange={(e) => onSelect((e.target as HTMLFormElement).value)}>
         <Table responsive>
           <thead>
             <tr>
@@ -91,8 +105,8 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
         </Table>
       </Form>
     } else if (endpoint in cache && cache[endpoint].data.status !== 200) {
-      dispatch(toast({ header: cache[endpoint].data.error, body: cache[endpoint].data.message }))
-      body = <Alert variant="danger">{ErrorMessage(cache[endpoint].data.message)}</Alert>
+      dispatch(toast({ header: (cache[endpoint].data as APIErrorData).error, body: String((cache[endpoint].data as APIErrorData).message) }))
+      body = <Alert variant="danger">{ErrorMessage((cache[endpoint].data as APIErrorData).message)}</Alert>
     }
   }
 
@@ -102,23 +116,24 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
   }
 
   function updateParent() {
-    const updateItemObject = {}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateItemObject: any = {}
     if (selectedItemId === "-1") {
       updateItemObject[updateIdField] = null
       updateItemObject[updateObjectField] = null
       updateItem(updateItemObject)
     } else {
-      updateItemObject[updateIdField] = Number(selectedItemObjects[selectedItemId].id)
-      updateItemObject[updateObjectField] = selectedItemObjects[selectedItemId]
+      updateItemObject[updateIdField] = Number(selectedItemObjects[Number(selectedItemId)].id)
+      updateItemObject[updateObjectField] = selectedItemObjects[Number(selectedItemId)]
       updateItem(updateItemObject)
     }
     setShow(false)
   }
 
-  function getRenderRow(item, index) {
+  function getRenderRow(item: RowObject, index: number) {
     return (search === "" || inSearchField(search, columns, item) || `${item.id}` === selectedItemId) && !(checkCircle === true && itemId === item.id) ?
       <tr key={index}>
-        <td style={{ width: "0.5em" }}><Form.Check name="itemSelect" type="radio" aria-label={item.id} reverse value={index} defaultChecked={initialSelectedItem === item.id ? true : false} /></td>
+        <td style={{ width: "0.5em" }}><Form.Check name="itemSelect" type="radio" aria-label={String(item.id)} reverse value={index} defaultChecked={initialSelectedItem === item.id ? true : false} /></td>
         {columns.map((column, cIndex) => (<td key={cIndex}>{item[column]}</td>))}
       </tr>
       : null

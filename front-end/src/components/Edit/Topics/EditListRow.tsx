@@ -1,16 +1,24 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import SelectMany from "../SelectManyModal";
-import { useState } from "react";
+import { JSX, useState } from "react";
 import SelectParentModal from "../SelectParentModal";
+import { Item } from '../../../types/API/Topics';
 
+
+type Props = {
+  item: Item
+  buttons: JSX.Element
+  updateTempItem: (a: object) => void;
+  edit: boolean
+}
 /**
  * Component for a row to edit an object
  * 
  * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function TopicEditListRow({ index, item, buttons, updateTempItem, edit }) {
+export function TopicEditListRow({ item, buttons, updateTempItem, edit }: Props) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
@@ -27,10 +35,10 @@ export function TopicEditListRow({ index, item, buttons, updateTempItem, edit })
       <td></td>
       <td>{buttons}</td>
       {showUpdateMany2Many ? <SelectMany
-        humanKey={item.name}
+        humanKey={item.title}
         show={showUpdateMany2Many}
         setShow={setShowUpdateMany2Many}
-        initialSelectedItems={item.requirement}
+        initialSelectedItems={item.requirements}
         endpoint="topics"
         columns={["key", "title"]}
         updateKey={"requirement"}

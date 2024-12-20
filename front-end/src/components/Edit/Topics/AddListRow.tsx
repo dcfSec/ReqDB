@@ -3,13 +3,21 @@ import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
 import SelectParentModal from "../SelectParentModal";
 
+import { Item as Topic } from "../../../types/API/Topics";
+
+type Props = {
+  newItem: Topic
+  updateNewItem: (a: object) => void;
+  postItem: () => void;
+}
+
 /**
  * Component to add a item in the editor table
  * 
  * @param {object} props Props for the component: newItem, updateNewItem, postItem
  * @returns A table row to add an item
  */
-export function TopicAddListRow({ newItem, updateNewItem, postItem }) {
+export function TopicAddListRow({ newItem, updateNewItem, postItem }: Props) {
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
 

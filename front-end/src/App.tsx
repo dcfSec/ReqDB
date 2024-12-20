@@ -1,20 +1,20 @@
 import './App.css';
 import { MsalProvider, AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
-import { loginRequest } from './authConfig';
+// import { loginRequest } from './authConfig';
 
 import { Router, LoginRouter } from './components/Router';
-
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from './hooks';
 import { setAccount, setRoles, setName } from "./stateSlices/UserSlice";
 
 import { useEffect } from "react";
+import { IPublicClientApplication } from '@azure/msal-browser';
 
 
 const MainContent = () => {
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const darkMode = useSelector(state => state.user.preferences.darkMode)
+  const darkMode = useAppSelector(state => state.user.preferences.darkMode)
   document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", darkMode ? "dark" : "light");
 
   /**
@@ -23,18 +23,18 @@ const MainContent = () => {
    */
   const { instance } = useMsal();
   const activeAccount = instance.getActiveAccount();
-  if (!activeAccount) {
-    instance.setActiveAccount(instance);
-    // instance.loginRedirect({
-    //   ...loginRequest,
-    //   prompt: 'login',
-    // });
-  }
+  // if (!activeAccount) {
+  //   instance.setActiveAccount(instance);
+  //   // instance.loginRedirect({
+  //   //   ...loginRequest,
+  //   //   prompt: 'login',
+  //   // });
+  // }
 
   useEffect(() => {
     if (activeAccount) {
       dispatch(setAccount(activeAccount));
-      if (activeAccount.idTokenClaims['roles']) {
+      if (activeAccount.idTokenClaims && activeAccount.idTokenClaims['roles']) {
         dispatch(setRoles(activeAccount.idTokenClaims['roles']));
       }
       if (activeAccount.username) {
@@ -64,7 +64,11 @@ const MainContent = () => {
   );
 };
 
-function App({ instance }) {
+type Props = {
+  instance: IPublicClientApplication;
+}
+
+function App({ instance }: Props) {
 
   return (
     <MsalProvider instance={instance}>

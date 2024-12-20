@@ -16,13 +16,29 @@ import { RequirementEditListRow } from "./Requirements/EditListRow"
 import { TagEditListRow } from "./Tags/EditListRow"
 import { TopicEditListRow } from "./Topics/EditListRow"
 
+import { Item as Catalogue } from '../../types/API/Catalogues';
+import { Item as Extra } from '../../types/API/Extras';
+import { Type } from '../../types/API/Extras';
+import { Item as Requirement } from "../../types/API/Requirements";
+import { Item as Tag } from "../../types/API/Tags";
+import { Item as Topic } from "../../types/API/Topics";
+
+type Props = {
+  index: number;
+  endpoint: string;
+  originalItem: Catalogue | Extra | Type | Requirement | Tag | Topic;
+  humanKey: string;
+  search: string;
+  searchFields: Array<string>;
+  editPageName: string;
+}
 /**
  * Component for a row to edit an object
  * 
  * @param {object} props Props for this component: index, endpoint, originalItem, humanKey, search, searchFields, editPageName
  * @returns Table row for editing an object
  */
-export default function EditListRow({ index, endpoint, originalItem, humanKey, search, searchFields, editPageName }) {
+export default function EditListRow({ index, endpoint, originalItem, humanKey, search, searchFields, editPageName }: Props) {
   const dispatch = useDispatch()
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -36,7 +52,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, s
     setItem(originalItem)
   }
 
-  function updateTempItem(properties) {
+  function updateTempItem(properties: object) {
     const tempItem = { ...item, ...properties }
     setItem(tempItem)
   }
@@ -71,7 +87,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, s
   }
 
   function handleDeleteItem() {
-    let parameters = []
+    const parameters = []
     if (force) {
       parameters.push("force")
     }
@@ -83,7 +99,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, s
           dispatch(toast({ header: "Item successfully deleted", body: `Item "${originalItem[humanKey]}" deleted.` }))
           dispatch(removeItem(index))
         } else {
-          response.json().then((r) => {
+          response.json().then((r: {error: string, message: string}) => {
             dispatch(toast({ header: r.error, body: r.message }))
           }
           );
@@ -99,27 +115,27 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, s
 
   if (inSearchField(search, searchFields, item) || edit) {
     let row = <></>
-    const deleteModal = <DeleteConfirmationModal show={showDeleteModal} item={item[humanKey]} onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()} onForceChange={e => setForce(e)} />
+    const deleteModal = <DeleteConfirmationModal show={showDeleteModal} item={String(item[humanKey])} onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()} onForceChange={e => setForce(e)} />
     const buttons = <EditButtons saveItem={saveItem} edit={edit} setEdit={setEdit} resetTempItem={resetTempItem} setShowDeleteModal={setShowDeleteModal} />
 
     switch (editPageName) {
       case "Catalogues":
-        row = <CatalogueEditListRow originalItem={originalItem} buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item} />
+        row = <CatalogueEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Catalogue} />
         break;
       case "ExtraEntries":
-        row = <ExtraEntryEditListRow originalItem={originalItem} buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item} />
+        row = <ExtraEntryEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Extra} />
         break;
       case "ExtraTypes":
-        row = <ExtraTypeEditListRow originalItem={originalItem} buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item} />
+        row = <ExtraTypeEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Type} />
         break;
       case "Requirements":
-        row = <RequirementEditListRow originalItem={originalItem} buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item} />
+        row = <RequirementEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Requirement} />
         break;
       case "Tags":
-        row = <TagEditListRow originalItem={originalItem} buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item} />
+        row = <TagEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Tag} />
         break;
       case "Topics":
-        row = <TopicEditListRow originalItem={originalItem} buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item} />
+        row = <TopicEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Topic} />
         break;
       default:
         row = <></>

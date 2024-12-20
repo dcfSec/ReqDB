@@ -7,8 +7,7 @@ import { Alert } from 'react-bootstrap';
 import { ErrorMessage } from '../components/MiniComponents'
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { protectedResources } from '../authConfig';
-
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../stateSlices/NotificationToastSlice";
 import { setItems } from "../stateSlices/EditSlice";
@@ -17,6 +16,22 @@ import EditListRowSkeleton from "../components/Edit/EditListRowSkeleton";
 import LoadingBar from '../components/LoadingBar';
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 
+import { Item as Catalogue } from '../types/API/Catalogues';
+import { Item as Extra } from '../types/API/Extras';
+import { Type } from '../types/API/Extras';
+import { Item as Requirement } from "../types/API/Requirements";
+import { Item as Tag } from "../types/API/Tags";
+import { Item as Topic } from "../types/API/Topics";
+
+type Props = {
+  editPageName: string;
+  humanKey: string;
+  headers: Array<string>;
+  blankItem: Catalogue | Extra | Type | Requirement | Tag | Topic;
+  searchFields: Array<string>;
+  endpoint: string;
+  parameters?: Array<string>
+}
 
 /**
  * Component for the parent view of the editor pages
@@ -24,9 +39,9 @@ import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
  * @param {object} props Props for the component: editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters
  * @returns Parent component for all editor views
  */
-function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [] }) {
-  const dispatch = useDispatch()
-  const items = useSelector(state => state.edit.items)
+function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [] } : Props) {
+  const dispatch = useAppDispatch()
+  const items = useAppSelector(state => state.edit.items)
 
   useEffect(() => {
     dispatch(setPageTitle(editPageName))
@@ -71,11 +86,11 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
       ))}
     </DataTable></Col></Row>
   }
-  function onSearch(s) {
+  function onSearch(s: string) {
     setSearch(s)
   }
 
-  function renderItem(item, index) {
+  function renderItem(item: Catalogue | Extra | Type | Requirement | Tag | Topic, index: number) {
     if (item) {
       return <EditListRowSkeleton
         key={item.id}
@@ -116,7 +131,7 @@ export function Tags() {
     ]}
     blankItem={{
       name: "",
-    }}
+    } as Tag}
     searchFields={[
       "name"
     ]}
@@ -142,8 +157,7 @@ export function Catalogues() {
     blankItem={{
       title: "",
       description: "",
-      root: null
-    }}
+    } as Catalogue}
     searchFields={[
       "title",
       "description"
@@ -174,7 +188,7 @@ export function Topics() {
       title: "",
       description: "",
       parentId: null,
-    }}
+    } as unknown as Topic}
     searchFields={[
       "key", "title", "description"
     ]}
@@ -207,7 +221,7 @@ export function Requirements() {
       description: "",
       parentId: null,
       visible: true,
-    }}
+    } as unknown as Requirement}
     searchFields={[
       "key", "title", "description"
     ]}
@@ -235,7 +249,7 @@ export function ExtraTypes() {
       title: "",
       description: "",
       extraType: null
-    }}
+    } as unknown as Type}
     searchFields={[
       "title", "description"
     ]}
@@ -263,7 +277,7 @@ export function ExtraEntries() {
       extraType: "",
       requirementId: null,
       parent: null,
-    }}
+    } as unknown as Extra}
     searchFields={[
       "content",
       "extraType.title",

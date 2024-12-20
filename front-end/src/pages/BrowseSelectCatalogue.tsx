@@ -5,7 +5,7 @@ import SelectCatalogueItem from "../components/Browse/SelectCatalogueItem";
 
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { set, reset, sort } from "../stateSlices/CatalogueDataSlice";
 import LoadingBar from "../components/LoadingBar";
@@ -17,8 +17,8 @@ import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
  * @returns View to select a catalogue
  */
 export default function BrowseSelectCatalogue() {
-  const dispatch = useDispatch()
-  const catalogueData = useSelector(state => state.catalogueData.items)
+  const dispatch = useAppDispatch()
+  const catalogueData = useAppSelector(state => state.catalogueData.items)
 
   useEffect(() => {
     dispatch(setPageTitle("Browse - Select Requirement Catalogue"))

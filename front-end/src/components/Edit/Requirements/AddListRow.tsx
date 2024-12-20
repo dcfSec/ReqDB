@@ -2,6 +2,13 @@ import { useState } from "react";
 import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
 import SelectParentModal from "../SelectParentModal";
+import { Item as Requirement } from "../../../types/API/Requirements";
+
+type Props = {
+  newItem: Requirement
+  updateNewItem: (a: object) => void;
+  postItem: () => void;
+}
 
 /**
  * Component to add a item in the editor table
@@ -9,7 +16,7 @@ import SelectParentModal from "../SelectParentModal";
  * @param {object} props Props for the component: newItem, updateNewItem, postItem
  * @returns A table row to add an item
  */
-export function RequirementAddListRow({ newItem, updateNewItem, postItem }) {
+export function RequirementAddListRow({ newItem, updateNewItem, postItem }: Props) {
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
 

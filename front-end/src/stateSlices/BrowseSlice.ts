@@ -7,7 +7,7 @@ import { BrowseState } from '../types/Generics';
 
 
 const initialState: BrowseState = {
-  data: {},
+  data: null,
   title: "Loading...",
   status: "nothing",
   search: "",

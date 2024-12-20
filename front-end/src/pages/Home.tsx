@@ -1,5 +1,6 @@
 import { Button, Col, Dropdown, Row, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import {LinkContainer} from 'react-router-bootstrap'
 import { appRoles } from "../authConfig";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { homeTitle, preMOTD, postMOTD } from "../static";
@@ -31,9 +32,9 @@ export default function Home() {
         <Stack gap={2} className="col-md-3 mx-auto">
           <h2>{homeTitle}</h2>
           <ReactMarkdown>{preMOTD}</ReactMarkdown>
-          <Link to="Browse"><Button variant="outline-secondary">Browse Catalogues</Button></Link>
+          <LinkContainer to="Browse"><Button variant="outline-secondary">Browse Catalogues</Button></LinkContainer>
           {roles.includes(appRoles.Comments.Moderator) ?
-             <Link to="Comments"><Button variant="outline-secondary">Comments</Button></Link>
+             <LinkContainer to="Comments"><Button variant="outline-secondary">Comments</Button></LinkContainer>
             : null}
           {roles.includes(appRoles.Requirements.Writer) ?
             <Dropdown className="d-inline-block">

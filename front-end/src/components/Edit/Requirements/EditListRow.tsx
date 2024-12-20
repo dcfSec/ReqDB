@@ -1,8 +1,17 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import SelectMany from "../SelectManyModal";
-import { useState } from "react";
+import { JSX, useState } from "react";
 import SelectParentModal from "../SelectParentModal";
+import { Item } from '../../../types/API/Requirements';
+
+
+type Props = {
+  item: Item
+  buttons: JSX.Element
+  updateTempItem: (a: object) => void;
+  edit: boolean
+}
 
 /**
  * Component for a row to edit an object
@@ -10,7 +19,7 @@ import SelectParentModal from "../SelectParentModal";
  * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function RequirementEditListRow({ index, item, buttons, updateTempItem, edit }) {
+export function RequirementEditListRow({ item, buttons, updateTempItem, edit }: Props) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);

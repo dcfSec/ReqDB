@@ -1,9 +1,15 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
-import SelectMany from "../SelectManyModal";
-import { useState } from "react";
-import DeleteConfirmationModal from "../../DeleteConfirmationModal";
+import { JSX, } from "react";
+import { Type } from '../../../types/API/Extras';
 
+
+type Props = {
+  item: Type
+  buttons: JSX.Element
+  updateTempItem: (a: object) => void;
+  edit: boolean
+}
 
 /**
  * Component for a row to edit an object
@@ -11,9 +17,7 @@ import DeleteConfirmationModal from "../../DeleteConfirmationModal";
  * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function ExtraTypeEditListRow({ index, item, buttons, updateTempItem, edit }) {
-
-  const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
+export function ExtraTypeEditListRow({ item, buttons, updateTempItem, edit }: Props) {
 
     return (
       <tr>
@@ -29,17 +33,6 @@ export function ExtraTypeEditListRow({ index, item, buttons, updateTempItem, edi
         </td>
         <td><Button variant="primary">Show</Button></td>
         <td>{buttons}</td>
-        {showUpdateMany2Many ? <SelectMany
-          humanKey={item.key}
-          show={showUpdateMany2Many}
-          setShow={setShowUpdateMany2Many}
-          initialSelectedItems={item.tags}
-          endpoint="tags"
-          columns={["name"]}
-          updateKey={"tags"}
-          updateItem={updateTempItem}
-          name="tag"
-        ></SelectMany> : null}
       </tr>
     );
 }

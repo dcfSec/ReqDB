@@ -2,7 +2,14 @@ import { useState } from "react";
 import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
 import SelectParentModal from "../SelectParentModal";
+import { Item as Extra } from '../../../types/API/Extras';
 
+
+type Props = {
+  newItem: Extra;
+  updateNewItem: (a: object) => void;
+  postItem: () => void;
+}
 
 /**
  * Component to add a item in the editor table
@@ -10,7 +17,7 @@ import SelectParentModal from "../SelectParentModal";
  * @param {object} props Props for the component: newItem, updateNewItem, postItem
  * @returns A table row to add an item
  */
-export function ExtraEntryAddListRow({ newItem, updateNewItem, postItem }) {
+export function ExtraEntryAddListRow({ newItem, updateNewItem, postItem }: Props) {
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
   const [showSelectExtraModal, setShowSelectExtraModal] = useState(false);
@@ -26,12 +33,12 @@ export function ExtraEntryAddListRow({ newItem, updateNewItem, postItem }) {
         setShowSelectParentModal(true)
       }}>{newItem.requirement ? newItem.requirement.key : "Requirement"}</Button></td>
       <td><Button variant="success" onClick={() => postItem()}>Add</Button></td>
-      {showSelectParentModal ? <SelectParentModal id="parent"
+      {showSelectParentModal ? <SelectParentModal
         itemId={newItem.id}
-        humanKey={newItem.title}
+        humanKey={"ExtraEntry"}
         show={showSelectParentModal}
         setShow={setShowSelectParentModal}
-        initialSelectedItem={newItem.parentId}
+        initialSelectedItem={newItem.requirementId}
         endpoint={"requirements"}
         updateItem={updateNewItem}
         updateIdField={"requirementId"}
@@ -39,12 +46,12 @@ export function ExtraEntryAddListRow({ newItem, updateNewItem, postItem }) {
         checkCircle={false}
         columns={["key", "title"]}
       ></SelectParentModal> : null}
-      {showSelectExtraModal ? <SelectParentModal id="extra"
+      {showSelectExtraModal ? <SelectParentModal
         itemId={newItem.id}
-        humanKey={newItem.title}
+        humanKey={"ExtraEntry"}
         show={showSelectExtraModal}
         setShow={setShowSelectExtraModal}
-        initialSelectedItem={newItem.parentId}
+        initialSelectedItem={newItem.extraTypeId}
         endpoint={"extraTypes"}
         updateItem={updateNewItem}
         updateIdField={"extraTypeId"}

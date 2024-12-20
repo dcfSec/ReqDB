@@ -1,13 +1,19 @@
 import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
+import { Type } from '../../../types/API/Extras';
 
+type Props = {
+  newItem: Type
+  updateNewItem: (a: object) => void;
+  postItem: () => void;
+}
 /**
  * Component to add a item in the editor table
  * 
  * @param {object} props Props for the component: newItem, updateNewItem, postItem
  * @returns A table row to add an item
  */
-export function ExtraTypeAddListRow({ newItem, updateNewItem, postItem }) {
+export function ExtraTypeAddListRow({ newItem, updateNewItem, postItem }: Props) {
 
   return (
     <tr>

@@ -1,7 +1,16 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
-import { useState } from "react";
+import { JSX, useState } from "react";
 import SelectMany from "../SelectManyModal";
+import { Item } from '../../../types/API/Catalogues';
+
+
+type Props = {
+  item: Item
+  buttons: JSX.Element
+  updateTempItem: (a: object) => void;
+  edit: boolean
+}
 
 /**
  * Component for a row to edit an object
@@ -9,7 +18,7 @@ import SelectMany from "../SelectManyModal";
  * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function CatalogueEditListRow({ index, item, buttons, updateTempItem, edit }) {
+export function CatalogueEditListRow({ item, buttons, updateTempItem, edit }: Props) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
 
