@@ -11,31 +11,36 @@ import { ExportTable } from "../Export";
 import Search from "./Search"
 import { toggleTagFilterSelected, toggleTagFilterSelectedAll } from '../../stateSlices/BrowseSlice';
 
-
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { reset, setData, sortRows, setTagFilterItems, sortTopicFilterItems, setStatus } from '../../stateSlices/BrowseSlice';
 import { setPageTitle } from "../../stateSlices/LayoutSlice";
 
 import { Suspense, startTransition, useDeferredValue } from "react";
 import BrowseRow from "./BrowseRow";
+import { Item as Topic } from "../../types/API/Topics";
+
+
+type Props = {
+  id: string | undefined
+}
 
 /**
  * View to browse a
  * 
  * @returns View to browse a catalogues
  */
-export default function BrowseContent({ id }) {
-  const dispatch = useDispatch()
-  const rows = useSelector(state => state.browse.rows.items)
-  const tagFilterItems = useSelector(state => state.browse.tags.filterItems)
-  const topicFilterItems = useSelector(state => state.browse.topics.filterItems)
-  const extraHeaders = useSelector(state => state.browse.extraHeaders)
-  const APIData = useSelector(state => state.browse.data)
-  const status = useSelector(state => state.browse.status)
+export default function BrowseContent({ id }: Props) {
+  const dispatch = useAppDispatch()
+  const rows = useAppSelector(state => state.browse.rows.items)
+  const tagFilterItems = useAppSelector(state => state.browse.tags.filterItems)
+  // const topicFilterItems = useAppSelector(state => state.browse.topics.filterItems)
+  const extraHeaders = useAppSelector(state => state.browse.extraHeaders)
+  // const APIData = useAppSelector(state => state.browse.data)
+  const status = useAppSelector(state => state.browse.status)
 
-  const selected = useSelector(state => state.browse.tags.filterSelected)
-  const allSelected = useSelector(state => state.browse.tags.allSelected)
+  // const selected = useAppSelector(state => state.browse.tags.filterSelected)
+  // const allSelected = useAppSelector(state => state.browse.tags.allSelected)
 
   const deferredRows = useDeferredValue(rows);
 
@@ -52,9 +57,9 @@ export default function BrowseContent({ id }) {
     execute("GET", `catalogues/${id}?extended`).then((response) => {
       if (response && response.status === 200) {
         startTransition(() => {
-        let tagFilterItemsTmp = []
+        const tagFilterItemsTmp: Array<string> = []
 
-        buildRows(extraHeaders, tagFilterItemsTmp, [], { children: response.data.topics })
+        buildRows(extraHeaders, tagFilterItemsTmp, [], { id:0, key: "", title: "", children: response.data.topics } as Topic)
         dispatch(setTagFilterItems(tagFilterItemsTmp))
         dispatch(sortRows())
         dispatch(sortTopicFilterItems())
@@ -65,15 +70,15 @@ export default function BrowseContent({ id }) {
         });
       } else if (response && response.status !== 200) {
         setAPIError(response.message)
-        dispatch(setFetched("error"));
+        // dispatch(setFetched("error"));
       }
     });
   }, [execute])
 
-  let errorMessage = ""
+  let errorMessage = <></>
 
   if (error) {
-    errorMessage = `Error loading catalogue data. Error: ${error.message}`
+    errorMessage = <>Error loading catalogue data. Error: ${error.message}</>
   } else if (APIError) {
     errorMessage = ErrorMessage(APIError)
   }
@@ -118,7 +123,7 @@ export default function BrowseContent({ id }) {
     return (
       <Container fluid className="bg-body">
         <Row>
-          <Col><MainBreadcrumb items={breadcrumbs}></MainBreadcrumb></Col>
+          <Col><MainBreadcrumb/></Col>
         </Row>
         <Row>
           <Col><h2>Browse</h2></Col>

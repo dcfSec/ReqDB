@@ -1,9 +1,17 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
-import { useState } from "react";
+import { JSX, useState } from "react";
 import SelectParentModal from "../SelectParentModal";
 import { truncate } from "../../MiniComponents";
+import { Item } from '../../../types/API/Extras';
 
+
+type Props = {
+  item: Item
+  buttons: JSX.Element
+  updateTempItem: (a: object) => void;
+  edit: boolean
+}
 
 /**
  * Component for a row to edit an object
@@ -11,7 +19,7 @@ import { truncate } from "../../MiniComponents";
  * @param {object} props Props for this component: index, item,  buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function ExtraEntryEditListRow({ index, item,  buttons, updateTempItem, edit }) {
+export function ExtraEntryEditListRow({ item,  buttons, updateTempItem, edit }: Props) {
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
   const [showSelectExtraModal, setShowSelectExtraModal] = useState(false);
@@ -27,12 +35,12 @@ export function ExtraEntryEditListRow({ index, item,  buttons, updateTempItem, e
           setShowSelectParentModal(true)
         }}>{item.requirement ? item.requirement.key : "Requirement"}</Button></td>
         <td>{buttons}</td>
-        {showSelectParentModal ? <SelectParentModal id="parent"
+        {showSelectParentModal ? <SelectParentModal
           itemId={item.id}
           humanKey={`[${truncate(item.content, 12)}]`}
           show={showSelectParentModal}
           setShow={setShowSelectParentModal}
-          initialSelectedItem={item.parentId}
+          initialSelectedItem={item.requirementId}
           endpoint={"requirements"}
           updateItem={updateTempItem}
           updateIdField={"requirementId"}
@@ -40,7 +48,7 @@ export function ExtraEntryEditListRow({ index, item,  buttons, updateTempItem, e
           checkCircle={false}
           columns={["key", "title"]}
         ></SelectParentModal> : null}
-        {showSelectExtraModal ? <SelectParentModal id="extra"
+        {showSelectExtraModal ? <SelectParentModal
           itemId={item.id}
           humanKey={`[${truncate(item.content, 12)}]`}
           show={showSelectExtraModal}

@@ -29,8 +29,10 @@ export default function FilterTopicsModal({ show, setShow }: Props) {
   }
 
   const all = {
+    id: 0,
     title: "All",
-    children: topics
+    children: topics,
+    key: ""
   }
 
   return (

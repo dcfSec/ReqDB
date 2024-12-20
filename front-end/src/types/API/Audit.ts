@@ -1,4 +1,4 @@
-export interface Item {
+export interface Item extends Record<string, unknown> {
   verb: "INSERT" | "UPDATE" | "DELETE";
   transaction: {
     issued_at: string

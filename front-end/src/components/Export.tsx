@@ -2,14 +2,15 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import ExcelJS from "exceljs";
 import YAML from 'yaml';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import Tooltip, { TooltipProps } from 'react-bootstrap/Tooltip';
 
 import { useAppSelector } from '../hooks';
+import { RefAttributes } from 'react';
+import { JSX } from 'react/jsx-runtime';
 
 /**
  * Exports the browse table in different formats
  * 
- * @param {object} props Props for the component: headers, dataToExport
  * @returns Returns a dropdown for export selection
  */
 export function ExportTable() {
@@ -66,7 +67,7 @@ export function ExportTable() {
     saveAs(blob, "ReqDB-Export.yaml");
   }
 
-  const renderTooltip = (props) => (
+  const renderTooltip = (props: JSX.IntrinsicAttributes & TooltipProps & RefAttributes<HTMLDivElement>) => (
     dataToExport.length === 0 ?
     <Tooltip id="export-tooltip" {...props}>
       First select the rows you want to export 
@@ -81,7 +82,7 @@ export function ExportTable() {
         overlay={renderTooltip}
       >
         <Dropdown.Toggle variant="success" id="export-dropdown">
-          Export {dataToExport.length}/{Object.values(visible).reduce((a, item) => a + item, 0)} rows
+          Export {dataToExport.length}/{Object.values(visible).reduce((a, item) => a + Number(item), 0)} rows
         </Dropdown.Toggle>
       </OverlayTrigger>
       <Dropdown.Menu>
@@ -99,9 +100,9 @@ export function ExportTable() {
  * @param {Blob} blob
  * @param {string} name
 */
-function saveAs(blob, name) {
+function saveAs(blob: Blob, name: string) {
   // Namespace is used to prevent conflict w/ Chrome Poper Blocker extension (Issue https://github.com/eligrey/FileSaver.js/issues/561)
-  const a = document.createElementNS('http://www.w3.org/1999/xhtml', 'a')
+  const a = document.createElementNS('http://www.w3.org/1999/xhtml', 'a') as HTMLAnchorElement
   a.download = name
   a.rel = 'noopener'
   a.href = URL.createObjectURL(blob)

@@ -1,8 +1,16 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import SelectMany from "../SelectManyModal";
-import { useState } from "react";
-import DeleteConfirmationModal from "../../DeleteConfirmationModal";
+import { JSX, useState } from "react";
+import { Item } from '../../../types/API/Tags';
+
+
+type Props = {
+  item: Item
+  buttons: JSX.Element
+  updateTempItem: (a: object) => void;
+  edit: boolean
+}
 
 /**
  * Component for a row to edit an object
@@ -10,7 +18,7 @@ import DeleteConfirmationModal from "../../DeleteConfirmationModal";
  * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function TagEditListRow({ index, item, buttons, updateTempItem, edit }) {
+export function TagEditListRow({ item, buttons, updateTempItem, edit }: Props) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
 

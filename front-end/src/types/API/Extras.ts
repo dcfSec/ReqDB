@@ -1,12 +1,15 @@
-export interface Item {
+import { Item as Requirement } from "./Requirements";
+
+export interface Item extends Record<string, unknown> {
     id: number;
     content: string;
     extraTypeId: number;
     extraType: Type;
     requirementId: number;
+    requirement: Requirement
 }
 
-export interface Type {
+export interface Type extends Record<string, unknown> {
     id: number;
     title: string;
     description: string;

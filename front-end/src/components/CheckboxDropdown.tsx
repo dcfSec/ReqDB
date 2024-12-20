@@ -13,8 +13,8 @@ type Props = {
   className: string;
   'aria-labelledby': string; 
   target: string;
-  toggleChangeAll: ActionCreatorWithPayload<boolean, "audit/toggleActionFilterSelectedAll">;
-  toggleChange: ActionCreatorWithPayload<string, "audit/toggleActionFilterSelected">;
+  toggleChangeAll: ActionCreatorWithPayload<boolean, "audit/toggleActionFilterSelectedAll"> | ActionCreatorWithPayload<boolean, "browse/toggleTagFilterSelectedAll">;
+  toggleChange: ActionCreatorWithPayload<string, "audit/toggleActionFilterSelected"> | ActionCreatorWithPayload<string, "browse/toggleTagFilterSelected">;
 }
 
 /**

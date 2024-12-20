@@ -1,5 +1,6 @@
 import { Item as Comment } from "./API/Comments";
 import { Item as Topic } from "./API/Topics";
+import { Item as Catalogue } from "./API/Catalogues";
 
 export interface Row {
   id: number
@@ -13,7 +14,7 @@ export interface Row {
 }
 
 export interface BrowseState {
-  data: object; // @TODO: define more precise
+  data: Catalogue | null
   title: string;
   status: string;
   search: string;
@@ -36,4 +37,26 @@ export interface BrowseState {
   };
   extraHeaders: { [key: string]: 1 | 2 | 3 };
   comments: object; // @TODO: define more precise
+}
+
+export interface APIData {
+  data: unknown;
+  status: number;
+}
+
+export interface APISuccessData extends APIData {
+  data: Array<object>;
+  status: number;
+
+}
+
+export interface APIErrorData extends APIData {
+  message: string | Array<string> | Record<string, Array<string>>;
+  error: string;
+}
+
+export type RowObject = {
+  id: number
+  [key: string]: string | number;
+
 }

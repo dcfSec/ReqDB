@@ -8,7 +8,7 @@ import { addRows, addTopicFilterItems, addExtraHeader } from '../stateSlices/Bro
 import store from '../store'
 import { Button } from "react-bootstrap";
 import { JSX } from 'react';
-import { Item as Topic} from '../types/API/Topics';
+import { Item as Topic } from '../types/API/Topics';
 import { BrowseState, Row } from '../types/Generics';
 
 type SearchFunction = (a: string) => void;
@@ -142,7 +142,7 @@ export function ErrorMessage(message: string | Array<string> | Record<string, Ar
  * @param {Object} topics Object containing the topics of the requirements
  * @param {Object} item A requirement
  */
-export async function buildRows(extraHeaders: object, tagFilterItems: Array<string>, topics: Array<Topic>, item: Topic, requirements: Array<Row>, selected: { [key: string]: boolean } = {}, visible: { [key: string]: boolean } = {}, root: boolean = true) {
+export async function buildRows(extraHeaders: object, tagFilterItems: Array<string>, topics: Array<Topic>, item: Topic, requirements: Array<Row> = [], selected: { [key: string]: boolean } = {}, visible: { [key: string]: boolean } = {}, root: boolean = true) {
   const dispatch = store.dispatch
   const topicFilterItems = store.getState().browse.topics.filterItems
 
@@ -209,12 +209,20 @@ type SetEditFunction = (a: boolean) => void;
 type ResetTempItemFunction = () => void;
 type SetShowDeleteModalFunction = (a: boolean) => void;
 
+type EditButtonProps = {
+  saveItem: SaveItemFunction;
+  edit: boolean;
+  setEdit: SetEditFunction;
+  resetTempItem: ResetTempItemFunction;
+  setShowDeleteModal: SetShowDeleteModalFunction;
+}
+
 /**
  * 
  * @param {object} props Props for this component: saveItem, edit, setEdit, resetTempItem, setShowDeleteModal
  * @returns 2 Buttons for an edit row
  */
-export function EditButtons(saveItem: SaveItemFunction, edit: boolean, setEdit: SetEditFunction, resetTempItem: ResetTempItemFunction, setShowDeleteModal: SetShowDeleteModalFunction) {
+export function EditButtons({saveItem, edit, setEdit, resetTempItem, setShowDeleteModal}: EditButtonProps): JSX.Element {
   if (edit) {
     return <><Button variant="success" onClick={() => saveItem()}>Save</Button>{' '}<Button variant="danger" onClick={() => { setEdit(false); resetTempItem() }}>Cancel</Button></>
   } else {

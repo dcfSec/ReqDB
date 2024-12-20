@@ -1,7 +1,12 @@
-import { useState } from "react";
 import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
-import SelectParentModal from "../SelectParentModal";
+import { Item as Tag } from "../../../types/API/Tags";
+
+type Props = {
+  newItem: Tag
+  updateNewItem: (a: object) => void;
+  postItem: () => void;
+}
 
 /**
  * Component to add a item in the editor table
@@ -9,7 +14,7 @@ import SelectParentModal from "../SelectParentModal";
  * @param {object} props Props for the component: newItem, updateNewItem, postItem
  * @returns A table row to add an item
  */
-export function TagAddListRow({ newItem, updateNewItem, postItem }) {
+export function TagAddListRow({ newItem, updateNewItem, postItem }: Props) {
 
   return (
     <tr>

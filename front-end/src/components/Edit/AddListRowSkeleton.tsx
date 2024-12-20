@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState } from "react";
 import useFetchWithMsal from "../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../authConfig";
 
@@ -14,13 +14,28 @@ import { RequirementAddListRow } from "./Requirements/AddListRow"
 import { TagAddListRow } from "./Tags/AddListRow"
 import { TopicAddListRow } from "./Topics/AddListRow"
 
+import { Item as Catalogue } from '../../types/API/Catalogues';
+import { Item as Extra } from '../../types/API/Extras';
+import { Type } from '../../types/API/Extras';
+import { Item as Requirement } from "../../types/API/Requirements";
+import { Item as Tag } from "../../types/API/Tags";
+import { Item as Topic } from "../../types/API/Topics";
+
+
+type Props = {
+  blankItem: Catalogue | Extra | Type | Requirement | Tag | Topic;
+  humanKey: string;
+  endpoint: string;
+  editPageName: string;
+}
+
 /**
  * Component to add a item in the editor table
  * 
  * @param {object} props Props for the component: blankItem, humanKey, endpoint, editPageName, updateParent
  * @returns A table row to add an item
  */
-export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, editPageName }) {
+export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, editPageName }: Props) {
 
   const dispatch = useDispatch()
 
@@ -54,24 +69,24 @@ export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, edit
     )
   }
 
-  function updateNewItem(properties) {
+  function updateNewItem(properties: object) {
     const tempItem = { ...newItem, ...properties }
     setNewItem(tempItem)
   }
 
   switch (editPageName) {
     case "Catalogues":
-      return <CatalogueAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem}/>
+      return <CatalogueAddListRow newItem={newItem as Catalogue} updateNewItem={updateNewItem} postItem={postItem}/>
     case "ExtraEntries":
-      return <ExtraEntryAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
+      return <ExtraEntryAddListRow newItem={newItem as Extra} updateNewItem={updateNewItem} postItem={postItem} />
     case "ExtraTypes":
-      return <ExtraTypeAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
+      return <ExtraTypeAddListRow newItem={newItem as Type} updateNewItem={updateNewItem} postItem={postItem} />
     case "Requirements":
-      return <RequirementAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
+      return <RequirementAddListRow newItem={newItem as Requirement} updateNewItem={updateNewItem} postItem={postItem} />
     case "Tags":
-      return <TagAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
+      return <TagAddListRow newItem={newItem as Tag} updateNewItem={updateNewItem} postItem={postItem} />
     case "Topics":
-      return <TopicAddListRow newItem={newItem} updateNewItem={updateNewItem} postItem={postItem} />
+      return <TopicAddListRow newItem={newItem as Topic} updateNewItem={updateNewItem} postItem={postItem} />
     default:
       return <></>
   }
