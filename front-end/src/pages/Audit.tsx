@@ -12,7 +12,7 @@ import { protectedResources } from '../authConfig';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../stateSlices/NotificationToastSlice";
-import { setItems } from "../stateSlices/EditSlice";
+import { setItems } from "../stateSlices/AuditSlice";
 import LoadingBar from '../components/LoadingBar';
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import AuditRow from '../components/Audit/AuditRow';
