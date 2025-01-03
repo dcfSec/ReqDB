@@ -29,7 +29,7 @@ export default function NotificationToast() {
     <ToastContainer
       className="p-3"
       position="top-center"
-      style={{ zIndex: 9999 }}
+      style={{ zIndex: 9999, position: "fixed" }}
     >
       <Toast onClose={close} show={visible} autohide delay={3000}>
         <Toast.Header>
