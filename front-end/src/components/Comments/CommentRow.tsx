@@ -32,7 +32,8 @@ type Props = {
 export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, showCompleted }: Props) {
   const dispatch = useDispatch()
 
-  const [/*force*/, setForce] = useState(false);
+  const [force, setForce] = useState(false);
+  const [/*cascade*/, setCascade] = useState(false);
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
@@ -104,7 +105,8 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
           show={showDeleteModal}
           item={comment.comment}
           onCancel={() => setShowDeleteModal(false)} onConfirm={() => deleteComment()}
-          onForceChange={e => setForce(e)}
+          onForceChange={e => setForce(e)} force={force}
+          needCascade={false} onCascadeChange={e => setCascade(e)}
         ></DeleteConfirmationModal> : null}
       </tr>
     );

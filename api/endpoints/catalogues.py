@@ -102,7 +102,20 @@ class Catalogue(BaseResource):
         """
         checkAccess(get_jwt(), ['Requirements.Writer'])
         catalogue = CatalogueModel.query.get_or_404(id)
+        print(request.args.get("force"), request.args.get("cascade"))
+        if len(catalogue.topics) > 0 and request.args.get("force") is None and request.args.get("cascade") is None:
+            return {
+                "status": 400,
+                "error": "ValidationError",
+                "message": [
+                    "Catalogue has topics.",
+                    "Use ?force to delete anyway and ?cascade to also delete all topics and requirements recursively.",
+                ],
+            }, 400
         try:
+            if len(catalogue.topics) > 0 and request.args.get("force") is not None and request.args.get("cascade") is None:
+                catalogue.topics = []
+                db.session.commit()
             db.session.delete(catalogue)
             db.session.commit()
             return {}, 204

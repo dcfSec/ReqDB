@@ -40,7 +40,8 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
   const roles = useAppSelector(state => state.user.roles)
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [/*force*/, setForce] = useState(false);
+  const [force, setForce] = useState(false);
+  const [/*cascade*/, setCascade] = useState(false);
 
   const { error, execute } = useFetchWithMsal({
     scopes: protectedResources.ReqDB.scopes,
@@ -140,7 +141,8 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
             titleItem="the selected comment"
             item={comment.comment}
             onCancel={() => setShowDeleteModal(false)} onConfirm={() => deleteComment()}
-            onForceChange={e => setForce(e)}
+            onForceChange={e => setForce(e)} force={force}
+            needCascade={false} onCascadeChange={e => setCascade(e)}
           ></DeleteConfirmationModal> : null
         }
       </>
