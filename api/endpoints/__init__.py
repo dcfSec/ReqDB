@@ -4,7 +4,7 @@ Path mapping for the API.
 Maps classes to the API paths
 """
 
-from api.appDefinition import api_bp, api, db
+from api.appDefinition import api_bp, api, db, apiUnauthenticated
 
 from api.endpoints.catalogues import Catalogue, Catalogues
 from api.endpoints.comments import Comment, Comments
@@ -16,6 +16,7 @@ from api.endpoints.topics import Topic, Topics
 from api.endpoints.coffee import Coffee
 from api.endpoints.wildcard import Wildcard
 from api.endpoints.audit import Audit
+from api.endpoints.config import OAuthConfig
 
 from api.helper import getUserUPN
 from api.models import User
@@ -46,8 +47,11 @@ api.add_resource(Coffee, '/coffee')
 
 api.add_resource(Audit, '/audit/<string:object>/<int:id>', '/audit/<string:object>')
 
-api.add_resource(Wildcard, '', '/', '/<path:path>')
+apiUnauthenticated.add_resource(OAuthConfig, '/oauth')
 
+
+
+api.add_resource(Wildcard, '', '/', '/<path:path>')
 
 @api_bp.before_request
 @jwt_required()
