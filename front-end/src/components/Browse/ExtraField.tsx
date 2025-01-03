@@ -1,5 +1,5 @@
 import { Badge } from "react-bootstrap";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Markdown from 'react-markdown'
 
 
 type Props = {
@@ -22,7 +22,7 @@ export default function ExtraField({ index, extraType, item, lineBreak = false }
   if (extraType === 1) {
     return item
   } else if (extraType === 2) {
-    return <ReactMarkdown>{item}</ReactMarkdown>
+    return <Markdown>{item}</Markdown>
   } else if (extraType === 3) {
     return item ? item.split(";").map((badge) => (<span key={"extraFieldBade" + index + "-" + ++badgeIdExtraFieldRunner}><Badge bg="secondary">{badge}</Badge>{lineBreak ? <br/> : ' '}</span>)) : null
   }

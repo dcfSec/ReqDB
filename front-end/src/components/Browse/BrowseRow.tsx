@@ -1,5 +1,5 @@
 import { Badge, Button, Form } from "react-bootstrap";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Markdown from 'react-markdown'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -60,7 +60,7 @@ export default memo(function BrowseRow({ index, row }: Props) {
     ))}</td>
     <td>{row.Key}</td>
     <td>{row.Title}</td>
-    <td><ReactMarkdown>{row.Description}</ReactMarkdown></td>
+    <td><Markdown>{row.Description}</Markdown></td>
     {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader] as string} lineBreak={true}/></td>))}
     <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectRow(row.id)) }} checked={selected[row.id]} /></td>
     { roles.includes(appRoles.Comments.Reader) ? <CommentModal index={index} show={showComments} setShow={setShowComments}></CommentModal> : null }

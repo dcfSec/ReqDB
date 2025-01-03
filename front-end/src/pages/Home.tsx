@@ -2,7 +2,7 @@ import { Button, Col, Dropdown, Row, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {LinkContainer} from 'react-router-bootstrap'
 import { appRoles } from "../authConfig";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Markdown from 'react-markdown'
 import { homeTitle, preMOTD, postMOTD } from "../static";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
@@ -31,7 +31,7 @@ export default function Home() {
       <Col>
         <Stack gap={2} className="col-md-3 mx-auto">
           <h2>{homeTitle}</h2>
-          <ReactMarkdown>{preMOTD}</ReactMarkdown>
+          <Markdown>{preMOTD}</Markdown>
           <LinkContainer to="Browse"><Button variant="outline-secondary">Browse Catalogues</Button></LinkContainer>
           {roles.includes(appRoles.Comments.Moderator) ?
              <LinkContainer to="Comments"><Button variant="outline-secondary">Comments</Button></LinkContainer>
@@ -69,7 +69,7 @@ export default function Home() {
                   : null}
               </Dropdown.Menu>
             </Dropdown> : null}
-          <ReactMarkdown>{postMOTD}</ReactMarkdown>
+          <Markdown>{postMOTD}</Markdown>
         </Stack>
       </Col>
     </Row>

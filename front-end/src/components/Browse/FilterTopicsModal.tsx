@@ -5,6 +5,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { useState } from 'react';
 import FilterTopicEntry from './FilterTopicEntry';
 import { useAppSelector } from '../../hooks';
+import { Item } from '../../types/API/Topics';
 
 
 type Props = {
@@ -21,7 +22,11 @@ export default function FilterTopicsModal({ show, setShow }: Props) {
 
   const [search, setSearch] = useState("");
 
-  const topics = useAppSelector(state => state.browse.data.topics)
+  const data = useAppSelector(state => state.browse.data)
+  let topics: Item[] = []
+  if (data !== null) {
+    topics = data.topics
+  }
 
   function reset() {
     setShow(false)

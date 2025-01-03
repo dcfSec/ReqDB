@@ -1,7 +1,7 @@
 import { Badge, Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Markdown from 'react-markdown'
 import { appRoles } from '../../authConfig';
 import { useState } from "react";
 import CommentEntry from "../Comments/CommentEntry";
@@ -73,7 +73,7 @@ export function DescriptionCard() {
     <Card>
       <Card.Header as="h3">Description</Card.Header>
       <Card.Body>
-        <ReactMarkdown className="card-text">{description}</ReactMarkdown>
+        <Markdown className="card-text">{description}</Markdown>
       </Card.Body>
     </Card>
   )
