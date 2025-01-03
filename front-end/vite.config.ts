@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': "http://localhost:5000"
+      '/api': "http://localhost:5000",
     }
   },
   plugins: [react(), macrosPlugin()],
@@ -17,5 +17,10 @@ export default defineConfig({
     'process.platform': JSON.stringify(process.version),
     'process.version': JSON.stringify(process.version),
     'process.versions.node': JSON.stringify(process.versions.node),
+  },
+  esbuild: {
+    supported: {
+      'top-level-await': true
+    },
   }
 })
