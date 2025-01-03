@@ -1,6 +1,6 @@
 from api.appDefinition import db
 from sqlalchemy.sql import functions
-from sqlalchemy.orm import configure_mappers
+from sqlalchemy.orm import configure_mappers, backref
 from sqlalchemy_continuum.plugins import FlaskPlugin
 from sqlalchemy_continuum import make_versioned
 from api.helper import getUserUPN
@@ -53,7 +53,6 @@ class Requirement(Base):
         "ExtraEntry",
         backref="requirement",
         lazy="joined",
-        passive_deletes=True,
         cascade="all, delete",
     )
 
@@ -80,7 +79,8 @@ class Requirement(Base):
 class Tag(Base):
     name = db.Column(db.String(50), unique=True, nullable=False)
     requirement = db.relationship(
-        "Requirement", secondary="RequirementTag", passive_deletes=True
+        "Requirement", secondary="RequirementTag",
+        cascade="all, delete",
     )
 
     def __repr__(self):
@@ -101,9 +101,8 @@ class Topic(Base):
     parent = db.relationship(
         "Topic",
         remote_side=[id],
-        backref="children",
+        backref=backref("children", cascade="all, delete"),
         lazy="joined",
-        passive_deletes=True,
         cascade="all, delete",
     )
     requirements = db.relationship(
@@ -164,7 +163,6 @@ class Catalogue(Base):
         "Topic",
         secondary="CatalogueTopic",
         back_populates="catalogues",
-        passive_deletes=True,
         cascade="all, delete",
     )
 

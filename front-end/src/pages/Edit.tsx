@@ -30,6 +30,7 @@ type Props = {
   blankItem: Catalogue | Extra | Type | Requirement | Tag | Topic;
   searchFields: Array<string>;
   endpoint: string;
+  needCascade: boolean;
   parameters?: Array<string>
 }
 
@@ -39,7 +40,7 @@ type Props = {
  * @param {object} props Props for the component: editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters
  * @returns Parent component for all editor views
  */
-function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters = [] } : Props) {
+function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, needCascade, parameters = [] } : Props) {
   const dispatch = useAppDispatch()
   const items = useAppSelector(state => state.edit.items)
 
@@ -82,7 +83,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
     body = <Row><Col><DataTable headers={headers}>
       <AddListRowSkeleton endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} editPageName={editPageName} />
       {items.map((item, index) => (
-        renderItem(item, index)
+        renderItem(item, index, needCascade)
       ))}
     </DataTable></Col></Row>
   }
@@ -90,12 +91,13 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
     setSearch(s)
   }
 
-  function renderItem(item: Catalogue | Extra | Type | Requirement | Tag | Topic, index: number) {
+  function renderItem(item: Catalogue | Extra | Type | Requirement | Tag | Topic, index: number, needCascade) {
     if (item) {
       return <EditListRowSkeleton
         key={item.id}
         index={index}
         endpoint={endpoint}
+        needCascade={needCascade}
         originalItem={item}
         search={search}
         searchFields={searchFields}
@@ -136,6 +138,7 @@ export function Tags() {
       "name"
     ]}
     endpoint="tags"
+    needCascade={true}
     parameters={["minimal"]}
   />
 }
@@ -163,6 +166,7 @@ export function Catalogues() {
       "description"
     ]}
     endpoint="catalogues"
+    needCascade={true}
     parameters={["nested"]}
   />
 }
@@ -193,6 +197,7 @@ export function Topics() {
       "key", "title", "description"
     ]}
     endpoint="topics"
+    needCascade={true}
     parameters={[]}
   />
 }
@@ -226,6 +231,7 @@ export function Requirements() {
       "key", "title", "description"
     ]}
     endpoint="requirements"
+    needCascade={false}
     parameters={[]}
   />
 }
@@ -254,6 +260,7 @@ export function ExtraTypes() {
       "title", "description"
     ]}
     endpoint="extraTypes"
+    needCascade={false}
     parameters={[]}
   />
 }
@@ -284,6 +291,7 @@ export function ExtraEntries() {
       "requirement.key"
     ]}
     endpoint="extraEntries"
+    needCascade={false}
     parameters={[]}
   />
 }

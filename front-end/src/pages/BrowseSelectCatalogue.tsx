@@ -55,9 +55,14 @@ export default function BrowseSelectCatalogue() {
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
-    body = <Stack gap={2} className="col-md-5 mx-auto"><ListGroup>
+    if (catalogueData.length > 0) {
+      body = <Stack gap={2} className="col-md-5 mx-auto"><ListGroup>
       {catalogueData.map((catalogue, index) => (<SelectCatalogueItem key={index} catalogue={catalogue} />))}
     </ListGroup></Stack>
+    } else {
+      body = <Alert variant="warning">No catalogues found. Ask your administrator to add a requirement catalogue</Alert>
+
+    }
   }
 
   return (

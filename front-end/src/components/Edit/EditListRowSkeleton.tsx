@@ -26,6 +26,7 @@ import { Item as Topic } from "../../types/API/Topics";
 type Props = {
   index: number;
   endpoint: string;
+  needCascade: boolean;
   originalItem: Catalogue | Extra | Type | Requirement | Tag | Topic;
   humanKey: string;
   search: string;
@@ -38,11 +39,12 @@ type Props = {
  * @param {object} props Props for this component: index, endpoint, originalItem, humanKey, search, searchFields, editPageName
  * @returns Table row for editing an object
  */
-export default function EditListRow({ index, endpoint, originalItem, humanKey, search, searchFields, editPageName }: Props) {
+export default function EditListRow({ index, endpoint, needCascade, originalItem, humanKey, search, searchFields, editPageName }: Props) {
   const dispatch = useDispatch()
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [force, setForce] = useState(false);
+  const [cascade, setCascade] = useState(false);
 
   const [edit, setEdit] = useState(false);
 
@@ -90,6 +92,9 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, s
     const parameters = []
     if (force) {
       parameters.push("force")
+      if (cascade) {
+        parameters.push("cascade")
+      }
     }
     execute("DELETE", `${endpoint}/${originalItem.id}?${parameters.join("&")}`, null, false).then(
       (response) => {
@@ -115,7 +120,7 @@ export default function EditListRow({ index, endpoint, originalItem, humanKey, s
 
   if (inSearchField(search, searchFields, item) || edit) {
     let row = <></>
-    const deleteModal = <DeleteConfirmationModal show={showDeleteModal} item={String(item[humanKey])} onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()} onForceChange={e => setForce(e)} />
+    const deleteModal = <DeleteConfirmationModal show={showDeleteModal} item={String(item[humanKey])} onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()} onForceChange={e => setForce(e)} force={force} needCascade={needCascade} onCascadeChange={e => setCascade(e)} />
     const buttons = <EditButtons saveItem={saveItem} edit={edit} setEdit={setEdit} resetTempItem={resetTempItem} setShowDeleteModal={setShowDeleteModal} />
 
     switch (editPageName) {
