@@ -28,7 +28,7 @@ To kickstart the ReqDB you can use the [ReqDBContentCreator](https://github.com/
 ###  Backend
 
 ```
-pip install -r requirements.tx
+pip install -r requirements.txt
 ```
 
 ### Frontend
