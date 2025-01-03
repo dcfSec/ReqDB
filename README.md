@@ -43,21 +43,14 @@ npm run build
 The base configuration is done  via environment variables:
 
 ```
-FLASK_APP="ReqDB"           # Name of the Flask app
-FLASK_ENV="production"      # Flask environment  production or development
-SECRET_KEY="CHANGEME"       # The secret key for flask
+FLASK_APP=ReqDB            # Name of the Flask app
+FLASK_ENV=production       # Flask environment  production or development
+SECRET_KEY=CHANGEME        # The secret key for flask
 
-DATABASE_URI="app.sqlite"   # Database URI for sqlalchemy (See https://docs.sqlalchemy.org/en/20/core/engines.html for details)
+DATABASE_URI=app.sqlite    # Database URI for sqlalchemy (See https://docs.sqlalchemy.org/en/20/core/engines.html for details)
 
-OAUTH_APP_CLIENT_ID="xxx"   # Client ID for oauth (Azure Entra)
-OAUTH_APP_TENANT="xxx"      # Azure Tenant ID
-
-RESOURCE_GROUP_NAME="ReqDB"  # Resource group for zip deployment with deployZip.sh
-APP_SERVICE_NAME="ReqDB"     # App Service for zip deployment with deployZip.sh
-
-VITE_APP_CLIENT_ID = "xxx"  # Client ID for oauth (Azure Entra) (React)
-VITE_APP_TENANT = "xxx"     # Azure Tenant ID (React)
-
+OAUTH_APP_CLIENT_ID=xxx    # Client ID for oauth (Azure Entra)
+OAUTH_APP_TENANT=xxx       # Azure Tenant ID
 ```
 
 ## Azure Entra Configuration
@@ -90,7 +83,25 @@ The application in Azure Entra needs to be configured to allow users to access i
 
 ## Deployment
 
-ReqDB can be deployed everywhere where python is supported as runtime environment. `deployZip.sh`  is a simple deployment script to deploy the app to an Azure App Service.
+ReqDB can be deployed everywhere where python is supported as runtime environment.
+
+### Docker
+
+ReqDB can be deployed with our docker image. Currently you need to build it yourself until upload it to docker hub:
+
+* Build: `docker build -t reqdb .`
+* Run: `docker run --env-file ./.env -p 8080:8080` (Use the `template.env` as a template for the environment variable file)
+
+### Azure App Service
+
+`deployZip.sh` is a simple deployment script to deploy the app to an Azure App Service.
+
+For deployment following environment variables must be set:
+
+```
+RESOURCE_GROUP_NAME=ReqDB  # Resource group for zip deployment with deployZip.sh
+APP_SERVICE_NAME=ReqDB     # App Service for zip deployment with deployZip.sh
+```
 
 ## Development
 
@@ -108,7 +119,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
  * [dcfSec](https://github.com/dcfSec) - *Initial work*
 
-See also the list of [contributors](https://github.com/dcfSec/REqDB/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/dcfSec/ReqDB/contributors) who participated in this project.
 
 ## License
 
