@@ -1,5 +1,5 @@
 import { Button, Col, Row, Stack } from "react-bootstrap";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Markdown from 'react-markdown'
 import { useMsal } from "@azure/msal-react";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { useDispatch } from "react-redux";
@@ -30,9 +30,9 @@ export default function Login() {
       <Col>
         <Stack gap={2} className="col-md-3 mx-auto">
           <h2>{homeTitle}</h2>
-          <ReactMarkdown>{preMOTD}</ReactMarkdown>
+          <Markdown>{preMOTD}</Markdown>
           <Button onClick={() => { instance.loginRedirect(); }} variant="outline-secondary">Login with Azure Entra</Button>
-          <ReactMarkdown>{postMOTD}</ReactMarkdown>
+          <Markdown>{postMOTD}</Markdown>
         </Stack>
       </Col>
     </Row>
