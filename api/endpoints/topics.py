@@ -109,7 +109,7 @@ class Topic(BaseResource):
         """
         checkAccess(get_jwt(), ["Requirements.Writer"])
         topic = TopicModel.query.get_or_404(id)
-        if len(topic.children) > 0 and request.args.get("force") is None:
+        if len(topic.children) > 0 and request.args.get("force") is None and request.args.get("cascade") is None:
             return {
                 "status": 400,
                 "error": "ValidationError",
@@ -124,10 +124,13 @@ class Topic(BaseResource):
                 "error": "ValidationError",
                 "message": [
                     "Topic has requirements.",
-                    "Use ?force to delete anyway (This will delete the requirements)",
+                    "Use ?force to delete anyway (This will delete also the requirements and ExtraEntries)",
                 ],
             }, 400
         try:
+            if len(topic.children) > 0 and request.args.get("force") is not None and request.args.get("cascade") is None:
+                topic.children = []
+                db.session.commit()
             db.session.delete(topic)
             db.session.commit()
             return {}, 204

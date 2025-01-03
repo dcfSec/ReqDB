@@ -1,7 +1,5 @@
 from flask import abort
 
-from marshmallow.exceptions import ValidationError
-
 from api.models import (
     ExtraEntry,
     ExtraType,
@@ -24,7 +22,7 @@ from api.versionSchemas import (
 )
 from api.endpoints.base import BaseResource
 
-from sqlalchemy_continuum import version_class, transaction_class
+from sqlalchemy_continuum import version_class
 
 from api.helper import checkAccess
 
@@ -75,4 +73,4 @@ class Audit(BaseResource):
 
         schema = modelMapping[object][1](many=True)
 
-        return {"status": 200, "data": schema.dump(versions)}
+        return {"status": 200, "data": sorted(schema.dump(versions), key=lambda x: x["transaction"]['issued_at'], reverse=True)}

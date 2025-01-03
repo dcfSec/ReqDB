@@ -114,7 +114,7 @@ class Requirement(BaseResource):
                 'status': 400,
                 'error': 'ValidationError',
                 'message': [
-                    'Requirement has extras. Use ?force to delete anyway (This will also delete the extras).'
+                    'Requirement has extras. Use ?force to delete anyway (This will also delete extras and comments).'
                 ]}, 400
         if (len(requirement.comments) > 0) \
                 and request.args.get('force') is None:
@@ -122,7 +122,7 @@ class Requirement(BaseResource):
                 'status': 400,
                 'error': 'ValidationError',
                 'message': [
-                    'Requirement has comments. Use ?force to delete anyway (This will also delete the comments).'
+                    'Requirement has comments. Use ?force to delete anyway (This will also delete extras and comments).'
                 ]}, 400
         try:
             db.session.delete(requirement)

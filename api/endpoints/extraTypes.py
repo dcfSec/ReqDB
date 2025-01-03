@@ -79,7 +79,8 @@ class ExtraType(BaseResource):
                 "status": 400,
                 "error": "ValidationError",
                 "message": [
-                    "ExtraType has ExtraEntries. Use ?force to delete anyway (This will delete the ExtraEntries)"
+                    "ExtraType has ExtraEntries.",
+                    "Use ?force to delete anyway (This will delete all ExtraEntries associated with this ExtraType)"
                 ],
             }, 400
         try:
