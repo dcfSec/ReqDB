@@ -23,19 +23,37 @@ To kickstart the ReqDB you can use the [ReqDBContentCreator](https://github.com/
 
 ![Edit](docs/readme-screenshot-edit-requirements.png)
 
-## Installation
+## Deployment
 
-###  Backend
+### Manual
+
+ReqDB can be deployed everywhere where python is supported as runtime environment.
 
 ```
 pip install -r requirements.txt
-```
 
-### Frontend
 
-```
 cd front-end
+npm install
 npm run build
+```
+
+### Docker
+
+ReqDB can be deployed with our docker image. Currently you need to build it yourself until upload it to docker hub:
+
+* Build: `docker build -t reqdb .`
+* Run: `docker run --env-file ./.env -p 8080:8080` (Use the `template.env` as a template for the environment variable file)
+
+### Azure App Service
+
+`deployZip.sh` is a simple deployment script to deploy the app to an Azure App Service.
+
+For deployment following environment variables must be set:
+
+```
+RESOURCE_GROUP_NAME=ReqDB  # Resource group for zip deployment with deployZip.sh
+APP_SERVICE_NAME=ReqDB     # App Service for zip deployment with deployZip.sh
 ```
 
 ## Configuration
@@ -80,28 +98,6 @@ The application in Azure Entra needs to be configured to allow users to access i
 * `Comments.Writer` -> Write (add) access to the comment front-end
 * `Comments.Moderator` -> Write (edit, delete) access to the comment front-end
 * `Comments.Auditor` -> Read access to view the comment audit log front-end
-
-## Deployment
-
-ReqDB can be deployed everywhere where python is supported as runtime environment.
-
-### Docker
-
-ReqDB can be deployed with our docker image. Currently you need to build it yourself until upload it to docker hub:
-
-* Build: `docker build -t reqdb .`
-* Run: `docker run --env-file ./.env -p 8080:8080` (Use the `template.env` as a template for the environment variable file)
-
-### Azure App Service
-
-`deployZip.sh` is a simple deployment script to deploy the app to an Azure App Service.
-
-For deployment following environment variables must be set:
-
-```
-RESOURCE_GROUP_NAME=ReqDB  # Resource group for zip deployment with deployZip.sh
-APP_SERVICE_NAME=ReqDB     # App Service for zip deployment with deployZip.sh
-```
 
 ## Development
 
