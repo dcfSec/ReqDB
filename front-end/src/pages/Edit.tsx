@@ -91,7 +91,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
     setSearch(s)
   }
 
-  function renderItem(item: Catalogue | Extra | Type | Requirement | Tag | Topic, index: number, needCascade) {
+  function renderItem(item: Catalogue | Extra | Type | Requirement | Tag | Topic, index: number, needCascade: boolean) {
     if (item) {
       return <EditListRowSkeleton
         key={item.id}
