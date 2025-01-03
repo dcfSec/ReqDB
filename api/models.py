@@ -60,7 +60,6 @@ class Requirement(Base):
         "Tag",
         secondary="RequirementTag",
         back_populates="requirement",
-        passive_deletes=True,
     )
     visible = db.Column(db.Boolean, unique=False, default=True)
 
@@ -109,12 +108,11 @@ class Topic(Base):
         "Requirement",
         backref="parent",
         lazy="joined",
-        passive_deletes=True,
         cascade="all, delete",
     )
 
     catalogues = db.relationship(
-        "Catalogue", secondary="CatalogueTopic", passive_deletes=True
+        "Catalogue", secondary="CatalogueTopic"
     )
 
     def __repr__(self):

@@ -5,6 +5,28 @@
 
 import { LogLevel } from "@azure/msal-browser";
 
+const config = await fetch('/api/config/oauth').then(response => {
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+})
+  .then(data => {
+    console.log(data)
+    return {
+      clientID: data.data.client_id,
+      tenantID: data.data.tenant_id
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    return {
+      clientID: "",
+      tenantID: ""
+    }
+  });
+
+
 /**
  * Configuration object to be passed to MSAL instance on creation.
  * For a full list of MSAL.js configuration parameters, visit:
@@ -12,8 +34,8 @@ import { LogLevel } from "@azure/msal-browser";
  */
 export const msalConfig = {
   auth: {
-    clientId: import.meta.env.VITE_APP_CLIENT_ID, // This is the ONLY mandatory field that you need to supply.
-    authority: `https://login.microsoftonline.com/${import.meta.env.VITE_APP_TENANT}`, // Defaults to "https://login.microsoftonline.com/common"
+    clientId: config.clientID, // This is the ONLY mandatory field that you need to supply.
+    authority: `https://login.microsoftonline.com/${config.tenantID}`, // Defaults to "https://login.microsoftonline.com/common"
     redirectUri: "/", // You must register this URI on Azure Portal/App Registration. Defaults to window.location.origin
     postLogoutRedirectUri: "/", // Indicates the page to navigate after logout.
     clientCapabilities: ["CP1"] // this lets the resource owner know that this client is capable of handling claims challenge.
@@ -59,13 +81,13 @@ export const msalConfig = {
 export const protectedResources = {
   ReqDB: {
     scopes: [
-      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Requirements.Reader`,
-      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Requirements.Writer`,
-      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Requirements.Auditor`,
-      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Reader`,
-      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Writer`,
-      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Moderator`,
-      `api://${import.meta.env.VITE_APP_CLIENT_ID}/ReqDB.Comments.Auditor`,
+      `api://${config.clientID}/ReqDB.Requirements.Reader`,
+      `api://${config.clientID}/ReqDB.Requirements.Writer`,
+      `api://${config.clientID}/ReqDB.Requirements.Auditor`,
+      `api://${config.clientID}/ReqDB.Comments.Reader`,
+      `api://${config.clientID}/ReqDB.Comments.Writer`,
+      `api://${config.clientID}/ReqDB.Comments.Moderator`,
+      `api://${config.clientID}/ReqDB.Comments.Auditor`,
     ]
 
   }
