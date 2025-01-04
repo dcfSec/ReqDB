@@ -12,7 +12,6 @@ const config = await fetch('/api/config/oauth').then(response => {
   return response.json();
 })
   .then(data => {
-    console.log(data)
     return {
       clientID: data.data.client_id,
       tenantID: data.data.tenant_id
