@@ -8,8 +8,6 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 
-import useFetchWithMsal from "../../hooks/useFetchWithMsal";
-import { protectedResources } from "../../authConfig";
 import { appRoles } from '../../authConfig';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +17,7 @@ import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { removeComment, updateComment } from '../../stateSlices/BrowseSlice';
 import { removeCommentFromRequirement, updateCommentInRequirement } from '../../stateSlices/RequirementSlice';
 import { Item as Comment } from '../../types/API/Comments';
+import APIClient from '../../APIClient';
 
 type Props = {
   view: string;
@@ -43,69 +42,59 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
   const [force, setForce] = useState(false);
   const [/*cascade*/, setCascade] = useState(false);
 
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
-
-  if (error) {
-    dispatch(toast({ header: "UnhandledError", body: error.message }))
-    dispatch(showSpinner(false))
-  }
 
   function deleteComment() {
     dispatch(showSpinner(true))
-    execute("DELETE", `comments/${comment.id}`, null, false).then(
-      (response) => {
-        if (response.status === 204) {
-          dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
-          if (view == "browse") {
-            dispatch(removeComment({ index: rowIndex, comment: commentIndex }))
-          } else if (view == "requirement") {
-            dispatch(removeCommentFromRequirement({ comment: commentIndex }))
-          }
-        } else {
-          response.json().then((r: {error: string, message: string}) => {
-            dispatch(toast({ header: r.error, body: r.message }))
-          }
-          );
+    
+    APIClient.delete(`comments/${comment.id}`).then((response) => {
+      if (response.status === 204) {
+        dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
+        if (view == "browse") {
+          dispatch(removeComment({ index: rowIndex, comment: commentIndex }))
+        } else if (view == "requirement") {
+          dispatch(removeCommentFromRequirement({ comment: commentIndex }))
         }
+      } else {
+          dispatch(toast({ header: response.data.error, body: response.data.message }))
+      }
+      dispatch(showSpinner(false))
+      setShowDeleteModal(false)
+    }).catch((error) => {
+      if (error.response) {
+        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
         dispatch(showSpinner(false))
         setShowDeleteModal(false)
-      },
-      (error) => {
+      } else {
         dispatch(toast({ header: "UnhandledError", body: error.message }))
         dispatch(showSpinner(false))
         setShowDeleteModal(false)
       }
-    )
+    });
   }
 
   function toggleComplete() {
     dispatch(showSpinner(true))
-    execute("PUT", `comments/${comment.id}`, { ...comment, completed: !comment.completed }).then(
-      (response) => {
-        if (response.status === 200) {
-          dispatch(toast({ header: "Comment marked as completed", body: "Comment successfully marked as completed" }))
-          if (view == "browse") {
-            dispatch(updateComment({ index: rowIndex, commentIndex, comment: response.data }))
-          } else if (view == "requirement") {
-            dispatch(updateCommentInRequirement({ index: commentIndex, comment: response.data }))
-          }
-        } else {
-          response.json().then((r: {error: string, message: string}) => {
-            dispatch(toast({ header: r.error, body: r.message }))
-          }
-          );
+    APIClient.put(`comments/${comment.id}`, { ...comment, completed: !comment.completed }).then((response) => {
+      if (response.status === 200) {
+        dispatch(toast({ header: "Comment marked as completed", body: "Comment successfully marked as completed" }))
+        if (view == "browse") {
+          dispatch(updateComment({ index: rowIndex, commentIndex, comment: response.data.data }))
+        } else if (view == "requirement") {
+          dispatch(updateCommentInRequirement({ index: commentIndex, comment: response.data.data }))
         }
+      } else {
+          dispatch(toast({ header: response.data.error, body: response.data.message }))
+      }
+      dispatch(showSpinner(false))
+    }).catch((error) => {
+      if (error.response) {
+        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
         dispatch(showSpinner(false))
-        setShowDeleteModal(false)
-      },
-      (error) => {
+      } else {
         dispatch(toast({ header: "UnhandledError", body: error.message }))
         dispatch(showSpinner(false))
-        setShowDeleteModal(false)
       }
-    )
+    });
   }
 
   if (!comment.completed || showCompleted) {

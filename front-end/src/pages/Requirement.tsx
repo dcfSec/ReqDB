@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
 import LoadingBar from "../components/LoadingBar";
 
-import { protectedResources } from "../authConfig";
-import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
@@ -14,6 +12,7 @@ import { CommentCard, DescriptionCard, ExtraCard, TagsCard, TopicsCard } from ".
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import APIClient from "../APIClient";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -32,35 +31,42 @@ export default function Requirement() {
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
+  const [error, setError] = useState(null);
 
   const params = useParams();
   const id = params.requirementId
-
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
 
   useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   useEffect(() => {
     dispatch(reset());
-    execute("GET", `requirements/${id}`).then((response) => {
+    APIClient.get( `requirements/${id}`).then((response) => {
       if (response && response.status === 200) {
-        dispatch(setRequirement(response.data))
-        dispatch(setPageTitle(`${response.data.key} - ${response.data.title}`))
-        dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: `${response.data.key} - ${response.data.title}`, active: true }]))
+        dispatch(setRequirement(response.data.data))
+        dispatch(setPageTitle(`${response.data.data.key} - ${response.data.data.title}`))
+        dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: `${response.data.data.key} - ${response.data.data.title}`, active: true }]))
         setFetched(true);
       } else if (response && response.status !== 200) {
-        setAPIError(response.message)
+        setAPIError(response.data.message)
+        setFetched(true);
+      }
+    }).catch((error) => {
+      if (error.response) {
+        setError(error.response.data.message)
+        dispatch(showSpinner(false))
+        setFetched(true);
+      } else {
+        setError(error.message);
+        dispatch(showSpinner(false))
         setFetched(true);
       }
     });
-  }, [execute])
+}, [])
 
   let body = <LoadingBar />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
+    body = <Alert variant="danger">Error loading catalogue data. Error: {error}</Alert>
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {

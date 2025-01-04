@@ -6,8 +6,6 @@ import DataTable from '../components/DataTable';
 import CheckboxDropdown from "../components/CheckboxDropdown";
 import { Alert } from 'react-bootstrap';
 import { ErrorMessage } from '../components/MiniComponents'
-import useFetchWithMsal from '../hooks/useFetchWithMsal';
-import { protectedResources } from '../authConfig';
 
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
@@ -19,6 +17,7 @@ import AuditRow from '../components/Audit/AuditRow';
 import { Item } from "../types/API/Audit";
 
 import { toggleActionFilterSelected, toggleActionFilterSelectedAll } from '../stateSlices/AuditSlice';
+import APIClient from '../APIClient';
 
 
 type Props = {
@@ -46,30 +45,35 @@ function AuditParent({ auditPageName, headers, searchFields, endpoint }: Props) 
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
-
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
+  const [error, setError] = useState(null);
 
   useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   useEffect(() => {
-    execute("GET", `audit/${endpoint}`).then((response) => {
-      if (response && response.status === 200) {
-        dispatch(setItems(response.data))
+    APIClient.get(`audit/${endpoint}`).then((response) => {
+      if (response && response.data && response.data.status === 200) {
+        dispatch(setItems(response.data.data))
         setFetched(true);
-      } else if (response && response.status !== 200) {
-        dispatch(toast({ header: response.error, body: response.message }));
-        setAPIError(response.message);
+      } else if (response && response.data && response.data.status !== 200) {
+        dispatch(toast({ header: response.data.error, body: response.data.message }));
+        setAPIError(response.data.message);
         setFetched(true);
       }
-    });
-  }, [execute])
+    }).catch((error) => {
+        if (error.response) {
+          setError(error.response.data.message)
+          dispatch(showSpinner(false))
+        } else {
+          setError(error.message);
+          dispatch(showSpinner(false))
+        }
+      });
+  }, [])
 
   let body = <LoadingBar />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
+    body = <Alert variant="danger">Error loading catalogue data. Error: {error}</Alert>
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {

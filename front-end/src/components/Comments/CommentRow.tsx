@@ -9,9 +9,8 @@ import {LinkContainer} from 'react-router-bootstrap'
 import Form from 'react-bootstrap/Form';
 import { useState } from "react";
 
-import { protectedResources } from "../../authConfig";
-import useFetchWithMsal from '../../hooks/useFetchWithMsal';
 import { Item } from "../../types/API/Comments";
+import APIClient from "../../APIClient";
 
 type Props = {
   index:number;
@@ -35,61 +34,51 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
   const [force, setForce] = useState(false);
   const [/*cascade*/, setCascade] = useState(false);
 
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
-
-  if (error) {
-    dispatch(toast({ header: "UnhandledError", body: error.message }))
-    dispatch(showSpinner(false))
-  }
-
   function deleteComment() {
     dispatch(showSpinner(true))
-    execute("DELETE", `comments/${comment.id}`, null, false).then(
-      (response) => {
-        if (response.status === 204) {
-          dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
-          dispatch(removeComment({ comment: index }))
-        } else {
-          response.json().then((r: {error: string, message: string}) => {
-            dispatch(toast({ header: r.error, body: r.message }))
-          }
-          );
-        }
+
+    APIClient.delete(`comments/${comment.id}`).then((response) => {
+      if (response.status === 204) {
+        dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
+        dispatch(removeComment({ comment: index }))
+      } else {
+        dispatch(toast({ header: response.data.error, body: response.data.message }))
+      }
+      dispatch(showSpinner(false))
+      setShowDeleteModal(false)
+    }).catch((error) => {
+      if (error.response) {
+        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
         dispatch(showSpinner(false))
         setShowDeleteModal(false)
-      },
-      (error) => {
+      } else {
         dispatch(toast({ header: "UnhandledError", body: error.message }))
         dispatch(showSpinner(false))
         setShowDeleteModal(false)
       }
-    )
+    });
   }
 
   function updateCompleted(completed: boolean) {
     dispatch(showSpinner(true))
-    execute("PUT", `comments/${comment.id}`, { ...comment, completed: completed }).then(
-      (response) => {
-        if (response.status === 200) {
-          dispatch(toast({ header: "Comment marked as completed updated", body: "Comment successfully updated marked as completed" }))
-          dispatch(updateComment({ index, comment: response.data }))
-        } else {
-          response.json().then((r: {error: string, message: string}) => {
-            dispatch(toast({ header: r.error, body: r.message }))
+        APIClient.put(`comments/${comment.id}`, { ...comment, completed: completed }).then((response) => {
+          if (response.status === 200) {
+            dispatch(toast({ header: "Comment marked as completed updated", body: "Comment successfully updated marked as completed" }))
+            dispatch(updateComment({ index, comment: response.data.data }))
+          } else {
+              dispatch(toast({ header: response.data.error, body: response.data.message }))
           }
-          );
-        }
-        dispatch(showSpinner(false))
-        setShowDeleteModal(false)
-      },
-      (error) => {
-        dispatch(toast({ header: "UnhandledError", body: error.message }))
-        dispatch(showSpinner(false))
-        setShowDeleteModal(false)
-      }
-    )
+          dispatch(showSpinner(false))
+          setShowDeleteModal(false)
+        }).catch((error) => {
+          if (error.response) {
+            dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
+            dispatch(showSpinner(false))
+          } else {
+            dispatch(toast({ header: "UnhandledError", body: error.message }))
+            dispatch(showSpinner(false))
+          }
+        });
   }
 
   if (inSearchField(search, searchFields, comment) && comment && (!comment.completed || showCompleted)) {

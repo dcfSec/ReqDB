@@ -155,6 +155,7 @@ class Requirements(BaseResources):
     def check(self, object):
         if object.parentId is not None:
             parent = Topic.query.get_or_404(object.parentId)
+            db.session.add(parent)
             if parent.children != []:
                 return {
                     'status': 400,

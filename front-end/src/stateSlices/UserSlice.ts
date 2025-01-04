@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AccountInfo } from "@azure/msal-browser";
 
 interface UserState {
   roles: Array<string>,
@@ -9,7 +8,6 @@ interface UserState {
     notificationMailOnRequirementComment: boolean,
   },
   name: string,
-  account: AccountInfo | null
 }
 
 const initialState: UserState = {
@@ -20,16 +18,12 @@ const initialState: UserState = {
     notificationMailOnRequirementComment: false,
   },
   name: "Nobody",
-  account: null
 }
 
 export const UserSlice = createSlice({
   name: 'User',
   initialState,
   reducers: {
-    setAccount: (state, action: PayloadAction<AccountInfo>) => {
-      state.account = { ...action.payload }
-    },
     setName: (state, action: PayloadAction<string>) => {
       state.name = action.payload
     },
@@ -49,6 +43,6 @@ export const UserSlice = createSlice({
   }
 })
 
-export const { setAccount, setName, setRoles, setDarkMode, toggleDarkMode } = UserSlice.actions
+export const { setName, setRoles, setDarkMode, toggleDarkMode } = UserSlice.actions
 
 export default UserSlice.reducer

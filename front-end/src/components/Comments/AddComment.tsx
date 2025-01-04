@@ -9,11 +9,9 @@ import { addCommentToRequirement } from '../../stateSlices/RequirementSlice';
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 
-import useFetchWithMsal from "../../hooks/useFetchWithMsal";
-import { protectedResources } from "../../authConfig";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import APIClient from '../../APIClient';
 
 
 type Props = {
@@ -33,36 +31,29 @@ export default function AddComment({ view, index, requirementId }: Props) {
 
   const [newComment, setNewComment] = useState("")
 
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
-
-  if (error) {
-    dispatch(toast({ header: "UnhandledError", body: error.message }))
-    dispatch(showSpinner(false))
-  }
-
   function postComment() {
-    execute("POST", `comments`, { comment: newComment, requirementId }).then(
-      (response) => {
-        if (response.status === 200) {
-          if (view == "browse") {
-            dispatch(addComment({ index, comment: response.data }))
-          } else if (view == "requirement") {
-            dispatch(addCommentToRequirement({ comment: response.data }))
-          }
-          dispatch(toast({ header: "Comment added", body: "Comment successfully added" }))
-          setNewComment("")
-        } else {
-          dispatch(toast({ header: response.error, body: response.message }))
+    APIClient.post(`comments`, { comment: newComment, requirementId }).then((response) => {
+      if (response.data.status === 200) {
+        if (view == "browse") {
+          dispatch(addComment({ index, comment: response.data.data }))
+        } else if (view == "requirement") {
+          dispatch(addCommentToRequirement({ comment: response.data.data }))
         }
+        dispatch(toast({ header: "Comment added", body: "Comment successfully added" }))
+        setNewComment("")
+      } else {
+        dispatch(toast({ header: response.data.error, body: response.data.message }))
+      }
+      dispatch(showSpinner(false))
+    }).catch((error) => {
+      if (error.response) {
+        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
         dispatch(showSpinner(false))
-      },
-      (error) => {
+      } else {
         dispatch(toast({ header: "UnhandledError", body: error.message }))
         dispatch(showSpinner(false))
       }
-    )
+    });
   }
 
   return (

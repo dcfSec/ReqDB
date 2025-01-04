@@ -1,7 +1,5 @@
 import { inSearchField, EditButtons } from "../MiniComponents";
 import { useState } from "react";
-import useFetchWithMsal from "../../hooks/useFetchWithMsal";
-import { protectedResources } from "../../authConfig";
 
 import { useDispatch } from 'react-redux'
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
@@ -22,6 +20,7 @@ import { Type } from '../../types/API/Extras';
 import { Item as Requirement } from "../../types/API/Requirements";
 import { Item as Tag } from "../../types/API/Tags";
 import { Item as Topic } from "../../types/API/Topics";
+import APIClient from "../../APIClient";
 
 type Props = {
   index: number;
@@ -59,33 +58,26 @@ export default function EditListRow({ index, endpoint, needCascade, originalItem
     setItem(tempItem)
   }
 
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
-
-  if (error) {
-    dispatch(toast({ header: "UnhandledError", body: error.message }))
-    dispatch(showSpinner(false))
-  }
-
   function saveItem() {
-    execute("PUT", `${endpoint}/${originalItem.id}?minimal`, item).then(
-      (response) => {
-        if (response.status === 200) {
-          setEdit(false)
-          setItem(response.data)
-          dispatch(updateItem({ index, item: response.data })) // Do we need to update the main list (unnecessary rerender)?
-          dispatch(toast({ header: "Item successfully edited", body: `Item "${response.data[humanKey]}" edited` }))
-        } else {
-          dispatch(toast({ header: response.error, body: response.message }))
-        }
+    APIClient.put(`${endpoint}/${originalItem.id}?minimal`, item).then((response) => {
+      if (response && response.data && response.data.status === 200) {
+        setEdit(false)
+        setItem(response.data)
+        dispatch(updateItem({ index, item: response.data.data })) // Do we need to update the main list (unnecessary rerender)?
+        dispatch(toast({ header: "Item successfully edited", body: `Item "${response.data.data[humanKey]}" edited` }))
+      } else {
+        dispatch(toast({ header: response.data.error, body: response.data.message }))
+      }
+      dispatch(showSpinner(false))
+    }).catch((error) => {
+      if (error.response) {
+        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
         dispatch(showSpinner(false))
-      },
-      (error) => {
+      } else {
         dispatch(toast({ header: "UnhandledError", body: error.message }))
         dispatch(showSpinner(false))
       }
-    )
+    });
   }
 
   function handleDeleteItem() {
@@ -96,26 +88,27 @@ export default function EditListRow({ index, endpoint, needCascade, originalItem
         parameters.push("cascade")
       }
     }
-    execute("DELETE", `${endpoint}/${originalItem.id}?${parameters.join("&")}`, null, false).then(
-      (response) => {
-        if (response.status === 204) {
-          setEdit(false)
-          setShowDeleteModal(false)
-          dispatch(toast({ header: "Item successfully deleted", body: `Item "${originalItem[humanKey]}" deleted.` }))
-          dispatch(removeItem(index))
-        } else {
-          response.json().then((r: {error: string, message: string}) => {
-            dispatch(toast({ header: r.error, body: r.message }))
-          }
-          );
-        }
+    APIClient.delete(`${endpoint}/${originalItem.id}?${parameters.join("&")}`).then((response) => {
+      if (response.status === 204) {
+        setEdit(false)
+        setShowDeleteModal(false)
+        dispatch(toast({ header: "Item successfully deleted", body: `Item "${originalItem[humanKey]}" deleted.` }))
+        dispatch(removeItem(index))
+      } else {
+          dispatch(toast({ header: response.data.error, body: response.data.message }))
+      }
+      dispatch(showSpinner(false))
+    }).catch((error) => {
+      if (error.response) {
+        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
         dispatch(showSpinner(false))
-      },
-      (error) => {
+        setShowDeleteModal(false)
+      } else {
         dispatch(toast({ header: "UnhandledError", body: error.message }))
         dispatch(showSpinner(false))
+        setShowDeleteModal(false)
       }
-    )
+    });
   }
 
   if (inSearchField(search, searchFields, item) || edit) {

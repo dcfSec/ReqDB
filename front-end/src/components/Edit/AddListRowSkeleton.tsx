@@ -1,6 +1,4 @@
 import { useState } from "react";
-import useFetchWithMsal from "../../hooks/useFetchWithMsal";
-import { protectedResources } from "../../authConfig";
 
 import { useDispatch } from 'react-redux'
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
@@ -20,6 +18,7 @@ import { Type } from '../../types/API/Extras';
 import { Item as Requirement } from "../../types/API/Requirements";
 import { Item as Tag } from "../../types/API/Tags";
 import { Item as Topic } from "../../types/API/Topics";
+import APIClient from "../../APIClient";
 
 
 type Props = {
@@ -41,32 +40,26 @@ export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, edit
 
   const [newItem, setNewItem] = useState(blankItem);
 
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
-
-  if (error) {
-    dispatch(toast({ header: "UnhandledError", body: error.message }))
-    dispatch(showSpinner(false))
-  }
-
   function postItem() {
-    execute("POST", `${endpoint}`, newItem).then(
-      (response) => {
-        if (response.status === 200) {
-          dispatch(addItem(response.data))
-          dispatch(toast({ header: "Item created", body: `Item "${response.data[humanKey]}" created.` }))
-          setNewItem(blankItem)
-        } else {
-          dispatch(toast({ header: response.error, body: response.message }))
-        }
+    APIClient.post(`${endpoint}`, newItem).then((response) => {
+      if (response && response.data && response.data.status === 200) {
+        console.log("io")
+        dispatch(addItem(response.data.data))
+        dispatch(toast({ header: "Item created", body: `Item "${response.data.data[humanKey]}" created.` }))
+        setNewItem(blankItem)
+      } else {
+        dispatch(toast({ header: response.data.error, body: response.data.message }))
+      }
+      dispatch(showSpinner(false))
+    }).catch((error) => {
+      if (error.response) {
+        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
         dispatch(showSpinner(false))
-      },
-      (error) => {
+      } else {
         dispatch(toast({ header: "UnhandledError", body: error.message }))
         dispatch(showSpinner(false))
       }
-    )
+    });
   }
 
   function updateNewItem(properties: object) {

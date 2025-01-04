@@ -3,8 +3,6 @@ import Modal from 'react-bootstrap/Modal';
 import { SearchField, inSearchField, ErrorMessage } from '../MiniComponents';
 import { Alert, Col, Container, Form, Row, Table } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
-import useFetchWithMsal from '../../hooks/useFetchWithMsal';
-import { protectedResources } from '../../authConfig';
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -22,6 +20,7 @@ import { Item as Topic } from '../../types/API/Topics';
 import { Item as Tag } from '../../types/API/Tags';
 import { Item as Requirement } from '../../types/API/Requirements';
 import { APIErrorData, APISuccessData, RowObject } from '../../types/Generics';
+import APIClient from '../../APIClient';
 
 type Props = {
   humanKey: string;
@@ -46,44 +45,69 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
   const cache = useAppSelector(state => state.edit.cache)
 
   const [search, setSearch] = useState("");
+  const [error, setError] = useState(null);
 
   const initialSelectedItemIds = initialSelectedItems.map((item) => (item.id))
   const [selectedItemIds, setSelectedItemIds] = useState(initialSelectedItemIds);
 
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
-
   function reloadCache() {
     dispatch(showSpinner(true))
     dispatch(cleanCache({ endpoint }))
-    execute("GET", `${endpoint}`).then((response) => {
-      if (response && response.status === 200) {
-        dispatch(updateCache({ endpoint, response }))
+    APIClient.get(`${endpoint}`).then((response) => {
+      if (response && response.data && response.data.status === 200) {
+          dispatch(updateCache({ endpoint, response: response.data }))
+          dispatch(showSpinner(false))
+      } else if (response && response.data && response.data.status !== 200) {
+        setError(response.data.message)
+        dispatch(showSpinner(false))
+      } else {
+        setError(response.data.message)
         dispatch(showSpinner(false))
       }
-    });
+    }).catch((error) => {
+        if (error.response) {
+          setError(error.response.data.message)
+          dispatch(showSpinner(false))
+        } else {
+          setError(error.message);
+          dispatch(showSpinner(false))
+        }
+      });
   }
 
   useEffect(() => {
     dispatch(showSpinner(true))
     if (!(endpoint in cache) || cache[endpoint].time + 36000 < Date.now()) {
       dispatch(cleanCache({ endpoint }))
-      execute("GET", `${endpoint}`).then((response) => {
-        if (response && response.status === 200) {
-          dispatch(updateCache({ endpoint, response }))
+      APIClient.get(`${endpoint}`).then((response) => {
+        if (response && response.data && response.data.status === 200) {
+            dispatch(updateCache({ endpoint, response: response.data }))
+            dispatch(showSpinner(false))
+        } else if (response && response.data && response.data.status !== 200) {
+          setError(response.data.message)
+          dispatch(showSpinner(false))
+        } else {
+          setError(response.data.message)
           dispatch(showSpinner(false))
         }
-      });
+      }).catch((error) => {
+          if (error.response) {
+            setError(error.response.data.message)
+            dispatch(showSpinner(false))
+          } else {
+            setError(error.message);
+            dispatch(showSpinner(false))
+          }
+        });
     } else {
       dispatch(showSpinner(false))
     }
-  }, [execute])
+  }, [])
 
   let body = <LoadingBar />
 
   if (error) {
-    body = <Alert variant="danger">Error: {error.message}</Alert>
+    body = <Alert variant="danger">Error: {error}</Alert>
   } else {
     if (endpoint in cache && cache[endpoint].data && cache[endpoint].data.status === 200) {
       body = <Form>

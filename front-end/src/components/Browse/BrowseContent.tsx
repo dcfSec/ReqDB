@@ -5,8 +5,6 @@ import { ErrorMessage, buildRows } from '../MiniComponents'
 import RequirementsTable from "./RequirementsTable";
 import CheckboxDropdown from "../CheckboxDropdown";
 import FilterTopicModal from "./FilterTopicsModal";
-import { protectedResources } from "../../authConfig";
-import useFetchWithMsal from "../../hooks/useFetchWithMsal";
 import { ExportTable } from "../Export";
 import Search from "./Search"
 import { toggleTagFilterSelected, toggleTagFilterSelectedAll } from '../../stateSlices/BrowseSlice';
@@ -19,6 +17,7 @@ import { setPageTitle } from "../../stateSlices/LayoutSlice";
 import { Suspense, startTransition, useDeferredValue } from "react";
 import BrowseRow from "./BrowseRow";
 import { Item as Topic } from "../../types/API/Topics";
+import APIClient from "../../APIClient";
 
 
 type Props = {
@@ -44,41 +43,49 @@ export default function BrowseContent({ id }: Props) {
 
   const deferredRows = useDeferredValue(rows);
 
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
-
   const [APIError, setAPIError] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     dispatch(reset());
     dispatch(showSpinner(true))
     dispatch(setStatus("loading"));
-    execute("GET", `catalogues/${id}?extended`).then((response) => {
-      if (response && response.status === 200) {
-        startTransition(() => {
-        const tagFilterItemsTmp: Array<string> = []
 
-        buildRows(extraHeaders, tagFilterItemsTmp, [], { id:0, key: "", title: "", children: response.data.topics } as Topic)
-        dispatch(setTagFilterItems(tagFilterItemsTmp))
-        dispatch(sortRows())
-        dispatch(sortTopicFilterItems())
-        dispatch(setData(response.data))
-        dispatch(setPageTitle(response.data.title))
+    APIClient.get( `catalogues/${id}?extended`).then((response) => {
+      if (response && response.data && response.data.status === 200) {
+        startTransition(() => {
+          const tagFilterItemsTmp: Array<string> = []
+          buildRows(extraHeaders, tagFilterItemsTmp, [], { id:0, key: "", title: "", children: response.data.data.topics } as Topic)
+          dispatch(setTagFilterItems(tagFilterItemsTmp))
+          dispatch(sortRows())
+          dispatch(sortTopicFilterItems())
+          dispatch(setData(response.data.data))
+          dispatch(setPageTitle(response.data.data.title))
+          dispatch(showSpinner(false))
+          dispatch(setStatus("ok"));
+          });
+      } else if (response && response.data && response.data.status !== 200) {
+        setAPIError(response.data.message)
         dispatch(showSpinner(false))
-        dispatch(setStatus("ok"));
-        });
-      } else if (response && response.status !== 200) {
-        setAPIError(response.message)
-        // dispatch(setFetched("error"));
+      } else {
+        setAPIError(response.data.message)
+        dispatch(showSpinner(false))
       }
-    });
-  }, [execute])
+    }).catch((error) => {
+        if (error.response) {
+          setAPIError(error.response.data.message);
+          dispatch(showSpinner(false))
+        } else {
+          setError(error.message);
+          dispatch(showSpinner(false))
+        }
+      });
+  }, [])
 
   let errorMessage = <></>
 
   if (error) {
-    errorMessage = <>Error loading catalogue data. Error: ${error.message}</>
+    errorMessage = <>Error loading catalogue data. Error: ${error}</>
   } else if (APIError) {
     errorMessage = ErrorMessage(APIError)
   }

@@ -6,37 +6,44 @@ import App from './App';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { PublicClientApplication, EventType, AuthenticationResult } from "@azure/msal-browser";
-
-import { msalConfig } from "./authConfig.js";
+import { msalConfig, protectedResources } from "./authConfig.js";
 
 import store from './store'
 import { Provider } from 'react-redux'
+import {
+  PublicClientApplication,
+  EventType,
+  EventMessage,
+  AuthenticationResult,
+} from "@azure/msal-browser";
+import APIClient from './APIClient';
 
-/**
- * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.
- * For more, visit: https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
- */
-const msalInstance = new PublicClientApplication(msalConfig);
+  const msalInstance  = new PublicClientApplication(msalConfig);
+  msalInstance.initialize().then(() => {
 
-// Default to using the first account if no account is active on page load
-if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
-    // Account selection logic is app dependent. Adjust as needed for different use cases.
-    msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]);
-}
-
-// Optional - This will update account state if a user signs in from another tab or window
-msalInstance.enableAccountStorageEvents();
-
-// Listen for sign-in event and set active account
-msalInstance.addEventCallback((event) => {
-    if (event.eventType === EventType.LOGIN_SUCCESS && event.payload && (event.payload as AuthenticationResult).account) {
-        const payload = event.payload as AuthenticationResult;
-        const account = payload.account;
-        msalInstance.setActiveAccount(account);
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length > 0) {
+        msalInstance.setActiveAccount(accounts[0]);
     }
+    msalInstance.addEventCallback((event: EventMessage) => {
+        if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
+            const payload = event.payload as AuthenticationResult;
+            const account = payload.account;
+            msalInstance.setActiveAccount(account);
+        }
+    });
+    APIClient.interceptors.request.use(async (config) => {
+      const account = msalInstance.getActiveAccount();
+      if (account) {
+          const tokenResponse = await msalInstance.acquireTokenSilent({
+              account: account,
+              scopes: protectedResources.ReqDB.scopes,
+          });
+          config.headers.Authorization = `Bearer ${tokenResponse.accessToken}`;
+      }
+      return config;
+  });
 });
-
 
 const rootElement = document.getElementById('root');
 if (rootElement) {

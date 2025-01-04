@@ -19,7 +19,7 @@ export function TagsCard() {
 
   const requirement = useAppSelector(state => state.requirement.requirement)
 
-  const tags = requirement ? { ...requirement.tags} : []
+  const tags = requirement ? [ ...requirement.tags] : []
 
   return (
     <Card>

@@ -3,13 +3,12 @@ import { useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
 import SelectCatalogueItem from "../components/Browse/SelectCatalogueItem";
 
-import { protectedResources } from "../authConfig";
-import useFetchWithMsal from '../hooks/useFetchWithMsal';
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { set, reset, sort } from "../stateSlices/CatalogueDataSlice";
 import LoadingBar from "../components/LoadingBar";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
+import APIClient from "../APIClient";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -27,31 +26,38 @@ export default function BrowseSelectCatalogue() {
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
-
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
-
+  const [error, setError] = useState(null);
   useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   useEffect(() => {
     dispatch(reset());
-    execute("GET", `catalogues`).then((response) => {
-      if (response && response.status === 200) {
-        dispatch(set(response.data));
+    APIClient.get( `catalogues`).then((response) => {
+      if (response && response.data && response.data.status === 200) {
+        dispatch(set(response.data.data));
         dispatch(sort());
         setFetched(true);
-      } else if (response && response.status !== 200) {
-        setAPIError(response.message)
+      } else if (response && response.data && response.data.status !== 200) {
+        setAPIError(response.data.message)
+        setFetched(true);
+      } else {
+        setAPIError(response.data.message)
         setFetched(true);
       }
-    });
-  }, [execute])
+    }).catch((error) => {
+        if (error.response) {
+          setAPIError(error.response.data.message);
+          setFetched(true);
+        } else {
+          setError(error.message);
+          setFetched(true);
+        }
+      });
+  }, [])
 
   let body = <LoadingBar />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
+    body = <Alert variant="danger">Error loading catalogue data. Error: {error}</Alert>
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {

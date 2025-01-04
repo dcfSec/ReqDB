@@ -5,25 +5,36 @@
 
 import { LogLevel } from "@azure/msal-browser";
 
-const config = await fetch('/api/config/oauth').then(response => {
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return response.json();
-})
-  .then(data => {
-    return {
-      clientID: data.data.client_id,
-      tenantID: data.data.tenant_id
+let clientID = sessionStorage.getItem("clientID") || "";
+let tenantID = sessionStorage.getItem("tenantID") || "";
+
+if (clientID === "" || tenantID === "") {
+  const config = await fetch('/api/config/oauth').then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    return response.json();
   })
-  .catch(error => {
-    console.error('Error:', error);
-    return {
-      clientID: "",
-      tenantID: ""
-    }
-  });
+    .then(data => {
+      return {
+        clientID: data.data.client_id,
+        tenantID: data.data.tenant_id
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      return {
+        clientID: "",
+        tenantID: ""
+      }
+    });
+  sessionStorage.setItem("key", config.clientID);
+  sessionStorage.setItem("key", config.tenantID);
+  clientID = config.clientID;
+  tenantID = config.tenantID;
+}
+
+
 
 
 /**
@@ -33,8 +44,8 @@ const config = await fetch('/api/config/oauth').then(response => {
  */
 export const msalConfig = {
   auth: {
-    clientId: config.clientID, // This is the ONLY mandatory field that you need to supply.
-    authority: `https://login.microsoftonline.com/${config.tenantID}`, // Defaults to "https://login.microsoftonline.com/common"
+    clientId: clientID, // This is the ONLY mandatory field that you need to supply.
+    authority: `https://login.microsoftonline.com/${tenantID}`, // Defaults to "https://login.microsoftonline.com/common"
     redirectUri: "/", // You must register this URI on Azure Portal/App Registration. Defaults to window.location.origin
     postLogoutRedirectUri: "/", // Indicates the page to navigate after logout.
     clientCapabilities: ["CP1"] // this lets the resource owner know that this client is capable of handling claims challenge.
@@ -42,6 +53,7 @@ export const msalConfig = {
   cache: {
     cacheLocation: "localStorage", // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
     storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
+    claimsBasedCachingEnabled: true,
   },
   system: {
     loggerOptions: {
@@ -80,13 +92,13 @@ export const msalConfig = {
 export const protectedResources = {
   ReqDB: {
     scopes: [
-      `api://${config.clientID}/ReqDB.Requirements.Reader`,
-      `api://${config.clientID}/ReqDB.Requirements.Writer`,
-      `api://${config.clientID}/ReqDB.Requirements.Auditor`,
-      `api://${config.clientID}/ReqDB.Comments.Reader`,
-      `api://${config.clientID}/ReqDB.Comments.Writer`,
-      `api://${config.clientID}/ReqDB.Comments.Moderator`,
-      `api://${config.clientID}/ReqDB.Comments.Auditor`,
+      `api://${clientID}/ReqDB.Requirements.Reader`,
+      `api://${clientID}/ReqDB.Requirements.Writer`,
+      `api://${clientID}/ReqDB.Requirements.Auditor`,
+      `api://${clientID}/ReqDB.Comments.Reader`,
+      `api://${clientID}/ReqDB.Comments.Writer`,
+      `api://${clientID}/ReqDB.Comments.Moderator`,
+      `api://${clientID}/ReqDB.Comments.Auditor`,
     ]
 
   }

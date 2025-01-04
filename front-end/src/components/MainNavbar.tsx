@@ -29,12 +29,12 @@ export default function MainNavbar() {
   const darkMode = useAppSelector(state => state.user.preferences.darkMode)
   const roles = useAppSelector(state => state.user.roles)
   const name = useAppSelector(state => state.user.name)
-  const account = useAppSelector(state => state.user.account)
 
   const [showRoles, setShowRoles] = useState(false)
   const [showPreferences, setShowPreferences] = useState(false)
 
   const { instance } = useMsal();
+  const account = instance.getActiveAccount();
 
   return (
     <Navbar className="bg-body-tertiary">

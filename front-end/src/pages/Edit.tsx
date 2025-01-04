@@ -5,8 +5,6 @@ import DataTable from '../components/DataTable';
 
 import { Alert } from 'react-bootstrap';
 import { ErrorMessage } from '../components/MiniComponents'
-import useFetchWithMsal from '../hooks/useFetchWithMsal';
-import { protectedResources } from '../authConfig';
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../stateSlices/NotificationToastSlice";
@@ -22,6 +20,7 @@ import { Type } from '../types/API/Extras';
 import { Item as Requirement } from "../types/API/Requirements";
 import { Item as Tag } from "../types/API/Tags";
 import { Item as Topic } from "../types/API/Topics";
+import APIClient from "../APIClient";
 
 type Props = {
   editPageName: string;
@@ -40,7 +39,7 @@ type Props = {
  * @param {object} props Props for the component: editPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters
  * @returns Parent component for all editor views
  */
-function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, needCascade, parameters = [] } : Props) {
+function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, needCascade, parameters = [] }: Props) {
   const dispatch = useAppDispatch()
   const items = useAppSelector(state => state.edit.items)
 
@@ -53,30 +52,35 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
-
-  const { error, execute } = useFetchWithMsal({
-    scopes: protectedResources.ReqDB.scopes,
-  });
+  const [error, setError] = useState(null);
 
   useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   useEffect(() => {
-    execute("GET", `${endpoint}?${parameters.join("&")}`).then((response) => {
+    APIClient.get(`${endpoint}?${parameters.join("&")}`).then((response) => {
       if (response && response.status === 200) {
-        dispatch(setItems(response.data))
+        dispatch(setItems(response.data.data))
         setFetched(true);
       } else if (response && response.status !== 200) {
-        dispatch(toast({ header: response.error, body: response.message }));
-        setAPIError(response.message);
+        dispatch(toast({ header: response.data.error, body: response.data.message }));
+        setAPIError(response.data.message);
         setFetched(true);
       }
+    }).catch((error) => {
+      if (error.response) {
+        setError(error.response.data.message)
+        dispatch(showSpinner(false))
+      } else {
+        setError(error.message);
+        dispatch(showSpinner(false))
+      }
     });
-  }, [execute])
+  }, [])
 
   let body = <LoadingBar />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data. Error: {error.message}</Alert>
+    body = <Alert variant="danger">Error loading catalogue data. Error: {error}</Alert>
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
