@@ -61,7 +61,7 @@ class BaseResources(Resource):
             db.session.add(object)
             db.session.commit()
             return {
-                'status': 200,
+                'status': 201,
                 'data': self.dumpSchemaClass().dump(object)
             }, 201
         except ValidationError as e:
