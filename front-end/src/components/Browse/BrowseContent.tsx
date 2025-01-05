@@ -17,8 +17,10 @@ import { setPageTitle } from "../../stateSlices/LayoutSlice";
 import { Suspense, startTransition, useDeferredValue } from "react";
 import BrowseRow from "./BrowseRow";
 import { Item as Topic } from "../../types/API/Topics";
-import APIClient from "../../APIClient";
+import APIClient, { handleError, handleResult } from "../../APIClient";
+import { APIErrorData, APISuccessData } from "../../types/Generics";
 
+import { Item as Catalogue } from "../../types/API/Catalogues";
 
 type Props = {
   id: string | undefined
@@ -43,44 +45,42 @@ export default function BrowseContent({ id }: Props) {
 
   const deferredRows = useDeferredValue(rows);
 
-  const [APIError, setAPIError] = useState(null);
-  const [error, setError] = useState(null);
+  const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(reset());
     dispatch(showSpinner(true))
     dispatch(setStatus("loading"));
 
-    APIClient.get( `catalogues/${id}?extended`).then((response) => {
-      if (response && response.data && response.data.status === 200) {
-        startTransition(() => {
-          const tagFilterItemsTmp: Array<string> = []
-          buildRows(extraHeaders, tagFilterItemsTmp, [], { id:0, key: "", title: "", children: response.data.data.topics } as Topic)
-          dispatch(setTagFilterItems(tagFilterItemsTmp))
-          dispatch(sortRows())
-          dispatch(sortTopicFilterItems())
-          dispatch(setData(response.data.data))
-          dispatch(setPageTitle(response.data.data.title))
-          dispatch(showSpinner(false))
-          dispatch(setStatus("ok"));
-          });
-      } else if (response && response.data && response.data.status !== 200) {
-        setAPIError(response.data.message)
-        dispatch(showSpinner(false))
-      } else {
-        setAPIError(response.data.message)
-        dispatch(showSpinner(false))
-      }
+    APIClient.get(`catalogues/${id}?extended`).then((response) => {
+      handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
-        if (error.response) {
-          setAPIError(error.response.data.message);
-          dispatch(showSpinner(false))
-        } else {
-          setError(error.message);
-          dispatch(showSpinner(false))
-        }
-      });
+      handleError(error, APIErrorCallback, errorCallback)
+    });
   }, [])
+
+  function okCallback(response: APISuccessData) {
+    startTransition(() => {
+      const tagFilterItemsTmp: Array<string> = []
+      buildRows(extraHeaders, tagFilterItemsTmp, [], { id: 0, key: "", title: "", children: (response.data as Catalogue).topics } as Topic)
+      dispatch(setTagFilterItems(tagFilterItemsTmp))
+      dispatch(sortRows())
+      dispatch(sortTopicFilterItems())
+      dispatch(setData(response.data))
+      dispatch(setPageTitle((response.data as Catalogue).title))
+      dispatch(showSpinner(false))
+      dispatch(setStatus("ok"));
+    });
+  }
+
+  function APIErrorCallback(response: APIErrorData) {
+    setAPIError(response.message)
+  }
+
+  function errorCallback(error: string) {
+    setError(error)
+  }
 
   let errorMessage = <></>
 
@@ -118,7 +118,7 @@ export default function BrowseContent({ id }: Props) {
           <Row>
             <Col>
               <RequirementsTable>
-                {deferredRows.map((row, index) => (<BrowseRow key={index} index={index} row={{...row}}></BrowseRow>))}
+                {deferredRows.map((row, index) => (<BrowseRow key={index} index={index} row={{ ...row }}></BrowseRow>))}
               </RequirementsTable>
             </Col>
           </Row>
@@ -130,7 +130,7 @@ export default function BrowseContent({ id }: Props) {
     return (
       <Container fluid className="bg-body">
         <Row>
-          <Col><MainBreadcrumb/></Col>
+          <Col><MainBreadcrumb /></Col>
         </Row>
         <Row>
           <Col><h2>Browse</h2></Col>

@@ -1,17 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { APISuccessData, APIErrorData } from '../types/Generics';
-
-import { Item as Catalogue } from '../types/API/Catalogues';
-import { Item as Extra } from '../types/API/Extras';
-import { Type } from '../types/API/Extras';
-import { Item as Requirement } from "../types/API/Requirements";
-import { Item as Tag } from "../types/API/Tags";
-import { Item as Topic } from "../types/API/Topics";
-
-type Item = Catalogue | Extra | Type | Requirement | Tag | Topic
+import { APISuccessData, APIErrorData, GenericItem } from '../types/Generics';
 
 interface EditState {
-  items: Array<Item>;
+  items: Array<GenericItem>;
   cache: {
     [key: string]: {
       data: APISuccessData | APIErrorData;
@@ -30,10 +21,10 @@ export const editSlice = createSlice({
   initialState,
   reducers: {
     reset: () => initialState,
-    setItems: (state, action: PayloadAction<Array<Item>>) => {
+    setItems: (state, action: PayloadAction<Array<GenericItem>>) => {
       state.items = [...action.payload]
     },
-    addItem: (state, action: PayloadAction<Item>) => {
+    addItem: (state, action: PayloadAction<GenericItem>) => {
       state.items = [action.payload, ...state.items]
     },
     removeItem: (state, action: PayloadAction<number>) => {
@@ -41,7 +32,7 @@ export const editSlice = createSlice({
       tmp.splice(action.payload, 1);
       state.items = [...tmp]
     },
-    updateItem: (state, action: PayloadAction<{ index: number, item: Item }>) => {
+    updateItem: (state, action: PayloadAction<{ index: number, item: GenericItem }>) => {
       const tmp = [...state.items]
       tmp[action.payload.index] = action.payload.item
       state.items = [...tmp]

@@ -1,6 +1,9 @@
-import { Item as Comment } from "./API/Comments";
+import { Item as Catalogue } from './API/Catalogues';
+import { Item as Extra } from './API/Extras';
+import { Type } from './API/Extras';
+import { Item as Requirement } from "./API/Requirements";
+import { Item as Tag } from "./API/Tags";
 import { Item as Topic } from "./API/Topics";
-import { Item as Catalogue } from "./API/Catalogues";
 
 export interface Row {
   id: number
@@ -45,7 +48,7 @@ export interface APIData {
 }
 
 export interface APISuccessData extends APIData {
-  data: Array<object>;
+  data: object | Array<object>;
   status: number;
 
 }
@@ -60,3 +63,5 @@ export type RowObject = {
   [key: string]: string | number;
 
 }
+
+export type GenericItem = Catalogue | Extra | Type | Requirement | Tag | Topic

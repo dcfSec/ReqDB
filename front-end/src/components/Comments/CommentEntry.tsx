@@ -17,7 +17,8 @@ import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { removeComment, updateComment } from '../../stateSlices/BrowseSlice';
 import { removeCommentFromRequirement, updateCommentInRequirement } from '../../stateSlices/RequirementSlice';
 import { Item as Comment } from '../../types/API/Comments';
-import APIClient from '../../APIClient';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClient';
+import { APISuccessData } from '../../types/Generics';
 
 type Props = {
   view: string;
@@ -45,56 +46,41 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
 
   function deleteComment() {
     dispatch(showSpinner(true))
-    
     APIClient.delete(`comments/${comment.id}`).then((response) => {
-      if (response.status === 204) {
-        dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
-        if (view == "browse") {
-          dispatch(removeComment({ index: rowIndex, comment: commentIndex }))
-        } else if (view == "requirement") {
-          dispatch(removeCommentFromRequirement({ comment: commentIndex }))
-        }
-      } else {
-          dispatch(toast({ header: response.data.error, body: response.data.message }))
-      }
-      dispatch(showSpinner(false))
+      handleResult(response, okCallback, APIErrorToastCallback)
       setShowDeleteModal(false)
     }).catch((error) => {
-      if (error.response) {
-        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
-        dispatch(showSpinner(false))
-        setShowDeleteModal(false)
-      } else {
-        dispatch(toast({ header: "UnhandledError", body: error.message }))
-        dispatch(showSpinner(false))
-        setShowDeleteModal(false)
-      }
+      handleError(error, APIErrorToastCallback, errorToastCallback)
+      setShowDeleteModal(false)
     });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    function okCallback(response: APISuccessData) {
+      dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
+      if (view == "browse") {
+        dispatch(removeComment({ index: rowIndex, comment: commentIndex }))
+      } else if (view == "requirement") {
+        dispatch(removeCommentFromRequirement({ comment: commentIndex }))
+      }
+    }
   }
 
   function toggleComplete() {
     dispatch(showSpinner(true))
     APIClient.put(`comments/${comment.id}`, { ...comment, completed: !comment.completed }).then((response) => {
-      if (response.status === 200) {
-        dispatch(toast({ header: "Comment marked as completed", body: "Comment successfully marked as completed" }))
-        if (view == "browse") {
-          dispatch(updateComment({ index: rowIndex, commentIndex, comment: response.data.data }))
-        } else if (view == "requirement") {
-          dispatch(updateCommentInRequirement({ index: commentIndex, comment: response.data.data }))
-        }
-      } else {
-          dispatch(toast({ header: response.data.error, body: response.data.message }))
-      }
-      dispatch(showSpinner(false))
+      handleResult(response, okCallback, APIErrorToastCallback)
     }).catch((error) => {
-      if (error.response) {
-        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
-        dispatch(showSpinner(false))
-      } else {
-        dispatch(toast({ header: "UnhandledError", body: error.message }))
-        dispatch(showSpinner(false))
-      }
+      handleError(error, APIErrorToastCallback, errorToastCallback)
     });
+
+    function okCallback(response: APISuccessData) {
+      dispatch(toast({ header: "Comment marked as completed", body: "Comment successfully marked as completed" }))
+      if (view == "browse") {
+        dispatch(updateComment({ index: rowIndex, commentIndex, comment: response.data as Comment }))
+      } else if (view == "requirement") {
+        dispatch(updateCommentInRequirement({ index: commentIndex, comment: response.data as Comment }))
+      }
+    }
   }
 
   if (!comment.completed || showCompleted) {
@@ -121,7 +107,7 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
             </Stack>
           </Card.Header>
           <Card.Body style={{ padding: '0.5em' }}>
-            <Card.Text style={{whiteSpace: "pre-line"}}>{comment.comment}</Card.Text>
+            <Card.Text style={{ whiteSpace: "pre-line" }}>{comment.comment}</Card.Text>
           </Card.Body>
         </Card>
         {

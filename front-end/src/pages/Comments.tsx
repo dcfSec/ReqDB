@@ -11,7 +11,9 @@ import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { reset, setComments } from "../stateSlices/CommentSlice";
 import { CommentRow } from "../components/Comments/CommentRow";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
-import APIClient from "../APIClient";
+import APIClient, { handleError, handleResult } from "../APIClient";
+import { APIErrorData, APISuccessData } from "../types/Generics";
+import { Item as Comment } from "../types/API/Comments";
 
 
 /**
@@ -46,31 +48,32 @@ export default function Comments() {
 
 
   const [fetched, setFetched] = useState(false);
-  const [APIError, setAPIError] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
+  const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    dispatch(showSpinner(true))
     dispatch(reset());
     APIClient.get(`comments`).then((response) => {
-      if (response && response.status === 200) {
-        dispatch(setComments(response.data.data))
-        setFetched(true);
-      } else if (response && response.status !== 200) {
-        setAPIError(response.data.message)
-        setFetched(true);
-      }
+      handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
-      if (error.response) {
-        setError(error.response.data.message)
-        dispatch(showSpinner(false))
-      } else {
-        setError(error.message);
-        dispatch(showSpinner(false))
-      }
+      handleError(error, APIErrorCallback, errorCallback)
     });
   }, [])
+
+  function okCallback(response: APISuccessData) {
+    dispatch(setComments(response.data as Comment[]))
+    setFetched(true);
+  }
+
+  function APIErrorCallback(response: APIErrorData) {
+    setAPIError(response.message)
+    setFetched(true);
+  }
+
+  function errorCallback(error: string) {
+    setError(error);
+  }
 
   let searchBar = <LoadingBar />
   let table = <></>

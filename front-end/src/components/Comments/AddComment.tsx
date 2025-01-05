@@ -7,11 +7,13 @@ import { addComment } from '../../stateSlices/BrowseSlice';
 import { addCommentToRequirement } from '../../stateSlices/RequirementSlice';
 
 import { toast } from "../../stateSlices/NotificationToastSlice";
-import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
-import APIClient from '../../APIClient';
+import APIClient, { handleError, handleResult } from '../../APIClient';
+import { APIErrorData, APISuccessData } from '../../types/Generics';
+import { Item as Comment } from "../../types/API/Comments";
+import { showSpinner } from '../../stateSlices/MainLogoSpinnerSlice';
 
 
 type Props = {
@@ -32,28 +34,30 @@ export default function AddComment({ view, index, requirementId }: Props) {
   const [newComment, setNewComment] = useState("")
 
   function postComment() {
+    dispatch(showSpinner(true))
     APIClient.post(`comments`, { comment: newComment, requirementId }).then((response) => {
-      if (response.data.status === 200) {
-        if (view == "browse") {
-          dispatch(addComment({ index, comment: response.data.data }))
-        } else if (view == "requirement") {
-          dispatch(addCommentToRequirement({ comment: response.data.data }))
-        }
-        dispatch(toast({ header: "Comment added", body: "Comment successfully added" }))
-        setNewComment("")
-      } else {
-        dispatch(toast({ header: response.data.error, body: response.data.message }))
-      }
-      dispatch(showSpinner(false))
+      handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
-      if (error.response) {
-        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
-        dispatch(showSpinner(false))
-      } else {
-        dispatch(toast({ header: "UnhandledError", body: error.message }))
-        dispatch(showSpinner(false))
-      }
+      handleError(error, APIErrorCallback, errorCallback)
     });
+  }
+
+  function okCallback(response: APISuccessData) {
+    if (view == "browse") {
+      dispatch(addComment({ index, comment: response.data as Comment }))
+    } else if (view == "requirement") {
+      dispatch(addCommentToRequirement({ comment: response.data as Comment }))
+    }
+    dispatch(toast({ header: "Comment added", body: "Comment successfully added" }))
+    setNewComment("")
+  }
+
+  function APIErrorCallback(response: APIErrorData) {
+    dispatch(toast({ header: response.error, body: response.message as string }))
+  }
+
+  function errorCallback(error: string) {
+    dispatch(toast({ header: "UnhandledError", body: error }))
   }
 
   return (

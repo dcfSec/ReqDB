@@ -12,7 +12,9 @@ import { CommentCard, DescriptionCard, ExtraCard, TagsCard, TopicsCard } from ".
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
-import APIClient from "../APIClient";
+import APIClient, { handleError, handleResult } from "../APIClient";
+import { APIErrorData, APISuccessData } from "../types/Generics";
+import { Item as RequirementItem } from "../types/API/Requirements";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -30,38 +32,38 @@ export default function Requirement() {
   const title = useAppSelector(state => state.layout.pageTitle)
 
   const [fetched, setFetched] = useState(false);
-  const [APIError, setAPIError] = useState(null);
-  const [error, setError] = useState(null);
+  const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const params = useParams();
   const id = params.requirementId
 
-  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
-
   useEffect(() => {
     dispatch(reset());
-    APIClient.get( `requirements/${id}`).then((response) => {
-      if (response && response.status === 200) {
-        dispatch(setRequirement(response.data.data))
-        dispatch(setPageTitle(`${response.data.data.key} - ${response.data.data.title}`))
-        dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: `${response.data.data.key} - ${response.data.data.title}`, active: true }]))
-        setFetched(true);
-      } else if (response && response.status !== 200) {
-        setAPIError(response.data.message)
-        setFetched(true);
-      }
+    dispatch(showSpinner(true))
+    APIClient.get(`requirements/${id}`).then((response) => {
+      handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
-      if (error.response) {
-        setError(error.response.data.message)
-        dispatch(showSpinner(false))
-        setFetched(true);
-      } else {
-        setError(error.message);
-        dispatch(showSpinner(false))
-        setFetched(true);
-      }
+      handleError(error, APIErrorCallback, errorCallback)
     });
-}, [])
+  }, [])
+
+  function okCallback(response: APISuccessData) {
+    dispatch(setRequirement(response.data as RequirementItem))
+    dispatch(setPageTitle(`${(response.data as RequirementItem).key} - ${(response.data as RequirementItem).title}`))
+    dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: `${(response.data as RequirementItem).key} - ${(response.data as RequirementItem).title}`, active: true }]))
+    setFetched(true);
+  }
+
+  function APIErrorCallback(response: APIErrorData) {
+    setAPIError(response.message)
+    setFetched(true);
+  }
+
+  function errorCallback(error: string) {
+    setError(error);
+    setFetched(true);
+  }
 
   let body = <LoadingBar />
 

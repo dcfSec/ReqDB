@@ -16,7 +16,7 @@ import { updateCache, cleanCache } from "../../stateSlices/EditSlice";
 
 import LoadingBar from '../LoadingBar';
 import { APIErrorData, APISuccessData, RowObject } from '../../types/Generics';
-import APIClient from '../../APIClient';
+import APIClient, { handleError, handleResult } from '../../APIClient';
 
 
 type Props = {
@@ -43,7 +43,7 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
   const cache = useAppSelector(state => state.edit.cache)
 
   const [search, setSearch] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   let selectedItemObjects: Array<RowObject> = []
   let selectedItemId: string = "0"
@@ -52,29 +52,27 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
     selectedItemId = id
   }
 
+
+  function okCallback(response: APISuccessData) {
+    dispatch(updateCache({ endpoint, response: response }))
+  }
+
+  function APIErrorCallback(response: APIErrorData) {
+    setError(response.message as string)
+  }
+
+  function errorCallback(error: string) {
+    setError(error)
+  }
+
   function reloadCache() {
     dispatch(showSpinner(true))
     dispatch(cleanCache({ endpoint }))
     APIClient.get(`${endpoint}`).then((response) => {
-      if (response && response.data && response.data.status === 200) {
-          dispatch(updateCache({ endpoint, response: response.data }))
-          dispatch(showSpinner(false))
-      } else if (response && response.data && response.data.status !== 200) {
-        setError(response.data.message)
-        dispatch(showSpinner(false))
-      } else {
-        setError(response.data.message)
-        dispatch(showSpinner(false))
-      }
+      handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
-        if (error.response) {
-          setError(error.response.data.message)
-          dispatch(showSpinner(false))
-        } else {
-          setError(error.message);
-          dispatch(showSpinner(false))
-        }
-      });
+      handleError(error, APIErrorCallback, errorCallback)
+    });
   }
 
   useEffect(() => {
@@ -82,25 +80,10 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
     if (!(endpoint in cache) || cache[endpoint].time + 36000 < Date.now()) {
       dispatch(cleanCache({ endpoint }))
       APIClient.get(`${endpoint}`).then((response) => {
-        if (response && response.data && response.data.status === 200) {
-            dispatch(updateCache({ endpoint, response: response.data }))
-            dispatch(showSpinner(false))
-        } else if (response && response.data && response.data.status !== 200) {
-          setError(response.data.message)
-          dispatch(showSpinner(false))
-        } else {
-          setError(response.data.message)
-          dispatch(showSpinner(false))
-        }
+        handleResult(response, okCallback, APIErrorCallback)
       }).catch((error) => {
-          if (error.response) {
-            setError(error.response.data.message)
-            dispatch(showSpinner(false))
-          } else {
-            setError(error.message);
-            dispatch(showSpinner(false))
-          }
-        });
+        handleError(error, APIErrorCallback, errorCallback)
+      });
     } else {
       dispatch(showSpinner(false))
     }

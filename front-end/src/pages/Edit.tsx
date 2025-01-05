@@ -20,7 +20,8 @@ import { Type } from '../types/API/Extras';
 import { Item as Requirement } from "../types/API/Requirements";
 import { Item as Tag } from "../types/API/Tags";
 import { Item as Topic } from "../types/API/Topics";
-import APIClient from "../APIClient";
+import APIClient, { handleError, handleResult } from "../APIClient";
+import { APIErrorData, APISuccessData, GenericItem } from "../types/Generics";
 
 type Props = {
   editPageName: string;
@@ -51,31 +52,33 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
   const [search, setSearch] = useState("");
 
   const [fetched, setFetched] = useState(false);
-  const [APIError, setAPIError] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
+  const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    dispatch(showSpinner(true));
     APIClient.get(`${endpoint}?${parameters.join("&")}`).then((response) => {
-      if (response && response.status === 200) {
-        dispatch(setItems(response.data.data))
-        setFetched(true);
-      } else if (response && response.status !== 200) {
-        dispatch(toast({ header: response.data.error, body: response.data.message }));
-        setAPIError(response.data.message);
-        setFetched(true);
-      }
+      handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
-      if (error.response) {
-        setError(error.response.data.message)
-        dispatch(showSpinner(false))
-      } else {
-        setError(error.message);
-        dispatch(showSpinner(false))
-      }
+      handleError(error, APIErrorCallback, errorCallback)
     });
   }, [])
+
+  function okCallback(response: APISuccessData) {
+    dispatch(setItems(response.data as GenericItem[]))
+    setFetched(true);
+  }
+
+  function APIErrorCallback(response: APIErrorData) {
+    dispatch(toast({ header: response.error, body: response.message as string }));
+    setAPIError(response.message);
+    setFetched(true);
+  }
+
+  function errorCallback(error: string) {
+    setError(error);
+    setFetched(true);
+  }
 
   let body = <LoadingBar />
 

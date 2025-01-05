@@ -20,13 +20,13 @@ import { Item as Topic } from '../../types/API/Topics';
 import { Item as Tag } from '../../types/API/Tags';
 import { Item as Requirement } from '../../types/API/Requirements';
 import { APIErrorData, APISuccessData, RowObject } from '../../types/Generics';
-import APIClient from '../../APIClient';
+import APIClient, { handleError, handleResult } from '../../APIClient';
 
 type Props = {
   humanKey: string;
   show: boolean;
   setShow: (a: boolean) => void;
-  initialSelectedItems?: Array<Topic|Tag|Requirement>;
+  initialSelectedItems?: Array<Topic | Tag | Requirement>;
   endpoint: string;
   columns: Array<string>;
   updateKey: string;
@@ -45,34 +45,31 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
   const cache = useAppSelector(state => state.edit.cache)
 
   const [search, setSearch] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const initialSelectedItemIds = initialSelectedItems.map((item) => (item.id))
   const [selectedItemIds, setSelectedItemIds] = useState(initialSelectedItemIds);
 
+
+  function okCallback(response: APISuccessData) {
+    dispatch(updateCache({ endpoint, response: response }))
+  }
+
+  function APIErrorCallback(response: APIErrorData) {
+    setError(response.message as string)
+  }
+
+  function errorCallback(error: string) {
+    setError(error)
+  }
   function reloadCache() {
     dispatch(showSpinner(true))
     dispatch(cleanCache({ endpoint }))
     APIClient.get(`${endpoint}`).then((response) => {
-      if (response && response.data && response.data.status === 200) {
-          dispatch(updateCache({ endpoint, response: response.data }))
-          dispatch(showSpinner(false))
-      } else if (response && response.data && response.data.status !== 200) {
-        setError(response.data.message)
-        dispatch(showSpinner(false))
-      } else {
-        setError(response.data.message)
-        dispatch(showSpinner(false))
-      }
+      handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
-        if (error.response) {
-          setError(error.response.data.message)
-          dispatch(showSpinner(false))
-        } else {
-          setError(error.message);
-          dispatch(showSpinner(false))
-        }
-      });
+      handleError(error, APIErrorCallback, errorCallback)
+    });
   }
 
   useEffect(() => {
@@ -80,25 +77,10 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
     if (!(endpoint in cache) || cache[endpoint].time + 36000 < Date.now()) {
       dispatch(cleanCache({ endpoint }))
       APIClient.get(`${endpoint}`).then((response) => {
-        if (response && response.data && response.data.status === 200) {
-            dispatch(updateCache({ endpoint, response: response.data }))
-            dispatch(showSpinner(false))
-        } else if (response && response.data && response.data.status !== 200) {
-          setError(response.data.message)
-          dispatch(showSpinner(false))
-        } else {
-          setError(response.data.message)
-          dispatch(showSpinner(false))
-        }
+        handleResult(response, okCallback, APIErrorCallback)
       }).catch((error) => {
-          if (error.response) {
-            setError(error.response.data.message)
-            dispatch(showSpinner(false))
-          } else {
-            setError(error.message);
-            dispatch(showSpinner(false))
-          }
-        });
+        handleError(error, APIErrorCallback, errorCallback)
+      });
     } else {
       dispatch(showSpinner(false))
     }
@@ -110,6 +92,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
     body = <Alert variant="danger">Error: {error}</Alert>
   } else {
     if (endpoint in cache && cache[endpoint].data && cache[endpoint].data.status === 200) {
+      const data = (cache[endpoint].data as APISuccessData).data
       body = <Form>
         <Table responsive>
           <thead>
@@ -119,7 +102,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
             </tr>
           </thead>
           <tbody>
-            {(cache[endpoint].data as APISuccessData).data.map((item, index) => (getRenderRow(item as RowObject, index)))}
+            {(data as RowObject[]).map((item: RowObject, index: number) => (getRenderRow(item as RowObject, index)))}
           </tbody>
         </Table>
       </Form>

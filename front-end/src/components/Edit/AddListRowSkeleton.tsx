@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import { useDispatch } from 'react-redux'
-import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { addItem } from "../../stateSlices/EditSlice";
 
@@ -18,7 +17,9 @@ import { Type } from '../../types/API/Extras';
 import { Item as Requirement } from "../../types/API/Requirements";
 import { Item as Tag } from "../../types/API/Tags";
 import { Item as Topic } from "../../types/API/Topics";
-import APIClient from "../../APIClient";
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClient";
+import { APISuccessData, GenericItem } from "../../types/Generics";
+import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 
 
 type Props = {
@@ -41,25 +42,18 @@ export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, edit
   const [newItem, setNewItem] = useState(blankItem);
 
   function postItem() {
+    dispatch(showSpinner(true))
     APIClient.post(`${endpoint}`, newItem).then((response) => {
-      if (response && response.data && response.data.status === 200) {
-        console.log("io")
-        dispatch(addItem(response.data.data))
-        dispatch(toast({ header: "Item created", body: `Item "${response.data.data[humanKey]}" created.` }))
-        setNewItem(blankItem)
-      } else {
-        dispatch(toast({ header: response.data.error, body: response.data.message }))
-      }
-      dispatch(showSpinner(false))
+      handleResult(response, okCallback, APIErrorToastCallback)
     }).catch((error) => {
-      if (error.response) {
-        dispatch(toast({ header: error.response.data.error, body: error.response.data.message }))
-        dispatch(showSpinner(false))
-      } else {
-        dispatch(toast({ header: "UnhandledError", body: error.message }))
-        dispatch(showSpinner(false))
-      }
+      handleError(error, APIErrorToastCallback, errorToastCallback)
     });
+
+    function okCallback(response: APISuccessData) {
+      dispatch(addItem(response.data as GenericItem))
+      dispatch(toast({ header: "Item created", body: `Item "${(response.data as GenericItem)[humanKey]}" created.` }))
+      setNewItem(blankItem)
+    }
   }
 
   function updateNewItem(properties: object) {
@@ -69,7 +63,7 @@ export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, edit
 
   switch (editPageName) {
     case "Catalogues":
-      return <CatalogueAddListRow newItem={newItem as Catalogue} updateNewItem={updateNewItem} postItem={postItem}/>
+      return <CatalogueAddListRow newItem={newItem as Catalogue} updateNewItem={updateNewItem} postItem={postItem} />
     case "ExtraEntries":
       return <ExtraEntryAddListRow newItem={newItem as Extra} updateNewItem={updateNewItem} postItem={postItem} />
     case "ExtraTypes":

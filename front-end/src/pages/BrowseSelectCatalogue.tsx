@@ -8,7 +8,9 @@ import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { set, reset, sort } from "../stateSlices/CatalogueDataSlice";
 import LoadingBar from "../components/LoadingBar";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
-import APIClient from "../APIClient";
+import APIClient, { handleError, handleResult } from "../APIClient";
+import { APIErrorData, APISuccessData } from "../types/Generics";
+import { Item as Catalogue } from "../types/API/Catalogues";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -25,34 +27,35 @@ export default function BrowseSelectCatalogue() {
   }, []);
 
   const [fetched, setFetched] = useState(false);
-  const [APIError, setAPIError] = useState(null);
-  const [error, setError] = useState(null);
+  const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   useEffect(() => {
+    dispatch(showSpinner(true))
     dispatch(reset());
-    APIClient.get( `catalogues`).then((response) => {
-      if (response && response.data && response.data.status === 200) {
-        dispatch(set(response.data.data));
-        dispatch(sort());
-        setFetched(true);
-      } else if (response && response.data && response.data.status !== 200) {
-        setAPIError(response.data.message)
-        setFetched(true);
-      } else {
-        setAPIError(response.data.message)
-        setFetched(true);
-      }
+    APIClient.get(`catalogues`).then((response) => {
+      handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
-        if (error.response) {
-          setAPIError(error.response.data.message);
-          setFetched(true);
-        } else {
-          setError(error.message);
-          setFetched(true);
-        }
-      });
+      handleError(error, APIErrorCallback, errorCallback)
+    });
   }, [])
+
+  function okCallback(response: APISuccessData) {
+    dispatch(set(response.data as Catalogue[]));
+    dispatch(sort());
+    setFetched(true);
+  }
+
+  function APIErrorCallback(response: APIErrorData) {
+    setAPIError(response.message)
+    setFetched(true);
+  }
+
+  function errorCallback(error: string) {
+    setError(error)
+    setFetched(true);
+  }
 
   let body = <LoadingBar />
 
@@ -63,8 +66,8 @@ export default function BrowseSelectCatalogue() {
   } else if (fetched) {
     if (catalogueData.length > 0) {
       body = <Stack gap={2} className="col-md-5 mx-auto"><ListGroup>
-      {catalogueData.map((catalogue, index) => (<SelectCatalogueItem key={index} catalogue={catalogue} />))}
-    </ListGroup></Stack>
+        {catalogueData.map((catalogue, index) => (<SelectCatalogueItem key={index} catalogue={catalogue} />))}
+      </ListGroup></Stack>
     } else {
       body = <Alert variant="warning">No catalogues found. Ask your administrator to add a requirement catalogue</Alert>
 
