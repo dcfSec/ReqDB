@@ -1,4 +1,4 @@
-module.exports = function (api) {
-    api.cache(true);
-    return { }
-  }
+export default function (api) {
+  api.cache(true);
+  return {}
+}
