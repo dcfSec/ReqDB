@@ -4,6 +4,7 @@ import { Type } from './API/Extras';
 import { Item as Requirement } from "./API/Requirements";
 import { Item as Tag } from "./API/Tags";
 import { Item as Topic } from "./API/Topics";
+import { Item as Comment } from "./API/Comments";
 
 export interface Row {
   id: number
