@@ -4,7 +4,7 @@ Path mapping for the API.
 Maps classes to the API paths
 """
 
-from api.appDefinition import api_bp, api, db, apiUnauthenticated
+from api.appDefinition import api_bp, api, db, configAPI
 
 from api.endpoints.catalogues import Catalogue, Catalogues
 from api.endpoints.comments import Comment, Comments
@@ -47,7 +47,7 @@ api.add_resource(Coffee, '/coffee')
 
 api.add_resource(Audit, '/audit/<string:object>/<int:id>', '/audit/<string:object>')
 
-apiUnauthenticated.add_resource(OAuthConfig, '/oauth')
+configAPI.add_resource(OAuthConfig, '/oauth')
 
 
 
