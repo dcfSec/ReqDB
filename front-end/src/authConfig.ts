@@ -28,8 +28,8 @@ if (clientID === "" || tenantID === "") {
         tenantID: ""
       }
     });
-  sessionStorage.setItem("key", config.clientID);
-  sessionStorage.setItem("key", config.tenantID);
+  sessionStorage.setItem("clientID", config.clientID);
+  sessionStorage.setItem("tenantID", config.tenantID);
   clientID = config.clientID;
   tenantID = config.tenantID;
 }
