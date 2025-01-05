@@ -1,7 +1,7 @@
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
 
-import { showToast } from "../stateSlices/NotificationToastSlice";
+import { removeToast } from "../stateSlices/NotificationToastSlice";
 import { ErrorMessage } from './MiniComponents';
 import { useAppSelector, useAppDispatch } from "../hooks";
 
@@ -13,17 +13,7 @@ import { useAppSelector, useAppDispatch } from "../hooks";
  */
 export default function NotificationToast() {
   const dispatch = useAppDispatch()
-  const visible = useAppSelector(state => state.notificationToast.visible)
-  const header = useAppSelector(state => state.notificationToast.header)
-  const body = useAppSelector(state => state.notificationToast.body)
-
-  let htmlBody = <></>
-
-  htmlBody = ErrorMessage(body)
-
-  function close() {
-    dispatch(showToast(false))
-  }
+  const toasts = useAppSelector(state => state.notificationToast.toasts)
 
   return (
     <ToastContainer
@@ -31,14 +21,16 @@ export default function NotificationToast() {
       position="top-center"
       style={{ zIndex: 9999, position: "fixed" }}
     >
-      <Toast onClose={close} show={visible} autohide delay={3000}>
+      {toasts.map((toast, index) => (
+      <Toast key={`toast-${index}`} onClose={() => {dispatch(removeToast(index))}} show={true} autohide delay={3000}>
         <Toast.Header>
-          <strong className="me-auto">{header}</strong>
+          <strong className="me-auto">{toast.header}</strong>
         </Toast.Header>
         <Toast.Body>
-          {htmlBody}
+          {ErrorMessage(toast.body)}
         </Toast.Body>
       </Toast>
+      ))}
     </ToastContainer>
   );
 }

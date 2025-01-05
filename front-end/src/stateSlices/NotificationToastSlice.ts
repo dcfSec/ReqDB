@@ -2,15 +2,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 
 interface NotificationToastState {
-  visible: boolean;
+  toasts: Toast[],
+}
+
+interface Toast {
   header: string;
   body: string;
 }
 
 const initialState: NotificationToastState = {
-  visible: false,
-  header: "",
-  body: ""
+  toasts: [],
 }
 
 export const NotificationToastSlice = createSlice({
@@ -18,23 +19,21 @@ export const NotificationToastSlice = createSlice({
   initialState,
   reducers: {
     reset: () => initialState,
-    showToast: (state, action: PayloadAction<boolean>) => {
-      state.visible = action.payload
-    },
-    setToastHeader: (state, action: PayloadAction<string>) => {
-      state.header = action.payload
-    },
-    setToastBody: (state, action: PayloadAction<string>) => {
-      state.body = action.payload
+    removeToast: (state, action: PayloadAction<number>) => {
+      const tmp = [...state.toasts]
+      tmp.splice(action.payload, 1);
+      state.toasts = [...tmp]
     },
     toast: (state, action: PayloadAction<{ header: string; body: string }>) => {
-      state.header = action.payload.header
-      state.body = action.payload.body
-      state.visible = true
+      const toast = {
+        header: action.payload.header,
+        body: action.payload.body
+      }
+      state.toasts = [...state.toasts, toast]
     }
   }
 })
 
-export const { showToast, setToastHeader, setToastBody, toast } = NotificationToastSlice.actions
+export const { removeToast, toast } = NotificationToastSlice.actions
 
 export default NotificationToastSlice.reducer
