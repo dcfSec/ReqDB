@@ -15,33 +15,47 @@ import {
   EventType,
   EventMessage,
   AuthenticationResult,
+  InteractionRequiredAuthError,
 } from "@azure/msal-browser";
 import APIClient from './APIClient';
 
-  const msalInstance  = new PublicClientApplication(msalConfig);
-  msalInstance.initialize().then(() => {
+const msalInstance = new PublicClientApplication(msalConfig);
+msalInstance.initialize().then(() => {
 
-    const accounts = msalInstance.getAllAccounts();
-    if (accounts.length > 0) {
-        msalInstance.setActiveAccount(accounts[0]);
+  const accounts = msalInstance.getAllAccounts();
+  if (accounts.length > 0) {
+    msalInstance.setActiveAccount(accounts[0]);
+  }
+  msalInstance.addEventCallback((event: EventMessage) => {
+    if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
+      const payload = event.payload as AuthenticationResult;
+      const account = payload.account;
+      msalInstance.setActiveAccount(account);
     }
-    msalInstance.addEventCallback((event: EventMessage) => {
-        if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
-            const payload = event.payload as AuthenticationResult;
-            const account = payload.account;
-            msalInstance.setActiveAccount(account);
-        }
-    });
-    APIClient.interceptors.request.use(async (config) => {
-      const account = msalInstance.getActiveAccount();
-      if (account) {
-          const tokenResponse = await msalInstance.acquireTokenSilent({
-              account: account,
-              scopes: protectedResources.ReqDB.scopes,
+  });
+  APIClient.interceptors.request.use(async (config) => {
+    const account = msalInstance.getActiveAccount();
+    if (account) {
+      try {
+        const tokenResponse = await msalInstance.acquireTokenSilent({
+          account: account,
+          scopes: protectedResources.ReqDB.scopes,
+        });
+        config.headers.Authorization = `Bearer ${tokenResponse.accessToken}`;
+      } catch (error) {
+        if (error instanceof InteractionRequiredAuthError) {
+          // fallback to interaction when silent call fails
+          const response = await msalInstance.acquireTokenPopup({
+            account: account,
+            scopes: protectedResources.ReqDB.scopes,
           });
-          config.headers.Authorization = `Bearer ${tokenResponse.accessToken}`;
+          config.headers.Authorization = `Bearer ${response.accessToken}`;
+        } else {
+          throw error;
+        }
       }
-      return config;
+    }
+    return config;
   });
 });
 
