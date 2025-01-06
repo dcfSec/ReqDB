@@ -3,7 +3,7 @@ from marshmallow import EXCLUDE, post_load, validate
 from api.appDefinition import ma
 from marshmallow_sqlalchemy import fields
 
-from api.models import ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue, Comment
+from api.models import ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue, Comment, CatalogueTopic, RequirementTag
 
 
 class ExtraEntrySchema(ma.SQLAlchemyAutoSchema):
@@ -231,3 +231,19 @@ class CommentSchema(ma.SQLAlchemyAutoSchema):
     requirement = fields.Nested(
         nested="RequirementSchema", only=["id", "title"]
     )
+
+class RequirementTagSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = RequirementTag
+        include_relationships = True
+        load_instance = True
+        include_fk = True
+        unknown = EXCLUDE
+
+class CatalogueTopicSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = CatalogueTopic
+        include_relationships = True
+        load_instance = True
+        include_fk = True
+        unknown = EXCLUDE

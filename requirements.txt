@@ -9,4 +9,3 @@ python-dotenv
 gunicorn
 pyodbc
 Flask-Migrate
-SQLAlchemy-Continuum

@@ -22,7 +22,6 @@ import APIClient from '../APIClient';
 
 type Props = {
   auditPageName: string;
-  headers: Array<string>;
   searchFields: Array<string>;
   endpoint: string;
 }
@@ -32,7 +31,7 @@ type Props = {
  * @param {object} props Props for the component: auditPageName, humanKey, headers, blankItem, searchFields, endpoint, parameters
  * @returns Parent component for all editor views
  */
-function AuditParent({ auditPageName, headers, searchFields, endpoint }: Props) {
+function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
   const dispatch = useAppDispatch()
   const items = useAppSelector(state => state.audit.items)
 
@@ -60,14 +59,14 @@ function AuditParent({ auditPageName, headers, searchFields, endpoint }: Props) 
         setFetched(true);
       }
     }).catch((error) => {
-        if (error.response) {
-          setError(error.response.data.message)
-          dispatch(showSpinner(false))
-        } else {
-          setError(error.message);
-          dispatch(showSpinner(false))
-        }
-      });
+      if (error.response) {
+        setError(error.response.data.message)
+        dispatch(showSpinner(false))
+      } else {
+        setError(error.message);
+        dispatch(showSpinner(false))
+      }
+    });
   }, [])
 
   let body = <LoadingBar />
@@ -88,13 +87,14 @@ function AuditParent({ auditPageName, headers, searchFields, endpoint }: Props) 
           </Dropdown>
         </Col>
       </Row >
-      <Row><Col><DataTable headers={["Timestamp", "User", "Action", ...headers, "Parent"]}>
-        {items.map((item, /*index*/) => (
+      <Row><Col><DataTable headers={["Timestamp", "User", "Action", "Target ID", "Data", "Parent"]}>
+        {items.length > 0 ? items.map((item, /*index*/) => (
           renderItem(item, /*index*/)
-        ))}
+        )) : <tr><td colSpan={6} style={{ textAlign: 'center' }}>No audit entries</td></tr>}
       </DataTable></Col></Row>
     </>
   }
+
   function onSearch(s: string) {
     setSearch(s)
   }
@@ -102,12 +102,11 @@ function AuditParent({ auditPageName, headers, searchFields, endpoint }: Props) 
   function renderItem(item: Item, /*index: number*/) {
     if (item) {
       return <AuditRow
-        key={item.transaction_id}
+        key={item.id}
         /*index={index}*/
         item={item}
         search={search}
         searchFields={searchFields}
-        auditPageName={auditPageName}
       ></AuditRow>
     } else {
       return null
@@ -130,14 +129,8 @@ function AuditParent({ auditPageName, headers, searchFields, endpoint }: Props) 
  */
 export function AuditTags() {
   return <AuditParent auditPageName="Tags"
-    headers={[
-      "Tag ID",
-      "Name",
-    ]}
     searchFields={[
-      "verb",
-      "name",
-      "transaction.user_id"
+      "timestamp", "user", "action", "target_id", "data.name", "parent"
     ]}
     endpoint="tags"
   />
@@ -150,16 +143,10 @@ export function AuditTags() {
  */
 export function AuditCatalogues() {
   return <AuditParent auditPageName="Catalogues"
-    headers={[
-      "Catalogue ID",
-      "Title",
-      "Description",
-    ]}
     searchFields={[
-      "verb",
-      "title",
-      "description",
-      "transaction.user_id"
+      "timestamp", "user", "action", "target_id", "parent",
+      "data.title",
+      "data.description",
     ]}
     endpoint="catalogues"
   />
@@ -172,15 +159,9 @@ export function AuditCatalogues() {
  */
 export function AuditTopics() {
   return <AuditParent auditPageName="Topics"
-    headers={[
-      "Topic ID",
-      "Key",
-      "Title",
-      "Description",
-    ]}
-
     searchFields={[
-      "verb", "key", "title", "description"
+      "timestamp", "user", "action", "target_id", "parent",
+      "data.key", "data.title", "data.description"
     ]}
     endpoint="topics"
   />
@@ -193,16 +174,9 @@ export function AuditTopics() {
  */
 export function AuditRequirements() {
   return <AuditParent auditPageName="Requirements"
-    headers={[
-      "Requirement ID",
-      "Key",
-      "Title",
-      "Description",
-      "Parent",
-      "Visible"
-    ]}
     searchFields={[
-      "verb", "key", "title", "description"
+      "timestamp", "user", "action", "target_id", "parent",
+      "data.key", "data.title", "data.description"
     ]}
     endpoint="requirements"
   />
@@ -215,15 +189,9 @@ export function AuditRequirements() {
  */
 export function AuditExtraTypes() {
   return <AuditParent auditPageName="ExtraTypes"
-    headers={[
-      "ExtraType ID",
-      "Title",
-      "Description",
-      "Type",
-    ]}
-
     searchFields={[
-      "verb", "title", "description"
+      "timestamp", "user", "action", "target_id", "parent",
+      "data.title", "data.description"
     ]}
     endpoint="extraTypes"
   />
@@ -236,17 +204,11 @@ export function AuditExtraTypes() {
  */
 export function AuditExtraEntries() {
   return <AuditParent auditPageName="ExtraEntries"
-    headers={[
-      "ExtraEntry ID",
-      "Content",
-      "ExtraType ID",
-      "Requirement ID",
-    ]}
-
     searchFields={[
-      "content",
-      "extraType.title",
-      "requirement.key"
+      "timestamp", "user", "action", "target_id", "parent",
+      "data.content",
+      "data.extraType.title",
+      "data.requirement.key"
     ]}
     endpoint="extraEntries"
   />
@@ -259,18 +221,11 @@ export function AuditExtraEntries() {
  */
 export function AuditComments() {
   return <AuditParent auditPageName="Comments"
-    headers={[
-      "Comment ID",
-      "Comment",
-      "Author",
-      "Completed",
-      "Requirement ID",
-    ]}
-
     searchFields={[
-      "comment",
-      "author",
-      "requirement.key"
+      "timestamp", "user", "action", "target_id", "parent",
+      "data.comment",
+      "data.author",
+      "data.requirement.key"
     ]}
     endpoint="comments"
   />

@@ -8,6 +8,12 @@ from api.models import (
     Topic,
     Catalogue,
     Comment,
+    Audit,
+    RequirementTag,
+    CatalogueTopic,
+    Base,
+    User,
 )
+import api.audit
 
 migrate = Migrate(app, db)

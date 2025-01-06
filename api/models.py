@@ -1,11 +1,6 @@
 from api.appDefinition import db
 from sqlalchemy.sql import functions
-from sqlalchemy.orm import configure_mappers, backref
-from sqlalchemy_continuum.plugins import FlaskPlugin
-from sqlalchemy_continuum import make_versioned
-from api.helper import getUserUPN
-
-make_versioned(plugins=[FlaskPlugin(current_user_id_factory=getUserUPN)])
+from sqlalchemy.orm import backref
 
 class User(db.Model):
     id = db.Column(db.String(200), primary_key=True)
@@ -184,4 +179,15 @@ class Comment(Base):
     def __repr__(self):
         return f'<Comment "{self.author}: {self.comment[:20]}">'
 
-configure_mappers()
+
+class Audit(Base):
+    timestamp = db.Column(db.DateTime(timezone=True), server_default=functions.now())
+    user = db.Column(db.String(200))
+    table = db.Column(db.String(200))
+    target_id = db.Column(db.Integer)
+    action = db.Column(db.Integer)
+    data = db.Column(db.JSON, nullable=True)
+
+    def __repr__(self):
+        return f'<Audit "{self.verb}">'
+

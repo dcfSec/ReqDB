@@ -8,25 +8,17 @@ from api.models import (
     Topic,
     Catalogue,
     Comment,
+    Audit as AuditModel,
 )
 
-from api.versionSchemas import (
-    TagVersionSchema,
-    ExtraEntryVersionSchema,
-    ExtraTypeVersionSchema,
-    RequirementVersionSchema,
-    TagVersionSchema,
-    TopicVersionSchema,
-    CatalogueVersionSchema,
-    CommentVersionSchema,
-)
 from api.endpoints.base import BaseResource
 
-from sqlalchemy_continuum import version_class
+from api.audit import AuditSchema
 
 from api.helper import checkAccess
 
 from flask_jwt_extended import get_jwt
+from sqlalchemy import and_
 
 
 class Audit(BaseResource):
@@ -48,29 +40,38 @@ class Audit(BaseResource):
         checkAccess(get_jwt(), ["Requirements.Auditor", "Comments.Auditor"])
 
         modelMapping = {
-            "extraEntries": (ExtraEntry, ExtraEntryVersionSchema, "Requirements.Auditor"),
-            "extraTypes": (ExtraType, ExtraTypeVersionSchema, "Requirements.Auditor"),
-            "requirements": (Requirement, RequirementVersionSchema, "Requirements.Auditor"),
-            "tags": (Tag, TagVersionSchema, "Requirements.Auditor"),
-            "topics": (Topic, TopicVersionSchema, "Requirements.Auditor"),
-            "catalogues": (Catalogue, CatalogueVersionSchema, "Requirements.Auditor"),
-            "comments": (Comment, CommentVersionSchema, "Comments.Auditor"),
+            "extraEntries": (ExtraEntry, "Requirements.Auditor"),
+            "extraTypes": (ExtraType, "Requirements.Auditor"),
+            "requirements": (Requirement, "Requirements.Auditor"),
+            "tags": (Tag, "Requirements.Auditor"),
+            "topics": (Topic, "Requirements.Auditor"),
+            "catalogues": (Catalogue, "Requirements.Auditor"),
+            "comments": (Comment, "Comments.Auditor"),
         }
 
         if object not in modelMapping.keys():
             abort(404)
 
-        checkAccess(get_jwt(), [modelMapping[object][2]])
-
-        version = version_class(modelMapping[object][0])
+        checkAccess(get_jwt(), [modelMapping[object][1]])
 
         if id is not None:
-            versions = version.query.where(version.id == id).all()
+            versions = AuditModel.query.filter(
+                and_(
+                    AuditModel.table == modelMapping[object][1],
+                    AuditModel.target_id == id,
+                )
+            ).all()
             if len(versions) == 0:
                 abort(404)
         else:
-            versions = version.query.all()
+            versions = AuditModel.query.filter(
+                AuditModel.table == modelMapping[object][0].__tablename__
+            ).all()
 
-        schema = modelMapping[object][1](many=True)
-
-        return {"status": 200, "data": sorted(schema.dump(versions), key=lambda x: x["transaction"]['issued_at'], reverse=True)}
+        schema = AuditSchema(many=True)
+        return {
+            "status": 200,
+            "data": sorted(
+                schema.dump(versions), key=lambda x: x["timestamp"], reverse=True
+            ),
+        }
