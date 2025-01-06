@@ -183,8 +183,8 @@ class Comment(Base):
 class Audit(Base):
     timestamp = db.Column(db.DateTime(timezone=True), server_default=functions.now())
     user = db.Column(db.String(200))
-    table = db.Column(db.String(200))
-    target_id = db.Column(db.Integer)
+    table = db.Column(db.String(200), index=True)
+    target_id = db.Column(db.Integer, index=True)
     action = db.Column(db.Integer)
     data = db.Column(db.JSON, nullable=True)
 
