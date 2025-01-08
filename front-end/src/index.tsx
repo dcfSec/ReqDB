@@ -45,11 +45,10 @@ msalInstance.initialize().then(() => {
       } catch (error) {
         if (error instanceof InteractionRequiredAuthError) {
           // fallback to interaction when silent call fails
-          const response = await msalInstance.acquireTokenPopup({
+          msalInstance.acquireTokenRedirect({
             account: account,
             scopes: protectedResources.ReqDB.scopes,
           });
-          config.headers.Authorization = `Bearer ${response.accessToken}`;
         } else {
           throw error;
         }
