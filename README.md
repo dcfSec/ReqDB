@@ -29,38 +29,35 @@ To kickstart the ReqDB you can use the [ReqDBContentCreator](https://github.com/
 
 ReqDB can be deployed everywhere where python is supported as runtime environment.
 
-```
-pip install -r requirements.txt
+#### Install and Build
 
+```sh
+pip install -r requirements.txt
 
 cd front-end
 npm install
 npm run build
 ```
 
+#### Run
+
+```sh
+gunicorn app:app
+```
+
 ### Docker
 
-ReqDB can be deployed with our docker image. Currently you need to build it yourself until upload it to docker hub:
+ReqDB can be deployed with our docker image. The image is available at [docker hub (dcfsec/reqdb)](https://hub.docker.com/r/dcfsec/reqdb):
 
-* Build: `docker build -t reqdb .`
-* Run: `docker run --env-file ./.env -p 8080:8080` (Use the `template.env` as a template for the environment variable file)
+* Pull: `docker pull dcfsec/reqdb`
+* Run: `docker run dcfsec/reqdb --env-file ./.env -p 8000:8000` (Use the `template.env` as a template for the environment variable file)
 
-### Azure App Service
-
-`deployZip.sh` is a simple deployment script to deploy the app to an Azure App Service.
-
-For deployment following environment variables must be set:
-
-```
-RESOURCE_GROUP_NAME=ReqDB  # Resource group for zip deployment with deployZip.sh
-APP_SERVICE_NAME=ReqDB     # App Service for zip deployment with deployZip.sh
-```
 
 ## Configuration
 
 The base configuration is done  via environment variables:
 
-```
+```sh
 FLASK_APP=ReqDB            # Name of the Flask app
 FLASK_ENV=production       # Flask environment  production or development
 SECRET_KEY=CHANGEME        # The secret key for flask
@@ -103,7 +100,7 @@ The application in Azure Entra needs to be configured to allow users to access i
 
 1. Clone the repository: `git clone git@github.com:dcfSec/ReqDB.git; cd ReqDB`
 2. Install the backend requirements: `pip install -r requirements.tx`
-3. Start the backend: `flask run flask --app app run`
+3. Start the backend: `flask run flask --app app run --reload --with-threads`
 4. Install the frontend requirements: `cd front-end; npm install`
 5. Start the frontend for development `npm run start`
 
