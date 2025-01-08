@@ -18,6 +18,7 @@ python-dotenv = "^1.0.1"
 gunicorn = "^23.0.0"
 pyodbc = "^5.2.0"
 flask-migrate = "^4.0.7"
+psycopg2-binary = "^2.9.10"
 
 
 [build-system]
