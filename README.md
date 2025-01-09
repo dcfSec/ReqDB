@@ -25,6 +25,9 @@ To kickstart the ReqDB you can use the [ReqDBContentCreator](https://github.com/
 
 ## Deployment
 
+ReqDB is a Flask plus React application with any database in the background which is [supported by sqlalchemy](https://docs.sqlalchemy.org/en/20/core/engines.html).
+Using ReqDB can be as simple as deploying it locally with a sqlite DB or as a web service with a e.g. postgres DB.
+
 ### Manual
 
 ReqDB can be deployed everywhere where python is supported as runtime environment.
@@ -60,14 +63,16 @@ ReqDB can be deployed with our docker image. The image is available at [docker h
 The base configuration is done via environment variables:
 
 ```sh
-FLASK_APP=ReqDB            # Name of the Flask app
-FLASK_ENV=production       # Flask environment  production or development
-SECRET_KEY=CHANGEME        # The secret key for flask
+FLASK_APP=ReqDB                    # Name of the Flask app
+FLASK_ENV=production               # Flask environment: production or development
+SECRET_KEY=CHANGEME                # The secret key for Flask
+                                   # See https://flask.palletsprojects.com/en/stable/config/#SECRET_KEY for details
 
-DATABASE_URI=app.sqlite    # Database URI for sqlalchemy (See https://docs.sqlalchemy.org/en/20/core/engines.html for details)
+DATABASE_URI=sqlite:///app.sqlite  # Database URI for sqlalchemy
+                                   # See https://docs.sqlalchemy.org/en/20/core/engines.html for details
 
-OAUTH_APP_CLIENT_ID=xxx    # Client ID for oauth (Azure Entra)
-OAUTH_APP_TENANT=xxx       # Azure Tenant ID
+OAUTH_APP_CLIENT_ID=xxx            # Client ID for oauth (Azure Entra)
+OAUTH_APP_TENANT=xxx               # Azure Tenant ID
 ```
 
 ### Additional static configuration
