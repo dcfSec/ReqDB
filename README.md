@@ -72,7 +72,7 @@ OAUTH_APP_TENANT=xxx       # Azure Tenant ID
 
 ### Additional static configuration
 
-The apperance of the login and index page can be customized with following environment variables:
+The appearance of the login and index page can be customized with following environment variables:
 
 ```sh
 STATIC_HOME_TITLE=TITLE    # Title displayed in the welcome screen. Defaults to "Welcome to ReqDB"
