@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {LinkContainer} from 'react-router-bootstrap'
 import { appRoles } from "../authConfig";
 import Markdown from 'react-markdown'
-import { homeTitle, preMOTD, postMOTD } from "../static";
+import { staticConfig } from "../static";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { useEffect } from "react";
@@ -30,8 +30,8 @@ export default function Home() {
     <Row>
       <Col>
         <Stack gap={2} className="col-md-3 mx-auto">
-          <h2>{homeTitle}</h2>
-          <Markdown>{preMOTD}</Markdown>
+          <h2>{staticConfig.home.title}</h2>
+          <Markdown>{staticConfig.home.MOTD.pre}</Markdown>
           <LinkContainer to="Browse"><Button variant="outline-secondary">Browse Catalogues</Button></LinkContainer>
           {roles.includes(appRoles.Comments.Moderator) ?
              <LinkContainer to="Comments"><Button variant="outline-secondary">Comments</Button></LinkContainer>
@@ -69,7 +69,7 @@ export default function Home() {
                   : null}
               </Dropdown.Menu>
             </Dropdown> : null}
-          <Markdown>{postMOTD}</Markdown>
+          <Markdown>{staticConfig.home.MOTD.post}</Markdown>
         </Stack>
       </Col>
     </Row>

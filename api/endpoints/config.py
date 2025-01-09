@@ -1,7 +1,8 @@
 from flask_restful import Resource
 from os import getenv
 
-class OAuthConfig(Resource):
+
+class Static(Resource):
     def get(self):
         """Gets the oauth config for login
 
@@ -9,10 +10,19 @@ class OAuthConfig(Resource):
         """
 
         return {
-            'status': 200,
-            'data': {
-                "provider": "Entra ID",
-                "tenant_id": getenv('OAUTH_APP_TENANT'),
-                "client_id": getenv('OAUTH_APP_CLIENT_ID')
-            }
+            "status": 200,
+            "data": {
+                "oauth": {
+                    "provider": "Entra ID",
+                    "tenant_id": getenv("OAUTH_APP_TENANT"),
+                    "client_id": getenv("OAUTH_APP_CLIENT_ID"),
+                },
+                "home": {
+                    "title": getenv("STATIC_HOME_TITLE", "Welcome to ReqDB"),
+                    "MOTD": {
+                        "pre": getenv("STATIC_HOME_MOTD_PRE", ""),
+                        "post": getenv("STATIC_HOME_MOTD_POST", ""),
+                    },
+                },
+            },
         }

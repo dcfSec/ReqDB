@@ -55,7 +55,9 @@ ReqDB can be deployed with our docker image. The image is available at [docker h
 
 ## Configuration
 
-The base configuration is done  via environment variables:
+### Base Configuration
+
+The base configuration is done via environment variables:
 
 ```sh
 FLASK_APP=ReqDB            # Name of the Flask app
@@ -66,6 +68,16 @@ DATABASE_URI=app.sqlite    # Database URI for sqlalchemy (See https://docs.sqlal
 
 OAUTH_APP_CLIENT_ID=xxx    # Client ID for oauth (Azure Entra)
 OAUTH_APP_TENANT=xxx       # Azure Tenant ID
+```
+
+### Additional static configuration
+
+The apperance of the login and index page can be customized with following environment variables:
+
+```sh
+STATIC_HOME_TITLE=TITLE    # Title displayed in the welcome screen. Defaults to "Welcome to ReqDB"
+STATIC_HOME_MOTD_PRE=MOTD  # Displays text below the welcome title and before the menu selection. Markdown is supported. Default is empty
+STATIC_HOME_MOTD_POST=MOTD # Displays text after the menu selection. Markdown is supported. Default is empty
 ```
 
 ## Azure Entra Configuration

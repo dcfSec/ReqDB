@@ -4,37 +4,12 @@
  */
 
 import { LogLevel } from "@azure/msal-browser";
-
-let clientID = sessionStorage.getItem("clientID") || "";
-let tenantID = sessionStorage.getItem("tenantID") || "";
-
-if (clientID === "" || tenantID === "") {
-  const config = await fetch('/api/config/oauth').then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-    .then(data => {
-      return {
-        clientID: data.data.client_id,
-        tenantID: data.data.tenant_id
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      return {
-        clientID: "",
-        tenantID: ""
-      }
-    });
-  sessionStorage.setItem("clientID", config.clientID);
-  sessionStorage.setItem("tenantID", config.tenantID);
-  clientID = config.clientID;
-  tenantID = config.tenantID;
-}
+import { staticConfig } from "./static";
 
 
+
+const clientID = staticConfig.oauth.client_id
+const tenantID = staticConfig.oauth.tenant_id
 
 
 /**
