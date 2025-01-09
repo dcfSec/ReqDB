@@ -40,9 +40,13 @@ export const UserSlice = createSlice({
       localStorage.setItem('darkMode', JSON.stringify(state.preferences.darkMode));
       document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", state.preferences.darkMode ? "dark" : "light");
     },
+    syncLocalStorage: (state, action: PayloadAction<boolean>) => {
+      state.preferences.darkMode = action.payload
+      document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", action.payload ? "dark" : "light");
+    },
   }
 })
 
-export const { setName, setRoles, setDarkMode, toggleDarkMode } = UserSlice.actions
+export const { setName, setRoles, setDarkMode, toggleDarkMode, syncLocalStorage } = UserSlice.actions
 
 export default UserSlice.reducer

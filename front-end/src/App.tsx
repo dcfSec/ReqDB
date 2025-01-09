@@ -1,42 +1,40 @@
 import './App.css';
 import { MsalProvider, AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
-
 import { Router, LoginRouter } from './components/Router';
-import { useAppDispatch, useAppSelector } from './hooks';
-import { setRoles, setName } from "./stateSlices/UserSlice";
+import { useAppDispatch } from './hooks';
+import { setRoles, setName, syncLocalStorage } from "./stateSlices/UserSlice";
 
 import {
   IPublicClientApplication,
 } from "@azure/msal-browser";
+import store from './store';
 
-const MainContent = () => {
-    const dispatch = useAppDispatch()
+function MainContent() {
 
-  const darkMode = useAppSelector(state => state.user.preferences.darkMode)
-  document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", darkMode ? "dark" : "light");
-  
+  const dispatch = useAppDispatch()
+
   const { instance } = useMsal();
   const account = instance.getActiveAccount();
-            if (account) {
-              if (account.idTokenClaims && account.idTokenClaims['roles']) {
-                dispatch(setRoles(account.idTokenClaims['roles']));
-              }
-              if (account.username) {
-                dispatch(setName(account.username));
-              }
-            }
+  if (account) {
+    if (account.idTokenClaims && account.idTokenClaims['roles']) {
+      dispatch(setRoles(account.idTokenClaims['roles']));
+    }
+    if (account.username) {
+      dispatch(setName(account.username));
+    }
+  }
 
-return (<>
-  <AuthenticatedTemplate>
-    {account ? (
-      <Router />
-    ) : null}
-  </AuthenticatedTemplate>
-  <UnauthenticatedTemplate>
-    <LoginRouter />
-  </UnauthenticatedTemplate>
-</>
-);
+  return (<>
+    <AuthenticatedTemplate>
+      {account ? (
+        <Router />
+      ) : null}
+    </AuthenticatedTemplate>
+    <UnauthenticatedTemplate>
+      <LoginRouter />
+    </UnauthenticatedTemplate>
+  </>
+  );
 };
 
 type Props = {
@@ -52,3 +50,11 @@ function App({ instance }: Props) {
 }
 
 export default App;
+
+window.addEventListener('storage', function (event) {
+  if (event.key === "darkMode") {
+    const dispatch = store.dispatch;
+    const darkMode = store.getState().user.preferences.darkMode
+    dispatch(syncLocalStorage(JSON.parse(localStorage.getItem('darkMode') || String(darkMode))))
+  }
+});

@@ -58,6 +58,8 @@ msalInstance.initialize().then(() => {
   });
 });
 
+const darkMode = JSON.parse(localStorage.getItem('darkMode') || "false") || false
+document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", darkMode ? "dark" : "light");
 const rootElement = document.getElementById('root');
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
