@@ -20,6 +20,7 @@ export interface Row {
 export interface BrowseState {
   data: Catalogue | null
   title: string;
+  description: string;
   status: string;
   search: string;
   rows: {

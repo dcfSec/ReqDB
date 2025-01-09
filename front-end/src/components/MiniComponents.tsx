@@ -9,6 +9,7 @@ import store from '../store'
 import { Button } from "react-bootstrap";
 import { JSX } from 'react';
 import { Item as Topic } from '../types/API/Topics';
+import { Item as Requirement } from '../types/API/Requirements';
 import { BrowseState, Row } from '../types/Generics';
 
 type SearchFunction = (a: string) => void;
@@ -143,55 +144,60 @@ export function ErrorMessage(message: string | Array<string> | Record<string, Ar
  * @param {Object} item A requirement
  */
 export async function buildRows(extraHeaders: object, tagFilterItems: Array<string>, topics: Array<Topic>, item: Topic, requirements: Array<Row> = [], selected: { [key: string]: boolean } = {}, visible: { [key: string]: boolean } = {}, root: boolean = true) {
-  const dispatch = store.dispatch
-  const topicFilterItems = store.getState().browse.topics.filterItems
+  const dispatch = store.dispatch;
+  const topicFilterItems = store.getState().browse.topics.filterItems;
 
-  if ('requirements' in item) {
-    item.requirements.forEach(requirement => {
-      const tags: Array<string> = []
-      if (requirement.visible === true) {
-        if (requirement.tags.length == 0 && !tagFilterItems.includes("No Tags")) {
-          tagFilterItems.push("No Tags")
-        }
-        requirement.tags.forEach(tag => {
-          tags.push(tag.name)
-          if (!tagFilterItems.includes(tag.name)) {
-            tagFilterItems.push(tag.name)
-          }
-        });
-        const base = {
-          id: requirement.id,
-          Tags: tags,
-          Topics: [...topics],
-          Key: requirement.key,
-          Title: requirement.title,
-          Description: requirement.description,
-          Comments: ('comments' in requirement) ? requirement.comments : [],
-        }
-        const extraColumns: { [key: string]: string } = {}
-        requirement.extras.forEach(extra => {
-          extraColumns[extra.extraType.title] = extra.content
-          if (!Object.keys(extraHeaders).includes(extra.extraType.title)) {
-            const header: { [key: string]: 1 | 2 | 3 } = {}
-            header[extra.extraType.title] = extra.extraType.extraType
-            dispatch(addExtraHeader(header))
-          }
-        });
-        requirements.push({ ...base, ...extraColumns })
-        selected[requirement.id] = false
-        visible[requirement.id] = true
+  const processRequirement = (requirement: Requirement) => {
+    const tags: Array<string> = [];
+    if (requirement.visible) {
+      if (requirement.tags.length === 0 && !tagFilterItems.includes("No Tags")) {
+        tagFilterItems.push("No Tags");
       }
-    });
+      requirement.tags.forEach(tag => {
+        tags.push(tag.name);
+        if (!tagFilterItems.includes(tag.name)) {
+          tagFilterItems.push(tag.name);
+        }
+      });
+      const base = {
+        id: requirement.id,
+        Tags: tags,
+        Topics: [...topics],
+        Key: requirement.key,
+        Title: requirement.title,
+        Description: requirement.description,
+        Comments: requirement.comments || [],
+      };
+      const extraColumns: { [key: string]: string } = {};
+      requirement.extras.forEach(extra => {
+        extraColumns[extra.extraType.title] = extra.content;
+        if (!Object.keys(extraHeaders).includes(extra.extraType.title)) {
+          const header: { [key: string]: 1 | 2 | 3 } = {};
+          header[extra.extraType.title] = extra.extraType.extraType;
+          dispatch(addExtraHeader(header));
+        }
+      });
+      requirements.push({ ...base, ...extraColumns });
+      selected[requirement.id] = false;
+      visible[requirement.id] = true;
+    }
+  };
+
+  const processTopic = async (topic: Topic) => {
+    if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
+      dispatch(addTopicFilterItems(`${topic.key} ${topic.title}`));
+    }
+    await buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic, requirements, selected, visible, false);
+  };
+
+  const requirementPromises = item.requirements ? item.requirements.map(processRequirement) : [];
+  const topicPromises = item.children ? item.children.map(processTopic) : [];
+
+  await Promise.all([...requirementPromises, ...topicPromises]);
+
+  if (root) {
+    dispatch(addRows({ requirements, selected, visible }));
   }
-  if ('children' in item) {
-    item.children.forEach(topic => {
-      if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
-        dispatch(addTopicFilterItems(`${topic.key} ${topic.title}`))
-      }
-      buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic, requirements, selected, visible, false)
-    });
-  }
-  if (root) dispatch(addRows({ requirements, selected, visible }))
 }
 
 /**

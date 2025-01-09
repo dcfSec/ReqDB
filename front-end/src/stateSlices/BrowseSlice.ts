@@ -9,6 +9,7 @@ import { BrowseState } from '../types/Generics';
 const initialState: BrowseState = {
   data: null,
   title: "Loading...",
+  description: "",
   status: "nothing",
   search: "",
   rows: {
@@ -247,12 +248,15 @@ export const browseSlice = createSlice({
     setStatus: (state, action: PayloadAction<string>) => {
       state.status = action.payload
     },
+    setDescription: (state, action: PayloadAction<string>) => {
+      state.description = action.payload
+    },
     trace: (state, action: PayloadAction<string>) => {
       console.log(action.payload)
     }
   },
 })
 
-export const { trace, reset, setData, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, addComment, removeComment, updateComment, setTitle, setStatus } = browseSlice.actions
+export const { trace, reset, setData, setDescription, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, addComment, removeComment, updateComment, setTitle, setStatus } = browseSlice.actions
 
 export default browseSlice.reducer

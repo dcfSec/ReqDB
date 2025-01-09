@@ -7,7 +7,7 @@ import CheckboxDropdown from "../CheckboxDropdown";
 import FilterTopicModal from "./FilterTopicsModal";
 import { ExportTable } from "../Export";
 import Search from "./Search"
-import { toggleTagFilterSelected, toggleTagFilterSelectedAll } from '../../stateSlices/BrowseSlice';
+import { setDescription, toggleTagFilterSelected, toggleTagFilterSelectedAll } from '../../stateSlices/BrowseSlice';
 
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
@@ -62,13 +62,14 @@ export default function BrowseContent({ id }: Props) {
 
   function okCallback(response: APISuccessData) {
     startTransition(() => {
+      dispatch(setData(response.data))
+      dispatch(setDescription((response.data as Catalogue).description))
+      dispatch(setPageTitle((response.data as Catalogue).title))
       const tagFilterItemsTmp: Array<string> = []
       buildRows(extraHeaders, tagFilterItemsTmp, [], { id: 0, key: "", title: "", children: (response.data as Catalogue).topics } as Topic)
       dispatch(setTagFilterItems(tagFilterItemsTmp))
       dispatch(sortRows())
       dispatch(sortTopicFilterItems())
-      dispatch(setData(response.data))
-      dispatch(setPageTitle((response.data as Catalogue).title))
       dispatch(showSpinner(false))
       dispatch(setStatus("ok"));
     });

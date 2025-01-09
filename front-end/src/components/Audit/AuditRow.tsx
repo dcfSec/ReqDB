@@ -18,7 +18,6 @@ type Props = {
  */
 export default function AuditRow({ item, search, searchFields }: Props) {
   const selected = useAppSelector(state => state.audit.action.filterSelected)
-  console.log(item)
   if (inSearchField(search, searchFields, item) && selected.indexOf(item.action) >= 0) {
     return <tr>
       <td>{item.timestamp}</td>
