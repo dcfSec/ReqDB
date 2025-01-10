@@ -14,22 +14,21 @@ COPY requirements.txt ./
 COPY api/ ./api
 COPY migrations/ ./migrations/
 
-RUN apk update
-RUN apk add --no-cache g++ unixodbc-dev gnupg curl
-
-# START Install ODBC driver for MS SQL
-RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk
-RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.apk
-RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.sig
-RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.sig
-RUN curl https://packages.microsoft.com/keys/microsoft.asc  | gpg --import -
-RUN gpg --verify msodbcsql18_18.4.1.1-1_amd64.sig msodbcsql18_18.4.1.1-1_amd64.apk
-RUN gpg --verify mssql-tools18_18.4.1.1-1_amd64.sig mssql-tools18_18.4.1.1-1_amd64.apk
-RUN apk add --allow-untrusted msodbcsql18_18.4.1.1-1_amd64.apk
-RUN apk add --allow-untrusted mssql-tools18_18.4.1.1-1_amd64.apk
-# END 
-
-RUN pip install -r requirements.txt
+RUN apk update && \
+    apk add --no-cache g++ unixodbc-dev gnupg curl && \
+    curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk && \
+    curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.apk && \
+    curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.sig && \
+    curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.sig && \ 
+    curl https://packages.microsoft.com/keys/microsoft.asc  | gpg --import - && \
+    gpg --verify msodbcsql18_18.4.1.1-1_amd64.sig msodbcsql18_18.4.1.1-1_amd64.apk && \
+    gpg --verify mssql-tools18_18.4.1.1-1_amd64.sig mssql-tools18_18.4.1.1-1_amd64.apk && \
+    apk add --allow-untrusted msodbcsql18_18.4.1.1-1_amd64.apk && \
+    apk add --allow-untrusted mssql-tools18_18.4.1.1-1_amd64.apk && \
+    rm -rf msodbcsql18_18.4.1.1-1_amd64.sig msodbcsql18_18.4.1.1-1_amd64.apk && \
+    rm -rf mssql-tools18_18.4.1.1-1_amd64.sig mssql-tools18_18.4.1.1-1_amd64.apk && \
+    pip install -r requirements.txt && \
+    apk del -r g++ gnupg curl
 
 EXPOSE 8000
 
