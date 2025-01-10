@@ -5,11 +5,13 @@ from flask_restful import Api
 
 from flask_jwt_extended import JWTManager
 
-from api.config import Config, getAzureJWTKeys
+from api.config import Config
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
+Config.getOpenIdConfig()
+Config.getJWKs()
 
 class ReqDBApi(Api):
     def handle_error(self, e):
@@ -42,7 +44,7 @@ def getDecodeKey(header, payload):
     if header["kid"] in Config.JWT_PUBLIC_KEY:
         return Config.JWT_PUBLIC_KEY[header["kid"]]
     else:
-        Config.JWT_PUBLIC_KEY = getAzureJWTKeys()
+        Config.getJWKs()
         if header["kid"] in Config.JWT_PUBLIC_KEY:
             return Config.JWT_PUBLIC_KEY[header["kid"]]
         else:

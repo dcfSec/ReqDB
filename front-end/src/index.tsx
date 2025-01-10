@@ -6,56 +6,32 @@ import App from './App';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { msalConfig, protectedResources } from "./authConfig.js";
+import { oidcConfig } from "./authConfig.js";
 
 import store from './store'
 import { Provider } from 'react-redux'
-import {
-  PublicClientApplication,
-  EventType,
-  EventMessage,
-  AuthenticationResult,
-  InteractionRequiredAuthError,
-} from "@azure/msal-browser";
+
+import { staticConfig } from "./static";
+import { User } from 'oidc-client-ts';
+import { AuthProvider } from "react-oidc-context";
+
 import APIClient from './APIClient';
 
-const msalInstance = new PublicClientApplication(msalConfig);
-msalInstance.initialize().then(() => {
-
-  const accounts = msalInstance.getAllAccounts();
-  if (accounts.length > 0) {
-    msalInstance.setActiveAccount(accounts[0]);
+function getUser() {
+  const oidcStorage = localStorage.getItem(`oidc.user:${staticConfig.oauth.authority}:${staticConfig.oauth.client_id}`)
+  if (!oidcStorage) {
+      return null;
   }
-  msalInstance.addEventCallback((event: EventMessage) => {
-    if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
-      const payload = event.payload as AuthenticationResult;
-      const account = payload.account;
-      msalInstance.setActiveAccount(account);
-    }
-  });
-  APIClient.interceptors.request.use(async (config) => {
-    const account = msalInstance.getActiveAccount();
-    if (account) {
-      try {
-        const tokenResponse = await msalInstance.acquireTokenSilent({
-          account: account,
-          scopes: protectedResources.ReqDB.scopes,
-        });
-        config.headers.Authorization = `Bearer ${tokenResponse.accessToken}`;
-      } catch (error) {
-        if (error instanceof InteractionRequiredAuthError) {
-          // fallback to interaction when silent call fails
-          msalInstance.acquireTokenRedirect({
-            account: account,
-            scopes: protectedResources.ReqDB.scopes,
-          });
-        } else {
-          throw error;
-        }
-      }
-    }
-    return config;
-  });
+  return User.fromStorageString(oidcStorage);
+}
+
+APIClient.interceptors.request.use(async (config) => {
+  const user = getUser();
+  const token = user?.access_token;
+  if (token != undefined) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 const darkMode = JSON.parse(localStorage.getItem('darkMode') || "false") || false
@@ -66,7 +42,9 @@ if (rootElement) {
   root.render(
     <React.StrictMode>
       <Provider store={store}>
-        <App instance={msalInstance} />
+        <AuthProvider {...oidcConfig}>
+          <App />
+        </AuthProvider>
       </Provider>
     </React.StrictMode>
   );

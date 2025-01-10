@@ -8,8 +8,6 @@ import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { Link } from 'react-router-dom';
-
-import { useMsal } from "@azure/msal-react";
 import { appRoles } from '../authConfig';
 
 import { useAppSelector, useAppDispatch } from "../hooks";
@@ -17,6 +15,7 @@ import { toggleDarkMode } from "../stateSlices/UserSlice";
 import { useState } from 'react';
 import RolesModal from './RolesModal';
 import Preferences from './Preferences';
+import { useAuth } from 'react-oidc-context';
 
 /**
  * Component for the main navigation bar
@@ -33,8 +32,7 @@ export default function MainNavbar() {
   const [showRoles, setShowRoles] = useState(false)
   const [showPreferences, setShowPreferences] = useState(false)
 
-  const { instance } = useMsal();
-  const account = instance.getActiveAccount();
+  const auth = useAuth();
 
   return (
     <Navbar className="bg-body-tertiary">
@@ -80,13 +78,13 @@ export default function MainNavbar() {
           <Navbar.Text className="justify-content-end"><Button variant="outline-secondary" onClick={() => { dispatch(toggleDarkMode()) }}><FontAwesomeIcon icon={darkMode ? solid("sun") : solid("moon")} /></Button></Navbar.Text>
           <Navbar.Text className='navbar-signed-in-text'>Signed in as:</Navbar.Text>
           <NavDropdown title={name} id="accountDropdown" align="end">
-            {account ?
+            {auth.isAuthenticated ?
               <>
                 <NavDropdown.Item onClick={() => { setShowRoles(true) }}>My Roles</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => { setShowPreferences(true) }}>Preferences</NavDropdown.Item>
-                <NavDropdown.Item onClick={() => { instance.logoutRedirect() }}>Logout</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => void auth.removeUser()}>Logout</NavDropdown.Item>
               </> :
-              <NavDropdown.Item onClick={() => { instance.loginRedirect() }}>Login</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => void auth.signinRedirect() }>Login</NavDropdown.Item>
             }
           </NavDropdown>
         </Navbar.Collapse>

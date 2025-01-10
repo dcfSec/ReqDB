@@ -1,52 +1,37 @@
 import './App.css';
-import { MsalProvider, AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
-import { Router, LoginRouter } from './components/Router';
+import { Router, LoginRouter, LoginErrorRouter } from './components/Router';
 import { useAppDispatch } from './hooks';
 import { setRoles, setName, syncLocalStorage } from "./stateSlices/UserSlice";
-
-import {
-  IPublicClientApplication,
-} from "@azure/msal-browser";
 import store from './store';
+import { useAuth } from 'react-oidc-context';
 
-function MainContent() {
 
+function App() {
+  const auth = useAuth();
   const dispatch = useAppDispatch()
 
-  const { instance } = useMsal();
-  const account = instance.getActiveAccount();
-  if (account) {
-    if (account.idTokenClaims && account.idTokenClaims['roles']) {
-      dispatch(setRoles(account.idTokenClaims['roles']));
-    }
-    if (account.username) {
-      dispatch(setName(account.username));
-    }
+  switch (auth.activeNavigator) {
+    case "signinSilent":
+      return <div>Signing you in...</div>;
+    case "signoutRedirect":
+      return <div>Signing you out...</div>;
   }
 
-  return (<>
-    <AuthenticatedTemplate>
-      {account ? (
-        <Router />
-      ) : null}
-    </AuthenticatedTemplate>
-    <UnauthenticatedTemplate>
-      <LoginRouter />
-    </UnauthenticatedTemplate>
-  </>
-  );
-};
+  if (auth.isLoading) {
+    return <div>Loading...</div>;
+  }
 
-type Props = {
-  instance: IPublicClientApplication;
-}
+  if (auth.error) {
+    return <LoginErrorRouter error={auth.error.message}/>;
+  }
 
-function App({ instance }: Props) {
-  return (
-    <MsalProvider instance={instance}>
-      <MainContent />
-    </MsalProvider>
-  );
+  if (auth.isAuthenticated) {
+    console.log(auth.user?.profile)
+    dispatch(setRoles(auth.user?.profile.roles as string[]));
+    dispatch(setName(auth.user?.profile.email as string));
+    return <Router />
+  }
+  return <LoginRouter />;
 }
 
 export default App;

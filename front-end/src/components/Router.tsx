@@ -12,6 +12,7 @@ import { appRoles } from "../authConfig";
 import Login from "../pages/Login";
 import Requirement from "../pages/Requirement";
 import Comments from "../pages/Comments";
+import AuthError from "../pages/AuthError";
 
 /**
  * Main Router for the web app
@@ -91,6 +92,25 @@ export function LoginRouter() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Login />} />
+          <Route path="*" element={<Login />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+/**
+ * Router for a non-logged when an error occurs
+ * 
+ * @returns Returns the login router
+ */
+export function LoginErrorRouter({ error }: { error: string; }) {
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<AuthError error={error} />} />
           <Route path="*" element={<Login />} />
         </Route>
       </Routes>

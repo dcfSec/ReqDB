@@ -1,7 +1,7 @@
 import { Button, Col, Row } from "react-bootstrap";
-import { useMsal } from "@azure/msal-react";
 import { useAppSelector } from "../hooks";
 import { ReactNode } from "react";
+import { useAuth } from "react-oidc-context";
 
 
 type Props = {
@@ -17,12 +17,11 @@ type Props = {
 export default function RouteGuard({ requiredRoles, children } : Props) {
   const roles = useAppSelector(state => state.user.roles)
   const isAuthorized = (requiredRoles.filter((role) => roles.includes(role)).length > 0);
-
-  const { instance } = useMsal();
-
+  const auth = useAuth();
+  
   return (
     <>
-      {isAuthorized ? (children) :
+      {auth.isAuthenticated && isAuthorized ? (children) :
         <>
           <Row>
             <Col><h1>Unauthorized</h1></Col>
@@ -46,7 +45,7 @@ export default function RouteGuard({ requiredRoles, children } : Props) {
           <Row>
             <Col>
               <p>Logout to refresh your token if you think this is an error:</p>
-              <Button onClick={() => { instance.logoutRedirect(); }} variant="outline-secondary">Logout</Button>
+              <Button onClick={() => void auth.removeUser()} variant="outline-secondary">Logout</Button>
             </Col>
           </Row>
         </>

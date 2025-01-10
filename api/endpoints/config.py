@@ -14,7 +14,7 @@ class Static(Resource):
             "data": {
                 "oauth": {
                     "provider": "Entra ID",
-                    "tenant_id": getenv("OAUTH_APP_TENANT"),
+                    "authority": getenv("OAUTH_APP_AUTHORITY"),
                     "client_id": getenv("OAUTH_APP_CLIENT_ID"),
                 },
                 "home": {

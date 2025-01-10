@@ -1,10 +1,10 @@
 import { Button, Col, Row, Stack } from "react-bootstrap";
 import Markdown from 'react-markdown'
-import { useMsal } from "@azure/msal-react";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { staticConfig } from "../static";
+import { useAuth } from "react-oidc-context";
 
 /**
  * View to display the button to login with the oauth provider
@@ -19,8 +19,7 @@ export default function Login() {
     dispatch(setPageTitle("Login"))
   }, []);
 
-
-  const { instance } = useMsal();
+  const auth = useAuth();
 
   return <>
     <Row>
@@ -31,7 +30,7 @@ export default function Login() {
         <Stack gap={2} className="col-md-3 mx-auto">
           <h2>{staticConfig.home.title}</h2>
           <Markdown>{staticConfig.home.MOTD.pre}</Markdown>
-          <Button onClick={() => { instance.loginRedirect(); }} variant="outline-secondary">Login with Azure Entra</Button>
+          <Button onClick={() => void auth.signinRedirect() } variant="outline-secondary">Login with Azure Entra</Button>
           <Markdown>{staticConfig.home.MOTD.post}</Markdown>
         </Stack>
       </Col>

@@ -1,7 +1,7 @@
 interface Config {
   oauth: {
     provider: string
-    tenant_id: string
+    authority: string
     client_id: string
   };
   home: {
