@@ -8,13 +8,13 @@ import { staticConfig } from "./static";
 export const protectedResources = {
   ReqDB: {
     scopes: [
-      `${staticConfig.oauth.client_id}/ReqDB.Requirements.Reader`,
-      `${staticConfig.oauth.client_id}/ReqDB.Requirements.Writer`,
-      `${staticConfig.oauth.client_id}/ReqDB.Requirements.Auditor`,
-      `${staticConfig.oauth.client_id}/ReqDB.Comments.Reader`,
-      `${staticConfig.oauth.client_id}/ReqDB.Comments.Writer`,
-      `${staticConfig.oauth.client_id}/ReqDB.Comments.Moderator`,
-      `${staticConfig.oauth.client_id}/ReqDB.Comments.Auditor`,
+      // `${staticConfig.oauth.client_id}/ReqDB.Requirements.Reader`,
+      // `${staticConfig.oauth.client_id}/ReqDB.Requirements.Writer`,
+      // `${staticConfig.oauth.client_id}/ReqDB.Requirements.Auditor`,
+      // `${staticConfig.oauth.client_id}/ReqDB.Comments.Reader`,
+      // `${staticConfig.oauth.client_id}/ReqDB.Comments.Writer`,
+      // `${staticConfig.oauth.client_id}/ReqDB.Comments.Moderator`,
+      // `${staticConfig.oauth.client_id}/ReqDB.Comments.Auditor`,
       `${staticConfig.oauth.client_id}/openid`,
     ]
 
