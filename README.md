@@ -71,18 +71,10 @@ SECRET_KEY=CHANGEME                # The secret key for Flask
 DATABASE_URI=sqlite:///app.sqlite  # Database URI for sqlalchemy
                                    # See https://docs.sqlalchemy.org/en/20/core/engines.html for details
 
-OAUTH_APP_CLIENT_ID=xxx            # Client ID for oauth (Azure Entra)
-OAUTH_APP_TENANT=xxx               # Azure Tenant ID
-```
-
-### Additional static configuration
-
-The appearance of the login and index page can be customized with following environment variables:
-
-```sh
-STATIC_HOME_TITLE=TITLE    # Title displayed in the welcome screen. Defaults to "Welcome to ReqDB"
-STATIC_HOME_MOTD_PRE=MOTD  # Displays text below the welcome title and before the menu selection. Markdown is supported. Default is empty
-STATIC_HOME_MOTD_POST=MOTD # Displays text after the menu selection. Markdown is supported. Default is empty
+OAUTH_PROVIDER=xxx                 # Use oauth provider in human readable way (E.g. Entra ID or Octa).
+                                   # This will be displayed as login button description
+OAUTH_CLIENT_ID=xxx                # Client ID for oauth
+OAUTH_AUTHORITY=xxx                # OAuth authority URL
 ```
 
 ## OAuth Server Configuration
@@ -102,15 +94,15 @@ To get our claim and roles for ReqDB we request the needed scopes from the oidc 
 
 * `email`
 * `openid`
-* `<OAUTH_APP_CLIENT_ID>/.default`
+* `<OAUTH_CLIENT_ID>/.default`
 
 
 ### App Roles
 
 ReqDB defines following roles:
 
-| Claim   | Reason                                                                 |
-|---------|------------------------------------------------------------------------|
+| Role                   | Description                                             |
+|------------------------|---------------------------------------------------------|
 | `Requirements.Reader`  | Read access to the requirements API                     |
 | `Requirements.Writer`  | Write access to the requirements API                    |
 | `Requirements.Auditor` | Read access to view the requirement audit log API       |
