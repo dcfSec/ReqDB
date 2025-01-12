@@ -110,6 +110,8 @@ ReqDB defines following roles:
 | `Comments.Writer`      | Write (add) access to the comment API                   |
 | `Comments.Moderator`   | Write (edit, delete) access to the comment API          |
 | `Comments.Auditor`     | Read access to view the comment audit log API           |
+| `Configuration.Reader` | Read access to the configuration API                     |
+| `Configuration.Writer` | Write access to the configuration API                    |
 
 
 ### Redirect URL
