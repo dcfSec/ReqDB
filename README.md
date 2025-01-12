@@ -85,33 +85,52 @@ STATIC_HOME_MOTD_PRE=MOTD  # Displays text below the welcome title and before th
 STATIC_HOME_MOTD_POST=MOTD # Displays text after the menu selection. Markdown is supported. Default is empty
 ```
 
-## Azure Entra Configuration
+## OAuth Server Configuration
 
-The application in Azure Entra needs to be configured to allow users to access it. The configuration below is the needed configuration (The section headers are the config menus in the Azure Portal)
+### Token configuration
 
-### API Permissions
+ReqDB accesses some user identifiers from OAuth claims. Following claims are needed:
 
-* `User.Read` -> Get the e-Mail to display in the upper corner
+| Claim   | Reason                                                                                                                                                                   |
+|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `email` | Used for displaying the logged in user in the front end and send it to the back end for human readable identification JWTs `sub` is used as primary identifier for users |
 
-### Expose an API
 
-* `api://<APP-ID>/ReqDB.Requirements.Reader` -> Read access to the requirements APIs
-* `api://<APP-ID>/ReqDB.Requirements.Writer` -> Write access to the requirements APIs
-* `api://<APP-ID>/ReqDB.Requirements.Auditor` -> Read access to the audit APIs to see requirement audit logs
-* `api://<APP-ID>/ReqDB.Comments.Reader` -> Read access to the comments API
-* `api://<APP-ID>/ReqDB.Comments.Writer` -> Write (add) access to the comments API
-* `api://<APP-ID>/ReqDB.Comments.Moderator` -> Write (edit, delete) access to the comments API
-* `api://<APP-ID>/ReqDB.Comments.Auditor` -> Read access to the audit APIs to see comment audit logs
+### Scopes
+
+To get our claim and roles for ReqDB we request the needed scopes from the oidc server:
+
+* `email`
+* `openid`
+* `<OAUTH_APP_CLIENT_ID>/.default`
+
 
 ### App Roles
 
-* `Requirements.Reader` -> Read access to the requirements front-end
-* `Requirements.Writer` -> Write access to the requirements front-end
-* `Requirements.Auditor` -> Read access to view the requirement audit log front-end
-* `Comments.Reader` -> Read access to the comment front-end
-* `Comments.Writer` -> Write (add) access to the comment front-end
-* `Comments.Moderator` -> Write (edit, delete) access to the comment front-end
-* `Comments.Auditor` -> Read access to view the comment audit log front-end
+ReqDB defines following roles:
+
+| Claim   | Reason                                                                 |
+|---------|------------------------------------------------------------------------|
+| `Requirements.Reader`  | Read access to the requirements API                     |
+| `Requirements.Writer`  | Write access to the requirements API                    |
+| `Requirements.Auditor` | Read access to view the requirement audit log API       |
+| `Comments.Reader`      | Read access to the comment API                          |
+| `Comments.Writer`      | Write (add) access to the comment API                   |
+| `Comments.Moderator`   | Write (edit, delete) access to the comment API          |
+| `Comments.Auditor`     | Read access to view the comment audit log API           |
+
+
+### Redirect URL
+
+The application uses `https://<YOUR_FQDN>/oauth/callback` as redirect URL for the web app and `http://localhost` is needed if you use the python client.
+
+### Azure Entra Configuration
+
+The configuration for Entra ID is of course special. To get a proper access token the applications manifest needs to be edited: Go to `Manifest` and set `requestedAccessTokenVersion` to `2`.
+
+Also in `Token configuration` the `email` claim needs to be set for `ID` and `Access`.
+
+Lastly in in `API permissions` the permissions `email`, `openid` and `profile` needs to be set.
 
 ## Development
 
