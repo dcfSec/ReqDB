@@ -71,7 +71,7 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
       <tr>
         <td>{comment.id}</td>
         <td style={{ whiteSpace: "pre-line" }}>{comment.comment}</td>
-        <td>{comment.author}</td>
+        <td>{comment.author.email}</td>
         <td><Form.Check type="switch" id="completed" defaultChecked={comment.completed} onChange={e => { updateCompleted(e.target.checked) }} /></td>
         <td><LinkContainer to={`/Browse/Requirement/${comment.requirement.id}`}><Button variant="primary" size="sm">{comment.requirement.title}</Button></LinkContainer></td>
         <td><Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button></td>

@@ -89,7 +89,7 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
         <Card style={{ marginBottom: '0.5em', lineHeight: '1em' }} border={comment.completed ? "danger" : undefined}>
           <Card.Header style={{ padding: '0em' }}>
             <Stack direction="horizontal" gap={2}>
-              <span className="p-2">From <span style={{ fontStyle: 'italic' }}>{comment.author}</span></span>
+              <span className="p-2">From <span style={{ fontStyle: 'italic' }}>{comment.author.email}</span></span>
               <span className="ms-auto text-muted" style={{ justifyContent: 'left' }}>at {new Date(comment.created).toLocaleString()}</span>
               {roles.includes(appRoles.Comments.Moderator) ?
                 <>

@@ -4,13 +4,13 @@ from sqlalchemy.orm import backref
 
 class User(db.Model):
     id = db.Column(db.String(200), primary_key=True)
+    email = db.Column(db.String(200))
     created = db.Column(db.DateTime(timezone=True), server_default=functions.now())
 
     def __repr__(self):
         return f'<User "{self.id}">'
 
 class Base(db.Model):
-    __versioned__ = {}
     __abstract__ = True
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
@@ -172,7 +172,8 @@ class Comment(Base):
         nullable=False,
         index=True,
     )
-    author = db.Column(db.String(200), nullable=False)
+    authorId = db.Column(db.ForeignKey("user.id", name="fk_user"), nullable=False,index=True)
+    author = db.relationship("User")
     created = db.Column(db.DateTime(timezone=True), server_default=functions.now())
     completed = db.Column(db.Boolean, unique=False, default=False)
 
@@ -182,7 +183,8 @@ class Comment(Base):
 
 class Audit(Base):
     timestamp = db.Column(db.DateTime(timezone=True), server_default=functions.now())
-    user = db.Column(db.String(200))
+    userId = db.Column(db.ForeignKey("user.id", name="fk_user"), nullable=False,index=True)
+    user = db.relationship("User")
     table = db.Column(db.String(200), index=True)
     target_id = db.Column(db.Integer, index=True)
     action = db.Column(db.Integer)

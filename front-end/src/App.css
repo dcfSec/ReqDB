@@ -10,7 +10,7 @@ div.col {
   width: 95%;
 }
 
-.bg-body  {
+.bg-body {
   border-left: 1px;
   border-right: 1px;
   border-top: 0px;
@@ -27,7 +27,7 @@ div.col {
   font-weight: bold;
 }
 
-.footer a{
+.footer a {
   text-decoration: none;
   color: var(--bs-nav-link-color);
 }
@@ -49,7 +49,7 @@ div.col {
 }
 
 table tr:hover td {
-  background-color: rgba(var(--bs-tertiary-bg-rgb),var(--bs-bg-opacity));
+  background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity));
 }
 
 .vertical-middle {
@@ -59,4 +59,12 @@ table tr:hover td {
 .eye-button {
   --bs-btn-padding-x: 0.3rem !important;
   --bs-btn-padding-y: 0.1rem !important;
+}
+
+.form-switch > .form-check-input {
+  margin-top: .30em !important;
+}
+
+.language-json {
+  color: var(--bs-code-color);
 }

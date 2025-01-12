@@ -18,9 +18,8 @@ from api.endpoints.wildcard import Wildcard
 from api.endpoints.audit import Audit
 from api.endpoints.config import Static
 
-from api.helper import getUserUPN
 from api.models import User
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 
 api.add_resource(Catalogues, "/catalogues")
 api.add_resource(Catalogue, "/catalogues/<int:id>")
@@ -55,7 +54,7 @@ api.add_resource(Wildcard, "", "/", "/<path:path>")
 @api_bp.before_request
 @jwt_required()
 def checkUserInDBorCreate():
-    user = User.query.get(getUserUPN())
+    user = User.query.get(get_jwt_identity())
     if user is None:
-        db.session.add(User(id=getUserUPN()))
+        db.session.add(User(id=get_jwt_identity(), email=get_jwt()["email"]))
         db.session.commit()

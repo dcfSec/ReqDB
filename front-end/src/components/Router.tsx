@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Layout from '../pages/Layout';
 import Home from '../pages/Home';
@@ -12,7 +12,6 @@ import { appRoles } from "../authConfig";
 import Login from "../pages/Login";
 import Requirement from "../pages/Requirement";
 import Comments from "../pages/Comments";
-import AuthError from "../pages/AuthError";
 
 /**
  * Main Router for the web app
@@ -26,6 +25,9 @@ export function Router() {
       <Routes>
         <Route path="/" element={/*<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Home">*/<Layout />/*</RouteGuard>*/}>
           <Route index element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} /* title="Home" */><Home /></RouteGuard>} />
+          <Route path="oauth">
+            <Route path="callback" element={<Navigate to="/" />} />
+          </Route>
           <Route path="Browse" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} /* title="Browse" */><BrowseSelectCatalogue /></RouteGuard>} />
           <Route path="Browse/:catalogueId" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} /* title="Browse" */><BrowseCatalogue /></RouteGuard>} />
           <Route path="Browse/Requirement/:requirementId" element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} /* title="Requirement" */><Requirement /></RouteGuard>} />
@@ -85,32 +87,13 @@ export function Router() {
  * 
  * @returns Returns the login router
  */
-export function LoginRouter() {
+export function LoginRouter({ authError = null }: { authError?: string | null; }) {
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Login />} />
-          <Route path="*" element={<Login />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  )
-}
-
-/**
- * Router for a non-logged when an error occurs
- * 
- * @returns Returns the login router
- */
-export function LoginErrorRouter({ error }: { error: string; }) {
-
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<AuthError error={error} />} />
+          <Route index element={<Login authError={authError} />} />
           <Route path="*" element={<Login />} />
         </Route>
       </Routes>

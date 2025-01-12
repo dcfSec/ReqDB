@@ -3,7 +3,7 @@ from marshmallow import EXCLUDE, post_load, validate
 from api.appDefinition import ma
 from marshmallow_sqlalchemy import fields
 
-from api.models import ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue, Comment, CatalogueTopic, RequirementTag
+from api.models import User, ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue, Comment, CatalogueTopic, RequirementTag
 
 
 class ExtraEntrySchema(ma.SQLAlchemyAutoSchema):
@@ -221,16 +221,22 @@ class CatalogueExtendedCommentsSchema(ma.SQLAlchemyAutoSchema):
         item['topics'] = sorted(item['topics'], key=itemgetter('key'))
         return item
 
-class CommentSchema(ma.SQLAlchemyAutoSchema):
+class CommentSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Comment
         include_relationships = True
         load_instance = True
         include_fk = True
+        unknown = EXCLUDE
 
+    id = ma.auto_field()
     requirement = fields.Nested(
         nested="RequirementSchema", only=["id", "title"]
     )
+    author = fields.Nested(nested="UserSchema", only=["id", "email"])
+    comment = ma.auto_field()
+    created = ma.auto_field()
+    completed = ma.auto_field()
 
 class RequirementTagSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -247,3 +253,10 @@ class CatalogueTopicSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         include_fk = True
         unknown = EXCLUDE
+
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        include_relationships = True
+        load_instance = True
+        include_fk = True

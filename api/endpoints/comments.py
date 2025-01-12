@@ -119,7 +119,7 @@ class Comments(BaseResources):
     model = CommentModel
 
     def checkRequest(self, data):
-        data["author"] = get_jwt()["upn"]
+        data["authorId"] = get_jwt_identity()
         if "created" in data:
             del data["created"]
         return data

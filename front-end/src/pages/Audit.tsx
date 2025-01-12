@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Col, Dropdown, Row } from "react-bootstrap";
+import { Col, Dropdown, Form, Row } from "react-bootstrap";
 import DataLayout from '../components/DataLayout';
 import DataTable from '../components/DataTable';
 
@@ -41,6 +41,7 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
   }, []);
 
   const [search, setSearch] = useState("");
+  const [showId, setShowId] = useState(false);
 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState(null);
@@ -86,10 +87,11 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
             </Dropdown.Menu>
           </Dropdown>
         </Col>
+        <Col><Form.Check type="switch" id="completed" defaultChecked={showId} onChange={e => { setShowId(e.target.checked) }} label="Show User ID instead of email" reverse /></Col>
       </Row >
-      <Row><Col><DataTable headers={["Timestamp", "User", "Action", "Target ID", "Data", "Parent"]}>
+      <Row><Col><DataTable headers={["Timestamp", "User", "Action", "Target ID", "Data", ""]}>
         {items.length > 0 ? items.map((item, /*index*/) => (
-          renderItem(item, /*index*/)
+          renderItem(item, showId/*index*/)
         )) : <tr><td colSpan={6} style={{ textAlign: 'center' }}>No audit entries</td></tr>}
       </DataTable></Col></Row>
     </>
@@ -99,7 +101,7 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
     setSearch(s)
   }
 
-  function renderItem(item: Item, /*index: number*/) {
+  function renderItem(item: Item, showId: boolean /*index: number*/) {
     if (item) {
       return <AuditRow
         key={item.id}
@@ -107,6 +109,7 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
         item={item}
         search={search}
         searchFields={searchFields}
+        showId={showId}
       ></AuditRow>
     } else {
       return null
@@ -130,7 +133,7 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
 export function AuditTags() {
   return <AuditParent auditPageName="Tags"
     searchFields={[
-      "timestamp", "user", "action", "target_id", "data.name", "parent"
+      "timestamp", "user.email", "action", "target_id", "data.name", "parent"
     ]}
     endpoint="tags"
   />
@@ -144,7 +147,7 @@ export function AuditTags() {
 export function AuditCatalogues() {
   return <AuditParent auditPageName="Catalogues"
     searchFields={[
-      "timestamp", "user", "action", "target_id", "parent",
+      "timestamp", "user.email", "action", "target_id", "parent",
       "data.title",
       "data.description",
     ]}
@@ -160,7 +163,7 @@ export function AuditCatalogues() {
 export function AuditTopics() {
   return <AuditParent auditPageName="Topics"
     searchFields={[
-      "timestamp", "user", "action", "target_id", "parent",
+      "timestamp", "user.email", "action", "target_id", "parent",
       "data.key", "data.title", "data.description"
     ]}
     endpoint="topics"
@@ -175,7 +178,7 @@ export function AuditTopics() {
 export function AuditRequirements() {
   return <AuditParent auditPageName="Requirements"
     searchFields={[
-      "timestamp", "user", "action", "target_id", "parent",
+      "timestamp", "user.email", "action", "target_id", "parent",
       "data.key", "data.title", "data.description"
     ]}
     endpoint="requirements"
@@ -190,7 +193,7 @@ export function AuditRequirements() {
 export function AuditExtraTypes() {
   return <AuditParent auditPageName="ExtraTypes"
     searchFields={[
-      "timestamp", "user", "action", "target_id", "parent",
+      "timestamp", "user.email", "action", "target_id", "parent",
       "data.title", "data.description"
     ]}
     endpoint="extraTypes"
@@ -205,7 +208,7 @@ export function AuditExtraTypes() {
 export function AuditExtraEntries() {
   return <AuditParent auditPageName="ExtraEntries"
     searchFields={[
-      "timestamp", "user", "action", "target_id", "parent",
+      "timestamp", "user.email", "action", "target_id", "parent",
       "data.content",
       "data.extraType.title",
       "data.requirement.key"
@@ -222,7 +225,7 @@ export function AuditExtraEntries() {
 export function AuditComments() {
   return <AuditParent auditPageName="Comments"
     searchFields={[
-      "timestamp", "user", "action", "target_id", "parent",
+      "timestamp", "user.email", "action", "target_id", "parent",
       "data.comment",
       "data.author",
       "data.requirement.key"

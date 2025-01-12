@@ -5,7 +5,10 @@ export interface Item extends Record<string, unknown> {
   comment: string;
   requirementId: number;
   requirement: Requirement;
-  author: string;
+  author: {
+    id: string;
+    email: string;
+  };
   created: string;
   completed: boolean
 }
