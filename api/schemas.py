@@ -1,9 +1,21 @@
 from operator import itemgetter
-from marshmallow import EXCLUDE, post_load, validate
+from marshmallow import EXCLUDE, ValidationError, post_load, validate, validates_schema
 from api.appDefinition import ma
 from marshmallow_sqlalchemy import fields
 
-from api.models import User, ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue, Comment, CatalogueTopic, RequirementTag
+from api.models import (
+    User,
+    ExtraEntry,
+    ExtraType,
+    Requirement,
+    Tag,
+    Topic,
+    Catalogue,
+    Comment,
+    CatalogueTopic,
+    RequirementTag,
+    Configuration,
+)
 
 
 class ExtraEntrySchema(ma.SQLAlchemyAutoSchema):
@@ -102,12 +114,12 @@ class TopicSchema(ma.SQLAlchemyAutoSchema):
 
     @post_load
     def sortRequirements(self, item):
-        item['requirements'] = sorted(item['requirements'], key=itemgetter('key'))
+        item["requirements"] = sorted(item["requirements"], key=itemgetter("key"))
         return item
 
     @post_load
     def sortTopics(self, item):
-        item['children'] = sorted(item['children'], key=itemgetter('key'))
+        item["children"] = sorted(item["children"], key=itemgetter("key"))
         return item
 
 
@@ -127,17 +139,20 @@ class TopicCommentsSchema(ma.SQLAlchemyAutoSchema):
     requirements = fields.Nested(
         nested="RequirementCommentsSchema", exclude=["parent"], many=True
     )
-    parent = fields.Nested(nested="TopicCommentsSchema", exclude=["requirements", "children"])
+    parent = fields.Nested(
+        nested="TopicCommentsSchema", exclude=["requirements", "children"]
+    )
 
     @post_load
     def sortRequirements(self, item):
-        item['requirements'] = sorted(item['requirements'], key=itemgetter('key'))
+        item["requirements"] = sorted(item["requirements"], key=itemgetter("key"))
         return item
 
     @post_load
     def sortTopics(self, item):
-        item['children'] = sorted(item['children'], key=itemgetter('key'))
+        item["children"] = sorted(item["children"], key=itemgetter("key"))
         return item
+
 
 class TopicOnlyIDAndTitleSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -179,7 +194,9 @@ class CatalogueLightNestedSchema(ma.SQLAlchemyAutoSchema):
         unknown = EXCLUDE
 
     title = ma.auto_field(validate=validate.Length(min=1))
-    topics = fields.Nested(nested="TopicSchema", only=["id", "title"], many=True, unknown=EXCLUDE)
+    topics = fields.Nested(
+        nested="TopicSchema", only=["id", "title"], many=True, unknown=EXCLUDE
+    )
 
 
 class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
@@ -198,7 +215,7 @@ class CatalogueExtendedSchema(ma.SQLAlchemyAutoSchema):
 
     @post_load
     def sortTopics(self, item):
-        item['topics'] = sorted(item['topics'], key=itemgetter('key'))
+        item["topics"] = sorted(item["topics"], key=itemgetter("key"))
         return item
 
 
@@ -218,8 +235,9 @@ class CatalogueExtendedCommentsSchema(ma.SQLAlchemyAutoSchema):
 
     @post_load
     def sortTopics(self, item):
-        item['topics'] = sorted(item['topics'], key=itemgetter('key'))
+        item["topics"] = sorted(item["topics"], key=itemgetter("key"))
         return item
+
 
 class CommentSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -230,13 +248,12 @@ class CommentSchema(ma.SQLAlchemySchema):
         unknown = EXCLUDE
 
     id = ma.auto_field()
-    requirement = fields.Nested(
-        nested="RequirementSchema", only=["id", "title"]
-    )
+    requirement = fields.Nested(nested="RequirementSchema", only=["id", "title"])
     author = fields.Nested(nested="UserSchema", only=["id", "email"])
     comment = ma.auto_field()
     created = ma.auto_field()
     completed = ma.auto_field()
+
 
 class RequirementTagSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -246,6 +263,7 @@ class RequirementTagSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         unknown = EXCLUDE
 
+
 class CatalogueTopicSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = CatalogueTopic
@@ -254,9 +272,24 @@ class CatalogueTopicSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         unknown = EXCLUDE
 
+
 class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
         include_relationships = True
         load_instance = True
         include_fk = True
+
+
+class ConfigurationSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Configuration
+        include_relationships = True
+        load_instance = True
+        include_fk = True
+        unknown = EXCLUDE
+    
+    @validates_schema
+    def validateType(self, data, **kwargs):
+        if data["type"] == "boolean" and data["value"] not in ["true", "false"]:
+            raise ValidationError('Value must be boolean', "value")

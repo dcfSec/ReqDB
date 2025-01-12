@@ -13,10 +13,10 @@ from flask_marshmallow import Marshmallow
 Config.getOpenIdConfig()
 Config.getJWKs()
 
+
 class ReqDBApi(Api):
     def handle_error(self, e):
         return e.message, e.code
-
 
 ma = Marshmallow()
 
@@ -26,11 +26,13 @@ app.config.from_object(Config)
 jwt = JWTManager(app)
 
 db = SQLAlchemy(app)
+
 configAPI_bp = Blueprint("configAPI", __name__, url_prefix="/api/config")
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 api = ReqDBApi(api_bp)
 configAPI = ReqDBApi(configAPI_bp)
+
 
 @jwt.decode_key_loader
 def getDecodeKey(header, payload):

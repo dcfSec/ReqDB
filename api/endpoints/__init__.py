@@ -16,7 +16,7 @@ from api.endpoints.topics import Topic, Topics
 from api.endpoints.coffee import Coffee
 from api.endpoints.wildcard import Wildcard
 from api.endpoints.audit import Audit
-from api.endpoints.config import Static
+from api.endpoints.config import Static, Config, ConfigItem
 
 from api.models import User
 from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
@@ -47,6 +47,10 @@ api.add_resource(Coffee, "/coffee")
 api.add_resource(Audit, "/audit/<string:object>/<int:id>", "/audit/<string:object>")
 
 configAPI.add_resource(Static, "/static")
+configAPI.add_resource(Config, "")
+configAPI.add_resource(ConfigItem, "/<string:key>")
+configAPI.add_resource(Wildcard, "", "/", "/<path:path>")
+
 
 api.add_resource(Wildcard, "", "/", "/<path:path>")
 

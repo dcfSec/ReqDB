@@ -14,7 +14,7 @@ except ImportError:
 
 basedir = path.abspath(path.dirname(__file__))
 
-for k in ["OAUTH_APP_CLIENT_ID", "OAUTH_APP_AUTHORITY"]:
+for k in ["OAUTH_CLIENT_ID", "OAUTH_AUTHORITY", "OAUTH_PROVIDER"]:
     if getenv(k) is None:
         raise AssertionError(f"Required env variable missing: {k}")
 
@@ -28,7 +28,7 @@ class Config:
 
     JWT_ERROR_MESSAGE_KEY = "error"
     JWT_ALGORITHM = "RS256"
-    JWT_DECODE_AUDIENCE = f"{getenv('OAUTH_APP_CLIENT_ID')}"
+    JWT_DECODE_AUDIENCE = f"{getenv('OAUTH_CLIENT_ID')}"
     JWT_DECODE_ISSUER = ""
     JWT_PUBLIC_KEY = ""
     JWT_JWK_URI = ""
@@ -56,10 +56,21 @@ class Config:
     @classmethod
     def getOpenIdConfig(cls):
         response = requests.get(
-            f"{getenv('OAUTH_APP_AUTHORITY')}/.well-known/openid-configuration"
+            f"{getenv('OAUTH_AUTHORITY')}/.well-known/openid-configuration"
         )
         response.raise_for_status()
         openIdConfig = response.json()
 
         cls.JWT_DECODE_ISSUER = openIdConfig["issuer"]
         cls.JWT_JWK_URI = openIdConfig["jwks_uri"]
+
+
+dynamicConfig = {
+    "HOME_TITLE": {"value": "Welcome to ReqDB", "description": "", "type": "string", "category": "static"},
+    "HOME_MOTD_PRE": {"value": "", "description": "", "type": "text", "category": "static"},
+    "HOME_MOTD_POST": {"value": "", "description": "", "type": "text", "category": "static"},
+    "SOFT_DELETE": {"value": "false", "description": "", "type": "boolean", "category": "behavior"},
+    "JIRA_ACTIVE": {"value": "false", "description": "", "type": "boolean", "category": "jira"},
+    "JIRA_URL": {"value": "", "description": "", "type": "string", "category": "jira"},
+    "JIRA_STORE_API_KEYS": {"value": "false", "description": "", "type": "boolean", "category": "jira"},
+}

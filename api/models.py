@@ -2,6 +2,7 @@ from api.appDefinition import db
 from sqlalchemy.sql import functions
 from sqlalchemy.orm import backref
 
+
 class User(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     email = db.Column(db.String(200))
@@ -10,15 +11,24 @@ class User(db.Model):
     def __repr__(self):
         return f'<User "{self.id}">'
 
+
 class Base(db.Model):
     __abstract__ = True
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    deleted = db.Column(db.Boolean, default=False)
 
 
 class RequirementTag(db.Model):
     __tablename__ = "RequirementTag"
-    requirementId = db.Column(db.Integer, db.ForeignKey("requirement.id", name="fk_requirement"), index=True, primary_key=True)
-    tagId = db.Column(db.Integer, db.ForeignKey("tag.id", name="fk_tag"), index=True, primary_key=True)
+    requirementId = db.Column(
+        db.Integer,
+        db.ForeignKey("requirement.id", name="fk_requirement"),
+        index=True,
+        primary_key=True,
+    )
+    tagId = db.Column(
+        db.Integer, db.ForeignKey("tag.id", name="fk_tag"), index=True, primary_key=True
+    )
 
     def __repr__(self):
         return f'<RequirementTag "{self.requirementId}" <-> "{self.tagId}">'
@@ -26,8 +36,18 @@ class RequirementTag(db.Model):
 
 class CatalogueTopic(db.Model):
     __tablename__ = "CatalogueTopic"
-    catalogueId = db.Column(db.Integer, db.ForeignKey("catalogue.id", name="fk_catalogue"), index=True, primary_key=True)
-    topicId = db.Column(db.Integer, db.ForeignKey("topic.id", name="fk_topic"), index=True, primary_key=True)
+    catalogueId = db.Column(
+        db.Integer,
+        db.ForeignKey("catalogue.id", name="fk_catalogue"),
+        index=True,
+        primary_key=True,
+    )
+    topicId = db.Column(
+        db.Integer,
+        db.ForeignKey("topic.id", name="fk_topic"),
+        index=True,
+        primary_key=True,
+    )
 
     def __repr__(self):
         return f'<CatalogueTopic "{self.catalogueId}" <-> "{self.topicId}">'
@@ -73,7 +93,8 @@ class Requirement(Base):
 class Tag(Base):
     name = db.Column(db.String(50), unique=True, nullable=False)
     requirement = db.relationship(
-        "Requirement", secondary="RequirementTag",
+        "Requirement",
+        secondary="RequirementTag",
         cascade="all, delete",
     )
 
@@ -106,9 +127,7 @@ class Topic(Base):
         cascade="all, delete",
     )
 
-    catalogues = db.relationship(
-        "Catalogue", secondary="CatalogueTopic"
-    )
+    catalogues = db.relationship("Catalogue", secondary="CatalogueTopic")
 
     def __repr__(self):
         return f'<Topic "{self.title}">'
@@ -172,7 +191,9 @@ class Comment(Base):
         nullable=False,
         index=True,
     )
-    authorId = db.Column(db.ForeignKey("user.id", name="fk_user"), nullable=False,index=True)
+    authorId = db.Column(
+        db.ForeignKey("user.id", name="fk_user"), nullable=False, index=True
+    )
     author = db.relationship("User")
     created = db.Column(db.DateTime(timezone=True), server_default=functions.now())
     completed = db.Column(db.Boolean, unique=False, default=False)
@@ -181,9 +202,12 @@ class Comment(Base):
         return f'<Comment "{self.author}: {self.comment[:20]}">'
 
 
-class Audit(Base):
+class Audit(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     timestamp = db.Column(db.DateTime(timezone=True), server_default=functions.now())
-    userId = db.Column(db.ForeignKey("user.id", name="fk_user"), nullable=False,index=True)
+    userId = db.Column(
+        db.ForeignKey("user.id", name="fk_user"), nullable=False, index=True
+    )
     user = db.relationship("User")
     table = db.Column(db.String(200), index=True)
     target_id = db.Column(db.Integer, index=True)
@@ -193,3 +217,10 @@ class Audit(Base):
     def __repr__(self):
         return f'<Audit "{self.verb}">'
 
+
+class Configuration(db.Model):
+    key = db.Column(db.String(200), primary_key=True)
+    category = db.Column(db.String(200))
+    value = db.Column(db.Text, nullable=True)
+    type = db.Column(db.String(50))
+    description = db.Column(db.String(200))

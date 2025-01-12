@@ -12,7 +12,7 @@ function App() {
   const auth = useAuth();
   const dispatch = useAppDispatch()
 
-  const [hasTriedSilentSignin, setHasTriedSilentSignin] = useState(false);
+  const [hasTriedSignin, setHasTriedSignin] = useState(false);
 
 
   useEffect(() => {
@@ -22,11 +22,11 @@ function App() {
   }, [auth.events, auth.signinSilent]);
 
   useEffect(() => {
-    if (auth.user?.expired && !hasTriedSilentSignin) {
-      auth.signinSilent();
-      setHasTriedSilentSignin(true);
+    if (auth.user?.expired && !hasTriedSignin) {
+      auth.signinRedirect();
+      setHasTriedSignin(true);
     }
-  }, [auth, hasTriedSilentSignin]);
+  }, [auth, hasTriedSignin]);
 
   switch (auth.activeNavigator) {
     case "signinSilent":
@@ -39,8 +39,6 @@ function App() {
   //   store.dispatch(showSpinner(false))
   //   store.dispatch(toast({ header: "Authentication error", body: `Message:${auth.error.message}`}))
   // }
-
-  console.log(auth)
 
   if (auth.isAuthenticated) {
     store.dispatch(showSpinner(false))

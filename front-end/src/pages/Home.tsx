@@ -6,7 +6,10 @@ import Markdown from 'react-markdown'
 import { staticConfig } from "../static";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
+import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { useEffect } from "react";
+import { loadConfiguration } from "../stateSlices/ConfigurationSlice";
+
 
 /**
  * Container for the main view when logged in
@@ -19,6 +22,10 @@ export default function Home() {
   useEffect(() => {
     dispatch(setBreadcrumbs([{ href: "", title: "Home", active: true }]))
     dispatch(setPageTitle("Home"))
+
+    dispatch(showSpinner(true))
+    dispatch(loadConfiguration())
+
   }, []);
 
   const roles = useAppSelector(state => state.user.roles)

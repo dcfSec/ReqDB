@@ -6,10 +6,6 @@ from api.appDefinition import db, app, api_bp, configAPI_bp
 from api import errorHandler, endpoints
 
 
-with app.app_context():
-    db.create_all()
-
-
 app.register_blueprint(api_bp)
 app.register_blueprint(configAPI_bp)
 

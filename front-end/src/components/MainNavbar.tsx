@@ -17,6 +17,7 @@ import RolesModal from './RolesModal';
 import Preferences from './Preferences';
 import { useAuth } from 'react-oidc-context';
 import { ReactNode } from 'react';
+import ConfigurationModal from './ConfigurationModal';
 
 /**
  * Component for the main navigation bar
@@ -28,6 +29,7 @@ export default function MainNavbar() {
 
   const [showRoles, setShowRoles] = useState(false)
   const [showPreferences, setShowPreferences] = useState(false)
+  const [showConfiguration, setShowConfiguration] = useState(false)
 
   const auth = useAuth();
 
@@ -36,7 +38,7 @@ export default function MainNavbar() {
     const roles = useAppSelector(state => state.user.roles)
     const name = useAppSelector(state => state.user.name)
 
-    return <MainNavbarParent showRoles={showRoles} setShowRoles={setShowRoles} showPreferences={showPreferences} setShowPreferences={setShowPreferences}>
+    return <MainNavbarParent showRoles={showRoles} setShowRoles={setShowRoles} showPreferences={showPreferences} setShowPreferences={setShowPreferences} showConfiguration={showConfiguration} setShowConfiguration={setShowConfiguration}>
       <MainNavbarLeftParent>
         {roles.includes(appRoles.Requirements.Reader) ? <Nav.Link as={Link} to="/browse">Browse</Nav.Link> : null}
         {roles.includes(appRoles.Comments.Moderator) ? <Nav.Link as={Link} to="/Comments">Comments</Nav.Link> : null}
@@ -72,6 +74,9 @@ export default function MainNavbar() {
             <>
               <NavDropdown.Item onClick={() => { setShowRoles(true) }}>My Roles</NavDropdown.Item>
               <NavDropdown.Item onClick={() => { setShowPreferences(true) }}>Preferences</NavDropdown.Item>
+            {roles.includes(appRoles.Configuration.Reader) ?
+              <NavDropdown.Item onClick={() => { setShowConfiguration(true) }}>Configuration</NavDropdown.Item>
+              : null}
               <NavDropdown.Item onClick={() => void auth.removeUser()}>Logout</NavDropdown.Item>
             </> :
             <NavDropdown.Item onClick={() => void auth.signinRedirect()}>Login</NavDropdown.Item>
@@ -82,7 +87,7 @@ export default function MainNavbar() {
 
 
   } else {
-    return <MainNavbarParent showRoles={showRoles} setShowRoles={setShowRoles} showPreferences={showPreferences} setShowPreferences={setShowPreferences}>
+    return <MainNavbarParent showRoles={showRoles} setShowRoles={setShowRoles} showPreferences={showPreferences} setShowPreferences={setShowPreferences} showConfiguration={showConfiguration} setShowConfiguration={setShowConfiguration}>
       <MainNavbarLeftParent />
       <MainNavbarRightParent>
         <NavDropdown title={"Nobody"} id="accountDropdown" align="end">
@@ -101,9 +106,11 @@ interface MainNavbarParentProps {
   setShowRoles: (show: boolean) => void;
   showPreferences: boolean;
   setShowPreferences: (show: boolean) => void;
+  showConfiguration: boolean;
+  setShowConfiguration: (show: boolean) => void;
 }
 
-function MainNavbarParent({ children, showRoles, setShowRoles, showPreferences, setShowPreferences }: MainNavbarParentProps) {
+function MainNavbarParent({ children, showRoles, setShowRoles, showPreferences, setShowPreferences, showConfiguration, setShowConfiguration }: MainNavbarParentProps) {
 
   return <Navbar className="bg-body-tertiary">
     <Container fluid>
@@ -114,6 +121,7 @@ function MainNavbarParent({ children, showRoles, setShowRoles, showPreferences, 
     </Container>
     {showRoles ? <RolesModal show={showRoles} setShow={setShowRoles} /> : null}
     <Preferences show={showPreferences} setShow={setShowPreferences} />
+    <ConfigurationModal show={showConfiguration} setShow={setShowConfiguration} />
   </Navbar>
 }
 
