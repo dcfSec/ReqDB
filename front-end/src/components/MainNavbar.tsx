@@ -121,7 +121,7 @@ function MainNavbarParent({ children, showRoles, setShowRoles, showPreferences, 
     </Container>
     {showRoles ? <RolesModal show={showRoles} setShow={setShowRoles} /> : null}
     <Preferences show={showPreferences} setShow={setShowPreferences} />
-    <ConfigurationModal show={showConfiguration} setShow={setShowConfiguration} />
+    {showConfiguration ? <ConfigurationModal show={showConfiguration} setShow={setShowConfiguration} /> : null}
   </Navbar>
 }
 

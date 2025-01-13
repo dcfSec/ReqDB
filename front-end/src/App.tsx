@@ -23,7 +23,7 @@ function App() {
 
   useEffect(() => {
     if (auth.user?.expired && !hasTriedSignin) {
-      auth.signinRedirect();
+      auth.signinSilent();
       setHasTriedSignin(true);
     }
   }, [auth, hasTriedSignin]);
