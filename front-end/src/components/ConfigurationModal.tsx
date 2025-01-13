@@ -53,9 +53,9 @@ export default function ConfigurationModal({ show, setShow }: Props) {
       backdrop="static"
       centered
     >
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title id="PreferencesModal">
-          Preferences
+          Configuration
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
