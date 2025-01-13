@@ -5,8 +5,12 @@ from api.config import dynamicConfig
 
 
 def checkAccess(jwt, neededRoles):
-    if "roles" not in jwt or not (set(jwt["roles"]) & set(neededRoles)):
-        abort(401, "Missing role")
+    if "roles" not in jwt or (
+        len(neededRoles) > 0 and not (set(jwt["roles"]) & set(neededRoles))
+    ):
+        abort(
+            401, {"status": 400, "error": "IntegrityError", "message": "Missing role"}
+        )
 
 
 def checkAndUpdateConfigDB():

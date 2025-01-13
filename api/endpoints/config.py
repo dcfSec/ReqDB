@@ -94,7 +94,7 @@ class Config(Resource):
     method_decorators = [jwt_required()]
 
     neededPostAccess = ['Configuration.Writer']
-    neededGetAccess = ['Configuration.Reader']
+    neededGetAccess = []
 
     def get(self):
         checkAccess(get_jwt(), self.neededGetAccess)
