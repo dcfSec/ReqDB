@@ -1,8 +1,8 @@
-from marshmallow import EXCLUDE, validate
+from marshmallow import EXCLUDE, ValidationError, validate, validates_schema
 from api.appDefinition import ma
 from marshmallow_sqlalchemy import fields
 
-from api.models import ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue, Comment
+from api.models import ExtraEntry, ExtraType, Requirement, Tag, Topic, Catalogue, Comment, Configuration
 
 
 class ExtraEntryUpdateSchema(ma.SQLAlchemyAutoSchema):
@@ -84,3 +84,17 @@ class CommentUpdateSchema(ma.SQLAlchemyAutoSchema):
     requirementId = ma.auto_field(required=True)
     authorId = ma.auto_field(required=True)
     completed = ma.auto_field()
+
+
+class ConfigurationUpdateSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Configuration
+        load_instance = True
+        unknown = EXCLUDE
+    
+    value = ma.auto_field()
+    
+    @validates_schema()
+    def validateType(self, data, **kwargs):
+        if self.instance.type == "boolean" and data["value"] not in ["true", "false"]:
+            raise ValidationError('Value must be boolean', "value")

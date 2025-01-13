@@ -1,5 +1,5 @@
 from operator import itemgetter
-from marshmallow import EXCLUDE, ValidationError, post_load, validate, validates_schema
+from marshmallow import EXCLUDE, ValidationError, post_dump, post_load, validate, validates_schema
 from api.appDefinition import ma
 from marshmallow_sqlalchemy import fields
 
@@ -284,12 +284,10 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
 class ConfigurationSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Configuration
-        include_relationships = True
         load_instance = True
-        include_fk = True
         unknown = EXCLUDE
-    
-    @validates_schema
+
+    @validates_schema()
     def validateType(self, data, **kwargs):
         if data["type"] == "boolean" and data["value"] not in ["true", "false"]:
             raise ValidationError('Value must be boolean', "value")

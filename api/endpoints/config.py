@@ -10,6 +10,7 @@ from api.appDefinition import db
 from api.helper import checkAccess
 from api.models import Configuration
 from api.schemas import ConfigurationSchema
+from api.updateSchemas import ConfigurationUpdateSchema
 
 
 class Static(Resource):
@@ -59,10 +60,14 @@ class ConfigItem(Resource):
 
     def put(self, key: str):
         checkAccess(get_jwt(), ['Comments.Writer'])
+
+        for i in ["category", "type", "description"]:
+            if i in request.json:
+                del request.json[i]
         item = Configuration.query.get_or_404(key)
-        schema = ConfigurationSchema()
+        schema = ConfigurationUpdateSchema()
         try:
-            item = schema.load(
+            schema.load(
                 request.json, instance=item,
                 partial=True, session=db.session)
             db.session.commit()
