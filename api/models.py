@@ -5,7 +5,7 @@ from sqlalchemy.orm import backref
 
 class User(db.Model):
     id = db.Column(db.String(200), primary_key=True)
-    email = db.Column(db.String(200))
+    email = db.Column(db.String(254))
     created = db.Column(db.DateTime(timezone=True), server_default=functions.now())
 
     def __repr__(self):
