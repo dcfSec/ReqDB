@@ -1,5 +1,4 @@
-import { Button, Col, Container, Dropdown, Row, Stack } from "react-bootstrap";
-import { MainBreadcrumb } from "../MiniComponents";
+import { Alert, Button, Col, Dropdown, Row, Stack } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { ErrorMessage, buildRows } from '../MiniComponents'
 import RequirementsTable from "./RequirementsTable";
@@ -86,7 +85,7 @@ export default function BrowseContent({ id }: Props) {
   let errorMessage = <></>
 
   if (error) {
-    errorMessage = <>Error loading catalogue data. Error: ${error}</>
+    errorMessage = ErrorMessage(error)
   } else if (APIError) {
     errorMessage = ErrorMessage(APIError)
   }
@@ -129,19 +128,11 @@ export default function BrowseContent({ id }: Props) {
     );
   } else if (APIError || error) {
     return (
-      <Container fluid className="bg-body">
-        <Row>
-          <Col><MainBreadcrumb /></Col>
-        </Row>
-        <Row>
-          <Col><h2>Browse</h2></Col>
-        </Row>
         <Row>
           <Col>
-            {errorMessage}
+          <Alert variant="danger">{errorMessage}</Alert>
           </Col>
         </Row>
-      </Container>
     )
   } else {
     return null

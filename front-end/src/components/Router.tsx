@@ -21,7 +21,7 @@ import Comments from "../pages/Comments";
 export function Router() {
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{v7_relativeSplatPath: true, v7_startTransition: true,}}>
       <Routes>
         <Route path="/" element={/*<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Home">*/<Layout />/*</RouteGuard>*/}>
           <Route index element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} /* title="Home" */><Home /></RouteGuard>} />
@@ -90,11 +90,11 @@ export function Router() {
 export function LoginRouter({ authError = null }: { authError?: string | null; }) {
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{v7_relativeSplatPath: true, v7_startTransition: true,}}>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Login authError={authError} />} />
-          <Route path="*" element={<Login />} />
+          <Route path="*" element={<Login authError={authError} />} />
         </Route>
       </Routes>
     </BrowserRouter>

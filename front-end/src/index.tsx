@@ -13,7 +13,7 @@ import { Provider } from 'react-redux'
 
 import { staticConfig } from "./static";
 import { User } from 'oidc-client-ts';
-import { AuthProvider } from "react-oidc-context";
+import { AuthProvider, useAuth } from "react-oidc-context";
 
 import APIClient from './APIClient';
 
@@ -28,6 +28,9 @@ function getUser() {
 APIClient.interceptors.request.use(async (config) => {
   const user = getUser();
   const token = user?.access_token;
+  if (user && user.expired) {
+    await useAuth().signinSilent()
+  }
   if (token != undefined) {
     config.headers.Authorization = `Bearer ${token}`;
   }

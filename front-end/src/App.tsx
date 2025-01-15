@@ -15,15 +15,24 @@ function App() {
   const [hasTriedSignin, setHasTriedSignin] = useState(false);
 
 
+
   useEffect(() => {
     return auth.events.addAccessTokenExpiring(() => {
-      auth.signinSilent();
+      auth.signinSilent().then(() => {
+        if (!auth.user || auth.user.expired) {
+          auth.signinRedirect()
+        }
+      });
     })
   }, [auth.events, auth.signinSilent]);
 
   useEffect(() => {
     if (auth.user?.expired && !hasTriedSignin) {
-      auth.signinSilent();
+      auth.signinSilent().then(() => {
+        if (!auth.user || auth.user.expired) {
+          auth.signinRedirect()
+        }
+      });
       setHasTriedSignin(true);
     }
   }, [auth, hasTriedSignin]);
@@ -35,18 +44,13 @@ function App() {
       return <div>Signing you out...</div>;
   }
 
-  // if (auth.error) {
-  //   store.dispatch(showSpinner(false))
-  //   store.dispatch(toast({ header: "Authentication error", body: `Message:${auth.error.message}`}))
-  // }
-
   if (auth.isAuthenticated) {
     store.dispatch(showSpinner(false))
     dispatch(setRoles(auth.user?.profile.roles as string[]));
     dispatch(setName(auth.user?.profile.email as string));
     return <Router />
   }
-  return <LoginRouter authError={auth.error ? auth.error.message : null}/>;
+  return <LoginRouter authError={auth.error ? auth.error.message : null} />;
 }
 
 export default App;
