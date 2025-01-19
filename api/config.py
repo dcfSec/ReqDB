@@ -1,9 +1,9 @@
-from os import getenv, path
 import json
+from os import getenv, path
+
 import jwt
 import requests
 from cryptography.hazmat.primitives import serialization
-
 
 try:
     from dotenv import load_dotenv
@@ -14,7 +14,7 @@ except ImportError:
 
 basedir = path.abspath(path.dirname(__file__))
 
-for k in ["OAUTH_CLIENT_ID", "OAUTH_AUTHORITY", "OAUTH_PROVIDER"]:
+for k in ["OAUTH_CLIENT_ID", "OAUTH_CONFIG", "OAUTH_PROVIDER"]:
     if getenv(k) is None:
         raise AssertionError(f"Required env variable missing: {k}")
 
@@ -32,10 +32,16 @@ class Config:
     JWT_DECODE_ISSUER = ""
     JWT_PUBLIC_KEY = ""
     JWT_JWK_URI = ""
+    JWT_AUTHORITY = ""
+
+    EMAIL_HOST = ""
+    EMAIL_USER = ""
+    EMAIL_PASSWORD = ""
+    EMAIL_FROM = ""
 
     @classmethod
     def getJWKs(cls):
-        """Returns the jwt signing keys from the microsoft jwk list as dictionary
+        """Returns the jwt signing keys from the authorities jwk list as dictionary
         with kid -> pem
 
         :return dict: Dict with kid: pem
@@ -55,11 +61,21 @@ class Config:
 
     @classmethod
     def getOpenIdConfig(cls):
+        """Fetches the oidc config from the provided config URL and sets the issuer and the jwk URI
+
+        :raises AssertionError: Raises if "issuer" or "jwks_uri" are not present in the config
+        :raises HTTPError: Raises if the HTTP status is not ok
+        :raises requests.exceptions.JSONDecodeError: Raises if oauth config can't be decoded as json
+        """
         response = requests.get(
-            f"{getenv('OAUTH_AUTHORITY')}/.well-known/openid-configuration"
+            f"{getenv('OAUTH_CONFIG')}"
         )
         response.raise_for_status()
         openIdConfig = response.json()
+
+        for k in ["issuer", "jwks_uri"]:
+            if k not in openIdConfig:
+                raise AssertionError(f"Required key missing in oidc config URL: {k}")        
 
         cls.JWT_DECODE_ISSUER = openIdConfig["issuer"]
         cls.JWT_JWK_URI = openIdConfig["jwks_uri"]
