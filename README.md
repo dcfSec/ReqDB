@@ -74,7 +74,7 @@ DATABASE_URI=sqlite:///app.sqlite  # Database URI for sqlalchemy
 OAUTH_PROVIDER=xxx                 # Use oauth provider in human readable way (E.g. Entra ID or Octa).
                                    # This will be displayed as login button description
 OAUTH_CLIENT_ID=xxx                # Client ID for oauth
-OAUTH_AUTHORITY=xxx                # OAuth authority URL
+OAUTH_CONFIG=xxx                   # OAuth config URL (something like <AUTHORITY>/.well-known/openid-configuration)
 ```
 
 ## OAuth Server Configuration
