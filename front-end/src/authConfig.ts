@@ -17,7 +17,7 @@ export const oidcConfig = {
   redirect_uri: `${window.location.origin}/oauth/callback`,
   //filterProtocolClaims: true,
   scope: protectedResources.ReqDB.scopes.join(" "),
-  automaticSilentRenew: true,
+  //automaticSilentRenew: true,
   mergeClaimsStrategy: { array: "merge" },
   userStore: new WebStorageStateStore({ store: window.localStorage }),
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -17,12 +17,12 @@ function App() {
 
 
   useEffect(() => {
-    return auth.events.addAccessTokenExpiring(() => {
-      auth.signinSilent().then(() => {
-        if (!auth.user || auth.user.expired) {
-          auth.signinRedirect()
-        }
-      });
+    return auth.events.addAccessTokenExpiring(async () => {
+      await auth.signinSilent()
+      if (!auth.user || auth.user.expired) {
+        auth.signinRedirect()
+      }
+
     })
   }, [auth.events, auth.signinSilent]);
 
