@@ -1,22 +1,23 @@
-from api.appDefinition import app, db
 from flask_migrate import Migrate
+
+import api.audit
+from api.appDefinition import app, db
 from api.helper import checkAndUpdateConfigDB
 from api.models import (
+    Audit,
+    Base,
+    Catalogue,
+    CatalogueTopic,
+    Comment,
+    Configuration,
     ExtraEntry,
     ExtraType,
     Requirement,
+    RequirementTag,
     Tag,
     Topic,
-    Catalogue,
-    Comment,
-    Audit,
-    RequirementTag,
-    CatalogueTopic,
-    Base,
     User,
-    Configuration
 )
-import api.audit
 
 migrate = Migrate(app, db)
 

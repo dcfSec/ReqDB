@@ -1,24 +1,20 @@
 from flask import abort
+from flask_jwt_extended import get_jwt
+from sqlalchemy import and_
 
+from api.audit import AuditSchema
+from api.endpoints.base import BaseResource
+from api.helper import checkAccess
+from api.models import Audit as AuditModel
 from api.models import (
+    Catalogue,
+    Comment,
     ExtraEntry,
     ExtraType,
     Requirement,
     Tag,
     Topic,
-    Catalogue,
-    Comment,
-    Audit as AuditModel,
 )
-
-from api.endpoints.base import BaseResource
-
-from api.audit import AuditSchema
-
-from api.helper import checkAccess
-
-from flask_jwt_extended import get_jwt
-from sqlalchemy import and_
 
 
 class Audit(BaseResource):
