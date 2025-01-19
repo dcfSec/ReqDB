@@ -1,17 +1,14 @@
-from flask import request, abort
-
+from flask import request
+from flask_jwt_extended import get_jwt
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 from api.appDefinition import db
+from api.endpoints.base import BaseResource, BaseResources
+from api.helper import checkAccess
 from api.models import ExtraEntry as ExtraEntryModel
 from api.schemas import ExtraEntrySchema
 from api.updateSchemas import ExtraEntryUpdateSchema
-from api.endpoints.base import BaseResource, BaseResources
-
-from api.helper import checkAccess
-
-from flask_jwt_extended import get_jwt
 
 
 class ExtraEntry(BaseResource):

@@ -1,17 +1,15 @@
-from flask import request, abort
-
+from flask import request
+from flask_jwt_extended import get_jwt
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 from api.appDefinition import db
-from api.models import Topic, Requirement as RequirementModel
-from api.schemas import RequirementSchema, RequirementCommentsSchema
-from api.updateSchemas import RequirementUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
-
 from api.helper import checkAccess
-
-from flask_jwt_extended import get_jwt
+from api.models import Requirement as RequirementModel
+from api.models import Topic
+from api.schemas import RequirementCommentsSchema, RequirementSchema
+from api.updateSchemas import RequirementUpdateSchema
 
 
 class Requirement(BaseResource):

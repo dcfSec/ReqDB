@@ -4,22 +4,21 @@ Path mapping for the API.
 Maps classes to the API paths
 """
 
-from api.appDefinition import api_bp, api, db, configAPI
+from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 
+from api.appDefinition import api, api_bp, configAPI, db
+from api.endpoints.audit import Audit
 from api.endpoints.catalogues import Catalogue, Catalogues
+from api.endpoints.coffee import Coffee
 from api.endpoints.comments import Comment, Comments
-from api.endpoints.extraEntries import ExtraEntry, ExtraEntries
+from api.endpoints.config import Config, ConfigItem, Static
+from api.endpoints.extraEntries import ExtraEntries, ExtraEntry
 from api.endpoints.extraTypes import ExtraType, ExtraTypes
 from api.endpoints.requirements import Requirement, Requirements
 from api.endpoints.tags import Tag, Tags
 from api.endpoints.topics import Topic, Topics
-from api.endpoints.coffee import Coffee
 from api.endpoints.wildcard import Wildcard
-from api.endpoints.audit import Audit
-from api.endpoints.config import Static, Config, ConfigItem
-
 from api.models import User
-from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 
 api.add_resource(Catalogues, "/catalogues")
 api.add_resource(Catalogue, "/catalogues/<int:id>")
@@ -58,6 +57,10 @@ api.add_resource(Wildcard, "", "/", "/<path:path>")
 @api_bp.before_request
 @jwt_required()
 def checkUserInDBorCreate():
+    """
+    Checks if the user identity is already present in the "User" table.
+    If not the user will be created with the email form the JWT
+    """
     user = User.query.get(get_jwt_identity())
     if user is None:
         db.session.add(User(id=get_jwt_identity(), email=get_jwt()["email"]))

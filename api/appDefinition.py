@@ -1,14 +1,12 @@
 from os import path
 
-from flask import Flask, Blueprint
-from flask_restful import Api
-
+from flask import Blueprint, Flask
 from flask_jwt_extended import JWTManager
+from flask_marshmallow import Marshmallow
+from flask_restful import Api
+from flask_sqlalchemy import SQLAlchemy
 
 from api.config import Config
-
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
 
 Config.getOpenIdConfig()
 Config.getJWKs()
@@ -35,8 +33,9 @@ configAPI = ReqDBApi(configAPI_bp)
 
 
 @jwt.decode_key_loader
-def getDecodeKey(header, payload):
-    """Returns the correct decoding key for the jwt
+def getDecodeKey(header: dict, payload: dict):
+    """
+    Returns the correct decoding key for the jwt
 
     :param dict header: jwt header
     :param dict payload: jwt payload

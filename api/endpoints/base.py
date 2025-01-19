@@ -1,13 +1,11 @@
-from flask_restful import Resource
 from flask import request
-
-from api.appDefinition import db
-from api.helper import checkAccess
+from flask_jwt_extended import get_jwt, jwt_required
+from flask_restful import Resource
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import get_jwt
+from api.appDefinition import db
+from api.helper import checkAccess
 
 
 class BaseResource(Resource):
@@ -25,13 +23,14 @@ class BaseResources(Resource):
     model = None
 
     def get(self):
-        """Get all elements
+        """
+        Get all elements
 
         Required roles:
             - Requirements.Reader
             - Requirements.Writer
 
-        :return list: All elements
+        :return dict: All elements
         """
         checkAccess(get_jwt(), self.neededGetAccess)
         data = self.model.query.all()
@@ -78,11 +77,27 @@ class BaseResources(Resource):
                 'message': e.args
             }, 400
 
-    def check(self, object):
+    def check(self, object: dict):
+        """
+        Parent for performing checks on the posted object
+
+        :param dict object: The object from the post request parsed by the schema
+        """
         pass
 
     def getDynamicSchema(self):
+        """
+        Gets the dynamic schema for this class if needed
+
+        :return SQLAlchemySchema: Schema for parsing the request
+        """
         return self.dumpSchemaClass
     
-    def checkRequest(self, data):
+    def checkRequest(self, data: dict) -> dict:
+        """
+        Checks if the request is valid
+
+        :param dict data: JSON parsed dict from the request
+        :return dict: Validated dict from the request
+        """
         return data

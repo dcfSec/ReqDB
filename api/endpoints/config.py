@@ -1,5 +1,3 @@
-from os import getenv
-
 from flask import request
 from flask_jwt_extended import get_jwt, jwt_required
 from flask_restful import Resource
@@ -29,9 +27,9 @@ class Static(Resource):
             "status": 200,
             "data": {
                 "oauth": {
-                    "provider": getenv("OAUTH_PROVIDER"),
+                    "provider": AppConfig.JWT_PROVIDER,
                     "authority": AppConfig.JWT_DECODE_ISSUER,
-                    "client_id": getenv("OAUTH_CLIENT_ID"),
+                    "client_id": AppConfig.JWT_DECODE_AUDIENCE,
                 },
                 "home": {
                     "title": (

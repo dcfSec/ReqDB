@@ -1,17 +1,15 @@
-from flask import request, abort
-
+from flask import request
+from flask_jwt_extended import get_jwt, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 from api.appDefinition import db
-from api.models import Requirement, Comment as CommentModel
+from api.endpoints.base import BaseResource, BaseResources
+from api.helper import checkAccess
+from api.models import Comment as CommentModel
+from api.models import Requirement
 from api.schemas import CommentSchema
 from api.updateSchemas import CommentUpdateSchema
-from api.endpoints.base import BaseResource, BaseResources
-
-from api.helper import checkAccess
-
-from flask_jwt_extended import get_jwt, get_jwt_identity
 
 
 class Comment(BaseResource):

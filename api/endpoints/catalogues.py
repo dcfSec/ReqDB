@@ -1,17 +1,19 @@
-from flask import request, abort
-
+from flask import request
+from flask_jwt_extended import get_jwt
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 from api.appDefinition import db
+from api.endpoints.base import BaseResource, BaseResources
 from api.helper import checkAccess
 from api.models import Catalogue as CatalogueModel
-from api.schemas import CatalogueExtendedSchema, CatalogueSchema, \
-    CatalogueLightNestedSchema, CatalogueExtendedCommentsSchema
+from api.schemas import (
+    CatalogueExtendedCommentsSchema,
+    CatalogueExtendedSchema,
+    CatalogueLightNestedSchema,
+    CatalogueSchema,
+)
 from api.updateSchemas import CatalogueUpdateSchema
-from api.endpoints.base import BaseResource, BaseResources
-
-from flask_jwt_extended import get_jwt
 
 
 class Catalogue(BaseResource):
