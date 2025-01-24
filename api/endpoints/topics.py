@@ -1,18 +1,14 @@
 from flask import request
-
+from flask_jwt_extended import get_jwt
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 from api.appDefinition import db
-from api.models import Topic as TopicModel
-from api.schemas import TopicSchema, TopicOnlyIDAndTitleSchema, TopicCommentsSchema
-from api.updateSchemas import TopicUpdateSchema
 from api.endpoints.base import BaseResource, BaseResources
-
-
 from api.helper import checkAccess
-
-from flask_jwt_extended import get_jwt
+from api.models import Topic as TopicModel
+from api.schemas import TopicCommentsSchema, TopicOnlyIDAndTitleSchema, TopicSchema
+from api.updateSchemas import TopicUpdateSchema
 
 
 class Topic(BaseResource):
