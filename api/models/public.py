@@ -1,4 +1,5 @@
-from pydantic import ConfigDict, computed_field
+from pydantic import computed_field
+
 from api.models.base import (
     AuditBase,
     CatalogueBase,

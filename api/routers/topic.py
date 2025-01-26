@@ -1,18 +1,16 @@
 from typing import Annotated, Union
-from fastapi import Depends, HTTPException, status
+
+from fastapi import Depends, status
 from sqlmodel import select
 
-from api.helper import checkParentTopicChildren
-from api.routers import AuthRouter, getUserId
 from api.error import ConflictError, NotFound
+from api.helper import checkParentTopicChildren
+from api.models import SessionDep, audit
+from api.models.db import Topic
 from api.models.insert import Insert
+from api.models.response import Response
 from api.models.update import Update
-
-from ..models import SessionDep, audit
-from ..models.db import Topic
-from ..models.response import (
-    Response,
-)
+from api.routers import AuthRouter, getUserId
 
 router = AuthRouter()
 

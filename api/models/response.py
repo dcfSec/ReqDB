@@ -3,6 +3,7 @@ from typing import Union
 from pydantic import BaseModel
 
 from api.models.base import StaticConfiguration
+from api.models.db import Configuration
 from api.models.public import (
     Audit,
     CatalogueWithTopics,
@@ -17,8 +18,6 @@ from api.models.public import (
     TopicWithParent,
     TopicWithRequirements,
 )
-
-from .db import Configuration
 
 
 class ResponseBase(BaseModel):

@@ -1,16 +1,10 @@
 import json
 from os import getenv, path
 
-import jwt
+from authlib.jose import JsonWebKey
 import requests
 from cryptography.hazmat.primitives import serialization
 
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
 
 basedir = path.abspath(path.dirname(__file__))
 
@@ -49,15 +43,7 @@ class AppConfig:
         r = {}
         response = requests.get(AppConfig.JWT_JWK_URI)
         response.raise_for_status()
-        keys = response.json()["keys"]
-        for key in keys:
-            rsa_pem_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key))
-            rsa_pem_key_bytes = rsa_pem_key.public_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo,
-            )
-            r[key["kid"]] = rsa_pem_key_bytes
-        cls.JWT_PUBLIC_KEY = r
+        cls.JWT_PUBLIC_KEY = JsonWebKey.import_key_set(response.json()["keys"])
 
     @classmethod
     def getOpenIdConfig(cls):

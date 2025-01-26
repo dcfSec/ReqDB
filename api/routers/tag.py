@@ -1,16 +1,15 @@
 from typing import Annotated, Union
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, status
 from sqlmodel import select
 
 from api.error import ConflictError, NotFound
+from api.models import SessionDep, audit
+from api.models.db import Tag
 from api.models.insert import Insert
+from api.models.response import Response
 from api.models.update import Update
 from api.routers import AuthRouter, getUserId
-
-from ..models import SessionDep, audit
-from ..models.db import Tag
-from ..models.response import Response
 
 router = AuthRouter()
 
@@ -61,7 +60,7 @@ async def patchTag(
 
 
 @router.post("/tags", status_code=status.HTTP_201_CREATED)
-def addTag(
+async def addTag(
     tag: Insert.Tag,
     session: SessionDep,
     userId: Annotated[dict, Depends(getUserId)],
@@ -75,7 +74,7 @@ def addTag(
 
 
 @router.delete("/tags/{tagID}", status_code=status.HTTP_204_NO_CONTENT)
-def deleteTag(
+async def deleteTag(
     tagID: int,
     session: SessionDep,
     userId: Annotated[dict, Depends(getUserId)],

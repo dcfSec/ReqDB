@@ -1,16 +1,16 @@
 from typing import Callable, Optional
+
 from authlib.jose import JsonWebToken
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.routing import APIRoute
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session
 
+from api.config import AppConfig
 from api.error import AuthConfigMissing, Forbidden, Unauthorized
+from api.models import engine
 from api.models.db import User
 
-from ..config import AppConfig
-
-from ..models import engine
 oauthParams = {
     "iss": {"essential": True, "values": [AppConfig.JWT_DECODE_ISSUER]},
     "sub": {"essential": True, "value": AppConfig.JWT_DECODE_AUDIENCE},
@@ -104,13 +104,13 @@ def getDecodeKey(header: dict, payload: dict):
     :raises KeyError: Returns if the key ID is not found in the dict
     :return str: Key in PEM format
     """
-    if header["kid"] in AppConfig.JWT_PUBLIC_KEY:
-        return AppConfig.JWT_PUBLIC_KEY[header["kid"]]
-    else:
+    try:
+        return AppConfig.JWT_PUBLIC_KEY.find_by_kid(header["kid"])
+    except ValueError:
         AppConfig.getJWKs()
-        if header["kid"] in AppConfig.JWT_PUBLIC_KEY:
-            return AppConfig.JWT_PUBLIC_KEY[header["kid"]]
-        else:
+        try:
+            return AppConfig.JWT_PUBLIC_KEY.find_by_kid(header["kid"])
+        except ValueError:
             raise KeyError(f"kid {header['kid']} is not a supported key ID")
 
 

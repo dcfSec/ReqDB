@@ -1,18 +1,16 @@
 from typing import Annotated, Union
-from fastapi import Depends, HTTPException, status
+
+from fastapi import Depends, status
 from sqlmodel import select
 
-from api.helper import checkParentTopicChildren
-from api.routers import AuthRouter, getUserId
 from api.error import ConflictError, NotFound
+from api.helper import checkParentTopicChildren
+from api.models import SessionDep, audit
+from api.models.db import Requirement
 from api.models.insert import Insert
+from api.models.response import Response
 from api.models.update import Update
-
-from ..models import SessionDep, audit
-from ..models.db import Requirement
-from ..models.response import (
-    Response,
-)
+from api.routers import AuthRouter, getUserId
 
 router = AuthRouter()
 
@@ -64,7 +62,7 @@ async def patchRequirement(
 
 
 @router.post("/requirements", status_code=status.HTTP_201_CREATED)
-def addRequirement(
+async def addRequirement(
     requirement: Insert.Requirement,
     session: SessionDep,
     userId: Annotated[dict, Depends(getUserId)],
@@ -79,7 +77,7 @@ def addRequirement(
 
 
 @router.delete("/requirements/{requirementID}", status_code=status.HTTP_204_NO_CONTENT)
-def deleteRequirement(
+async def deleteRequirement(
     requirementID: int,
     session: SessionDep,
     userId: Annotated[dict, Depends(getUserId)],

@@ -1,9 +1,19 @@
-from datetime import datetime
 from typing import Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from api.models.base import AuditBase, CatalogueBase, CommentBase, ConfigurationBase, ExtraEntryBase, ExtraTypeBase, RequirementBase, TagBase, TopicBase, UserBase
+from api.models.base import (
+    AuditBase,
+    CatalogueBase,
+    CommentBase,
+    ConfigurationBase,
+    ExtraEntryBase,
+    ExtraTypeBase,
+    RequirementBase,
+    TagBase,
+    TopicBase,
+    UserBase,
+)
 
 
 class TableBase(SQLModel):

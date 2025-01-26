@@ -4,10 +4,8 @@ from fastapi import Depends, status
 from sqlmodel import desc, select
 
 from api.error import Forbidden, NotFound
-from api.routers import AuthRouter, getRoles
-
-from ..models import SessionDep
-from ..models.db import (
+from api.models import SessionDep
+from api.models.db import (
     Audit,
     Catalogue,
     Comment,
@@ -17,7 +15,8 @@ from ..models.db import (
     Tag,
     Topic,
 )
-from ..models.response import Response
+from api.models.response import Response
+from api.routers import AuthRouter, getRoles
 
 router = AuthRouter()
 

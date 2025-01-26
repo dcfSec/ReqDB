@@ -1,17 +1,15 @@
 from typing import Annotated, Union
-from fastapi import Depends, HTTPException, status
+
+from fastapi import Depends, status
 from sqlmodel import select
 
-from api.routers import AuthRouter, getUserId
 from api.error import ConflictError, NotFound
+from api.models import SessionDep, audit
+from api.models.db import ExtraType
 from api.models.insert import Insert
+from api.models.response import Response
 from api.models.update import Update
-
-from ..models import SessionDep, audit
-from ..models.db import ExtraType
-from ..models.response import (
-    Response,
-)
+from api.routers import AuthRouter, getUserId
 
 router = AuthRouter()
 
@@ -62,7 +60,7 @@ async def patchExtraType(
 
 
 @router.post("/extraTypes", status_code=status.HTTP_201_CREATED)
-def addExtraType(
+async def addExtraType(
     extraType: Insert.ExtraType,
     session: SessionDep,
     userId: Annotated[dict, Depends(getUserId)],
@@ -76,7 +74,7 @@ def addExtraType(
 
 
 @router.delete("/extraTypes/{extraTypeID}", status_code=status.HTTP_204_NO_CONTENT)
-def deleteExtraType(
+async def deleteExtraType(
     extraTypeID: int,
     session: SessionDep,
     userId: Annotated[dict, Depends(getUserId)],

@@ -1,7 +1,7 @@
 import smtplib
 from email.message import EmailMessage
 
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from api.config import AppConfig, dynamicConfig
 from api.error import ConflictError, NotFound
@@ -14,14 +14,10 @@ def checkAndUpdateConfigDB():
     Checks the configuration table if all dynamic configuration keys are available with the correct type and description
     """
 
-    
     with Session(engine) as session:
-        data = session.exec(select(Configuration)).all()
-
-        dataKeys = [d.key for d in data]
-        
         for key, config in dynamicConfig.items():
-            if key not in dataKeys:
+            item = session.get(Configuration, key)
+            if not item:
                 session.add(
                     Configuration(
                         key=key,
@@ -31,15 +27,14 @@ def checkAndUpdateConfigDB():
                         category=config["category"],
                     )
                 )
-                
             else:
-                if config["description"] != data[dataKeys.index(key)].description:
-                    data[dataKeys.index(key)].description = config["description"]
-                if config["type"] != data[dataKeys.index(key)].description:
-                    data[dataKeys.index(key)].type = config["type"]
-                if config["category"] != data[dataKeys.index(key)].category:
-                    data[dataKeys.index(key)].category = config["category"]
-                session.add(data[dataKeys.index(key)])
+                if config["description"] != item.description:
+                    item.description = config["description"]
+                if config["type"] != item.description:
+                    item.type = config["type"]
+                if config["category"] != item.category:
+                    item.category = config["category"]
+                session.add(item)
         session.commit()
 
 
@@ -67,7 +62,6 @@ def sendNotificationMail(recipient: str, subject: str, content: str):
         s.sendmail(AppConfig.EMAIL_FROM, recipient, msg.as_string())
 
 
-
 def checkParentTopicChildren(topicID: int, session, forRequirements: bool = False):
     if topicID:
         topic = session.get(Topic, topicID)
@@ -76,13 +70,14 @@ def checkParentTopicChildren(topicID: int, session, forRequirements: bool = Fals
         if forRequirements and len(topic.requirements) > 0:
             raise ConflictError(
                 detail=[
-                    "Can't add child to parent Topic", "Topic has already requirements.",
+                    "Can't add child to parent Topic",
+                    "Topic has already requirements.",
                 ]
             )
         if not forRequirements and len(topic.children) > 0:
             raise ConflictError(
                 detail=[
-                    "Can't add requirement to parent Topic", "Topic has already children.",
+                    "Can't add requirement to parent Topic",
+                    "Topic has already children.",
                 ]
             )
-

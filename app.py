@@ -1,7 +1,10 @@
 __version__ = "0.1.0"
 
+import multiprocessing
 from contextlib import asynccontextmanager
+from os import getenv
 
+import uvicorn
 from authlib.integrations.starlette_client import OAuth
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
@@ -17,6 +20,13 @@ from api.helper import checkAndUpdateConfigDB
 from api.models import engine
 from api.models.db import *
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 
 async def not_found(request: Request, exc: HTTPException):
     return FileResponse("front-end/dist/index.html", status_code=exc.status_code)
@@ -27,7 +37,7 @@ exception_handlers = {
 }
 
 
-config = Config(".env")
+config = Config()
 oauth = OAuth(config)
 
 oauth.register(
@@ -72,3 +82,19 @@ app.add_middleware(SessionMiddleware, secret_key="!secret")
 app.mount("/api", api.api)
 
 app.mount("/", SPAStaticFiles(directory="front-end/dist", html=True), name="index")
+
+
+if __name__ == "__main__":
+
+    workers = getenv("USE_UVICORN_WORKERS")
+    if workers == -1:
+        workers = (multiprocessing.cpu_count() * 2) + 1
+
+    uvicorn.run(
+        "app:app",
+        port=8000,
+        host="0.0.0.0",
+        proxy_headers=True,
+        access_log=True,
+        workers=workers,
+    )

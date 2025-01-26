@@ -1,17 +1,15 @@
-from typing import Annotated, Union
-from fastapi import Depends, HTTPException, status
+from typing import Annotated
+
+from fastapi import Depends, status
 from sqlmodel import select
 
-from api.routers import AuthRouter, getUserId
 from api.error import NotFound
+from api.models import SessionDep, audit
+from api.models.db import Comment
 from api.models.insert import Insert
+from api.models.response import Response
 from api.models.update import Update
-
-from ..models import SessionDep, audit
-from ..models.db import Comment
-from ..models.response import (
-    Response,
-)
+from api.routers import AuthRouter, getUserId
 
 router = AuthRouter()
 
@@ -59,7 +57,7 @@ async def patchComment(
 
 
 @router.post("/comments", status_code=status.HTTP_201_CREATED)
-def addComment(
+async def addComment(
     userId: Annotated[dict, Depends(getUserId)], 
     comment: Insert.Comment,
     session: SessionDep,
@@ -74,7 +72,7 @@ def addComment(
 
 
 @router.delete("/comments/{commentID}", status_code=status.HTTP_204_NO_CONTENT)
-def deleteComment(
+async def deleteComment(
     commentID: int,
     session: SessionDep,
     userId: Annotated[dict, Depends(getUserId)],

@@ -1,9 +1,8 @@
 
 from fastapi import status
 
+from api.models.response import Response
 from api.routers import AuthRouter
-
-from ..models.response import Response
 
 router = AuthRouter()
 

@@ -3,9 +3,8 @@ from typing import Annotated
 from fastapi import Depends
 from sqlmodel import Field, Session, SQLModel, create_engine
 
+from api.config import AppConfig
 from api.models.db import Audit
-
-from ..config import AppConfig
 
 
 class EntityBase(SQLModel):

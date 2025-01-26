@@ -1,14 +1,15 @@
 from typing import Annotated
-from fastapi import Depends, HTTPException, status
+
+from fastapi import Depends, status
 from sqlmodel import select
 
+from api.config import AppConfig
+from api.error import NotFound
+from api.models import SessionDep
+from api.models.db import Configuration
+from api.models.response import Response, ResponseUpdate
 from api.models.update import Update
 from api.routers import AuthRouter, getUserId
-
-from ..config import AppConfig
-from ..models import SessionDep, audit
-from ..models.db import Configuration
-from ..models.response import Response, ResponseUpdate
 
 router = AuthRouter()
 
@@ -68,7 +69,7 @@ async def patchConfig(
     session.add(configurationFromDB)
     session.commit()
     session.refresh(configurationFromDB)
-    if configurationFromDB.type == "secret":
-        configurationFromDB.value = "******"
-    audit(session, 1, configurationFromDB, userId)
+    # if configurationFromDB.type == "secret":
+    #     configurationFromDB.value = "******"
+    # audit(session, 1, configurationFromDB, userId)
     return {"status": 200, "data": configurationFromDB}
