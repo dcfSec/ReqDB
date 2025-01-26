@@ -1,16 +1,10 @@
 import json
 from os import getenv, path
 
-import jwt
+from authlib.jose import JsonWebKey
 import requests
 from cryptography.hazmat.primitives import serialization
 
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
 
 basedir = path.abspath(path.dirname(__file__))
 
@@ -19,14 +13,12 @@ for k in ["OAUTH_CLIENT_ID", "OAUTH_CONFIG", "OAUTH_PROVIDER"]:
         raise AssertionError(f"Required env variable missing: {k}")
 
 
-class Config:
+class AppConfig:
     SECRET_KEY = getenv("SECRET_KEY")
-    SQLALCHEMY_DATABASE_URI = (
+    DATABASE_URI = (
         getenv("DATABASE_URI") or f"sqlite:///{path.join(basedir, 'app.sqlite')}"
     )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    JWT_ERROR_MESSAGE_KEY = "error"
     JWT_ALGORITHM = "RS256"
     JWT_PROVIDER = f"{getenv('OAUTH_PROVIDER')}"
     JWT_DECODE_AUDIENCE = f"{getenv('OAUTH_CLIENT_ID')}"
@@ -49,17 +41,9 @@ class Config:
         :return dict: Dict with kid: pem
         """
         r = {}
-        response = requests.get(Config.JWT_JWK_URI)
+        response = requests.get(AppConfig.JWT_JWK_URI)
         response.raise_for_status()
-        keys = response.json()["keys"]
-        for key in keys:
-            rsa_pem_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key))
-            rsa_pem_key_bytes = rsa_pem_key.public_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo,
-            )
-            r[key["kid"]] = rsa_pem_key_bytes
-        cls.JWT_PUBLIC_KEY = r
+        cls.JWT_PUBLIC_KEY = JsonWebKey.import_key_set(response.json()["keys"])
 
     @classmethod
     def getOpenIdConfig(cls):

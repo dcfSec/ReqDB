@@ -54,7 +54,7 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
 
   function updateCompleted(completed: boolean) {
     dispatch(showSpinner(true))
-    APIClient.put(`comments/${comment.id}`, { ...comment, completed: completed }).then((response) => {
+    APIClient.patch(`comments/${comment.id}`, { ...comment, completed: completed }).then((response) => {
       handleResult(response, okCallback, APIErrorToastCallback)
     }).catch((error) => {
       handleError(error, APIErrorToastCallback, errorToastCallback)

@@ -114,7 +114,7 @@ export function ErrorMessage(message: string | Array<string> | Record<string, Ar
   let errorLines = null
   if (Array.isArray(message)) {
     errorLines = <>{message.map((line, index) => (
-      <p key={index}>{line}</p>
+      <p key={index}>{typeof line === "string" ? line : JSON.stringify(line)}</p>
     ))}</>
   } else if (typeof message === "object") {
     errorLines = <ul>
@@ -254,3 +254,19 @@ export function getActionBadge(action: string) {
     return <Badge bg="danger">DELETE</Badge>
   }
 }
+
+export function toISOStringWithTimezone(date: Date) {
+  const pad = (n: number) => `${Math.floor(Math.abs(n))}`.padStart(2, '0');
+  const getTimezoneOffset = (date: Date) => {
+    const tzOffset = -date.getTimezoneOffset();
+    const diff = tzOffset >= 0 ? '+' : '-';
+    return diff + pad(tzOffset / 60) + ':' + pad(tzOffset % 60);
+  };
+  return date.getFullYear() +
+    '-' + pad(date.getMonth() + 1) +
+    '-' + pad(date.getDate()) +
+    'T' + pad(date.getHours()) +
+    ':' + pad(date.getMinutes()) +
+    ':' + pad(date.getSeconds()) +
+    getTimezoneOffset(date);
+};

@@ -67,7 +67,7 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
 
   function toggleComplete() {
     dispatch(showSpinner(true))
-    APIClient.put(`comments/${comment.id}`, { ...comment, completed: !comment.completed }).then((response) => {
+    APIClient.patch(`comments/${comment.id}`, { ...comment, completed: !comment.completed }).then((response) => {
       handleResult(response, okCallback, APIErrorToastCallback)
     }).catch((error) => {
       handleError(error, APIErrorToastCallback, errorToastCallback)

@@ -45,8 +45,10 @@ npm run build
 #### Run
 
 ```sh
-gunicorn app:app
+python3.13 app.py
 ```
+
+_The app was tested with python3.13_
 
 ### Docker
 
@@ -63,8 +65,6 @@ ReqDB can be deployed with our docker image. The image is available at [docker h
 The base configuration is done via environment variables:
 
 ```sh
-FLASK_APP=ReqDB                    # Name of the Flask app
-FLASK_ENV=production               # Flask environment: production or development
 SECRET_KEY=CHANGEME                # The secret key for Flask
                                    # See https://flask.palletsprojects.com/en/stable/config/#SECRET_KEY for details
 
@@ -75,6 +75,8 @@ OAUTH_PROVIDER=xxx                 # Use oauth provider in human readable way (E
                                    # This will be displayed as login button description
 OAUTH_CLIENT_ID=xxx                # Client ID for oauth
 OAUTH_CONFIG=xxx                   # OAuth config URL (something like <AUTHORITY>/.well-known/openid-configuration)
+
+USE_UVICORN_WORKERS=-1             # Use this if you want to use workers for uvicorn (-1 uses the max available workers) Don't set this if you don't want to use workers   
 ```
 
 ## OAuth Server Configuration
@@ -129,8 +131,8 @@ Lastly in in `API permissions` the permissions `email`, `openid` and `profile` n
 ## Development
 
 1. Clone the repository: `git clone git@github.com:dcfSec/ReqDB.git; cd ReqDB`
-2. Install the backend requirements: `pip install -r requirements.tx`
-3. Start the backend: `flask run flask --app app run --reload --with-threads`
+2. Install the backend requirements: `poetry install --no-root` (`poetry` is used to manage the dependencies for development)
+3. Start the backend: `fastapi dev app.py`
 4. Install the frontend requirements: `cd front-end; npm install`
 5. Start the frontend for development `npm run start`
 

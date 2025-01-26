@@ -27,9 +27,9 @@ RUN apk update && \
     apk add --allow-untrusted mssql-tools18_18.4.1.1-1_amd64.apk && \
     rm -rf msodbcsql18_18.4.1.1-1_amd64.sig msodbcsql18_18.4.1.1-1_amd64.apk && \
     rm -rf mssql-tools18_18.4.1.1-1_amd64.sig mssql-tools18_18.4.1.1-1_amd64.apk && \
-    pip install -r requirements.txt && \
+    pip install --no-cache-dir --upgrade -r requirements.txt && \
     apk del -r g++ gnupg curl
 
 EXPOSE 8000
 
-CMD ["gunicorn", "app:app"]
+CMD ["python", "app.py"]

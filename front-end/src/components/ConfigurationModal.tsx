@@ -30,7 +30,7 @@ export default function ConfigurationModal({ show, setShow }: Props) {
     dispatch(showSpinner(true))
     Object.keys(configuration).forEach((key) => {
       if (configuration[key].dirty == true) {
-        APIClient.put(`config/${key}`, { ...configuration[key] }).then((response) => {
+        APIClient.patch(`config/${key}`, { ...configuration[key] }).then((response) => {
           handleResult(response, okCallback, APIErrorToastCallback)
         }).catch((error) => {
           handleError(error, APIErrorToastCallback, errorToastCallback)

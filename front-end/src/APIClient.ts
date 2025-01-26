@@ -27,7 +27,7 @@ export function handleError(error: { response: { data: APIErrorData; }; message:
 }
 
 export function APIErrorToastCallback(response: APIErrorData) {
-  store.dispatch(toast({ header: response.error, body: response.message as string }))
+  store.dispatch(toast({ header: response.error, body: response.message }))
 }
 
 export function errorToastCallback(error: string) {

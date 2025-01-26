@@ -7,7 +7,7 @@ interface NotificationToastState {
 
 interface Toast {
   header: string;
-  body: string;
+  body: string | string[] | Record<string, string[]>;
 }
 
 const initialState: NotificationToastState = {
@@ -24,7 +24,7 @@ export const NotificationToastSlice = createSlice({
       tmp.splice(action.payload, 1);
       state.toasts = [...tmp]
     },
-    toast: (state, action: PayloadAction<{ header: string; body: string }>) => {
+    toast: (state, action: PayloadAction<{ header: string; body: string | string[] | Record<string, string[]> }>) => {
       const toast = {
         header: action.payload.header,
         body: action.payload.body

@@ -42,8 +42,9 @@ export function TopicsCard() {
   const parent = requirement ? buildTopicsList({...requirement.parent}).map(topic => (<span key={topic}>{' '}<FontAwesomeIcon icon={solid("arrow-right")} />{' '}<Badge bg="secondary">{topic}</Badge></span>)) : ""
 
   function buildTopicsList(topic: Topic) {
+    console.log(topic)
     let r = [topic.title]
-    if (topic.parent !== null) {
+    if (topic.parentId !== null) {
       r = buildTopicsList(topic.parent).concat(r)
     }
     return r
