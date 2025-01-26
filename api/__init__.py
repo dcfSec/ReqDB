@@ -1,26 +1,62 @@
-from flask_migrate import Migrate
+from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
-import api.audit
-from api.appDefinition import app, db
-from api.helper import checkAndUpdateConfigDB
-from api.models import (
-    Audit,
-    Base,
-    Catalogue,
-    CatalogueTopic,
-    Comment,
-    Configuration,
-    ExtraEntry,
-    ExtraType,
-    Requirement,
-    RequirementTag,
-    Tag,
-    Topic,
-    User,
+from api.routers import (
+    audit,
+    catalogue,
+    coffee,
+    comment,
+    config,
+    extraEntry,
+    extraType,
+    requirement,
+    tag,
+    topic,
 )
 
-migrate = Migrate(app, db)
+api = FastAPI()
 
-with app.app_context():
-    db.create_all()
-    checkAndUpdateConfigDB()
+api.include_router(config.router)
+api.include_router(tag.router)
+api.include_router(catalogue.router)
+api.include_router(comment.router)
+api.include_router(topic.router)
+api.include_router(requirement.router)
+api.include_router(extraType.router)
+api.include_router(extraEntry.router)
+api.include_router(audit.router)
+api.include_router(coffee.router)
+
+
+@api.exception_handler(HTTPException)
+async def genericExceptionHandler(request, exc: HTTPException):
+    return JSONResponse(
+        {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
+        status_code=exc.status_code,
+    )
+
+
+@api.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc: StarletteHTTPException):
+    return JSONResponse(
+        {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
+        status_code=exc.status_code,
+    )
+
+
+@api.exception_handler(RequestValidationError)
+async def http_exception_handler(request, exc: RequestValidationError):
+    return JSONResponse(
+        {"status": 422, "error": type(exc).__name__, "message": exc.errors()},
+        status_code=422,
+    )
+
+
+@api.exception_handler(Exception)
+async def http_exception_handler(request, exc: Exception):
+    return JSONResponse(
+        {"status": 500, "error": type(exc).__name__, "message": str(exc)},
+        status_code=500,
+    )

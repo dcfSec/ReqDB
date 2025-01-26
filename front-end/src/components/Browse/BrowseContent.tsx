@@ -52,7 +52,7 @@ export default function BrowseContent({ id }: Props) {
     dispatch(showSpinner(true))
     dispatch(setStatus("loading"));
 
-    APIClient.get(`catalogues/${id}?extended`).then((response) => {
+    APIClient.get(`catalogues/${id}?expandRelationships=true`).then((response) => {
       handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
       handleError(error, APIErrorCallback, errorCallback)

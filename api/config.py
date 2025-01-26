@@ -19,14 +19,12 @@ for k in ["OAUTH_CLIENT_ID", "OAUTH_CONFIG", "OAUTH_PROVIDER"]:
         raise AssertionError(f"Required env variable missing: {k}")
 
 
-class Config:
+class AppConfig:
     SECRET_KEY = getenv("SECRET_KEY")
-    SQLALCHEMY_DATABASE_URI = (
+    DATABASE_URI = (
         getenv("DATABASE_URI") or f"sqlite:///{path.join(basedir, 'app.sqlite')}"
     )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    JWT_ERROR_MESSAGE_KEY = "error"
     JWT_ALGORITHM = "RS256"
     JWT_PROVIDER = f"{getenv('OAUTH_PROVIDER')}"
     JWT_DECODE_AUDIENCE = f"{getenv('OAUTH_CLIENT_ID')}"
@@ -49,7 +47,7 @@ class Config:
         :return dict: Dict with kid: pem
         """
         r = {}
-        response = requests.get(Config.JWT_JWK_URI)
+        response = requests.get(AppConfig.JWT_JWK_URI)
         response.raise_for_status()
         keys = response.json()["keys"]
         for key in keys:

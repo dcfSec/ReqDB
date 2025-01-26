@@ -61,7 +61,7 @@ export default function EditListRow({ index, endpoint, needCascade, originalItem
 
   function saveItem() {
     dispatch(showSpinner(true))
-    APIClient.put(`${endpoint}/${originalItem.id}?minimal`, item).then((response) => {
+    APIClient.patch(`${endpoint}/${originalItem.id}?minimal=true`, item).then((response) => {
       handleResult(response, okCallback, APIErrorToastCallback)
     }).catch((error) => {
       handleError(error, APIErrorToastCallback, errorToastCallback)
@@ -78,9 +78,9 @@ export default function EditListRow({ index, endpoint, needCascade, originalItem
   function handleDeleteItem() {
     const parameters = []
     if (force) {
-      parameters.push("force")
+      parameters.push("force=true")
       if (cascade) {
-        parameters.push("cascade")
+        parameters.push("cascade=true")
       }
     }
     dispatch(showSpinner(true))

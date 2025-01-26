@@ -1,62 +1,46 @@
 import smtplib
 from email.message import EmailMessage
 
-from flask import abort
+from sqlmodel import Session, select
 
-from api.appDefinition import db
-from api.config import Config, dynamicConfig
-from api.models import Configuration
-
-
-def checkAccess(jwt: dict, neededRoles: list[str]):
-    """
-    Checks the access for a request. Checks if the jwt contains the needed roles.
-    Aborts if the required roles are not met
-
-    :param dict jwt: Dict with the JWT properties
-    :param list neededRoles: List with the needed roles
-    """
-
-    if "roles" not in jwt or (
-        len(neededRoles) > 0 and not (set(jwt["roles"]) & set(neededRoles))
-    ):
-        abort(
-            401,
-            {
-                "status": 400,
-                "error": "AuthorizationError",
-                "message": "Missing a needed role for this request.",
-            },
-        )
+from api.config import AppConfig, dynamicConfig
+from api.error import ConflictError, NotFound
+from api.models import engine
+from api.models.db import Configuration, Topic
 
 
 def checkAndUpdateConfigDB():
     """
     Checks the configuration table if all dynamic configuration keys are available with the correct type and description
     """
-    data = Configuration.query.all()
 
-    dataKeys = [d.key for d in data]
+    
+    with Session(engine) as session:
+        data = session.exec(select(Configuration)).all()
 
-    for key, config in dynamicConfig.items():
-        if key not in dataKeys:
-            db.session.add(
-                Configuration(
-                    key=key,
-                    value=config["value"],
-                    type=config["type"],
-                    description=config["description"],
-                    category=config["category"],
+        dataKeys = [d.key for d in data]
+        
+        for key, config in dynamicConfig.items():
+            if key not in dataKeys:
+                session.add(
+                    Configuration(
+                        key=key,
+                        value=config["value"],
+                        type=config["type"],
+                        description=config["description"],
+                        category=config["category"],
+                    )
                 )
-            )
-        else:
-            if config["description"] != data[dataKeys.index(key)].description:
-                data[dataKeys.index(key)].description = config["description"]
-            if config["type"] != data[dataKeys.index(key)].description:
-                data[dataKeys.index(key)].type = config["type"]
-            if config["category"] != data[dataKeys.index(key)].category:
-                data[dataKeys.index(key)].category = config["category"]
-    db.session.commit()
+                
+            else:
+                if config["description"] != data[dataKeys.index(key)].description:
+                    data[dataKeys.index(key)].description = config["description"]
+                if config["type"] != data[dataKeys.index(key)].description:
+                    data[dataKeys.index(key)].type = config["type"]
+                if config["category"] != data[dataKeys.index(key)].category:
+                    data[dataKeys.index(key)].category = config["category"]
+                session.add(data[dataKeys.index(key)])
+        session.commit()
 
 
 def sendNotificationMail(recipient: str, subject: str, content: str):
@@ -72,12 +56,33 @@ def sendNotificationMail(recipient: str, subject: str, content: str):
     msg.set_content(content)
 
     msg["Subject"] = subject
-    msg["From"] = Config.EMAIL_FROM
+    msg["From"] = AppConfig.EMAIL_FROM
     msg["To"] = recipient
 
     with smtplib.SMTP("localhost") as s:
         s.ehlo()
         s.starttls()
         s.ehlo()
-        s.login(Config.EMAIL_USER, Config.EMAIL_PASSWORD)
-        s.sendmail(Config.EMAIL_FROM, recipient, msg.as_string())
+        s.login(AppConfig.EMAIL_USER, AppConfig.EMAIL_PASSWORD)
+        s.sendmail(AppConfig.EMAIL_FROM, recipient, msg.as_string())
+
+
+
+def checkParentTopicChildren(topicID: int, session, forRequirements: bool = False):
+    if topicID:
+        topic = session.get(Topic, topicID)
+        if not topic:
+            raise NotFound(detail="Parent not found")
+        if forRequirements and len(topic.requirements) > 0:
+            raise ConflictError(
+                detail=[
+                    "Can't add child to parent Topic", "Topic has already requirements.",
+                ]
+            )
+        if not forRequirements and len(topic.children) > 0:
+            raise ConflictError(
+                detail=[
+                    "Can't add requirement to parent Topic", "Topic has already children.",
+                ]
+            )
+

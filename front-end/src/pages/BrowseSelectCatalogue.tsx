@@ -34,7 +34,7 @@ export default function BrowseSelectCatalogue() {
   useEffect(() => {
     dispatch(showSpinner(true))
     dispatch(reset());
-    APIClient.get(`catalogues`).then((response) => {
+    APIClient.get(`catalogues?expandRelationships=false`).then((response) => {
       handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
       handleError(error, APIErrorCallback, errorCallback)

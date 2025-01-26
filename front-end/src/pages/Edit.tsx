@@ -145,8 +145,8 @@ export function Tags() {
       "name"
     ]}
     endpoint="tags"
-    needCascade={true}
-    parameters={["minimal"]}
+    needCascade={false}
+    parameters={["expandRelationships=true"]}
   />
 }
 
@@ -173,8 +173,8 @@ export function Catalogues() {
       "description"
     ]}
     endpoint="catalogues"
-    needCascade={true}
-    parameters={["nested"]}
+    needCascade={false}
+    parameters={["expandRelationships=true"]}
   />
 }
 
