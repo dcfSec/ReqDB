@@ -9,6 +9,6 @@ export interface Item extends Record<string, unknown> {
     id: string;
     email: string;
   };
-  created: string;
+  created: number;
   completed: boolean
 }

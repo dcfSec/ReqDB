@@ -1,10 +1,13 @@
 export interface Item extends Record<string, unknown> {
-  verb: "INSERT" | "UPDATE" | "DELETE";
-  transaction: {
-    issued_at: string
-    user_id: string
-  };
   id: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  timestamp: number;
+  table: string;
+  target_id: number;
+  data: JSON;
+  userId: string;
+  verb: "INSERT" | "UPDATE" | "DELETE";
+  user: {
+    id: string;
+    email: string;
+  }
 }
