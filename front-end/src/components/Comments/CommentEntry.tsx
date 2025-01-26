@@ -19,6 +19,7 @@ import { removeCommentFromRequirement, updateCommentInRequirement } from '../../
 import { Item as Comment } from '../../types/API/Comments';
 import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClient';
 import { APISuccessData } from '../../types/Generics';
+import { toISOStringWithTimezone } from '../MiniComponents';
 
 type Props = {
   view: string;
@@ -90,7 +91,7 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
           <Card.Header style={{ padding: '0em' }}>
             <Stack direction="horizontal" gap={2}>
               <span className="p-2">From <span style={{ fontStyle: 'italic' }}>{comment.author.email}</span></span>
-              <span className="ms-auto text-muted" style={{ justifyContent: 'left' }}>at {new Date(comment.created).toLocaleString()}</span>
+              <span className="ms-auto text-muted" style={{ justifyContent: 'left' }}>at {toISOStringWithTimezone(new Date(comment.created * 1000))}</span>
               {roles.includes(appRoles.Comments.Moderator) ?
                 <>
                   <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="delete-tooltip">Delete comment</Tooltip>}>
