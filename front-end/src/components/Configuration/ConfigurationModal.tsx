@@ -1,13 +1,14 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Col, Container, Row, Card } from 'react-bootstrap';
-import { useAppDispatch, useAppSelector } from '../hooks';
-import { ConfigurationItem } from './Configuration/ConfigurationItem';
-import { loadConfiguration, removeDirty } from '../stateSlices/ConfigurationSlice';
-import { showSpinner } from '../stateSlices/MainLogoSpinnerSlice';
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClient';
-import { APISuccessData } from '../types/Generics';
-import { Item } from '../types/API/Configuration';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { ConfigurationItem } from './ConfigurationItem';
+import { loadConfiguration, removeDirty } from '../../stateSlices/ConfigurationSlice';
+import { showSpinner } from '../../stateSlices/MainLogoSpinnerSlice';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClient';
+import { APISuccessData } from '../../types/Generics';
+import { Item } from '../../types/API/Configuration';
+import { useEffect } from 'react';
 
 
 type Props = {
@@ -25,6 +26,11 @@ export default function ConfigurationModal({ show, setShow }: Props) {
   const dispatch = useAppDispatch()
   const configuration = useAppSelector(state => state.configuration.configuration)
   const categories = useAppSelector(state => state.configuration.categories)
+
+  useEffect(() => {
+    dispatch(loadConfiguration())
+  }, []);
+
 
   function safeConfiguration() {
     dispatch(showSpinner(true))

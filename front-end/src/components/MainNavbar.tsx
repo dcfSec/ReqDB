@@ -17,7 +17,7 @@ import RolesModal from './RolesModal';
 import Preferences from './Preferences';
 import { useAuth } from 'react-oidc-context';
 import { ReactNode } from 'react';
-import ConfigurationModal from './ConfigurationModal';
+import ConfigurationModal from './Configuration/ConfigurationModal';
 
 /**
  * Component for the main navigation bar
