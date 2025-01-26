@@ -84,12 +84,16 @@ class StaticConfiguration(SQLModel):
             provider: str
             authority: str
             client_id: str
+            scope: str
         class MOTDClass(SQLModel):
             pre: str
             post: str
         class HomeClass(SQLModel):
             title: str
             MOTD: 'StaticConfiguration.MOTDClass'
+        class LoginClass(SQLModel):
+            MOTD: 'StaticConfiguration.MOTDClass'
 
         oauth: 'StaticConfiguration.OAuthClass'
         home: 'StaticConfiguration.HomeClass'
+        login: 'StaticConfiguration.LoginClass'

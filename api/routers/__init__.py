@@ -13,7 +13,7 @@ from api.models.db import User
 
 oauthParams = {
     "iss": {"essential": True, "values": [AppConfig.JWT_DECODE_ISSUER]},
-    "sub": {"essential": True, "value": AppConfig.JWT_DECODE_AUDIENCE},
+    "sub": {"essential": True, "value": AppConfig.OAUTH_CLIENT_ID},
 }
 
 
@@ -105,11 +105,11 @@ def getDecodeKey(header: dict, payload: dict):
     :return str: Key in PEM format
     """
     try:
-        return AppConfig.JWT_PUBLIC_KEY.find_by_kid(header["kid"])
+        return AppConfig.JWT_PUBLIC_KEYS.find_by_kid(header["kid"])
     except ValueError:
         AppConfig.getJWKs()
         try:
-            return AppConfig.JWT_PUBLIC_KEY.find_by_kid(header["kid"])
+            return AppConfig.JWT_PUBLIC_KEYS.find_by_kid(header["kid"])
         except ValueError:
             raise KeyError(f"kid {header['kid']} is not a supported key ID")
 

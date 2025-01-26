@@ -16,7 +16,7 @@ from api.routers import (
     topic,
 )
 
-api = FastAPI()
+api = FastAPI(title="ReqDB - API")
 
 api.include_router(config.router)
 api.include_router(tag.router)

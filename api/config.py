@@ -19,13 +19,14 @@ class AppConfig:
         getenv("DATABASE_URI") or f"sqlite:///{path.join(basedir, 'app.sqlite')}"
     )
 
+    OAUTH_CLIENT_ID = f"{getenv('OAUTH_CLIENT_ID')}"
+    OAUTH_SCOPE = f"openid email offline_access {OAUTH_CLIENT_ID}/openid"
+    OAUTH_PROVIDER = f"{getenv('OAUTH_PROVIDER')}"
+
     JWT_ALGORITHM = "RS256"
-    JWT_PROVIDER = f"{getenv('OAUTH_PROVIDER')}"
-    JWT_DECODE_AUDIENCE = f"{getenv('OAUTH_CLIENT_ID')}"
     JWT_DECODE_ISSUER = ""
-    JWT_PUBLIC_KEY = ""
+    JWT_PUBLIC_KEYS = ""
     JWT_JWK_URI = ""
-    JWT_AUTHORITY = ""
 
     EMAIL_HOST = ""
     EMAIL_USER = ""
@@ -43,7 +44,7 @@ class AppConfig:
         r = {}
         response = requests.get(AppConfig.JWT_JWK_URI)
         response.raise_for_status()
-        cls.JWT_PUBLIC_KEY = JsonWebKey.import_key_set(response.json()["keys"])
+        cls.JWT_PUBLIC_KEYS = JsonWebKey.import_key_set(response.json()["keys"])
 
     @classmethod
     def getOpenIdConfig(cls):
@@ -80,6 +81,18 @@ dynamicConfig = {
         "category": "static",
     },
     "HOME_MOTD_POST": {
+        "value": "",
+        "description": "",
+        "type": "text",
+        "category": "static",
+    },
+    "LOGIN_MOTD_PRE": {
+        "value": "",
+        "description": "",
+        "type": "text",
+        "category": "static",
+    },
+    "LOGIN_MOTD_POST": {
         "value": "",
         "description": "",
         "type": "text",

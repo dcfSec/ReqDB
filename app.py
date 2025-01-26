@@ -42,9 +42,9 @@ oauth = OAuth(config)
 
 oauth.register(
     name="oauth",
-    server_metadata_url=AppConfig.JWT_PROVIDER,
+    server_metadata_url=AppConfig.OAUTH_PROVIDER,
     client_kwargs={
-        "scope": f"openid email offline_access {AppConfig.JWT_DECODE_AUDIENCE}/openid"
+        "scope": f"openid email offline_access {AppConfig.OAUTH_CLIENT_ID}/openid"
     },
 )
 
@@ -75,6 +75,7 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None,
     openapi_url=None,
+    title="ReqDB",
 )
 
 app.add_middleware(SessionMiddleware, secret_key="!secret")
