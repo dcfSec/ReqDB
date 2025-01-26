@@ -21,14 +21,17 @@ async def getStaticConfig(
     homeTitle = session.get(Configuration, "HOME_TITLE")
     homeMOTDPre = session.get(Configuration, "HOME_MOTD_PRE")
     homeMOTDPost = session.get(Configuration, "HOME_MOTD_POST")
+    loginMOTDPre = session.get(Configuration, "LOGIN_MOTD_PRE")
+    loginMOTDPost = session.get(Configuration, "LOGIN_MOTD_POST")
 
     return {
         "status": 200,
         "data": {
             "oauth": {
-                "provider": AppConfig.JWT_PROVIDER,
+                "provider": AppConfig.OAUTH_PROVIDER,
                 "authority": AppConfig.JWT_DECODE_ISSUER,
-                "client_id": AppConfig.JWT_DECODE_AUDIENCE,
+                "client_id": AppConfig.OAUTH_CLIENT_ID,
+                "scope": AppConfig.OAUTH_SCOPE,
             },
             "home": {
                 "title": (
@@ -39,6 +42,12 @@ async def getStaticConfig(
                 "MOTD": {
                     "pre": homeMOTDPre.value if homeMOTDPre else "",
                     "post": homeMOTDPost.value if homeMOTDPost else "",
+                },
+            },
+            "login": {
+                "MOTD": {
+                    "pre": loginMOTDPre.value if loginMOTDPre else "",
+                    "post": loginMOTDPost.value if loginMOTDPost else "",
                 },
             },
         },

@@ -3,6 +3,7 @@ interface Config {
     provider: string
     authority: string
     client_id: string
+    scope: string
   };
   home: {
     title: string;
@@ -10,7 +11,13 @@ interface Config {
       pre: string
       post: string
     };
-  }
+  };
+  login: {
+    MOTD: {
+      pre: string
+      post: string
+    };
+  };
 }
 
 export const staticConfig = await getConfig()
@@ -30,10 +37,7 @@ async function getConfig(): Promise<Config> {
       })
       .catch(error => {
         console.error("Error:", error);
-        return {
-          clientID: "",
-          tenantID: ""
-        }
+        return undefined
       });
     sessionStorage.setItem("static", JSON.stringify(config));
     storedConfig = config
