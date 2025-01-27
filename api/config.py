@@ -1,10 +1,8 @@
-import json
 from os import getenv, path
+from uuid import uuid4
 
-from authlib.jose import JsonWebKey
 import requests
-from cryptography.hazmat.primitives import serialization
-
+from authlib.jose import JsonWebKey
 
 basedir = path.abspath(path.dirname(__file__))
 
@@ -14,7 +12,7 @@ for k in ["OAUTH_CLIENT_ID", "OAUTH_CONFIG", "OAUTH_PROVIDER"]:
 
 
 class AppConfig:
-    SECRET_KEY = getenv("SECRET_KEY")
+    SECRET_KEY = getenv("SECRET_KEY", uuid4().hex)
     DATABASE_URI = (
         getenv("DATABASE_URI") or f"sqlite:///{path.join(basedir, 'app.sqlite')}"
     )

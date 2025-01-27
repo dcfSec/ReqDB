@@ -78,7 +78,7 @@ app = FastAPI(
     title="ReqDB",
 )
 
-app.add_middleware(SessionMiddleware, secret_key="!secret")
+app.add_middleware(SessionMiddleware, secret_key=AppConfig.SECRET_KEY)
 
 app.mount("/api", api.api)
 
