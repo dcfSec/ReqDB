@@ -88,8 +88,14 @@ app.mount("/", SPAStaticFiles(directory="front-end/dist", html=True), name="inde
 if __name__ == "__main__":
 
     workers = getenv("USE_UVICORN_WORKERS")
-    if workers == -1:
-        workers = (multiprocessing.cpu_count() * 2) + 1
+    if workers:
+        try:
+            workers = int(workers)
+        except ValueError:
+            print("Can't parse 'USE_UVICORN_WORKERS'.")
+            exit(-1)
+        if workers == -1:
+            workers = (multiprocessing.cpu_count() * 2) + 1
 
     uvicorn.run(
         "app:app",

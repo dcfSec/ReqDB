@@ -17,7 +17,11 @@ def get_session():
         yield session
 
 
-connect_args = {"check_same_thread": False}
+if AppConfig.DATABASE_URI.startswith("sqlite"):
+    connect_args = {"check_same_thread": False}
+else:
+    connect_args = {}
+
 engine = create_engine(AppConfig.DATABASE_URI, connect_args=connect_args)
 SessionDep = Annotated[Session, Depends(get_session)]
 
