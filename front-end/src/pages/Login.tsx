@@ -46,9 +46,9 @@ export default function Login({ authError = null }: { authError?: string | null;
       {authError !== null ? <Alert variant="danger">{`Authentication error: ${authError}`}</Alert> : null}
         <Stack gap={2} className="col-md-3 mx-auto">
           <h2>{staticConfig.home.title}</h2>
-          <Markdown>{staticConfig.home.MOTD.pre}</Markdown>
+          <Markdown>{staticConfig.login.MOTD.pre}</Markdown>
           <Button onClick={(onAuth)} disabled={auth.isLoading} variant="outline-secondary">{buttonText}</Button>
-          <Markdown>{staticConfig.home.MOTD.post}</Markdown>
+          <Markdown>{staticConfig.login.MOTD.post}</Markdown>
         </Stack>
       </Col>
     </Row>

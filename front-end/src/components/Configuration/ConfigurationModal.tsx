@@ -44,9 +44,9 @@ export default function ConfigurationModal({ show, setShow }: Props) {
       }
     });
 
-      function okCallback(response: APISuccessData) {
-        dispatch(removeDirty((response.data as Item).key as string))
-      }
+    function okCallback(response: APISuccessData) {
+      dispatch(removeDirty((response.data as Item).key as string))
+    }
 
     setShow(false)
   }
