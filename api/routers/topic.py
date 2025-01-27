@@ -3,7 +3,7 @@ from typing import Annotated, Union
 from fastapi import Depends, status
 from sqlmodel import select
 
-from api.error import ConflictError, NotFound
+from api.error import ConflictError, NotFound, ErrorResponses
 from api.helper import checkParentTopicChildren
 from api.models import SessionDep, audit
 from api.models.db import Topic
@@ -15,7 +15,15 @@ from api.routers import AuthRouter, getUserId
 router = AuthRouter()
 
 
-@router.get("/topics", status_code=status.HTTP_200_OK)
+@router.get(
+    "/topics",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All topics"},
+    },
+)
 async def getTopics(
     session: SessionDep, expandRelationships: bool = False
 ) -> Union[Response.Topic, Response.TopicWithRequirements]:
@@ -27,21 +35,42 @@ async def getTopics(
         return Response.TopicWithRequirements(status=200, data=topics)
 
 
-@router.get("/topics/{topicID}", status_code=status.HTTP_200_OK)
+@router.get(
+    "/topics/{topicID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The selected topic"},
+    },
+)
 async def getTopic(
     session: SessionDep, topicID: int, expandRelationships: bool = False
 ) -> Union[Response.Topic, Response.TopicWithRequirements]:
     topic = session.get(Topic, topicID)
 
     if not topic:
-        raise NotFound(status_code=404, detail="Topic not found")
+        raise NotFound(detail="Topic not found")
     if expandRelationships is False:
         return Response.Topic(status=200, data=topic)
     else:
         return Response.TopicWithRequirements(status=200, data=topic)
 
 
-@router.patch("/topics/{topicID}", status_code=status.HTTP_200_OK)
+@router.patch(
+    "/topics/{topicID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        **ErrorResponses.conflict,
+        200: {"description": "The updated topic"},
+    },
+)
 async def patchTopic(
     topic: Update.Topic,
     topicID: int,
@@ -50,7 +79,7 @@ async def patchTopic(
 ) -> Response.Topic:
     topicFromDB = session.get(Topic, topicID)
     if not topicFromDB:
-        raise NotFound(status_code=404, detail="Topic not found")
+        raise NotFound(detail="Topic not found")
     topicData = topic.model_dump(exclude_unset=True, mode="python")
     checkParentTopicChildren(topic.parentId, session, True)
     topicFromDB.sqlmodel_update(topicData)
@@ -61,7 +90,16 @@ async def patchTopic(
     return {"status": 200, "data": topicFromDB}
 
 
-@router.post("/topics", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/topics",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The new topic"},
+    },
+)
 async def addTopic(
     topic: Insert.Topic,
     session: SessionDep,
@@ -76,7 +114,18 @@ async def addTopic(
     return {"status": 201, "data": topicDB}
 
 
-@router.delete("/topics/{topicID}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/topics/{topicID}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        **ErrorResponses.conflict,
+        204: {"description": "Nothing"},
+    },
+)
 async def deleteTopic(
     topicID: int,
     session: SessionDep,

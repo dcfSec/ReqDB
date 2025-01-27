@@ -3,7 +3,7 @@ from typing import Annotated, Union
 from fastapi import Depends, status
 from sqlmodel import select
 
-from api.error import ConflictError, NotFound
+from api.error import ConflictError, NotFound, ErrorResponses
 from api.models import SessionDep, audit
 from api.models.db import Catalogue, Topic
 from api.models.insert import Insert
@@ -14,7 +14,15 @@ from api.routers import AuthRouter, getRoles, getUserId
 router = AuthRouter()
 
 
-@router.get("/catalogues", status_code=status.HTTP_200_OK)
+@router.get(
+    "/catalogues",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All catalogues"},
+    },
+)
 async def getCatalogues(
     session: SessionDep, expandRelationships: bool = True
 ) -> Union[Response.Catalogue, Response.CatalogueWithTopicsAndRequirements]:
@@ -26,7 +34,17 @@ async def getCatalogues(
         return Response.CatalogueWithTopicsAndRequirements(status=200, data=catalogues)
 
 
-@router.get("/catalogues/{catalogueID}", status_code=status.HTTP_200_OK)
+@router.get(
+    "/catalogues/{catalogueID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The selected catalogue"},
+    },
+)
 async def getCatalogue(
     roles: Annotated[dict, Depends(getRoles)],
     session: SessionDep,
@@ -40,7 +58,7 @@ async def getCatalogue(
     catalogue = session.get(Catalogue, catalogueID)
 
     if not catalogue:
-        raise NotFound(status_code=404, detail="Catalogue not found")
+        raise NotFound(detail="Catalogue not found")
     if expandRelationships is False:
         return Response.Catalogue(status=200, data=catalogue)
     else:
@@ -51,7 +69,17 @@ async def getCatalogue(
         return Response.CatalogueWithTopicsAndRequirements(status=200, data=catalogue)
 
 
-@router.patch("/catalogues/{catalogueID}", status_code=status.HTTP_200_OK)
+@router.patch(
+    "/catalogues/{catalogueID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The updated catalogue"},
+    },
+)
 async def patchCatalogue(
     catalogue: Update.Catalogue,
     catalogueID: int,
@@ -77,7 +105,17 @@ async def patchCatalogue(
     return {"status": 200, "data": catalogueFromDB}
 
 
-@router.post("/catalogues", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/catalogues",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The new catalogue"},
+    },
+)
 async def addCatalogue(
     catalogue: Insert.Catalogue,
     session: SessionDep,
@@ -99,7 +137,18 @@ async def addCatalogue(
     return {"status": 201, "data": catalogueDB}
 
 
-@router.delete("/catalogues/{catalogueID}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/catalogues/{catalogueID}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        **ErrorResponses.conflict,
+        204: {"description": "Nothing"},
+    },
+)
 async def deleteCatalogue(
     catalogueID: int,
     session: SessionDep,

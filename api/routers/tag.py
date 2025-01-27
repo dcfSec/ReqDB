@@ -3,7 +3,7 @@ from typing import Annotated, Union
 from fastapi import Depends, status
 from sqlmodel import select
 
-from api.error import ConflictError, NotFound
+from api.error import ConflictError, NotFound, ErrorResponses
 from api.models import SessionDep, audit
 from api.models.db import Tag
 from api.models.insert import Insert
@@ -14,7 +14,15 @@ from api.routers import AuthRouter, getUserId
 router = AuthRouter()
 
 
-@router.get("/tags", status_code=status.HTTP_200_OK)
+@router.get(
+    "/tags",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All tags"},
+    },
+)
 async def getTags(
     session: SessionDep, expandRelationships: bool = True
 ) -> Union[Response.Tag, Response.TagWithRequirements]:
@@ -26,21 +34,41 @@ async def getTags(
         return Response.TagWithRequirements(status=200, data=tags)
 
 
-@router.get("/tags/{tagID}", status_code=status.HTTP_200_OK)
+@router.get(
+    "/tags/{tagID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The selected tag"},
+    },
+)
 async def getTag(
     session: SessionDep, tagID: int, expandRelationships: bool = True
 ) -> Union[Response.Tag, Response.TagWithRequirements]:
     tag = session.get(Tag, tagID)
 
     if not tag:
-        raise NotFound(status_code=404, detail="Tag not found")
+        raise NotFound(detail="Tag not found")
     if expandRelationships is False:
         return Response.Tag(status=200, data=tag)
     else:
         return Response.TagWithRequirements(status=200, data=tag)
 
 
-@router.patch("/tags/{tagID}", status_code=status.HTTP_200_OK)
+@router.patch(
+    "/tags/{tagID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The updated tag"},
+    },
+)
 async def patchTag(
     tag: Update.Tag,
     tagID: int,
@@ -59,7 +87,16 @@ async def patchTag(
     return {"status": 200, "data": tagFromDB}
 
 
-@router.post("/tags", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/tags",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The new tag"},
+    },
+)
 async def addTag(
     tag: Insert.Tag,
     session: SessionDep,
@@ -73,7 +110,18 @@ async def addTag(
     return {"status": 201, "data": tagDB}
 
 
-@router.delete("/tags/{tagID}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/tags/{tagID}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        **ErrorResponses.conflict,
+        204: {"description": "Nothing"},
+    },
+)
 async def deleteTag(
     tagID: int,
     session: SessionDep,

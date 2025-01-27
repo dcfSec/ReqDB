@@ -69,6 +69,18 @@ class Response:
     class TeePod(ResponseBase):
         data: str
 
+    class Error(ResponseBase):
+        error: str
+        message: Union[list[dict],str,dict]
+        
+    class ErrorStr(ResponseBase):
+        error: str
+        message: str
+
+    class ErrorStrList(ResponseBase):
+        error: str
+        message: list[str]
+
 class ResponseUpdate:
     class Configuration(ResponseBase):
         data: Configuration

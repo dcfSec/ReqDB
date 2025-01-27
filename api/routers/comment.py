@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, status
 from sqlmodel import select
 
-from api.error import NotFound
+from api.error import NotFound, ErrorResponses
 from api.models import SessionDep, audit
 from api.models.db import Comment
 from api.models.insert import Insert
@@ -14,30 +14,52 @@ from api.routers import AuthRouter, getUserId
 router = AuthRouter()
 
 
-@router.get("/comments", status_code=status.HTTP_200_OK)
-async def getComments(
-    session: SessionDep
-) -> Response.Comment:
+@router.get(
+    "/comments",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All comments"},
+    },
+)
+async def getComments(session: SessionDep) -> Response.Comment:
     comments = session.exec(select(Comment)).all()
 
     return Response.Comment(status=200, data=comments)
 
 
-
-@router.get("/comments/{commentID}", status_code=status.HTTP_200_OK)
-async def getComment(
-    session: SessionDep, commentID: int
-) -> Response.Comment:
+@router.get(
+    "/comments/{commentID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "the selected comment"},
+    },
+)
+async def getComment(session: SessionDep, commentID: int) -> Response.Comment:
     comment = session.get(Comment, commentID)
 
     if not comment:
-        raise NotFound(status_code=404, detail="Comment not found")
-    
+        raise NotFound(detail="Comment not found")
+
     return Response.Comment(status=200, data=comment)
 
 
-
-@router.patch("/comments/{commentID}", status_code=status.HTTP_200_OK)
+@router.patch(
+    "/comments/{commentID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The updated comment"},
+    },
+)
 async def patchComment(
     comment: Update.Comment,
     commentID: int,
@@ -56,9 +78,18 @@ async def patchComment(
     return {"status": 200, "data": commentFromDB}
 
 
-@router.post("/comments", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/comments",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The new comment"},
+    },
+)
 async def addComment(
-    userId: Annotated[dict, Depends(getUserId)], 
+    userId: Annotated[dict, Depends(getUserId)],
     comment: Insert.Comment,
     session: SessionDep,
 ) -> Response.Comment:
@@ -71,7 +102,17 @@ async def addComment(
     return {"status": 201, "data": commentDB}
 
 
-@router.delete("/comments/{commentID}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/comments/{commentID}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        204: {"description": "Nothing"},
+    },
+)
 async def deleteComment(
     commentID: int,
     session: SessionDep,

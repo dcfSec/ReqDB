@@ -3,6 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from api.models.response import Response
 from api.routers import (
     audit,
     catalogue,
@@ -31,7 +32,7 @@ api.include_router(coffee.router)
 
 
 @api.exception_handler(HTTPException)
-async def genericExceptionHandler(request, exc: HTTPException):
+async def genericExceptionHandler(request, exc: HTTPException) -> Response.Error:
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
@@ -39,7 +40,7 @@ async def genericExceptionHandler(request, exc: HTTPException):
 
 
 @api.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request, exc: StarletteHTTPException):
+async def http_exception_handler(request, exc: StarletteHTTPException) -> Response.Error:
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
@@ -47,7 +48,7 @@ async def http_exception_handler(request, exc: StarletteHTTPException):
 
 
 @api.exception_handler(RequestValidationError)
-async def http_exception_handler(request, exc: RequestValidationError):
+async def http_exception_handler(request, exc: RequestValidationError) -> Response.Error:
     return JSONResponse(
         {"status": 422, "error": type(exc).__name__, "message": exc.errors()},
         status_code=422,
@@ -55,7 +56,7 @@ async def http_exception_handler(request, exc: RequestValidationError):
 
 
 @api.exception_handler(Exception)
-async def http_exception_handler(request, exc: Exception):
+async def http_exception_handler(request, exc: Exception) -> Response.Error:
     return JSONResponse(
         {"status": 500, "error": type(exc).__name__, "message": str(exc)},
         status_code=500,

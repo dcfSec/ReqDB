@@ -3,7 +3,7 @@ from typing import Annotated, Union
 from fastapi import Depends, status
 from sqlmodel import select
 
-from api.error import NotFound
+from api.error import NotFound, ErrorResponses
 from api.models import SessionDep, audit
 from api.models.db import ExtraEntry
 from api.models.insert import Insert
@@ -14,7 +14,15 @@ from api.routers import AuthRouter, getUserId
 router = AuthRouter()
 
 
-@router.get("/extraEntries", status_code=status.HTTP_200_OK)
+@router.get(
+    "/extraEntries",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All extra entries"},
+    },
+)
 async def getExtraEntries(
     session: SessionDep, expandRelationships: bool = True
 ) -> Union[Response.ExtraEntry, Response.ExtraEntry]:
@@ -26,21 +34,41 @@ async def getExtraEntries(
         return Response.ExtraEntry(status=200, data=extraEntries)
 
 
-@router.get("/extraEntries/{extraTypeID}", status_code=status.HTTP_200_OK)
+@router.get(
+    "/extraEntries/{extraTypeID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The selected extra entry"},
+    },
+)
 async def getExtraEntry(
     session: SessionDep, extraTypeID: int, expandRelationships: bool = True
 ) -> Union[Response.ExtraEntry, Response.ExtraEntry]:
     extraType = session.get(ExtraEntry, extraTypeID)
 
     if not extraType:
-        raise NotFound(status_code=404, detail="ExtraEntry not found")
+        raise NotFound(detail="ExtraEntry not found")
     if expandRelationships is False:
         return Response.ExtraEntry(status=200, data=extraType)
     else:
         return Response.ExtraEntry(status=200, data=extraType)
 
 
-@router.patch("/extraEntries/{extraTypeID}", status_code=status.HTTP_200_OK)
+@router.patch(
+    "/extraEntries/{extraTypeID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The updated extra entry"},
+    },
+)
 async def patchExtraEntry(
     extraType: Update.ExtraEntry,
     extraTypeID: int,
@@ -59,7 +87,16 @@ async def patchExtraEntry(
     return {"status": 200, "data": extraTypeFromDB}
 
 
-@router.post("/extraEntries", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/extraEntries",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The new extra entry"},
+    },
+)
 async def addExtraEntry(
     extraType: Insert.ExtraEntry,
     session: SessionDep,
@@ -73,7 +110,17 @@ async def addExtraEntry(
     return {"status": 201, "data": extraTypeDB}
 
 
-@router.delete("/extraEntries/{extraTypeID}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/extraEntries/{extraTypeID}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        204: {"description": "Nothing"},
+    },
+)
 async def deleteExtraEntry(
     extraTypeID: int,
     session: SessionDep,

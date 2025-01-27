@@ -4,7 +4,7 @@ from fastapi import Depends, status
 from sqlmodel import select
 
 from api.config import AppConfig
-from api.error import NotFound
+from api.error import NotFound, ErrorResponses
 from api.models import SessionDep
 from api.models.db import Configuration
 from api.models.response import Response, ResponseUpdate
@@ -14,7 +14,13 @@ from api.routers import AuthRouter, getUserId
 router = AuthRouter()
 
 
-@router.get("/config/static", status_code=status.HTTP_200_OK)
+@router.get(
+    "/config/static",
+    status_code=status.HTTP_200_OK,
+    responses={
+        200: {"description": "The static config"},
+    },
+)
 async def getStaticConfig(
     session: SessionDep,
 ) -> Response.StaticConfiguration:
@@ -54,7 +60,15 @@ async def getStaticConfig(
     }
 
 
-@router.get("/config", status_code=status.HTTP_200_OK)
+@router.get(
+    "/config",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All dynamic config items"},
+    },
+)
 async def getConfig(
     session: SessionDep,
 ) -> Response.Configuration:
@@ -63,7 +77,17 @@ async def getConfig(
     return {"status": 200, "data": conf}
 
 
-@router.patch("/config/{configID}", status_code=status.HTTP_200_OK)
+@router.patch(
+    "/config/{configID}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The updated config element"},
+    },
+)
 async def patchConfig(
     configuration: Update.Configuration,
     configID: str,
