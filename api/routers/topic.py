@@ -30,9 +30,9 @@ async def getTopics(
     topics = session.exec(select(Topic)).unique().all()
 
     if expandRelationships is False:
-        return Response.Topic(status=200, data=topics)
+        return Response.buildResponse(Response.Topic, topics)
     else:
-        return Response.TopicWithRequirements(status=200, data=topics)
+        return Response.buildResponse(Response.TopicWithRequirements, topics)
 
 
 @router.get(
@@ -54,9 +54,9 @@ async def getTopic(
     if not topic:
         raise NotFound(detail="Topic not found")
     if expandRelationships is False:
-        return Response.Topic(status=200, data=topic)
+        return Response.buildResponse(Response.Topic, topic)
     else:
-        return Response.TopicWithRequirements(status=200, data=topic)
+        return Response.buildResponse(Response.TopicWithRequirements, topic)
 
 
 @router.patch(
@@ -87,7 +87,7 @@ async def patchTopic(
     session.commit()
     session.refresh(topicFromDB)
     audit(session, 1, topicFromDB, userId)
-    return {"status": 200, "data": topicFromDB}
+    return Response.buildResponse(Response.Topic, topicFromDB)
 
 
 @router.post(
@@ -97,7 +97,7 @@ async def patchTopic(
         **ErrorResponses.forbidden,
         **ErrorResponses.unauthorized,
         **ErrorResponses.unprocessable,
-        200: {"description": "The new topic"},
+        201: {"description": "The new topic"},
     },
 )
 async def addTopic(
@@ -111,7 +111,7 @@ async def addTopic(
     session.commit()
     session.refresh(topicDB)
     audit(session, 0, topicDB, userId)
-    return {"status": 201, "data": topicDB}
+    return Response.buildResponse(Response.Topic, topicDB, 201)
 
 
 @router.delete(

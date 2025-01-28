@@ -26,7 +26,7 @@ router = AuthRouter()
 async def getComments(session: SessionDep) -> Response.Comment:
     comments = session.exec(select(Comment)).unique().all()
 
-    return Response.Comment(status=200, data=comments)
+    return Response.buildResponse(Response.Comment, comments)
 
 
 @router.get(
@@ -46,7 +46,7 @@ async def getComment(session: SessionDep, commentID: int) -> Response.Comment:
     if not comment:
         raise NotFound(detail="Comment not found")
 
-    return Response.Comment(status=200, data=comment)
+    return Response.buildResponse(Response.Comment, comment)
 
 
 @router.patch(
@@ -75,7 +75,7 @@ async def patchComment(
     session.commit()
     session.refresh(commentFromDB)
     audit(session, 1, commentFromDB, userId)
-    return {"status": 200, "data": commentFromDB}
+    return Response.buildResponse(Response.Comment, commentFromDB)
 
 
 @router.post(
@@ -85,7 +85,7 @@ async def patchComment(
         **ErrorResponses.forbidden,
         **ErrorResponses.unauthorized,
         **ErrorResponses.unprocessable,
-        200: {"description": "The new comment"},
+        201: {"description": "The new comment"},
     },
 )
 async def addComment(
@@ -99,7 +99,7 @@ async def addComment(
     session.commit()
     session.refresh(commentDB)
     audit(session, 0, commentDB, userId)
-    return {"status": 201, "data": commentDB}
+    return Response.buildResponse(Response.Comment, commentDB, 201)
 
 
 @router.delete(

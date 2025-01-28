@@ -30,9 +30,9 @@ async def getRequirements(
     requirements = session.exec(select(Requirement)).unique().all()
 
     if expandRelationships is False:
-        return Response.Requirement(status=200, data=requirements)
+        return Response.buildResponse(Response.Requirement, requirements)
     else:
-        return Response.Requirement(status=200, data=requirements)
+        return Response.buildResponse(Response.Requirement, requirements)
 
 
 @router.get(
@@ -54,9 +54,9 @@ async def getRequirement(
     if not requirement:
         raise NotFound(detail="Requirement not found")
     if expandRelationships is False:
-        return Response.Requirement(status=200, data=requirement)
+        return Response.buildResponse(Response.Requirement, requirement)
     else:
-        return Response.Requirement(status=200, data=requirement)
+        return Response.buildResponse(Response.Requirement, requirement)
 
 
 @router.patch(
@@ -87,7 +87,7 @@ async def patchRequirement(
     session.commit()
     session.refresh(requirementFromDB)
     audit(session, 1, requirement, requirementFromDB)
-    return {"status": 200, "data": requirementFromDB}
+    return Response.buildResponse(Response.Requirement, requirementFromDB)
 
 
 @router.post(
@@ -97,7 +97,7 @@ async def patchRequirement(
         **ErrorResponses.forbidden,
         **ErrorResponses.unauthorized,
         **ErrorResponses.unprocessable,
-        200: {"description": "The new requirement"},
+        201: {"description": "The new requirement"},
     },
 )
 async def addRequirement(
@@ -111,7 +111,7 @@ async def addRequirement(
     session.commit()
     session.refresh(requirementDB)
     audit(session, 0, requirementDB, userId)
-    return {"status": 201, "data": requirementDB}
+    return Response.buildResponse(Response.Requirement, requirementDB, 201)
 
 
 @router.delete(

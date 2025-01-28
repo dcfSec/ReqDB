@@ -30,9 +30,9 @@ async def getStaticConfig(
     loginMOTDPre = session.get(Configuration, "LOGIN_MOTD_PRE")
     loginMOTDPost = session.get(Configuration, "LOGIN_MOTD_POST")
 
-    return {
-        "status": 200,
-        "data": {
+    return Response.buildResponse(
+        Response.StaticConfiguration,
+        {
             "oauth": {
                 "provider": AppConfig.OAUTH_PROVIDER,
                 "authority": AppConfig.JWT_DECODE_ISSUER,
@@ -57,7 +57,7 @@ async def getStaticConfig(
                 },
             },
         },
-    }
+    )
 
 
 @router.get(
@@ -74,7 +74,7 @@ async def getConfig(
 ) -> Response.Configuration:
 
     conf = session.exec(select(Configuration)).unique().all()
-    return {"status": 200, "data": conf}
+    return Response.buildResponse(Response.Configuration, conf)
 
 
 @router.patch(
@@ -105,4 +105,4 @@ async def patchConfig(
     # if configurationFromDB.type == "secret":
     #     configurationFromDB.value = "******"
     # audit(session, 1, configurationFromDB, userId)
-    return {"status": 200, "data": configurationFromDB}
+    return Response.buildResponse(Response.Configuration, configurationFromDB)

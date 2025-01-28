@@ -1,6 +1,8 @@
 import smtplib
 from email.message import EmailMessage
+import time
 
+from fastapi import Request, Response
 from sqlmodel import Session
 
 from api.config import AppConfig, dynamicConfig
@@ -81,3 +83,19 @@ def checkParentTopicChildren(topicID: int, session, forRequirements: bool = Fals
                     "Topic has already children.",
                 ]
             )
+
+class RequestTimer:
+    def __init__(self, response: Response, target: str):
+        self.response = response
+        self.target = target
+        self.startTime = None
+    
+    def __enter__(self):
+        self.startTime = time.perf_counter_ns()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        processTime = time.perf_counter_ns() - self.startTime
+        if "server-timing" not in self.response.headers:
+            self.response.headers["server-timing"] = f"{self.target};dur={str(processTime/1000000)}"
+        else:
+            self.response.headers["server-timing"] += f",{self.target};dur={str(processTime/1000000)}"

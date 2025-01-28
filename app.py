@@ -79,7 +79,7 @@ app = FastAPI(
     title="ReqDB",
 )
 
-app.add_middleware(SessionMiddleware, secret_key=AppConfig.SECRET_KEY)
+# app.add_middleware(SessionMiddleware, secret_key=AppConfig.SECRET_KEY)
 app.add_middleware(GZipMiddleware)
 
 app.mount("/api", api.api)
@@ -106,4 +106,5 @@ if __name__ == "__main__":
         proxy_headers=True,
         access_log=True,
         workers=workers,
+        server_header=False,
     )

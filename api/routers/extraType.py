@@ -29,9 +29,9 @@ async def getExtraTypes(
     extraTypes = session.exec(select(ExtraType)).unique().all()
 
     if expandRelationships is False:
-        return Response.ExtraType(status=200, data=extraTypes)
+        return Response.buildResponse(Response.ExtraType, extraTypes)
     else:
-        return Response.ExtraType(status=200, data=extraTypes)
+        return Response.buildResponse(Response.ExtraType, extraTypes)
 
 
 @router.get(
@@ -53,9 +53,9 @@ async def getExtraType(
     if not extraType:
         raise NotFound(status_code=404, detail="ExtraType not found")
     if expandRelationships is False:
-        return Response.ExtraType(status=200, data=extraType)
+        return Response.buildResponse(Response.ExtraType, extraType)
     else:
-        return Response.ExtraType(status=200, data=extraType)
+        return Response.buildResponse(Response.ExtraType, extraType)
 
 
 @router.patch(
@@ -84,7 +84,7 @@ async def patchExtraType(
     session.commit()
     session.refresh(extraTypeFromDB)
     audit(session, 1, extraTypeFromDB, userId)
-    return {"status": 200, "data": extraTypeFromDB}
+    return Response.buildResponse(Response.ExtraType, extraTypeFromDB)
 
 
 @router.post(
@@ -94,7 +94,7 @@ async def patchExtraType(
         **ErrorResponses.forbidden,
         **ErrorResponses.unauthorized,
         **ErrorResponses.unprocessable,
-        200: {"description": "The new extra type"},
+        201: {"description": "The new extra type"},
     },
 )
 async def addExtraType(
@@ -107,7 +107,7 @@ async def addExtraType(
     session.commit()
     session.refresh(extraTypeDB)
     audit(session, 0, extraTypeDB, userId)
-    return {"status": 201, "data": extraTypeDB}
+    return Response.buildResponse(Response.ExtraType, extraTypeDB, 201)
 
 
 @router.delete(

@@ -61,4 +61,4 @@ async def getTag(
     )
     data = session.exec(statement)
 
-    return Response.Audit(status=200, data=data)
+    return Response.buildResponse(Response.Audit, data)

@@ -1,3 +1,4 @@
+import time
 from typing import Annotated, Union
 
 from fastapi import Depends, status
@@ -10,6 +11,7 @@ from api.models.insert import Insert
 from api.models.response import Response
 from api.models.update import Update
 from api.routers import AuthRouter, getRoles, getUserId
+from api.helper import RequestTimer
 
 router = AuthRouter()
 
@@ -29,9 +31,9 @@ async def getCatalogues(
     catalogues = session.exec(select(Catalogue)).unique().all()
 
     if expandRelationships is False:
-        return Response.Catalogue(data=catalogues)
+        return Response.buildResponse(Response.Catalogue, catalogues)
     else:
-        return Response.CatalogueWithTopicsAndRequirements(data=catalogues)
+        return Response.buildResponse(Response.CatalogueWithTopicsAndRequirements, catalogues)
 
 
 @router.get(
@@ -63,10 +65,8 @@ async def getCatalogue(
         return Response.Catalogue(status=200, data=catalogue)
     else:
         if "Comments.Reader" in roles:
-            return Response.CatalogueWithTopicsAndRequirementsAndComments(
-                status=200, data=catalogue
-            )
-        return Response.CatalogueWithTopicsAndRequirements(status=200, data=catalogue)
+            return Response.buildResponse(Response.CatalogueWithTopicsAndRequirementsAndComments, catalogue)
+        return  Response.buildResponse(Response.CatalogueWithTopicsAndRequirements, catalogue)
 
 
 @router.patch(
@@ -102,7 +102,7 @@ async def patchCatalogue(
     session.commit()
     session.refresh(catalogueFromDB)
     audit(session, 1, catalogueFromDB, userId)
-    return {"status": 200, "data": catalogueFromDB}
+    return Response.buildResponse(Response.CatalogueWithTopics, catalogueFromDB)
 
 
 @router.post(
@@ -113,7 +113,7 @@ async def patchCatalogue(
         **ErrorResponses.forbidden,
         **ErrorResponses.unauthorized,
         **ErrorResponses.unprocessable,
-        200: {"description": "The new catalogue"},
+        201: {"description": "The new catalogue"},
     },
 )
 async def addCatalogue(
@@ -134,7 +134,7 @@ async def addCatalogue(
     session.commit()
     session.refresh(catalogueDB)
     audit(session, 0, catalogueDB, userId)
-    return {"status": 201, "data": catalogueDB}
+    return Response.buildResponse(Response.Catalogue, catalogueDB, 201)
 
 
 @router.delete(

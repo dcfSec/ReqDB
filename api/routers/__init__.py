@@ -1,3 +1,4 @@
+import time
 from typing import Callable, Optional
 
 from authlib.jose import JsonWebToken
@@ -8,6 +9,7 @@ from sqlmodel import Session
 
 from api.config import AppConfig
 from api.error import AuthConfigMissing, Forbidden, Unauthorized
+from api.helper import RequestTimer
 from api.models import engine
 from api.models.db import User
 

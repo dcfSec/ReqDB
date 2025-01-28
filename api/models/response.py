@@ -1,6 +1,7 @@
 from typing import Union
 
 from pydantic import BaseModel
+from fastapi import Response as FastAPIResponse
 
 from api.models.base import StaticConfiguration
 from api.models.db import Configuration
@@ -84,6 +85,10 @@ class Response:
     class ErrorStrList(ResponseBase):
         error: str
         message: list[str]
+
+    @staticmethod
+    def buildResponse(responseClass: ResponseBase.__class__, data: ResponseBase, status: int = 200):
+        return FastAPIResponse(status_code=status, media_type='application/json', content=responseClass(status=status, data=data).model_dump_json())
 
 class ResponseUpdate:
     class Configuration(ResponseBase):

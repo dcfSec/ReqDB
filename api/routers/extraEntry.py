@@ -29,9 +29,9 @@ async def getExtraEntries(
     extraEntries = session.exec(select(ExtraEntry)).unique().all()
 
     if expandRelationships is False:
-        return Response.ExtraEntry(status=200, data=extraEntries)
+        return Response.buildResponse(Response.ExtraEntry, extraEntries)
     else:
-        return Response.ExtraEntry(status=200, data=extraEntries)
+        return Response.buildResponse(Response.ExtraEntry, extraEntries)
 
 
 @router.get(
@@ -53,9 +53,9 @@ async def getExtraEntry(
     if not extraType:
         raise NotFound(detail="ExtraEntry not found")
     if expandRelationships is False:
-        return Response.ExtraEntry(status=200, data=extraType)
+        return Response.buildResponse(Response.ExtraEntry, extraType)
     else:
-        return Response.ExtraEntry(status=200, data=extraType)
+        return Response.buildResponse(Response.ExtraEntry, extraType)
 
 
 @router.patch(
@@ -84,7 +84,7 @@ async def patchExtraEntry(
     session.commit()
     session.refresh(extraTypeFromDB)
     audit(session, 1, extraTypeFromDB, userId)
-    return {"status": 200, "data": extraTypeFromDB}
+    return Response.buildResponse(Response.ExtraEntry, extraTypeFromDB)
 
 
 @router.post(
@@ -94,7 +94,7 @@ async def patchExtraEntry(
         **ErrorResponses.forbidden,
         **ErrorResponses.unauthorized,
         **ErrorResponses.unprocessable,
-        200: {"description": "The new extra entry"},
+        201: {"description": "The new extra entry"},
     },
 )
 async def addExtraEntry(
@@ -107,7 +107,7 @@ async def addExtraEntry(
     session.commit()
     session.refresh(extraTypeDB)
     audit(session, 0, extraTypeDB, userId)
-    return {"status": 201, "data": extraTypeDB}
+    return Response.buildResponse(Response.ExtraEntry, extraTypeDB, 201)
 
 
 @router.delete(

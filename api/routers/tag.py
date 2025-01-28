@@ -29,9 +29,9 @@ async def getTags(
     tags = session.exec(select(Tag)).unique().all()
 
     if expandRelationships is False:
-        return Response.Tag(status=200, data=tags)
+        return Response.buildResponse(Response.Tag, tags)
     else:
-        return Response.TagWithRequirements(status=200, data=tags)
+        return Response.buildResponse(Response.TagWithRequirements, tags)
 
 
 @router.get(
@@ -53,9 +53,9 @@ async def getTag(
     if not tag:
         raise NotFound(detail="Tag not found")
     if expandRelationships is False:
-        return Response.Tag(status=200, data=tag)
+        return Response.buildResponse(Response.Tag, tag)
     else:
-        return Response.TagWithRequirements(status=200, data=tag)
+        return Response.buildResponse(Response.TagWithRequirements, tag)
 
 
 @router.patch(
@@ -84,7 +84,7 @@ async def patchTag(
     session.commit()
     session.refresh(tagFromDB)
     audit(session, 1, tagFromDB, userId)
-    return {"status": 200, "data": tagFromDB}
+    return Response.buildResponse(Response.TagWithRequirements, tagFromDB)
 
 
 @router.post(
@@ -94,7 +94,7 @@ async def patchTag(
         **ErrorResponses.forbidden,
         **ErrorResponses.unauthorized,
         **ErrorResponses.unprocessable,
-        200: {"description": "The new tag"},
+        201: {"description": "The new tag"},
     },
 )
 async def addTag(
@@ -107,7 +107,7 @@ async def addTag(
     session.commit()
     session.refresh(tagDB)
     audit(session, 0, tagDB, userId)
-    return {"status": 201, "data": tagDB}
+    return Response.buildResponse(Response.Tag, tagDB, 201)
 
 
 @router.delete(
