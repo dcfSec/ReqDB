@@ -8,7 +8,6 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
@@ -165,7 +164,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
             <Col><SearchField title={name} search={search} onSearch={setSearch}></SearchField></Col>
             <Col xs={1}>
               <OverlayTrigger overlay={<Tooltip id="refresh-tooltip">Refresh list</Tooltip>}>
-                <Button variant="outline-primary" onClick={() => reloadCache()}><FontAwesomeIcon icon={solid("arrows-rotate")} /></Button>
+                <Button variant="outline-primary" onClick={() => reloadCache()}><FontAwesomeIcon icon={"arrows-rotate"} /></Button>
               </OverlayTrigger>
             </Col>
           </Row>

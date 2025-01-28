@@ -9,7 +9,6 @@ import { addCommentToRequirement } from '../../stateSlices/RequirementSlice';
 import { toast } from "../../stateSlices/NotificationToastSlice";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import APIClient, { handleError, handleResult } from '../../APIClient';
 import { APIErrorData, APISuccessData } from '../../types/Generics';
 import { Item as Comment } from "../../types/API/Comments";
@@ -63,7 +62,7 @@ export default function AddComment({ view, index, requirementId }: Props) {
   return (
     <Stack direction="horizontal" gap={3}>
       <Form.Control as="textarea" className="me-auto" id="description" value={newComment} onChange={e => { setNewComment(e.target.value) }}></Form.Control>
-      <Button variant="primary" onClick={() => postComment()}><FontAwesomeIcon icon={solid("paper-plane")} /></Button>
+      <Button variant="primary" onClick={() => postComment()}><FontAwesomeIcon icon={"paper-plane"} /></Button>
     </Stack>
   );
 }

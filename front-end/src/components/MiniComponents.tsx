@@ -2,7 +2,6 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { Badge, Form } from 'react-bootstrap';
 import { Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { useAppSelector } from '../hooks'
 import { addRows, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 import store from '../store'
@@ -25,7 +24,7 @@ export function MainLogoSpinner() {
   if (visible) {
     return <><Spinner animation="grow" size="sm" />{'  '}</>
   } else {
-    return <><FontAwesomeIcon icon={solid("database")} />{'  '}</>
+    return <><FontAwesomeIcon icon={"database"} />{'  '}</>
   }
 }
 

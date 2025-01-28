@@ -6,7 +6,6 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { MainLogoSpinner } from './MiniComponents';
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { Link } from 'react-router-dom';
 import { appRoles } from '../authConfig';
 
@@ -141,7 +140,7 @@ function MainNavbarRightParent({ children }: { children?: ReactNode; }) {
   const dispatch = useAppDispatch()
   const darkMode = useAppSelector(state => state.user.preferences.darkMode)
   return <Navbar.Collapse className="justify-content-end">
-    <Navbar.Text className="justify-content-end"><Button variant="outline-secondary" onClick={() => { dispatch(toggleDarkMode()) }}><FontAwesomeIcon icon={darkMode ? solid("sun") : solid("moon")} /></Button></Navbar.Text>
+    <Navbar.Text className="justify-content-end"><Button variant="outline-secondary" onClick={() => { dispatch(toggleDarkMode()) }}><FontAwesomeIcon icon={darkMode ? "sun" : "moon"} /></Button></Navbar.Text>
     <Navbar.Text className='navbar-signed-in-text'>Signed in as:</Navbar.Text>
     {children}
   </Navbar.Collapse>

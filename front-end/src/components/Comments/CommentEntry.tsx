@@ -11,7 +11,6 @@ import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { appRoles } from '../../authConfig';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { removeComment, updateComment } from '../../stateSlices/BrowseSlice';
@@ -95,13 +94,13 @@ export default function CommentEntry({ view, rowIndex, commentIndex, comment, sh
               {roles.includes(appRoles.Comments.Moderator) ?
                 <>
                   <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="delete-tooltip">Delete comment</Tooltip>}>
-                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0em' }} size='sm' onClick={() => { setShowDeleteModal(true) }}><FontAwesomeIcon icon={solid("eraser")} /></Button>
+                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0em' }} size='sm' onClick={() => { setShowDeleteModal(true) }}><FontAwesomeIcon icon={"eraser"} /></Button>
                   </OverlayTrigger>
                   <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">Edit comment</Tooltip>}>
-                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' disabled><FontAwesomeIcon icon={solid("pen")} /></Button>
+                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' disabled><FontAwesomeIcon icon={"pen"} /></Button>
                   </OverlayTrigger>
                   <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">Mark as {comment.completed ? "to do" : "completed"}</Tooltip>}>
-                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { toggleComplete() }}><FontAwesomeIcon icon={solid("check")} /></Button>
+                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { toggleComplete() }}><FontAwesomeIcon icon={"check"} /></Button>
                   </OverlayTrigger>
                 </> : null}
               <span></span>

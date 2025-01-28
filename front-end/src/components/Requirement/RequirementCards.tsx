@@ -1,6 +1,5 @@
 import { Badge, Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import Markdown from 'react-markdown'
 import { appRoles } from '../../authConfig';
 import { useState } from "react";
@@ -39,7 +38,7 @@ export function TagsCard() {
 export function TopicsCard() {
 
   const requirement = useAppSelector(state => state.requirement.requirement)
-  const parent = requirement ? buildTopicsList({...requirement.parent}).map(topic => (<span key={topic}>{' '}<FontAwesomeIcon icon={solid("arrow-right")} />{' '}<Badge bg="secondary">{topic}</Badge></span>)) : ""
+  const parent = requirement ? buildTopicsList({...requirement.parent}).map(topic => (<span key={topic}>{' '}<FontAwesomeIcon icon={"arrow-right"} />{' '}<Badge bg="secondary">{topic}</Badge></span>)) : ""
 
   function buildTopicsList(topic: Topic) {
     console.log(topic)

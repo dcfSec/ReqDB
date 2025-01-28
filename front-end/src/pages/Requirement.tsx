@@ -11,7 +11,6 @@ import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { CommentCard, DescriptionCard, ExtraCard, TagsCard, TopicsCard } from "../components/Requirement/RequirementCards";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import APIClient, { handleError, handleResult } from "../APIClient";
 import { APIErrorData, APISuccessData } from "../types/Generics";
 import { Item as RequirementItem } from "../types/API/Requirements";
@@ -74,7 +73,7 @@ export default function Requirement() {
   } else if (fetched) {
     body = <Container>
       <Row>
-        <Col><Button><FontAwesomeIcon icon={solid("code-compare")} /></Button></Col>
+        <Col><Button><FontAwesomeIcon icon={"code-compare"} /></Button></Col>
       </Row>
       <Row>
         <Col>

@@ -6,7 +6,6 @@ import BrowseContent from "../components/Browse/BrowseContent";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 /**
  * View to browse a
@@ -30,7 +29,7 @@ export default function BrowseCatalogue() {
   const id = params.catalogueId
 
   const overlay = <OverlayTrigger placement="right" delay={{ show: 50, hide: 200 }} overlay={<Tooltip id="button-tooltip">{description}</Tooltip>}>
-    <Button variant="link" style={{ height: '1.5rem', width: '1.5rem', padding: '0em' }} size='sm' ><FontAwesomeIcon icon={regular("circle-question")} /></Button></OverlayTrigger>
+    <Button variant="link" style={{ height: '1.5rem', width: '1.5rem', padding: '0em' }} size='sm' ><FontAwesomeIcon icon={["far", "circle-question"]} /></Button></OverlayTrigger>
 
   return (
     <>

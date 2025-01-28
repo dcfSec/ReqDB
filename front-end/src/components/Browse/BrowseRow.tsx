@@ -3,7 +3,6 @@ import Markdown from 'react-markdown'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import Stack from 'react-bootstrap/Stack';
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { toggleSelectRow } from '../../stateSlices/BrowseSlice';
@@ -44,8 +43,8 @@ export default memo(function BrowseRow({ index, row }: Props) {
   const renderRow = <tr key={row.Key}>
     <td className="vertical-middle">
       <Stack gap={1}>
-        <LinkContainer to={`/Browse/Requirement/${row.id}`}><Button className="eye-button" variant="primary"><FontAwesomeIcon icon={solid("link")} /></Button></LinkContainer>
-        { roles.includes(appRoles.Comments.Reader) ? <Button className="eye-button" variant="primary" onClick={() => { setShowComments(true) }} style={{ position: "relative" }}><FontAwesomeIcon icon={solid("comment")} />
+        <LinkContainer to={`/Browse/Requirement/${row.id}`}><Button className="eye-button" variant="primary"><FontAwesomeIcon icon={"link"} /></Button></LinkContainer>
+        { roles.includes(appRoles.Comments.Reader) ? <Button className="eye-button" variant="primary" onClick={() => { setShowComments(true) }} style={{ position: "relative" }}><FontAwesomeIcon icon={"comment"} />
         { commentCount > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1.5em', marginLeft: '-0.5em'}}>{commentCount}</Badge><span className="visually-hidden">comments</span></> : null }</Button> : null }
       </Stack>
     </td>
