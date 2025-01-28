@@ -86,7 +86,7 @@ async def patchRequirement(
     session.add(requirementFromDB)
     session.commit()
     session.refresh(requirementFromDB)
-    audit(session, 1, requirement, requirementFromDB)
+    audit(session, 1, requirementFromDB, userId)
     return Response.buildResponse(Response.Requirement, requirementFromDB)
 
 
