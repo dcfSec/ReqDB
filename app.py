@@ -13,6 +13,7 @@ from sqlmodel import SQLModel
 from starlette.config import Config
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 import api
 from api.config import AppConfig
@@ -79,6 +80,7 @@ app = FastAPI(
 )
 
 app.add_middleware(SessionMiddleware, secret_key=AppConfig.SECRET_KEY)
+app.add_middleware(GZipMiddleware)
 
 app.mount("/api", api.api)
 

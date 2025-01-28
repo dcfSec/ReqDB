@@ -20,6 +20,7 @@ class TableBase(SQLModel):
     id: int | None = Field(default=None, primary_key=True)
     deleted: bool = Field(default=False)
 
+
 class RequirementTag(SQLModel, table=True):
     __tablename__ = "RequirementTag"
     requirementId: int = Field(foreign_key="requirement.id", primary_key=True)
@@ -33,7 +34,9 @@ class CatalogueTopic(SQLModel, table=True):
 
 
 class User(UserBase, table=True):
-    comments: list["Comment"] = Relationship(back_populates="author")
+    comments: list["Comment"] = Relationship(
+        back_populates="author",
+    )
 
     def __repr__(self):
         return f'<User "{self.id}">'
@@ -49,10 +52,18 @@ class Audit(AuditBase, SQLModel, table=True):
 
 class Topic(TopicBase, TableBase, table=True):
     parent: Optional["Topic"] | None = Relationship(
-        back_populates="children", sa_relationship_kwargs=dict(remote_side="Topic.id")
+        back_populates="children",
+        sa_relationship_kwargs={"remote_side": "Topic.id", "lazy": "joined"},
     )
-    children: list["Topic"] = Relationship(back_populates="parent")
-    requirements: list["Requirement"] = Relationship(back_populates="parent", cascade_delete=True)
+    children: list["Topic"] = Relationship(
+        back_populates="parent",
+        sa_relationship_kwargs={"lazy": "joined"},
+    )
+    requirements: list["Requirement"] = Relationship(
+        back_populates="parent",
+        cascade_delete=True,
+        sa_relationship_kwargs={"lazy": "joined"},
+    )
     catalogues: list["Catalogue"] = Relationship(
         back_populates="topics", link_model=CatalogueTopic
     )
@@ -65,12 +76,22 @@ class Requirement(RequirementBase, TableBase, table=True):
     parent: Topic = Relationship(back_populates="requirements")
 
     tags: list["Tag"] = Relationship(
-        back_populates="requirements", link_model=RequirementTag
+        back_populates="requirements",
+        link_model=RequirementTag,
+        sa_relationship_kwargs={"lazy": "joined"},
     )
 
-    extras: list["ExtraEntry"] = Relationship(back_populates="requirement", cascade_delete=True)
+    extras: list["ExtraEntry"] = Relationship(
+        back_populates="requirement",
+        cascade_delete=True,
+        sa_relationship_kwargs={"lazy": "joined"},
+    )
 
-    comments: list["Comment"] = Relationship(back_populates="requirement", cascade_delete=True)
+    comments: list["Comment"] = Relationship(
+        back_populates="requirement",
+        cascade_delete=True,
+        sa_relationship_kwargs={"lazy": "joined"},
+    )
 
     def __repr__(self):
         return f'<Requirement "{self.title}">'
@@ -78,7 +99,9 @@ class Requirement(RequirementBase, TableBase, table=True):
 
 class Catalogue(CatalogueBase, TableBase, table=True):
     topics: list["Topic"] = Relationship(
-        back_populates="catalogues", link_model=CatalogueTopic
+        back_populates="catalogues",
+        link_model=CatalogueTopic,
+        sa_relationship_kwargs={"lazy": "joined"},
     )
 
     def __repr__(self):
@@ -88,7 +111,10 @@ class Catalogue(CatalogueBase, TableBase, table=True):
 class Comment(CommentBase, TableBase, table=True):
     requirement: Requirement = Relationship(back_populates="comments")
 
-    author: User = Relationship(back_populates="comments")
+    author: User = Relationship(
+        back_populates="comments",
+        sa_relationship_kwargs={"lazy": "joined"},
+    )
 
     def __repr__(self):
         return f'<Comment "{self.author}: {self.comment[:20]}">'
@@ -103,7 +129,11 @@ class Configuration(ConfigurationBase, table=True):
 class ExtraType(ExtraTypeBase, TableBase, table=True):
     __tablename__ = "extra_type"
 
-    children: list["ExtraEntry"] = Relationship(back_populates="extraType", cascade_delete=True)
+    children: list["ExtraEntry"] = Relationship(
+        back_populates="extraType",
+        cascade_delete=True,
+        sa_relationship_kwargs={"lazy": "joined"},
+    )
 
     def __repr__(self):
         return f'<ExtraType "{self.title}">'
@@ -112,7 +142,10 @@ class ExtraType(ExtraTypeBase, TableBase, table=True):
 class ExtraEntry(ExtraEntryBase, TableBase, table=True):
     __tablename__ = "extra_entry"
 
-    extraType: ExtraType = Relationship(back_populates="children")
+    extraType: ExtraType = Relationship(
+        back_populates="children",
+        sa_relationship_kwargs={"lazy": "joined"},
+    )
     requirement: Requirement = Relationship(back_populates="extras")
 
     def __repr__(self):

@@ -26,7 +26,7 @@ router = AuthRouter()
 async def getExtraTypes(
     session: SessionDep, expandRelationships: bool = True
 ) -> Union[Response.ExtraType, Response.ExtraType]:
-    extraTypes = session.exec(select(ExtraType)).all()
+    extraTypes = session.exec(select(ExtraType)).unique().all()
 
     if expandRelationships is False:
         return Response.ExtraType(status=200, data=extraTypes)

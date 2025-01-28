@@ -24,7 +24,7 @@ router = AuthRouter()
     },
 )
 async def getComments(session: SessionDep) -> Response.Comment:
-    comments = session.exec(select(Comment)).all()
+    comments = session.exec(select(Comment)).unique().all()
 
     return Response.Comment(status=200, data=comments)
 

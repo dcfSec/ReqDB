@@ -27,7 +27,7 @@ router = AuthRouter()
 async def getRequirements(
     session: SessionDep, expandRelationships: bool = False
 ) -> Response.Requirement:
-    requirements = session.exec(select(Requirement)).all()
+    requirements = session.exec(select(Requirement)).unique().all()
 
     if expandRelationships is False:
         return Response.Requirement(status=200, data=requirements)

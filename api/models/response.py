@@ -6,6 +6,7 @@ from api.models.base import StaticConfiguration
 from api.models.db import Configuration
 from api.models.public import (
     Audit,
+    Catalogue,
     CatalogueWithTopics,
     CatalogueWithTopicsAndRequirements,
     CatalogueWithTopicsAndRequirementsAndComments,
@@ -21,7 +22,7 @@ from api.models.public import (
 
 
 class ResponseBase(BaseModel):
-    status: int
+    status: int = 200
 
 class Response:
     class Configuration(ResponseBase):
@@ -36,6 +37,9 @@ class Response:
     class Tag(ResponseBase):
         data: Union[list[Tag],Tag]
 
+    class CatalogueWithTopics(ResponseBase):
+        data: Union[list[CatalogueWithTopics],CatalogueWithTopics]
+
     class CatalogueWithTopicsAndRequirements(ResponseBase):
         data: Union[list[CatalogueWithTopicsAndRequirements],CatalogueWithTopicsAndRequirements]
 
@@ -43,7 +47,7 @@ class Response:
         data: Union[list[CatalogueWithTopicsAndRequirementsAndComments],CatalogueWithTopicsAndRequirementsAndComments]
 
     class Catalogue(ResponseBase):
-        data: Union[list[CatalogueWithTopics],CatalogueWithTopics]
+        data: Union[list[Catalogue],Catalogue]
 
     class Comment(ResponseBase):
         data: Union[list[CommentWithRequirement],CommentWithRequirement]

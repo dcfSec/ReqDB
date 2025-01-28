@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException
+import time
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -32,7 +33,7 @@ api.include_router(coffee.router)
 
 
 @api.exception_handler(HTTPException)
-async def genericExceptionHandler(request, exc: HTTPException) -> Response.Error:
+async def genericExceptionHandler(request: Request, exc: HTTPException) -> Response.Error:
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
@@ -40,7 +41,7 @@ async def genericExceptionHandler(request, exc: HTTPException) -> Response.Error
 
 
 @api.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request, exc: StarletteHTTPException) -> Response.Error:
+async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> Response.Error:
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
@@ -48,7 +49,7 @@ async def http_exception_handler(request, exc: StarletteHTTPException) -> Respon
 
 
 @api.exception_handler(RequestValidationError)
-async def http_exception_handler(request, exc: RequestValidationError) -> Response.Error:
+async def http_exception_handler(request: Request, exc: RequestValidationError) -> Response.Error:
     return JSONResponse(
         {"status": 422, "error": type(exc).__name__, "message": exc.errors()},
         status_code=422,
@@ -56,8 +57,19 @@ async def http_exception_handler(request, exc: RequestValidationError) -> Respon
 
 
 @api.exception_handler(Exception)
-async def http_exception_handler(request, exc: Exception) -> Response.Error:
+async def http_exception_handler(request: Request, exc: Exception) -> Response.Error:
     return JSONResponse(
         {"status": 500, "error": type(exc).__name__, "message": str(exc)},
         status_code=500,
     )
+
+@api.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.perf_counter_ns()
+    response = await call_next(request)
+    process_time = time.perf_counter_ns() - start_time
+    if "Server-Timing" not in response.headers:
+        response.headers["Server-Timing"] = f"app;dur={str(process_time/1000000)}"
+    else:
+        response.headers["Server-Timing"] += f",app;dur={str(process_time/1000000)}"
+    return response

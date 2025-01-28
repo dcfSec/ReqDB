@@ -26,12 +26,12 @@ router = AuthRouter()
 async def getCatalogues(
     session: SessionDep, expandRelationships: bool = True
 ) -> Union[Response.Catalogue, Response.CatalogueWithTopicsAndRequirements]:
-    catalogues = session.exec(select(Catalogue)).all()
+    catalogues = session.exec(select(Catalogue)).unique().all()
 
     if expandRelationships is False:
-        return Response.Catalogue(status=200, data=catalogues)
+        return Response.Catalogue(data=catalogues)
     else:
-        return Response.CatalogueWithTopicsAndRequirements(status=200, data=catalogues)
+        return Response.CatalogueWithTopicsAndRequirements(data=catalogues)
 
 
 @router.get(

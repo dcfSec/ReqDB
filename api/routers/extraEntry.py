@@ -26,7 +26,7 @@ router = AuthRouter()
 async def getExtraEntries(
     session: SessionDep, expandRelationships: bool = True
 ) -> Union[Response.ExtraEntry, Response.ExtraEntry]:
-    extraEntries = session.exec(select(ExtraEntry)).all()
+    extraEntries = session.exec(select(ExtraEntry)).unique().all()
 
     if expandRelationships is False:
         return Response.ExtraEntry(status=200, data=extraEntries)

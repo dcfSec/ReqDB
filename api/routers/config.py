@@ -73,7 +73,7 @@ async def getConfig(
     session: SessionDep,
 ) -> Response.Configuration:
 
-    conf = session.exec(select(Configuration)).all()
+    conf = session.exec(select(Configuration)).unique().all()
     return {"status": 200, "data": conf}
 
 
