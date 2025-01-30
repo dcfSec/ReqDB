@@ -38,6 +38,7 @@ class Insert:
         title: str
         description: str
         parentId: int
+        visible: bool = True
         
     class ExtraType(SQLModel):
         model_config = ConfigDict(from_attributes=True)
