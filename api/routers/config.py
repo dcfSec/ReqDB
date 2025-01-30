@@ -105,4 +105,4 @@ async def patchConfig(
     # if configurationFromDB.type == "secret":
     #     configurationFromDB.value = "******"
     # audit(session, 1, configurationFromDB, userId)
-    return Response.buildResponse(Response.Configuration, configurationFromDB)
+    return Response.buildResponse(ResponseUpdate.Configuration, configurationFromDB)
