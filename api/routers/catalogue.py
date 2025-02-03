@@ -84,7 +84,7 @@ async def patchCatalogue(
     catalogue: Update.Catalogue,
     catalogueID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.CatalogueWithTopicsAndRequirements:
     catalogueFromDB = session.get(Catalogue, catalogueID)
     if not catalogueFromDB:
@@ -119,7 +119,7 @@ async def patchCatalogue(
 async def addCatalogue(
     catalogue: Insert.Catalogue,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.Catalogue:
     topics = catalogue.topics
     catalogue.topics = []
@@ -152,7 +152,7 @@ async def addCatalogue(
 async def deleteCatalogue(
     catalogueID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
     force: bool = False,
 ) -> None:
     catalogue = session.get(Catalogue, catalogueID)

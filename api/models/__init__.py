@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlmodel import Field, Session, SQLModel, create_engine
 
 from api.config import AppConfig
-from api.models.db import Audit
+from api.models.db import Audit, TableBase
 
 
 class EntityBase(SQLModel):
@@ -26,7 +26,7 @@ engine = create_engine(AppConfig.DATABASE_URI, connect_args=connect_args)
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
-def audit(session, action, model, user):
+def audit(session: Session, action: int, model: TableBase, user: str):
     session.add(
         Audit(
             userId=user,

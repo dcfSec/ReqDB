@@ -92,7 +92,7 @@ async def patchConfig(
     configuration: Update.Configuration,
     configID: str,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> ResponseUpdate.Configuration:
     configurationFromDB = session.get(Configuration, configID)
     if not configurationFromDB:

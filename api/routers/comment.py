@@ -64,7 +64,7 @@ async def patchComment(
     comment: Update.Comment,
     commentID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.Comment:
     commentFromDB = session.get(Comment, commentID)
     if not commentFromDB:
@@ -89,7 +89,7 @@ async def patchComment(
     },
 )
 async def addComment(
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
     comment: Insert.Comment,
     session: SessionDep,
 ) -> Response.Comment:
@@ -116,7 +116,7 @@ async def addComment(
 async def deleteComment(
     commentID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> None:
     comment = session.get(Comment, commentID)
     if not comment:

@@ -73,7 +73,7 @@ async def patchTag(
     tag: Update.Tag,
     tagID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.TagWithRequirements:
     tagFromDB = session.get(Tag, tagID)
     if not tagFromDB:
@@ -100,7 +100,7 @@ async def patchTag(
 async def addTag(
     tag: Insert.Tag,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.Tag:
     tagDB = Tag.model_validate(tag)
     session.add(tagDB)
@@ -125,7 +125,7 @@ async def addTag(
 async def deleteTag(
     tagID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
     force: bool = False,
 ) -> None:
     tag = session.get(Tag, tagID)

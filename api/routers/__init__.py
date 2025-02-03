@@ -164,7 +164,7 @@ async def getRoles(
 
 async def getUserId(
     credentials: HTTPAuthorizationCredentials = Depends(HTTPBearerWithUnauthorizedError()),
-):
+) -> str:
     token = credentials.credentials
     jwt = JsonWebToken(["RS256"])
     try:

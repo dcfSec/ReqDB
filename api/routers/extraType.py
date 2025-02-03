@@ -73,7 +73,7 @@ async def patchExtraType(
     extraType: Update.ExtraType,
     extraTypeID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.ExtraType:
     extraTypeFromDB = session.get(ExtraType, extraTypeID)
     if not extraTypeFromDB:
@@ -100,7 +100,7 @@ async def patchExtraType(
 async def addExtraType(
     extraType: Insert.ExtraType,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.ExtraType:
     extraTypeDB = ExtraType.model_validate(extraType)
     session.add(extraTypeDB)
@@ -125,7 +125,7 @@ async def addExtraType(
 async def deleteExtraType(
     extraTypeID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
     force: bool = False,
 ) -> None:
     extraType = session.get(ExtraType, extraTypeID)

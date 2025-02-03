@@ -75,7 +75,7 @@ async def patchTopic(
     topic: Update.Topic,
     topicID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.Topic:
     topicFromDB = session.get(Topic, topicID)
     if not topicFromDB:
@@ -103,7 +103,7 @@ async def patchTopic(
 async def addTopic(
     topic: Insert.Topic,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.Topic:
     topicDB = Topic.model_validate(topic)
     checkParentTopicChildren(topic.parentId, session, True)
@@ -129,7 +129,7 @@ async def addTopic(
 async def deleteTopic(
     topicID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
     force: bool = False,
     cascade: bool = False,
 ) -> None:

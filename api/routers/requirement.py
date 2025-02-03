@@ -75,7 +75,7 @@ async def patchRequirement(
     requirement: Update.Requirement,
     requirementID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.Requirement:
     requirementFromDB = session.get(Requirement, requirementID)
     if not requirementFromDB:
@@ -103,7 +103,7 @@ async def patchRequirement(
 async def addRequirement(
     requirement: Insert.Requirement,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
 ) -> Response.Requirement:
     requirementDB = Requirement.model_validate(requirement)
     checkParentTopicChildren(requirement.parentId, session, False)
@@ -129,7 +129,7 @@ async def addRequirement(
 async def deleteRequirement(
     requirementID: int,
     session: SessionDep,
-    userId: Annotated[dict, Depends(getUserId)],
+    userId: Annotated[str, Depends(getUserId)],
     force: bool = False,
 ) -> None:
     requirement = session.get(Requirement, requirementID)
