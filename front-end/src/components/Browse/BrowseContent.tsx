@@ -65,12 +65,14 @@ export default function BrowseContent({ id }: Props) {
       dispatch(setDescription((response.data as Catalogue).description))
       dispatch(setPageTitle((response.data as Catalogue).title))
       const tagFilterItemsTmp: Array<string> = []
-      buildRows(extraHeaders, tagFilterItemsTmp, [], { id: 0, key: "", title: "", children: (response.data as Catalogue).topics } as Topic)
-      dispatch(setTagFilterItems(tagFilterItemsTmp))
-      dispatch(sortRows())
-      dispatch(sortTopicFilterItems())
-      dispatch(showSpinner(false))
-      dispatch(setStatus("ok"));
+      buildRows(extraHeaders, tagFilterItemsTmp, [], { id: 0, key: "", title: "", children: (response.data as Catalogue).topics } as Topic).then(() => {
+        dispatch(setTagFilterItems(tagFilterItemsTmp))
+        dispatch(sortRows())
+        dispatch(sortTopicFilterItems())
+        dispatch(showSpinner(false))
+        dispatch(setStatus("ok"));
+      })
+
     });
   }
 

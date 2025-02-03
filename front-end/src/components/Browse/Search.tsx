@@ -15,10 +15,9 @@ export default function Search() {
   const [ query, setQuery ] = useState("")
 
   useEffect(() => {
-    const timeOutId = setTimeout(() => dispatch(setSearch(query)), 500);
-    return () => clearTimeout(timeOutId);
+    dispatch(setSearch(query))
   }, [query]);
 
-  return <SearchField title="Requirements" search={query} onSearch={setQuery} />
+  return <SearchField title="Requirements" onSearch={setQuery} />
 
 }

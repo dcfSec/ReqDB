@@ -117,7 +117,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
   }
 
   return (<>
-    <DataLayout title={editPageName} search={search} onSearch={onSearch}>
+    <DataLayout title={editPageName} onSearch={onSearch}>
       {body}
     </DataLayout>
   </>

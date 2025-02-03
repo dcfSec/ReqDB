@@ -161,7 +161,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
       <Modal.Body>
         <Container>
           <Row>
-            <Col><SearchField title={name} search={search} onSearch={setSearch}></SearchField></Col>
+            <Col><SearchField title={name} onSearch={setSearch}></SearchField></Col>
             <Col xs={1}>
               <OverlayTrigger overlay={<Tooltip id="refresh-tooltip">Refresh list</Tooltip>}>
                 <Button variant="outline-primary" onClick={() => reloadCache()}><FontAwesomeIcon icon={"arrows-rotate"} /></Button>

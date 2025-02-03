@@ -7,7 +7,6 @@ import { ReactNode } from 'react';
 type Props = {
   title: string;
   children: ReactNode;
-  search: string;
   onSearch: (a: string) => void;
 }
 
@@ -17,7 +16,7 @@ type Props = {
  * @param {object} props Props for this component: title, children, search, onSearch
  * @returns Returns a container for the main editor layout
  */
-export default function DataLayout({ title, children, search, onSearch }: Props) {
+export default function DataLayout({ title, children, onSearch }: Props) {
 
   return (
     <>
@@ -25,7 +24,7 @@ export default function DataLayout({ title, children, search, onSearch }: Props)
         <Col><h2>{title}</h2></Col>
       </Row>
       <Row>
-        <Col><SearchField title={title} search={search} onSearch={onSearch}></SearchField></Col>
+        <Col><SearchField title={title} onSearch={onSearch}></SearchField></Col>
       </Row>
       {children}
     </>

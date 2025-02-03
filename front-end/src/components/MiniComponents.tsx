@@ -6,7 +6,7 @@ import { useAppSelector } from '../hooks'
 import { addRows, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 import store from '../store'
 import { Button } from "react-bootstrap";
-import { JSX } from 'react';
+import { JSX, useEffect, useState } from 'react';
 import { Item as Topic } from '../types/API/Topics';
 import { Item as Requirement } from '../types/API/Requirements';
 import { BrowseState, Row } from '../types/Generics';
@@ -48,7 +48,6 @@ export function MainBreadcrumb() {
 
 type SearchFieldProps = {
   title: string;
-  search: string;
   onSearch: SearchFunction;
 }
 
@@ -58,9 +57,17 @@ type SearchFieldProps = {
  * @param {object} props Props for the component: title, search, onsearch
  * @returns Searchfield component
  */
-export function SearchField({title, search, onSearch}: SearchFieldProps): JSX.Element {
+export function SearchField({title, onSearch}: SearchFieldProps): JSX.Element {
+
+  const [ query, setQuery ] = useState("")
+
+  useEffect(() => {
+    const timeOutId = setTimeout(() => onSearch(query), 500);
+    return () => clearTimeout(timeOutId);
+  }, [query]);
+
   return (
-    <Form.Control type="text" id="search" placeholder={`Search for ${title}`} value={search} onChange={e => { onSearch(e.target.value) }}></Form.Control>
+    <Form.Control type="text" id="search" placeholder={`Search for ${title}`} value={query} onChange={e => { setQuery(e.target.value) }}></Form.Control>
   );
 }
 

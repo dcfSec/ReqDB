@@ -84,7 +84,7 @@ export default function Comments() {
   } else if (APIError) {
     body = <Row><Col><Alert variant="danger">{ErrorMessage(APIError)}</Alert></Col></Row>
   } else if (fetched) {
-    searchBar = <Col><SearchField title="Comments" search={search} onSearch={setSearch}></SearchField></Col>
+    searchBar = <Col><SearchField title="Comments" onSearch={setSearch}></SearchField></Col>
     table = <Row><Col><DataTable headers={headers}>
       {comments.length > 0 ? comments.map((item, index) => (
         <CommentRow key={index} index={index} search={search} searchFields={searchFields} comment={item} showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} showCompleted={showCompleted} />

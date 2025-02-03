@@ -162,7 +162,7 @@ export default function SelectParentModal({ itemId, humanKey, show, setShow, ini
       <Modal.Body>
         <Container>
           <Row>
-            <Col><SearchField title={updateObjectField} search={search} onSearch={setSearch}></SearchField></Col>
+            <Col><SearchField title={updateObjectField} onSearch={setSearch}></SearchField></Col>
             <Col xs={1}>
               <OverlayTrigger overlay={<Tooltip id="refresh-tooltip">Refresh list</Tooltip>}>
                 <Button variant="outline-primary" onClick={() => reloadCache()}><FontAwesomeIcon icon={"arrows-rotate"} /></Button>

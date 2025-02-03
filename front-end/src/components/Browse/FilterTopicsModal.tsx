@@ -56,7 +56,7 @@ export default function FilterTopicsModal({ show, setShow }: Props) {
       <Modal.Body>
         <Container>
           <Row>
-            <Col><SearchField title="topic" search={search} onSearch={setSearch}></SearchField></Col>
+            <Col><SearchField title="topic" onSearch={setSearch}></SearchField></Col>
           </Row>
           <Row>
             <ul><FilterTopicEntry topic={all} search={search} root={true} /></ul>

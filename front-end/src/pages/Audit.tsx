@@ -117,7 +117,7 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
   }
 
   return (<>
-    <DataLayout title={auditPageName} search={search} onSearch={onSearch}>
+    <DataLayout title={auditPageName} onSearch={onSearch}>
       {body}
     </DataLayout>
   </>
