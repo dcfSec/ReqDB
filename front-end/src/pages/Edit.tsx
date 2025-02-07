@@ -90,10 +90,11 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
     body = <Row><Col><DataTable headers={headers}>
       <AddListRowSkeleton endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} editPageName={editPageName} />
       {items.length > 0 ? items.map((item, index) => (
-          renderItem(item, index, needCascade)
-        )) : <tr><td colSpan={headers.length} style={{ textAlign: 'center' }}>No items</td></tr>}
+        renderItem(item, index, needCascade)
+      )) : <tr><td colSpan={headers.length} style={{ textAlign: 'center' }}>No items</td></tr>}
     </DataTable></Col></Row>
   }
+
   function onSearch(s: string) {
     setSearch(s)
   }
