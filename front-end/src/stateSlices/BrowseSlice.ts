@@ -105,13 +105,10 @@ export const browseSlice = createSlice({
       const selectState = !state.rows.allSelected;
       Object.keys(newSelected).forEach((key) => {
         if (state.rows.visible[key]) {
-          newSelected[key] = selectState
+          newSelected[key] = selectState;
         }
       });
-      // newSelected[action.payload] = !state.rows.selected[action.payload]
-      // state.rows.selected = {
-      //   ...newSelected
-      // }
+      state.rows.selected = { ...newSelected };
       if (Object.values(state.rows.selected).every(r => r === true)) {
         state.rows.allSelected = true;
       } else {
