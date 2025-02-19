@@ -6,7 +6,7 @@ cffi==1.17.1 ; python_version >= "3.13" and python_version < "4.0" and platform_
 charset-normalizer==3.4.1 ; python_version >= "3.13" and python_version < "4.0"
 click==8.1.8 ; python_version >= "3.13" and python_version < "4.0"
 colorama==0.4.6 ; python_version >= "3.13" and python_version < "4.0" and (sys_platform == "win32" or platform_system == "Windows")
-cryptography==44.0.0 ; python_version >= "3.13" and python_version < "4.0"
+cryptography==44.0.1 ; python_version >= "3.13" and python_version < "4.0"
 fastapi-cli==0.0.7 ; python_version >= "3.13" and python_version < "4.0"
 fastapi==0.115.7 ; python_version >= "3.13" and python_version < "4.0"
 h11==0.14.0 ; python_version >= "3.13" and python_version < "4.0"
