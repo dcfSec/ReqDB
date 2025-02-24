@@ -12,7 +12,6 @@ COPY app.py ./
 COPY gunicorn.conf.py ./
 COPY requirements.txt ./
 COPY api/ ./api
-COPY migrations/ ./migrations/
 
 RUN apk update && \
     apk add --no-cache g++ unixodbc-dev gnupg curl && \
