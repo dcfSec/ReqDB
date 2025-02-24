@@ -17,6 +17,7 @@ sqlmodel = "^0.0.22"
 authlib = "^1.4.0"
 httpx = "^0.28.1"
 itsdangerous = "^2.2.0"
+alembic = "^1.14.1"
 
 [tool.isort]
 profile = "black"
