@@ -1,6 +1,9 @@
 import time
-from fastapi import FastAPI, HTTPException, Request
+from typing import Annotated
+
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -13,12 +16,13 @@ from api.routers import (
     config,
     extraEntry,
     extraType,
+    getRoles,
     requirement,
     tag,
     topic,
 )
 
-api = FastAPI(title="ReqDB - API")
+api = FastAPI(title="ReqDB - API", docs_url=None, redoc_url=None, openapi_url=None)
 
 api.include_router(config.router)
 api.include_router(tag.router)
@@ -32,8 +36,19 @@ api.include_router(audit.router)
 api.include_router(coffee.router)
 
 
+@api.get("/openapi.json")
+async def openapi(
+    roles: Annotated[dict, Depends(getRoles)],
+):
+    return get_openapi(
+        title="FastAPI", version="0.1.0", routes=api.routes, servers=[{"url": "/api"}]
+    )
+
+
 @api.exception_handler(HTTPException)
-async def genericExceptionHandler(request: Request, exc: HTTPException) -> Response.Error:
+async def genericExceptionHandler(
+    request: Request, exc: HTTPException
+) -> Response.Error:
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
@@ -41,7 +56,9 @@ async def genericExceptionHandler(request: Request, exc: HTTPException) -> Respo
 
 
 @api.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> Response.Error:
+async def http_exception_handler(
+    request: Request, exc: StarletteHTTPException
+) -> Response.Error:
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
@@ -49,7 +66,9 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException) 
 
 
 @api.exception_handler(RequestValidationError)
-async def http_exception_handler(request: Request, exc: RequestValidationError) -> Response.Error:
+async def http_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> Response.Error:
     return JSONResponse(
         {"status": 422, "error": type(exc).__name__, "message": exc.errors()},
         status_code=422,
@@ -62,6 +81,7 @@ async def http_exception_handler(request: Request, exc: Exception) -> Response.E
         {"status": 500, "error": type(exc).__name__, "message": str(exc)},
         status_code=500,
     )
+
 
 @api.middleware("http")
 async def add_process_time_header(request: Request, call_next):

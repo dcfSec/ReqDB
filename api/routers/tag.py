@@ -25,13 +25,13 @@ router = AuthRouter()
 )
 async def getTags(
     session: SessionDep, expandRelationships: bool = True
-) -> Union[Response.Tag, Response.TagWithRequirements]:
+) -> Union[Response.Tags, Response.TagsWithRequirements]:
     tags = session.exec(select(Tag)).unique().all()
 
     if expandRelationships is False:
-        return Response.buildResponse(Response.Tag, tags)
+        return Response.buildResponse(Response.Tags, tags)
     else:
-        return Response.buildResponse(Response.TagWithRequirements, tags)
+        return Response.buildResponse(Response.TagsWithRequirements, tags)
 
 
 @router.get(

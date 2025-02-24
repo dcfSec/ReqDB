@@ -25,13 +25,13 @@ router = AuthRouter()
 )
 async def getExtraEntries(
     session: SessionDep, expandRelationships: bool = True
-) -> Union[Response.ExtraEntry, Response.ExtraEntry]:
+) -> Response.ExtraEntries:
     extraEntries = session.exec(select(ExtraEntry)).unique().all()
 
     if expandRelationships is False:
-        return Response.buildResponse(Response.ExtraEntry, extraEntries)
+        return Response.buildResponse(Response.ExtraEntries, extraEntries)
     else:
-        return Response.buildResponse(Response.ExtraEntry, extraEntries)
+        return Response.buildResponse(Response.ExtraEntries, extraEntries)
 
 
 @router.get(

@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
-import mainLogoSpinnerReducer from './stateSlices/MainLogoSpinnerSlice'
+import MainLogoSpinnerReducer from './stateSlices/MainLogoSpinnerSlice'
 import BrowseReducer from './stateSlices/BrowseSlice'
-import catalogueDataReducer from './stateSlices/CatalogueDataSlice'
+import CatalogueDataReducer from './stateSlices/CatalogueDataSlice'
 import NotificationToastReducer from './stateSlices/NotificationToastSlice'
 import EditReducer from './stateSlices/EditSlice'
 import UserReducer from './stateSlices/UserSlice'
@@ -10,12 +10,13 @@ import CommentReducer from './stateSlices/CommentSlice'
 import LayoutReducer from './stateSlices/LayoutSlice'
 import AuditReducer from './stateSlices/AuditSlice'
 import ConfigurationReducer from './stateSlices/ConfigurationSlice'
+import ApiDocSliceReducer from './stateSlices/APIDocSlice'
 
 const store = configureStore({
   reducer: {
-    mainLogoSpinner: mainLogoSpinnerReducer,
+    mainLogoSpinner: MainLogoSpinnerReducer,
     browse: BrowseReducer,
-    catalogueData: catalogueDataReducer,
+    catalogueData: CatalogueDataReducer,
     notificationToast: NotificationToastReducer,
     edit: EditReducer,
     user: UserReducer,
@@ -24,6 +25,7 @@ const store = configureStore({
     layout: LayoutReducer,
     audit: AuditReducer,
     configuration: ConfigurationReducer,
+    apiDoc: ApiDocSliceReducer
   }
 })
 

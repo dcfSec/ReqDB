@@ -10,6 +10,8 @@ from api.models.base import (
     TagBase,
     TopicBase,
     UserBase,
+    ConfigurationBase,
+    StaticConfiguration as StaticConfigurationBase
 )
 
 
@@ -97,3 +99,9 @@ class Audit(AuditBase):
     @property
     def verb(self) -> str:
         return ["INSERT", "UPDATE", "DELETE"][self.action]
+
+class Configuration(ConfigurationBase):
+    pass
+
+class StaticConfiguration(StaticConfigurationBase):
+    pass

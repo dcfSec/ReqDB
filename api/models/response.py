@@ -1,17 +1,18 @@
 from typing import Union
 
-from pydantic import BaseModel
 from fastapi import Response as FastAPIResponse
+from pydantic import BaseModel
 
-from api.models.base import StaticConfiguration
-from api.models.db import Configuration
+from api.models.public import Audit, Catalogue, CatalogueWithTopics
 from api.models.public import (
-    Audit,
-    Catalogue,
-    CatalogueWithTopics,
-    CatalogueWithTopicsAndRequirements,
-    CatalogueWithTopicsAndRequirementsAndComments,
+    CatalogueWithTopicsAndRequirements as CatalogueWithTopicsAndRequirementsModel,
+)
+from api.models.public import (
+    CatalogueWithTopicsAndRequirementsAndComments as CatalogueWithTopicsAndRequirementsAndCommentsModel,
+)
+from api.models.public import (
     CommentWithRequirement,
+    Configuration,
     ExtraEntryWithExtraTypeAndRequirement,
     ExtraType,
     RequirementWithExtrasAndTagsAndComments,
@@ -19,6 +20,7 @@ from api.models.public import (
     TagWithRequirements,
     TopicWithParent,
     TopicWithRequirements,
+    StaticConfiguration,
 )
 
 
@@ -33,43 +35,79 @@ class Response:
         data: StaticConfiguration
 
     class TagWithRequirements(ResponseBase):
-        data:  Union[list[TagWithRequirements], TagWithRequirements]
+        data: TagWithRequirements
+
+    class TagsWithRequirements(ResponseBase):
+        data:  list[TagWithRequirements]
 
     class Tag(ResponseBase):
-        data: Union[list[Tag],Tag]
+        data: Tag
+
+    class Tags(ResponseBase):
+        data: list[Tag]
 
     class CatalogueWithTopics(ResponseBase):
-        data: Union[list[CatalogueWithTopics],CatalogueWithTopics]
+        data:CatalogueWithTopics
 
     class CatalogueWithTopicsAndRequirements(ResponseBase):
-        data: Union[list[CatalogueWithTopicsAndRequirements],CatalogueWithTopicsAndRequirements]
+        data: CatalogueWithTopicsAndRequirementsModel
 
     class CatalogueWithTopicsAndRequirementsAndComments(ResponseBase):
-        data: Union[list[CatalogueWithTopicsAndRequirementsAndComments],CatalogueWithTopicsAndRequirementsAndComments]
+        data: CatalogueWithTopicsAndRequirementsAndCommentsModel
 
     class Catalogue(ResponseBase):
-        data: Union[list[Catalogue],Catalogue]
+        data: Catalogue
+
+    class CataloguesWithTopics(ResponseBase):
+        data: list[CatalogueWithTopics]
+
+    class CataloguesWithTopicsAndRequirements(ResponseBase):
+        data: list[CatalogueWithTopicsAndRequirementsModel]
+
+    class CataloguesWithTopicsAndRequirementsAndComments(ResponseBase):
+        data: list[CatalogueWithTopicsAndRequirementsAndCommentsModel]
+
+    class Catalogues(ResponseBase):
+        data: list[Catalogue]
 
     class Comment(ResponseBase):
-        data: Union[list[CommentWithRequirement],CommentWithRequirement]
+        data:CommentWithRequirement
     
+    class Comments(ResponseBase):
+        data: list[CommentWithRequirement]
+
     class Topic(ResponseBase):
-        data: Union[list[TopicWithParent],TopicWithParent]
+        data: TopicWithParent
 
     class TopicWithRequirements(ResponseBase):
-        data: Union[list[TopicWithRequirements],TopicWithRequirements]
+        data: TopicWithRequirements
+
+    class Topics(ResponseBase):
+        data: list[TopicWithParent]
+
+    class TopicsWithRequirements(ResponseBase):
+        data: list[TopicWithRequirements]
 
     class Requirement(ResponseBase):
-        data: Union[list[RequirementWithExtrasAndTagsAndComments],RequirementWithExtrasAndTagsAndComments]
+        data: RequirementWithExtrasAndTagsAndComments
+
+    class Requirements(ResponseBase):
+        data: list[RequirementWithExtrasAndTagsAndComments]
 
     class ExtraType(ResponseBase):
-        data: Union[list[ExtraType],ExtraType]
+        data: ExtraType
+
+    class ExtraTypes(ResponseBase):
+        data: list[ExtraType]
 
     class ExtraEntry(ResponseBase):
-        data: Union[list[ExtraEntryWithExtraTypeAndRequirement],ExtraEntryWithExtraTypeAndRequirement]
-    
+        data: ExtraEntryWithExtraTypeAndRequirement
+
+    class ExtraEntries(ResponseBase):
+        data: ExtraEntryWithExtraTypeAndRequirement
+ 
     class Audit(ResponseBase):
-        data: Union[list[Audit],Audit]
+        data: list[Audit]
     
     class TeePod(ResponseBase):
         data: str

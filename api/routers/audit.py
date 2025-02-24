@@ -32,7 +32,7 @@ router = AuthRouter()
         200: {"description": "Audit logs for the requested object"},
     },
 )
-async def getTag(
+async def getAudit(
     session: SessionDep,
     object: str,
     roles: Annotated[dict, Depends(getRoles)],

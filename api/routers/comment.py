@@ -23,10 +23,10 @@ router = AuthRouter()
         200: {"description": "All comments"},
     },
 )
-async def getComments(session: SessionDep) -> Response.Comment:
+async def getComments(session: SessionDep) -> Response.Comments:
     comments = session.exec(select(Comment)).unique().all()
 
-    return Response.buildResponse(Response.Comment, comments)
+    return Response.buildResponse(Response.Comments, comments)
 
 
 @router.get(

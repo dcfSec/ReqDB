@@ -12,6 +12,7 @@ import { appRoles } from "../authConfig";
 import Login from "../pages/Login";
 import Requirement from "../pages/Requirement";
 import Comments from "../pages/Comments";
+import APIDoc from "../pages/APIDoc";
 
 /**
  * Main Router for the web app
@@ -75,6 +76,7 @@ export function Router() {
               <RouteGuard requiredRoles={[appRoles.Comments.Auditor]} /* title="Comments" */><AuditComments /></RouteGuard>
             } />
           </Route>
+          <Route path="APIDoc" element={<RouteGuard requiredRoles={[appRoles.Comments.Reader]}><APIDoc /></RouteGuard>} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>

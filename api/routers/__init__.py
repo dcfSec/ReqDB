@@ -59,8 +59,8 @@ auth = {
     "addExtraEntry": {"required": True, "roles": ["Requirements.Writer"]},
     "deleteExtraEntry": {"required": True, "roles": ["Requirements.Writer"]},
     "getCoffee": {"required": True, "roles": ["Requirements.Reader"]},
+    "getAudit": {"required": True, "roles": ["Requirements.Auditor"]},
 }
-
 
 
 class HTTPBearerWithUnauthorizedError(HTTPBearer):
@@ -91,6 +91,7 @@ class RBACRoute(APIRoute):
             return response
 
         return checkAccessRouteHandler
+
 
 class AuthRouter(APIRouter):
     def __init__(self, **kwargs):
@@ -125,7 +126,7 @@ async def validateJWT(
         claims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
     except Exception as e:
         raise Unauthorized(detail=str(e))
-    
+
     with Session(engine) as session:
         user = session.get(User, claims["sub"])
         if not user:
@@ -151,7 +152,9 @@ async def checkAccess(jwt: dict, neededRoles: list[str]):
 
 
 async def getRoles(
-    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearerWithUnauthorizedError()),
+    credentials: HTTPAuthorizationCredentials = Depends(
+        HTTPBearerWithUnauthorizedError()
+    ),
 ):
     token = credentials.credentials
     jwt = JsonWebToken(["RS256"])
@@ -163,7 +166,9 @@ async def getRoles(
 
 
 async def getUserId(
-    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearerWithUnauthorizedError()),
+    credentials: HTTPAuthorizationCredentials = Depends(
+        HTTPBearerWithUnauthorizedError()
+    ),
 ) -> str:
     token = credentials.credentials
     jwt = JsonWebToken(["RS256"])

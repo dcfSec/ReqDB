@@ -76,6 +76,7 @@ export default function MainNavbar() {
             {roles.includes(appRoles.Configuration.Reader) ?
               <NavDropdown.Item onClick={() => { setShowConfiguration(true) }}>Configuration</NavDropdown.Item>
               : null}
+              <NavDropdown.Item as={Link} to="/APIDoc">API Doc</NavDropdown.Item>
               <NavDropdown.Item onClick={() => void auth.removeUser()}>Logout</NavDropdown.Item>
             </> :
             <NavDropdown.Item onClick={() => void auth.signinRedirect()}>Login</NavDropdown.Item>

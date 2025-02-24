@@ -276,3 +276,23 @@ export function toISOStringWithTimezone(date: Date) {
     ':' + pad(date.getSeconds()) +
     getTimezoneOffset(date);
 };
+
+/** 
+ * Save blob as file (See https://github.com/eligrey/FileSaver.js/issues/774)
+ * 
+ * @param {Blob} blob
+ * @param {string} name
+*/
+export function saveAs(blob: Blob, name: string) {
+  // Namespace is used to prevent conflict w/ Chrome popup Blocker extension (Issue https://github.com/eligrey/FileSaver.js/issues/561)
+  const a = document.createElementNS('http://www.w3.org/1999/xhtml', 'a') as HTMLAnchorElement
+  a.download = name
+  a.rel = 'noopener'
+  a.href = URL.createObjectURL(blob)
+
+  a.click()
+  URL.revokeObjectURL(a.href)
+
+  // setTimeout(() => URL.revokeObjectURL(a.href), 40 /* sec */ * 1000)
+  // setTimeout(() => a.click(), 0)
+}
