@@ -184,7 +184,6 @@ function getPropertyValue(property: OpenAPIV3_1.SchemaObject, ref: string[] = []
   } else if (property && "$ref" in property && property.$ref) {
     const locRef = (property.$ref as string).split("/").at(-1)
     if (locRef && !locRef.startsWith("api__models") && !ref.includes(locRef)) {
-      console.log(locRef)
       ref.push(locRef)
       return parseObject(apiSpec?.components?.schemas?.[locRef], ref)
     } else {
