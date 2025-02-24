@@ -25,7 +25,7 @@ To kickstart the ReqDB you can use the [ReqDBContentCreator](https://github.com/
 
 ## Deployment
 
-ReqDB is a Flask plus React application with any database in the background which is [supported by sqlalchemy](https://docs.sqlalchemy.org/en/20/core/engines.html).
+ReqDB is a FastAPI plus React application with any database in the background which is [supported by sqlalchemy](https://docs.sqlalchemy.org/en/20/core/engines.html).
 Using ReqDB can be as simple as deploying it locally with a sqlite DB or as a web service with a e.g. postgres DB.
 
 ### Manual
