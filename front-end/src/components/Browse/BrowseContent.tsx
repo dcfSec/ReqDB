@@ -46,17 +46,22 @@ export default function BrowseContent({ id }: Props) {
 
   const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  let init = false
 
   useEffect(() => {
-    dispatch(reset());
-    dispatch(showSpinner(true))
-    dispatch(setStatus("loading"));
-
-    APIClient.get(`catalogues/${id}?expandRelationships=true`).then((response) => {
-      handleResult(response, okCallback, APIErrorCallback)
-    }).catch((error) => {
-      handleError(error, APIErrorCallback, errorCallback)
-    });
+    if (init === false) {
+      init = true
+      dispatch(reset());
+      dispatch(showSpinner(true))
+      dispatch(setStatus("loading"));
+  
+      APIClient.get(`catalogues/${id}?expandRelationships=true`).then((response) => {
+        handleResult(response, okCallback, APIErrorCallback)
+      }).catch((error) => {
+        handleError(error, APIErrorCallback, errorCallback)
+      });
+    }
   }, [])
 
   function okCallback(response: APISuccessData) {

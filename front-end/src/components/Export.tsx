@@ -1,12 +1,13 @@
 import Dropdown from 'react-bootstrap/Dropdown';
 import ExcelJS from "exceljs";
-import YAML from 'yaml';
+import * as yaml from 'js-yaml';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip, { TooltipProps } from 'react-bootstrap/Tooltip';
 
 import { useAppSelector } from '../hooks';
 import { RefAttributes } from 'react';
 import { JSX } from 'react/jsx-runtime';
+import { saveAs } from './MiniComponents';
 
 /**
  * Exports the browse table in different formats
@@ -61,9 +62,7 @@ export function ExportTable() {
 
   function exportYaml() {
     const fileType = 'data:text/yaml;charset=utf-8;';
-    const doc = new YAML.Document();
-    doc.contents = dataToExport;
-    const blob = new Blob([doc.toString()], { type: fileType });
+    const blob = new Blob([yaml.dump(dataToExport)], { type: fileType });
     saveAs(blob, "ReqDB-Export.yaml");
   }
 
@@ -92,24 +91,4 @@ export function ExportTable() {
       </Dropdown.Menu>
     </Dropdown>
   );
-}
-
-/** 
- * Save blob as file (See https://github.com/eligrey/FileSaver.js/issues/774)
- * 
- * @param {Blob} blob
- * @param {string} name
-*/
-function saveAs(blob: Blob, name: string) {
-  // Namespace is used to prevent conflict w/ Chrome Poper Blocker extension (Issue https://github.com/eligrey/FileSaver.js/issues/561)
-  const a = document.createElementNS('http://www.w3.org/1999/xhtml', 'a') as HTMLAnchorElement
-  a.download = name
-  a.rel = 'noopener'
-  a.href = URL.createObjectURL(blob)
-
-  a.click()
-  URL.revokeObjectURL(a.href)
-
-  // setTimeout(() => URL.revokeObjectURL(a.href), 40 /* sec */ * 1000)
-  // setTimeout(() => a.click(), 0)
 }
