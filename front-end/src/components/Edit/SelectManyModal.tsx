@@ -64,6 +64,7 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
   function reloadCache() {
     dispatch(showSpinner(true))
     dispatch(cleanCache({ endpoint }))
+    setError(null)
     APIClient.get(`${endpoint}`).then((response) => {
       handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {

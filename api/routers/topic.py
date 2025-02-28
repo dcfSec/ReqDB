@@ -26,13 +26,13 @@ router = AuthRouter()
 )
 async def getTopics(
     session: SessionDep, expandRelationships: bool = False
-) -> Union[Response.Topic, Response.TopicWithRequirements]:
+) -> Union[Response.Topics, Response.TopicsWithRequirements]:
     topics = session.exec(select(Topic)).unique().all()
 
     if expandRelationships is False:
-        return Response.buildResponse(Response.Topic, topics)
+        return Response.buildResponse(Response.Topics, topics)
     else:
-        return Response.buildResponse(Response.TopicWithRequirements, topics)
+        return Response.buildResponse(Response.TopicsWithRequirements, topics)
 
 
 @router.get(
