@@ -1,17 +1,20 @@
 from datetime import datetime
 
-from pydantic import ConfigDict
 from sqlmodel import JSON, Column, Field, SQLModel
+
+
+def timestamp() -> float:
+    return datetime.timestamp(datetime.now())
 
 
 class UserBase(SQLModel):
     id: str = Field(primary_key=True)
     email: str = Field(max_length=254)
-    created: float = Field(default=datetime.timestamp(datetime.now()))
+    created: float = Field(default_factory=timestamp)
 
 
 class AuditBase(SQLModel):
-    timestamp: float = Field(default=datetime.timestamp(datetime.now()))
+    timestamp: float = Field(default_factory=timestamp)
 
     table: str = Field(max_length=200, index=True)
     target_id: int = Field(index=True)
@@ -45,12 +48,14 @@ class CatalogueBase(SQLModel):
 
 class CommentBase(SQLModel):
     comment: str
-    created: float = Field(default=datetime.timestamp(datetime.now()))
+    created: float = Field(default_factory=timestamp)
     completed: bool = Field(default=False)
 
     requirementId: int = Field(foreign_key="requirement.id", ondelete="CASCADE")
 
     authorId: str = Field(foreign_key="user.id")
+
+    parentId: int | None = Field(foreign_key="comment.id", default=None, nullable=True, ondelete="CASCADE")
 
 
 class ConfigurationBase(SQLModel):

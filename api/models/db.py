@@ -90,7 +90,7 @@ class Requirement(RequirementBase, TableBase, table=True):
     comments: list["Comment"] = Relationship(
         back_populates="requirement",
         cascade_delete=True,
-        sa_relationship_kwargs={"lazy": "joined"},
+        sa_relationship_kwargs={"lazy": "joined", "order_by": "Comment.created"},
     )
 
     def __repr__(self):
@@ -114,6 +114,17 @@ class Comment(CommentBase, TableBase, table=True):
     author: User = Relationship(
         back_populates="comments",
         sa_relationship_kwargs={"lazy": "joined"},
+    )
+
+    parent: Optional["Comment"] | None = Relationship(
+        back_populates="children",
+        sa_relationship_kwargs={"remote_side": "Comment.id", "lazy": "joined"},
+    )
+
+    children: list["Comment"] = Relationship(
+        back_populates="parent",
+        sa_relationship_kwargs={"lazy": "joined", "order_by": "Comment.created"},
+        cascade_delete=True,
     )
 
     def __repr__(self):

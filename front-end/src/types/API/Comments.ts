@@ -10,5 +10,8 @@ export interface Item extends Record<string, unknown> {
     email: string;
   };
   created: number;
-  completed: boolean
+  completed: boolean;
+  children: Item[];
+  parentId: number | null;
+  parent: Item | null
 }

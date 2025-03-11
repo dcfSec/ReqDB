@@ -1,13 +1,12 @@
-import { Badge, Card, Form } from "react-bootstrap";
+import { Badge, Card } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Markdown from 'react-markdown'
 import { appRoles } from '../../authConfig';
-import { useState } from "react";
-import CommentEntry from "../Comments/CommentEntry";
-import AddComment from "../Comments/AddComment";
 import ExtraField from "../Browse/ExtraField";
-import { useAppSelector } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { Item as Topic } from "../../types/API/Topics";
+import CommentsBase from "../Comments/CommentsBase";
+import { setComments, setRequirementId } from "../../stateSlices/CommentSlice";
 
 /**
  * Card for listing the tags
@@ -41,6 +40,7 @@ export function TopicsCard() {
   const parent = requirement ? buildTopicsList({...requirement.parent}).map(topic => (<span key={topic}>{' '}<FontAwesomeIcon icon={"arrow-right"} />{' '}<Badge bg="secondary">{topic}</Badge></span>)) : ""
 
   function buildTopicsList(topic: Topic) {
+    console.log(topic)
     let r = [topic.title]
     if (topic.parentId !== null) {
       r = buildTopicsList(topic.parent).concat(r)
@@ -107,21 +107,20 @@ export function CommentCard() {
 
   const requirement = useAppSelector(state => state.requirement.requirement)
   const roles = useAppSelector(state => state.user.roles)
-  const [showCompleted, setShowCompleted] = useState(false);
   
   const comments = requirement ? [...requirement.comments] : []
-  const id = requirement ? requirement.id : NaN
-
-  const completedCount = comments.filter((el) => el.completed == true).length
 
   if (roles.includes(appRoles.Comments.Reader) || roles.includes(appRoles.Comments.Writer)) {
+
+    const dispatch = useAppDispatch()
+    dispatch(setComments(comments))
+    dispatch(setRequirementId(requirement ? requirement.id : undefined))
+
     return (
       <Card>
         <Card.Header as="h3">Comments</Card.Header>
         <Card.Body>
-          {completedCount > 0 ? <Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label={`${completedCount} comments completed. Show completed`} reverse /> : null}
-          {roles.includes(appRoles.Comments.Reader) ? comments.sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"requirement"} rowIndex={0} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} showCompleted={showCompleted} />) : null}
-          {roles.includes(appRoles.Comments.Writer) ? <><Card.Title>Add Comment</Card.Title><AddComment view={"requirement"} index={0} requirementId={id} /></> : null}
+          <CommentsBase />
         </Card.Body>
       </Card>
     )

@@ -18,8 +18,6 @@ type Props = {
   comment: Item;
   search: string;
   searchFields: Array<string>;
-  showDeleteModal: boolean;
-  setShowDeleteModal: (a: boolean) => void;
   showCompleted: boolean
 }
 
@@ -29,15 +27,23 @@ type Props = {
  * @param {object} props Props for this component: comment, showDeleteModal, setShowDeleteModal, handleDeleteItem
  * @returns Table row for editing an object
  */
-export function CommentRow({ index, comment, search, searchFields, showDeleteModal, setShowDeleteModal, showCompleted }: Props) {
+export function CommentRow({ index, comment, search, searchFields, showCompleted }: Props) {
   const dispatch = useDispatch()
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [force, setForce] = useState(false);
-  const [/*cascade*/, setCascade] = useState(false);
+  const [cascade, setCascade] = useState(false);
 
   function deleteComment() {
+    const parameters = []
+    if (force) {
+      parameters.push("force=true")
+      if (cascade) {
+        parameters.push("cascade=true")
+      }
+    }
     dispatch(showSpinner(true))
-    APIClient.delete(`comments/${comment.id}`).then((response) => {
+    APIClient.delete(`comments/${comment.id}?${parameters.join("&")}`).then((response) => {
       handleResult(response, okCallback, APIErrorToastCallback)
       setShowDeleteModal(false)
     }).catch((error) => {
@@ -48,7 +54,7 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function okCallback(response: APISuccessData) {
       dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
-      dispatch(removeComment({ comment: index }))
+      dispatch(removeComment({ index, force }))
     }
   }
 
@@ -74,8 +80,10 @@ export function CommentRow({ index, comment, search, searchFields, showDeleteMod
         <td>{comment.author.email}</td>
         <td><Form.Check type="switch" id="completed" defaultChecked={comment.completed} onChange={e => { updateCompleted(e.target.checked) }} /></td>
         <td><LinkContainer to={`/Browse/Requirement/${comment.requirement.id}`}><Button variant="primary" size="sm">{comment.requirement.title}</Button></LinkContainer></td>
-        <td><Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button></td>
+        <td>{comment.parentId}</td>
+        <td><Button variant="danger" onClick={() => {console.log(comment.id);setShowDeleteModal(true)}}>Delete</Button></td>
         {showDeleteModal ? <DeleteConfirmationModal
+          key={`${comment.id}`}
           show={showDeleteModal}
           item={comment.comment}
           onCancel={() => setShowDeleteModal(false)} onConfirm={() => deleteComment()}

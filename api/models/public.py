@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import computed_field
 
 from api.models.base import (
@@ -27,7 +28,7 @@ class Topic(TopicBase):
 
 class TopicWithParent(TopicBase):
     id: int
-    parent: Topic | None = None
+    parent: Optional["TopicWithParent"] = None
 
 class Requirement(RequirementBase):
     id: int
@@ -44,6 +45,7 @@ class User(UserBase):
 class Comment(CommentBase):
     id: int
     author: User
+    children: list["Comment"] | None = []
 
 class CommentWithRequirement(Comment):
     author: User
@@ -66,6 +68,7 @@ class RequirementWithExtrasAndTags(Requirement):
 class RequirementWithExtrasAndTagsAndTopics(Requirement):
     extras: list[ExtraEntryWithExtraType] | None = []
     tags: list[Tag] | None = []
+    parent: TopicWithParent | None = []
 
 class RequirementWithExtrasAndTagsAndComments(Requirement):
     extras: list[ExtraEntryWithExtraType] | None = []

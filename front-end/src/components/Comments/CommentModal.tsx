@@ -1,16 +1,15 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { Col, Container, Row, Form } from 'react-bootstrap';
-import { useAppSelector } from '../../hooks';
-import CommentEntry from "./CommentEntry"
-import AddComment from "./AddComment"
-import { appRoles } from '../../authConfig';
-import { useState } from "react";
 import Stack from 'react-bootstrap/Stack';
+import CommentsBase from './CommentsBase';
+import { reset } from '../../stateSlices/CommentSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { setComments } from '../../stateSlices/BrowseSlice';
 
 
 type Props = {
-  index: number;
+  requirementIndex: number;
+  title: string;
   show: boolean;
   setShow: (a: boolean) => void;
 }
@@ -21,18 +20,16 @@ type Props = {
  * @param {object} props Props for this component: humanKey, show, setShow, initialSelectedItems, endpoint, columns, updateKey, updateItem
  * @returns Returns a modal to select many
  */
-export default function CommentModal({ index, show, setShow }: Props) {
+export default function CommentModal({ requirementIndex, title, show, setShow }: Props) {
+  const dispatch = useAppDispatch()
 
-  const row = useAppSelector(state => state.browse.rows.items)[index]
-  const roles = useAppSelector(state => state.user.roles)
-
-  const [showCompleted, setShowCompleted] = useState(false);
+  const comments = useAppSelector(state => state.comment.comments)
 
   function close() {
+    dispatch(setComments({ index: requirementIndex, comments }))
+    dispatch(reset())
     setShow(false)
   }
-
-  const completedCount = [...row.Comments].filter((el) => el.completed == true).length
 
   return (
     <Modal
@@ -44,24 +41,11 @@ export default function CommentModal({ index, show, setShow }: Props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          Comments for <code>{row["Title"]}</code>
+          Comments for <code>{title}</code>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Container>
-          { completedCount > 0 ?
-          <Row>
-            <Col><Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label={`${completedCount} comments completed. Show completed`} reverse/></Col>
-          </Row> : null}
-          <Row>
-            <Col>{[...row["Comments"]].sort((a, b) => a.id - b.id).map((item, commentIndex) => <CommentEntry view={"browse"} rowIndex={index} commentIndex={commentIndex} comment={item} key={`comment-${commentIndex}`} showCompleted={showCompleted}/>)}</Col>
-          </Row>
-          <Row>
-            <Col>
-            { roles.includes(appRoles.Comments.Writer) ? <AddComment view={"browse"} index={index} requirementId={row["id"]} /> : null }
-            </Col>
-          </Row>
-        </Container>
+        <CommentsBase />
       </Modal.Body>
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>

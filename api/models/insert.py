@@ -1,9 +1,5 @@
-from datetime import datetime
-
 from pydantic import ConfigDict
 from sqlmodel import SQLModel
-
-from api.models.base import UserBase
 
 
 class Insert:
@@ -20,10 +16,10 @@ class Insert:
     class Comment(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         comment: str | None = None
-        created: float = datetime.timestamp(datetime.now())
         completed: bool = False
         requirementId: int
         authorId: str | None = None
+        parentId: int | None = None
 
     class Topic(SQLModel):
         model_config = ConfigDict(from_attributes=True)
@@ -39,7 +35,7 @@ class Insert:
         description: str
         parentId: int
         visible: bool = True
-        
+
     class ExtraType(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         title: str | None = None
@@ -51,7 +47,7 @@ class Insert:
         content: str | None = None
         extraTypeId: int | None = None
         requirementId: int | None = None
-        
+
     class CatalogueTopic(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         id: int

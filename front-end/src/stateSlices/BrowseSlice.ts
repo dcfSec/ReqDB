@@ -220,24 +220,14 @@ export const browseSlice = createSlice({
         state.rows.visible[row.id] = isVisible(state, row)
       })
     },
-    addComment: (state, action: PayloadAction<{ index: number, comment: Comment }>) => {
+    setComments: (state, action: PayloadAction<{ index: number, comments: Comment[] }>) => {
       const tmp = [
         ...state.rows.items
       ]
-      tmp[action.payload.index].Comments.push(action.payload.comment)
+      tmp[action.payload.index].Comments = [...action.payload.comments]
       state.rows.items = [
         ...tmp
       ]
-    },
-    removeComment: (state, action: PayloadAction<{ index: number, comment: number }>) => {
-      const tmp = [...state.rows.items]
-      tmp[action.payload.index].Comments.splice(action.payload.comment, 1);
-      state.rows.items = [...tmp]
-    },
-    updateComment: (state, action: PayloadAction<{ index: number, commentIndex: number, comment: Comment }>) => {
-      const tmp = [...state.rows.items]
-      tmp[action.payload.index].Comments[action.payload.commentIndex] = action.payload.comment
-      state.comments = [...tmp]
     },
     setTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload
@@ -254,6 +244,6 @@ export const browseSlice = createSlice({
   },
 })
 
-export const { trace, reset, setData, setDescription, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, addComment, removeComment, updateComment, setTitle, setStatus } = browseSlice.actions
+export const { trace, reset, setData, setDescription, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, setComments, setTitle, setStatus } = browseSlice.actions
 
 export default browseSlice.reducer

@@ -1,10 +1,9 @@
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
-import { Form } from 'react-bootstrap';
+import { Alert, Form } from 'react-bootstrap';
 import { useState } from "react";
 import { useDispatch } from 'react-redux'
-import { addComment } from '../../stateSlices/BrowseSlice';
-import { addCommentToRequirement } from '../../stateSlices/RequirementSlice';
+import { addComment } from '../../stateSlices/CommentSlice';
 
 import { toast } from "../../stateSlices/NotificationToastSlice";
 
@@ -13,12 +12,14 @@ import APIClient, { handleError, handleResult } from '../../APIClient';
 import { APIErrorData, APISuccessData } from '../../types/Generics';
 import { Item as Comment } from "../../types/API/Comments";
 import { showSpinner } from '../../stateSlices/MainLogoSpinnerSlice';
+import { truncate } from '../MiniComponents';
+import { useAppSelector } from '../../hooks';
 
 
 type Props = {
-  view: string;
-  index: number;
-  requirementId: number
+  replyTo: Comment|null;
+  replyToText: string;
+  setReply: (a: Comment|null) => void;
 }
 
 /**
@@ -27,14 +28,17 @@ type Props = {
  * @param {object} props Props for this component: index, requirementId
  * @returns A comment entry
  */
-export default function AddComment({ view, index, requirementId }: Props) {
+export default function AddComment({ replyTo = null, replyToText = "", setReply }: Props) {
   const dispatch = useDispatch()
+
+
+  const requirementId = useAppSelector(state => state.comment.requirementId)
 
   const [newComment, setNewComment] = useState("")
 
   function postComment() {
     dispatch(showSpinner(true))
-    APIClient.post(`comments`, { comment: newComment, requirementId }).then((response) => {
+    APIClient.post(`comments`, { comment: newComment, requirementId, parentId: replyTo ? replyTo.id : null }).then((response) => {
       handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
       handleError(error, APIErrorCallback, errorCallback)
@@ -42,13 +46,10 @@ export default function AddComment({ view, index, requirementId }: Props) {
   }
 
   function okCallback(response: APISuccessData) {
-    if (view == "browse") {
-      dispatch(addComment({ index, comment: response.data as Comment }))
-    } else if (view == "requirement") {
-      dispatch(addCommentToRequirement({ comment: response.data as Comment }))
-    }
+    dispatch(addComment({ comment: response.data as Comment }))
     dispatch(toast({ header: "Comment added", body: "Comment successfully added" }))
     setNewComment("")
+    setReply(null)
   }
 
   function APIErrorCallback(response: APIErrorData) {
@@ -60,9 +61,17 @@ export default function AddComment({ view, index, requirementId }: Props) {
   }
 
   return (
-    <Stack direction="horizontal" gap={3}>
-      <Form.Control as="textarea" className="me-auto" id="description" value={newComment} onChange={e => { setNewComment(e.target.value) }}></Form.Control>
-      <Button variant="primary" onClick={() => postComment()}><FontAwesomeIcon icon={"paper-plane"} /></Button>
-    </Stack>
+    <>
+      { replyTo != null ? <Alert variant="info" style={{marginBottom: "0.5rem", padding: "0.2rem"}}>
+      <Stack direction="horizontal" gap={3}>
+        <span>Replying to: <span style={{ fontStyle: "italic"}}>{truncate(replyToText, 100)}</span></span>
+        <Button className="ms-auto" variant="link" size='sm' onClick={() => setReply(null)}><FontAwesomeIcon icon={"xmark"} /></Button>
+      </Stack>
+      </Alert> : null}
+      <Stack direction="horizontal" gap={3}>
+        <Form.Control as="textarea" className="me-auto" id="description" value={newComment} onChange={e => { setNewComment(e.target.value) }}></Form.Control>
+        <Button variant="primary" onClick={() => postComment()}><FontAwesomeIcon icon={"paper-plane"} /></Button>
+      </Stack>
+    </>
   );
 }

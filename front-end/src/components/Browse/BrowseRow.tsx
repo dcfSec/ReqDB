@@ -13,6 +13,7 @@ import { useState, memo } from "react";
 import CommentModal from "../Comments/CommentModal";
 import ExtraField from "./ExtraField";
 import { Row } from "../../types/Generics";
+import { setComments, setRequirementId } from "../../stateSlices/CommentSlice";
 
 
 type Props = {
@@ -37,6 +38,13 @@ export default memo(function BrowseRow({ index, row }: Props) {
   //const [visible, setVisible] = useState(true)
   const [showComments, setShowComments] = useState(false)
 
+  function showCommentsModal() {
+    dispatch(setComments(row.Comments))
+    dispatch(setRequirementId(row.id))
+    setShowComments(true)
+  }
+
+
   const topicMaxlength = 40
 
   const commentCount = [...row.Comments].filter((el) => el.completed == false).length
@@ -44,7 +52,7 @@ export default memo(function BrowseRow({ index, row }: Props) {
     <td className="vertical-middle">
       <Stack gap={1}>
         <LinkContainer to={`/Browse/Requirement/${row.id}`}><Button className="eye-button" variant="primary"><FontAwesomeIcon icon={"link"} /></Button></LinkContainer>
-        { roles.includes(appRoles.Comments.Reader) ? <Button className="eye-button" variant="primary" onClick={() => { setShowComments(true) }} style={{ position: "relative" }}><FontAwesomeIcon icon={"comment"} />
+        { roles.includes(appRoles.Comments.Reader) ? <Button className="eye-button" variant="primary" onClick={() => { showCommentsModal() }} style={{ position: "relative" }}><FontAwesomeIcon icon={"comment"} />
         { commentCount > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1.5em', marginLeft: '-0.5em'}}>{commentCount}</Badge><span className="visually-hidden">comments</span></> : null }</Button> : null }
       </Stack>
     </td>
@@ -62,7 +70,7 @@ export default memo(function BrowseRow({ index, row }: Props) {
     <td><Markdown>{row.Description}</Markdown></td>
     {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader] as string} lineBreak={true}/></td>))}
     <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectRow(row.id)) }} checked={selected[row.id]} /></td>
-    { roles.includes(appRoles.Comments.Reader) ? <CommentModal index={index} show={showComments} setShow={setShowComments}></CommentModal> : null }
+    { roles.includes(appRoles.Comments.Reader) ? <CommentModal requirementIndex={index} title={row.Title} show={showComments} setShow={setShowComments}></CommentModal> : null }
   </tr>
 
   return (visible ? renderRow : null )

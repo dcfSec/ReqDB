@@ -4,10 +4,12 @@ import { Item as Comment } from '../types/API/Comments'
 
 interface CommentState {
   comments: Array<Comment>
+  requirementId: number | undefined
 }
 
 const initialState: CommentState = {
   comments: [],
+  requirementId: undefined
 }
 
 export const commentSlice = createSlice({
@@ -18,15 +20,28 @@ export const commentSlice = createSlice({
     setComments: (state, action: PayloadAction<Array<Comment>>) => {
       state.comments = [...action.payload]
     },
+    setRequirementId: (state, action: PayloadAction<number | undefined>) => {
+      state.requirementId = action.payload
+    },
     addComment: (state, action: PayloadAction<{ comment: Comment }>) => {
       state.comments = [
         ...state.comments,
         ...[action.payload.comment]
       ]
     },
-    removeComment: (state, action: PayloadAction<{ comment: number }>) => {
+    removeComment: (state, action: PayloadAction<{ index: number, force: boolean }>) => {
       const tmp = [...state.comments]
-      tmp.splice(action.payload.comment, 1);
+      const id = state.comments[action.payload.index].id
+      tmp.splice(action.payload.index, 1);
+      console.log(action.payload.force, id)
+      if (action.payload.force) {
+        let i = tmp.length
+        while (i--) {
+          if (tmp[i].parentId == id) {
+            tmp.splice(i, 1);
+          }
+        }
+      }
       state.comments = [...tmp]
     },
     updateComment: (state, action) => {
@@ -37,6 +52,6 @@ export const commentSlice = createSlice({
   },
 })
 
-export const { reset, setComments, addComment, removeComment, updateComment } = commentSlice.actions
+export const { reset, setComments, addComment, removeComment, updateComment, setRequirementId } = commentSlice.actions
 
 export default commentSlice.reducer

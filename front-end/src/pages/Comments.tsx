@@ -31,8 +31,6 @@ export default function Comments() {
 
   const comments = useAppSelector(state => state.comment.comments)
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-
   const searchFields = ["comment", "requirement.title"]
   const headers = [
     "#",
@@ -40,7 +38,8 @@ export default function Comments() {
     "Author",
     "Completed",
     "Requirement",
-    "Action"
+    "Parent #",
+    "Action",
   ]
 
   const [search, setSearch] = useState("");
@@ -87,8 +86,8 @@ export default function Comments() {
     searchBar = <Col><SearchField title="Comments" onSearch={setSearch}></SearchField></Col>
     table = <Row><Col><DataTable headers={headers}>
       {comments.length > 0 ? comments.map((item, index) => (
-        <CommentRow key={index} index={index} search={search} searchFields={searchFields} comment={item} showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} showCompleted={showCompleted} />
-      )) : <tr><td colSpan={6} style={{ textAlign: 'center' }}>No comments</td></tr>}
+        <CommentRow key={index} index={index} search={search} searchFields={searchFields} comment={item} showCompleted={showCompleted} />
+      )) : <tr><td colSpan={7} style={{ textAlign: 'center' }}>No comments</td></tr>}
     </DataTable></Col></Row>
     body = (
       <>
