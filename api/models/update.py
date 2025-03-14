@@ -53,3 +53,8 @@ class Update:
         content: str | None = None
         extraTypeId: int | None = None
         requirementId: int | None = None
+
+    class User(SQLModel):
+        model_config = ConfigDict(from_attributes=True)
+        notificationMailOnCommentChain: bool | None = None
+        notificationMailOnRequirementComment: bool | None = None

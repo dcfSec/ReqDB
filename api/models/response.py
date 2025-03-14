@@ -21,6 +21,7 @@ from api.models.public import (
     TopicWithParent,
     TopicWithRequirements,
     StaticConfiguration,
+    User,
 )
 
 
@@ -111,6 +112,9 @@ class Response:
     
     class TeePod(ResponseBase):
         data: str
+    
+    class User(ResponseBase):
+        data: User
 
     class Error(ResponseBase):
         error: str

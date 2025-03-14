@@ -6,7 +6,7 @@ from sqlmodel import select
 from api.config import AppConfig
 from api.error import NotFound, ErrorResponses
 from api.models import SessionDep
-from api.models.db import Configuration
+from api.models.db import Configuration, User
 from api.models.response import Response, ResponseUpdate
 from api.models.update import Update
 from api.routers import AuthRouter, getUserId
@@ -61,7 +61,7 @@ async def getStaticConfig(
 
 
 @router.get(
-    "/config",
+    "/config/system",
     status_code=status.HTTP_200_OK,
     responses={
         **ErrorResponses.forbidden,
@@ -69,7 +69,7 @@ async def getStaticConfig(
         200: {"description": "All dynamic config items"},
     },
 )
-async def getConfig(
+async def getSystemConfig(
     session: SessionDep,
 ) -> Response.Configuration:
 
@@ -78,7 +78,7 @@ async def getConfig(
 
 
 @router.patch(
-    "/config/{configID}",
+    "/config/system/{configID}",
     status_code=status.HTTP_200_OK,
     responses={
         **ErrorResponses.notFound,
@@ -88,7 +88,7 @@ async def getConfig(
         200: {"description": "The updated config element"},
     },
 )
-async def patchConfig(
+async def patchSystemConfig(
     configuration: Update.Configuration,
     configID: str,
     session: SessionDep,
@@ -106,3 +106,48 @@ async def patchConfig(
     #     configurationFromDB.value = "******"
     # audit(session, 1, configurationFromDB, userId)
     return Response.buildResponse(ResponseUpdate.Configuration, configurationFromDB)
+
+
+@router.get(
+    "/config/user",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "User configuration"},
+    },
+)
+async def getUserConfig(
+    session: SessionDep,
+    userId: Annotated[str, Depends(getUserId)],
+) -> Response.User:
+
+    conf = session.get(User, userId)
+    return Response.buildResponse(Response.User, conf)
+
+
+@router.patch(
+    "/config/user",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.notFound,
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        **ErrorResponses.unprocessable,
+        200: {"description": "The updated config element"},
+    },
+)
+async def patchSystemConfig(
+    configuration: Update.User,
+    session: SessionDep,
+    userId: Annotated[str, Depends(getUserId)],
+) -> Response.User:
+    configurationFromDB = session.get(User, userId)
+    if not configurationFromDB:
+        raise NotFound(detail="Configuration item not found")
+    configurationData = configuration.model_dump(exclude_unset=True)
+    configurationFromDB.sqlmodel_update(configurationData)
+    session.add(configurationFromDB)
+    session.commit()
+    session.refresh(configurationFromDB)
+    return Response.buildResponse(Response.User, configurationFromDB)

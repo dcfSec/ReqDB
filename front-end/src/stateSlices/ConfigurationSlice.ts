@@ -27,7 +27,7 @@ export const editSlice = createSlice({
   reducers: {
     reset: () => initialState,
     loadConfiguration: () => {
-      APIClient.get(`config`).then((response) => {
+      APIClient.get(`config/system`).then((response) => {
         handleResult(response, okCallback, APIErrorToastCallback)
       }).catch((error) => {
         handleError(error, APIErrorToastCallback, errorToastCallback)

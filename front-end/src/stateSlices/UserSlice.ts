@@ -1,4 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClient';
+import { APISuccessData } from '../types/Generics';
+import store from '../store';
+import { Item } from '../types/API/User';
+
 
 interface UserState {
   roles: Array<string>,
@@ -44,9 +49,36 @@ export const UserSlice = createSlice({
       state.preferences.darkMode = action.payload
       document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", action.payload ? "dark" : "light");
     },
+    loadUserConfiguration: () => {
+      APIClient.get(`config/user`).then((response) => {
+        handleResult(response, okCallback, APIErrorToastCallback)
+      }).catch((error) => {
+        handleError(error, APIErrorToastCallback, errorToastCallback)
+      });
+    },
+    setUserConfiguration: (state, action: PayloadAction<Item>) => {
+      state.preferences.notificationMailOnCommentChain = action.payload.notificationMailOnCommentChain
+      state.preferences.notificationMailOnRequirementComment = action.payload.notificationMailOnRequirementComment
+    },
+    toggleUserConfiguration: (state, action: PayloadAction<{ id: string, checked: boolean }>) => {
+      switch (action.payload.id) {
+        case "notification-comment-chain-switch":
+          state.preferences.notificationMailOnCommentChain = action.payload.checked
+          break;
+        case "notification-comment-requirement-switch":
+          state.preferences.notificationMailOnRequirementComment = action.payload.checked
+          break;
+        default:
+          break;
+      }
+    },
   }
 })
 
-export const { setName, setRoles, setDarkMode, toggleDarkMode, syncLocalStorage } = UserSlice.actions
+export const { setName, setRoles, setDarkMode, toggleDarkMode, syncLocalStorage, loadUserConfiguration, setUserConfiguration, toggleUserConfiguration } = UserSlice.actions
 
 export default UserSlice.reducer
+
+function okCallback(response: APISuccessData) {
+  store.dispatch(setUserConfiguration(response.data as Item))
+}

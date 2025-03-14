@@ -1,5 +1,5 @@
 import Form from 'react-bootstrap/Form';
-import { FloatingLabel } from 'react-bootstrap';
+import { FloatingLabel, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Item } from "../../types/API/Configuration";
 import { useAppDispatch } from '../../hooks';
 import { editConfigurationItem } from '../../stateSlices/ConfigurationSlice';
@@ -18,30 +18,38 @@ type Props = {
 export function ConfigurationItem({ item }: Props) {
   const dispatch = useAppDispatch()
 
+  let setting = <></>
 
   switch (item.type) {
     case "string":
-      return (
-        <FloatingLabel controlId={item.key} label={`${item.key}: ${item.description}`}>
+      setting = <FloatingLabel controlId={item.key} label={`${item.key}: ${item.description}`}>
           <Form.Control type="text" value={item.value} onChange={e => { dispatch(editConfigurationItem({ key: item.key, value: e.target.value })) }} />
         </FloatingLabel>
-      );
+      break;
     case "text":
-      return (
-        <FloatingLabel controlId={item.key} label={`${item.key}: ${item.description}`}>
+      setting = <FloatingLabel controlId={item.key} label={`${item.key}: ${item.description}`}>
           <Form.Control as="textarea" style={{ height: '5rem' }} value={item.value} onChange={e => { dispatch(editConfigurationItem({ key: item.key, value: e.target.value })) }} />
         </FloatingLabel>
-      );
+      break;
     case "boolean":
-      return (
-        <FloatingLabel controlId={item.key} label={`${item.key}: ${item.description}`}>
+      setting = <FloatingLabel controlId={item.key} label={`${item.key}: ${item.description}`}>
           <Form.Select aria-label={`${item.key}: ${item.description}`} defaultValue={item.value} onChange={e => { dispatch(editConfigurationItem({ key: item.key, value: e.target.value })) }}>
             <option value="false">false</option>
             <option value="true">true</option>
           </Form.Select>
         </FloatingLabel>
-      );
+      break;
     default:
-      return null
+      break;
+  }
+
+  if (item.description != "") {
+    return (
+      <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="button-tooltip"> {item.description} </Tooltip>}>
+        {setting}
+      </OverlayTrigger>
+    );
+  } else {
+    return setting
   }
 }
