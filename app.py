@@ -6,26 +6,23 @@ from os import getenv
 
 import uvicorn
 from authlib.integrations.starlette_client import OAuth
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel
 from starlette.config import Config
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
-
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
 
 import api
 from api.config import AppConfig
 from api.helper import checkAndUpdateConfigDB
 from api.models import engine
 from api.models.db import *
+
+load_dotenv()
 
 async def not_found(request: Request, exc: HTTPException):
     return FileResponse("front-end/dist/index.html", status_code=exc.status_code)
@@ -36,20 +33,20 @@ exception_handlers = {
 }
 
 
-config = Config()
-oauth = OAuth(config)
-
-oauth.register(
-    name="oauth",
-    server_metadata_url=AppConfig.OAUTH_PROVIDER,
-    client_kwargs={
-        "scope": f"openid email offline_access {AppConfig.OAUTH_CLIENT_ID}/openid"
-    },
-)
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    AppConfig.checkNeededEnvVariables()
+
+    oauth = OAuth(Config())
+
+    oauth.register(
+        name="oauth",
+        server_metadata_url=AppConfig.OAUTH_PROVIDER,
+        client_kwargs={
+            "scope": f"openid email offline_access {AppConfig.OAUTH_CLIENT_ID}/openid"
+        },
+    )
+    AppConfig.setEmailActiveStatus()
     SQLModel.metadata.create_all(engine)
     AppConfig.getOpenIdConfig()
     AppConfig.getJWKs()

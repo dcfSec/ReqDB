@@ -2,7 +2,7 @@ import smtplib
 from email.message import EmailMessage
 import time
 
-from fastapi import Request, Response
+from fastapi import Response
 from sqlmodel import Session, select
 
 from api.config import AppConfig, dynamicConfig
@@ -10,6 +10,7 @@ from api.error import ConflictError, NotFound
 from api.models import engine
 from api.models.db import Comment, Configuration, Topic, User
 from urllib.parse import urlparse
+
 
 def checkAndUpdateConfigDB():
     """
@@ -58,7 +59,11 @@ def sendNotificationMail(recipient: str, subject: str, content: str):
     msg["From"] = AppConfig.EMAIL_FROM
     msg["To"] = recipient
 
-    with smtplib.SMTP(AppConfig.EMAIL_HOST, AppConfig.EMAIL_PORT, local_hostname=urlparse(AppConfig.BASE_URL).netloc) as s:
+    with smtplib.SMTP(
+        AppConfig.EMAIL_HOST,
+        AppConfig.EMAIL_PORT,
+        local_hostname=urlparse(AppConfig.BASE_URL).netloc,
+    ) as s:
         if AppConfig.EMAIL_TLS is True:
             s.starttls()
         if AppConfig.EMAIL_USER != "" and AppConfig.EMAIL_PASSWORD != "":
@@ -124,22 +129,22 @@ async def sendNotificationMailForNewComment(session: Session, commentID: int):
         )
 
         for chainRecipient in emailRecipientsFromChain:
-            if True: # or chainRecipient != comment.author.email:
-                print("ok call send", chainRecipient)
-                
-                sendNotificationMail(
-                    chainRecipient,
-                    f"A user added a comment to a chain you are participating in (Requirement: {comment.requirement.key})",
-                    f"{comment.author.email} added following comment to {comment.requirement.key}:\n\n-------\n{comment.comment}\n-------\n\nGo to the requirement: {AppConfig.BASE_URL}/Browse/Requirement/{comment.requirement.id}",
-                )
-
-        for recipient in emailRecipientsFromRequirement:
             if (
-                recipient.email not in emailRecipientsFromChain
-                and recipient.id != comment.authorId
+                AppConfig.EMAIL_SEND_SELF is True
+                or chainRecipient != comment.author.email
             ):
                 sendNotificationMail(
                     chainRecipient,
+                    f"A user added a comment to a chain you are participating in (Requirement: {comment.requirement.key})",
+                    f"{comment.author.email} added following comment to {comment.requirement.key} in reply to a comment from you:\n\n-------\n{comment.comment}\n-------\n\nGo to the requirement: {AppConfig.BASE_URL}/Browse/Requirement/{comment.requirement.id}",
+                )
+
+        for recipient in emailRecipientsFromRequirement:
+            if recipient.email not in emailRecipientsFromChain and (
+                AppConfig.EMAIL_SEND_SELF is True or recipient.id != comment.authorId
+            ):
+                sendNotificationMail(
+                    recipient.email,
                     f"A user added a new comment to a requirement ({comment.requirement.key})",
                     f"{comment.author.email} added following comment to {comment.requirement.key}:\n\n-------\n{comment.comment}\n-------\n\nGo to the requirement: {AppConfig.BASE_URL}/Browse/Requirement/{comment.requirement.id}",
                 )

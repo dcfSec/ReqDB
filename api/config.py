@@ -6,9 +6,6 @@ from authlib.jose import JsonWebKey
 
 basedir = path.abspath(path.dirname(__file__))
 
-for k in ["OAUTH_CLIENT_ID", "OAUTH_CONFIG", "OAUTH_PROVIDER"]:
-    if getenv(k) is None:
-        raise AssertionError(f"Required env variable missing: {k}")
 
 class AppConfig:
     SECRET_KEY = getenv("SECRET_KEY", uuid4().hex)
@@ -34,6 +31,7 @@ class AppConfig:
     EMAIL_PASSWORD = f"{getenv('EMAIL_PASSWORD', '')}"
     EMAIL_FROM = f"{getenv('EMAIL_FROM', '')}"
     EMAIL_TLS = bool(getenv('EMAIL_TLS', 1))
+    EMAIL_SEND_SELF =  bool(getenv('EMAIL_SEND_SELF', 0))
 
     @classmethod
     def getJWKs(cls):
@@ -73,6 +71,11 @@ class AppConfig:
         if cls.EMAIL_HOST != "" and cls.EMAIL_FROM != "":
             cls.EMAIL_ACTIVE = True
 
+    @classmethod
+    def checkNeededEnvVariables(cls):
+        for k in ["OAUTH_CLIENT_ID", "OAUTH_CONFIG", "OAUTH_PROVIDER"]:
+            if getenv(k) is None:
+                raise AssertionError(f"Required env variable missing: {k}")
 
 dynamicConfig = {
     "HOME_TITLE": {
@@ -125,5 +128,3 @@ dynamicConfig = {
         "category": "jira",
     },
 }
-
-AppConfig.setEmailActiveStatus()
