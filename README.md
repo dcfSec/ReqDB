@@ -78,7 +78,7 @@ OAUTH_CONFIG=xxx                   # OAuth config URL (something like <AUTHORITY
 
 USE_UVICORN_WORKERS=-1             # Use this if you want to use workers for uvicorn (-1 uses the max available workers) Don't set this if you don't want to use workers   
 
-BASE_URL=localhost                 # The base URL for ReqDB (Used in Notifications for the link). Defaults to localhost
+BASE_URL=http://localhost          # The base URL for ReqDB (Used in Notifications for the link). Defaults to http://localhost
 EMAIL_HOST=xxx                     # SMTP server for sending mails. If EMAIL_HOST is not set mail sending will be disabled 
 EMAIL_PORT=587                     # Port for the smtp server. Defaults to 587
 EMAIL_USER=xxx                     # User for logging into the SMTP server. Can be unset
