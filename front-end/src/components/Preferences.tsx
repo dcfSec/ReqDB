@@ -2,7 +2,12 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { Col, Container, Row, Card } from 'react-bootstrap';
-// import { useAppSelector } from "../hooks";
+import { useAppDispatch, useAppSelector } from '../hooks';
+import { toggleUserConfiguration } from '../stateSlices/UserSlice';
+import { showSpinner } from '../stateSlices/MainLogoSpinnerSlice';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClient';
+import { APISuccessData } from '../types/Generics';
+import { toast } from '../stateSlices/NotificationToastSlice';
 
 
 type Props = {
@@ -17,7 +22,26 @@ type Props = {
  * @returns Returns a modal for viewing the own roles
  */
 export default function Preferences({ show, setShow }: Props) {
-  // const preferences = useAppSelector(state => state.user.preferences)
+  const preferences = useAppSelector(state => state.user.preferences)
+  const dispatch = useAppDispatch()
+
+  function safeConfiguration() {
+    dispatch(showSpinner(true))
+    APIClient.patch(`config/user`, {
+      notificationMailOnCommentChain: preferences.notificationMailOnCommentChain,
+      notificationMailOnRequirementComment: preferences.notificationMailOnRequirementComment
+    }).then((response) => {
+      handleResult(response, okCallback, APIErrorToastCallback)
+    }).catch((error) => {
+      handleError(error, APIErrorToastCallback, errorToastCallback)
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    function okCallback(response: APISuccessData) {
+      dispatch(toast({ header: "User Setting Updated", body: "User setting successfully updated" }))
+      setShow(false)
+    }
+  }
 
   return (
     <Modal
@@ -39,10 +63,9 @@ export default function Preferences({ show, setShow }: Props) {
               <Card>
                 <Card.Header as="h4">Notifications (E-Mail)</Card.Header>
                 <Card.Body>
-                  <p>Send an E-Mail when
-                    <Form.Check type="switch" id="notification-comment-chain-switch" label="someone replies to a comment chain I'm participating in" />
-                    <Form.Check type="switch" id="notification-comment-requirement-switch" label="someone adds a new comment to a requirement" />
-                  </p>
+                  Send an E-Mail when
+                  <Form.Check type="switch" id="notification-comment-chain-switch" label="someone replies to a comment chain I'm participating in" onChange={(e) => dispatch(toggleUserConfiguration({ id: e.target.id, checked: e.target.checked }))} checked={preferences.notificationMailOnCommentChain} />
+                  <Form.Check type="switch" id="notification-comment-requirement-switch" label="someone adds a new comment to a requirement" onChange={(e) => dispatch(toggleUserConfiguration({ id: e.target.id, checked: e.target.checked }))} checked={preferences.notificationMailOnRequirementComment}/>
                 </Card.Body>
               </Card>
               <Card>
@@ -57,7 +80,7 @@ export default function Preferences({ show, setShow }: Props) {
         </Container>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="success" onClick={() => setShow(false)}>Save</Button>
+        <Button variant="success" onClick={() => safeConfiguration()}>Save</Button>
         <Button variant="primary" onClick={() => setShow(false)}>Close</Button>
       </Modal.Footer>
     </Modal>

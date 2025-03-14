@@ -35,9 +35,10 @@ export const commentSlice = createSlice({
       tmp.splice(action.payload.index, 1);
       console.log(action.payload.force, id)
       if (action.payload.force) {
+        const toDelete = getChildrenCommentIDs(state.comments[action.payload.index])
         let i = tmp.length
         while (i--) {
-          if (tmp[i].parentId == id) {
+          if (toDelete.includes(tmp[i].id)) {
             tmp.splice(i, 1);
           }
         }
@@ -55,3 +56,13 @@ export const commentSlice = createSlice({
 export const { reset, setComments, addComment, removeComment, updateComment, setRequirementId } = commentSlice.actions
 
 export default commentSlice.reducer
+
+
+function getChildrenCommentIDs(comment: Comment) {
+  const r: number[] = []
+  comment.children.forEach(child => {
+    r.push(child.id)
+    r.concat(getChildrenCommentIDs(child))
+  });
+  return r
+}

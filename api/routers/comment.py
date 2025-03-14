@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from fastapi import Depends, status
+from fastapi import BackgroundTasks, Depends, status
 from sqlmodel import select
 
 from api.error import ConflictError, NotFound, ErrorResponses
+from api.helper import sendNotificationMailForNewComment
 from api.models import SessionDep, audit
 from api.models.db import Comment
 from api.models.insert import Insert
@@ -92,6 +93,7 @@ async def addComment(
     userId: Annotated[str, Depends(getUserId)],
     comment: Insert.Comment,
     session: SessionDep,
+    backgroundTasks: BackgroundTasks
 ) -> Response.Comment:
     comment.authorId = userId
     commentDB = Comment.model_validate(comment)
@@ -99,6 +101,8 @@ async def addComment(
     session.commit()
     session.refresh(commentDB)
     audit(session, 0, commentDB, userId)
+    #sendNotificationMailForNewComment(session, commentDB.id)
+    backgroundTasks.add_task(sendNotificationMailForNewComment, session, commentDB.id)
     return Response.buildResponse(Response.Comment, commentDB, 201)
 
 

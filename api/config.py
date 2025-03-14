@@ -10,7 +10,6 @@ for k in ["OAUTH_CLIENT_ID", "OAUTH_CONFIG", "OAUTH_PROVIDER"]:
     if getenv(k) is None:
         raise AssertionError(f"Required env variable missing: {k}")
 
-
 class AppConfig:
     SECRET_KEY = getenv("SECRET_KEY", uuid4().hex)
     DATABASE_URI = (
@@ -26,10 +25,15 @@ class AppConfig:
     JWT_PUBLIC_KEYS = ""
     JWT_JWK_URI = ""
 
-    EMAIL_HOST = ""
-    EMAIL_USER = ""
-    EMAIL_PASSWORD = ""
-    EMAIL_FROM = ""
+    BASE_URL = f"{getenv('BASE_URL', 'http://localhost')}"
+
+    EMAIL_ACTIVE = False
+    EMAIL_HOST = f"{getenv('EMAIL_HOST', '')}"
+    EMAIL_PORT = int(getenv('EMAIL_PORT', 587))
+    EMAIL_USER = f"{getenv('EMAIL_USER', '')}"
+    EMAIL_PASSWORD = f"{getenv('EMAIL_PASSWORD', '')}"
+    EMAIL_FROM = f"{getenv('EMAIL_FROM', '')}"
+    EMAIL_TLS = bool(getenv('EMAIL_TLS', 1))
 
     @classmethod
     def getJWKs(cls):
@@ -63,6 +67,11 @@ class AppConfig:
 
         cls.JWT_DECODE_ISSUER = openIdConfig["issuer"]
         cls.JWT_JWK_URI = openIdConfig["jwks_uri"]
+
+    @classmethod
+    def setEmailActiveStatus(cls):
+        if cls.EMAIL_HOST != "" and cls.EMAIL_FROM != "":
+            cls.EMAIL_ACTIVE = True
 
 
 dynamicConfig = {
@@ -116,3 +125,5 @@ dynamicConfig = {
         "category": "jira",
     },
 }
+
+AppConfig.setEmailActiveStatus()

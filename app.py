@@ -15,19 +15,17 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 import api
 from api.config import AppConfig
 from api.helper import checkAndUpdateConfigDB
 from api.models import engine
 from api.models.db import *
-
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
-
 
 async def not_found(request: Request, exc: HTTPException):
     return FileResponse("front-end/dist/index.html", status_code=exc.status_code)

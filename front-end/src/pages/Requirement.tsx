@@ -1,4 +1,4 @@
-import { Alert, Button, Col, Container, Row } from "react-bootstrap";
+import { Alert, Col, Container, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
 import LoadingBar from "../components/LoadingBar";
@@ -10,7 +10,7 @@ import { reset, setRequirement } from "../stateSlices/RequirementSlice";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { CommentCard, DescriptionCard, ExtraCard, TagsCard, TopicsCard } from "../components/Requirement/RequirementCards";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import APIClient, { handleError, handleResult } from "../APIClient";
 import { APIErrorData, APISuccessData } from "../types/Generics";
 import { Item as RequirementItem } from "../types/API/Requirements";
@@ -73,7 +73,7 @@ export default function Requirement() {
   } else if (fetched) {
     body = <Container>
       <Row>
-        <Col><Button><FontAwesomeIcon icon={"code-compare"} /></Button></Col>
+        {/* <Col><Button><FontAwesomeIcon icon={"code-compare"} /></Button></Col> */}
       </Row>
       <Row>
         <Col>

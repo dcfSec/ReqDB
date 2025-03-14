@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { appRoles } from '../authConfig';
 
 import { useAppSelector, useAppDispatch } from "../hooks";
-import { toggleDarkMode } from "../stateSlices/UserSlice";
+import { loadUserConfiguration, toggleDarkMode } from "../stateSlices/UserSlice";
 import { useState } from 'react';
 import RolesModal from './RolesModal';
 import Preferences from './Preferences';
@@ -24,7 +24,7 @@ import ConfigurationModal from './Configuration/ConfigurationModal';
  * @returns Returns the main navigation bar container
  */
 export default function MainNavbar() {
-
+  const dispatch = useAppDispatch()
 
   const [showRoles, setShowRoles] = useState(false)
   const [showPreferences, setShowPreferences] = useState(false)
@@ -72,7 +72,7 @@ export default function MainNavbar() {
           {auth.isAuthenticated ?
             <>
               <NavDropdown.Item onClick={() => { setShowRoles(true) }}>My Roles</NavDropdown.Item>
-              <NavDropdown.Item onClick={() => { setShowPreferences(true) }}>Preferences</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => { dispatch(loadUserConfiguration()); setShowPreferences(true) }}>Preferences</NavDropdown.Item>
             {roles.includes(appRoles.Configuration.Reader) ?
               <NavDropdown.Item onClick={() => { setShowConfiguration(true) }}>Configuration</NavDropdown.Item>
               : null}

@@ -84,7 +84,7 @@ export default function CommentEntry({ index, comment, showCompleted, setReply }
   if (!comment.completed || showCompleted) {
     return (
       <>
-        <Card style={{ marginBottom: '0.5em', lineHeight: '1em' }} border={comment.completed ? "danger" : undefined}>
+        <Card id={`comment-${comment.id}`} style={{ marginBottom: '0.5em', lineHeight: '1em' }} border={comment.completed ? "danger" : undefined}>
           <Card.Header style={{ padding: '0em' }}>
             <Stack direction="horizontal" gap={2}>
               <span className="p-2">From <span style={{ fontStyle: 'italic' }}>{comment.author.email}</span></span>
