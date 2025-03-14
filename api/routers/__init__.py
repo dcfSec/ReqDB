@@ -21,8 +21,10 @@ oauthParams = {
 
 auth = {
     "getStaticConfig": {"required": False, "roles": []},
-    "getConfig": {"required": True, "roles": []},
-    "patchConfig": {"required": True, "roles": ["Configuration.Writer"]},
+    "getSystemConfig": {"required": True, "roles": []},
+    "patchSystemConfig": {"required": True, "roles": ["Configuration.Writer"]},
+    "getUserConfig": {"required": True, "roles": []},
+    "patchUserConfig": {"required": True, "roles": []},
     "getTags": {"required": True, "roles": ["Requirements.Reader"]},
     "getTag": {"required": True, "roles": ["Requirements.Reader"]},
     "patchTag": {"required": True, "roles": ["Requirements.Writer"]},
