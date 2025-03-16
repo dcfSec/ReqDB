@@ -23,7 +23,13 @@ interface Config {
 export const staticConfig = await getConfig()
 
 async function getConfig(): Promise<Config> {
-  let storedConfig = JSON.parse(sessionStorage.getItem("static") || "{}") || {}
+  let storedConfig;
+  try {
+    storedConfig = JSON.parse(sessionStorage.getItem("static") || "{}") || {};
+  } catch (error) {
+    console.error("Error parsing stored config:", error);
+    storedConfig = {};
+  }
 
   if (Object.keys(storedConfig).length === 0) {
     const config = await fetch("/api/config/static").then(response => {
