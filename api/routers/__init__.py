@@ -1,4 +1,3 @@
-import time
 from typing import Callable, Optional
 
 from authlib.jose import JsonWebToken
@@ -9,7 +8,6 @@ from sqlmodel import Session
 
 from api.config import AppConfig
 from api.error import AuthConfigMissing, Forbidden, Unauthorized
-from api.helper import RequestTimer
 from api.models import audit, engine
 from api.models.db import User
 
@@ -65,6 +63,12 @@ auth = {
 
 
 class HTTPBearerWithUnauthorizedError(HTTPBearer):
+    """
+    Class to overwrite the HTTPBearer dependency from FastAPI.
+    This is done to get an Unauthorized error instead of the normal error.
+
+    :param HTTPBearer: HTTPBearer dependency from FastAPI
+    """
     async def __call__(
         self, request: Request
     ) -> Optional[HTTPAuthorizationCredentials]:
@@ -75,6 +79,13 @@ class HTTPBearerWithUnauthorizedError(HTTPBearer):
 
 
 class RBACRoute(APIRoute):
+    """
+    A route class to centrally manage OAuth auth and authz.
+    The class checks if the OAuth Bearer is present and if the JWT is valid.
+    Then it checks if the needed role for the route is present.
+
+    :param APIRoute: APIRoute from FastAPI
+    """
     def get_route_handler(self) -> Callable:
         original_route_handler = super().get_route_handler()
 
@@ -95,6 +106,11 @@ class RBACRoute(APIRoute):
 
 
 class AuthRouter(APIRouter):
+    """
+    The router for the API with the RBAC route class
+
+    :param APIRouter: APIRouter from FastAPI
+    """
     def __init__(self, **kwargs):
         super().__init__(route_class=RBACRoute, **kwargs)
 
@@ -120,7 +136,14 @@ def getDecodeKey(header: dict, payload: dict):
 
 async def validateJWT(
     credentials: HTTPAuthorizationCredentials,
-):
+) -> dict:
+    """
+    VAlidates the JWT and adds (or updates) to the Users table
+
+    :param HTTPAuthorizationCredentials credentials: The given JWT
+    :raises Unauthorized: Raises, if the JWT is not valid
+    :return dict: A dict of the given JWT claims
+    """
     token = credentials.credentials
     jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
@@ -165,7 +188,14 @@ async def getRoles(
     credentials: HTTPAuthorizationCredentials = Depends(
         HTTPBearerWithUnauthorizedError()
     ),
-):
+) -> list[str]:
+    """
+    Returns the given roles in the JWT claim as array
+
+    :param HTTPAuthorizationCredentials credentials: Dependency to get the auth Bearer, defaults to Depends( HTTPBearerWithUnauthorizedError() )
+    :raises Unauthorized: Raises, if the claim can't be decoded
+    :return list[str]: List of given roles
+    """
     token = credentials.credentials
     jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
@@ -180,6 +210,13 @@ async def getUserId(
         HTTPBearerWithUnauthorizedError()
     ),
 ) -> str:
+    """
+    Returns the user id (sub) from the given JWT
+
+    :param HTTPAuthorizationCredentials credentials: Dependency to get the auth Bearer, defaults to Depends( HTTPBearerWithUnauthorizedError() )
+    :raises Unauthorized: Raises, if the claim can't be decoded
+    :return str: The user id (sub)
+    """
     token = credentials.credentials
     jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:

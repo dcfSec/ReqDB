@@ -1,6 +1,7 @@
 import smtplib
-from email.message import EmailMessage
 import time
+from email.message import EmailMessage
+from urllib.parse import urlparse
 
 from fastapi import Response
 from sqlmodel import Session, select
@@ -9,7 +10,6 @@ from api.config import AppConfig, dynamicConfig
 from api.error import ConflictError, NotFound
 from api.models import engine
 from api.models.db import Comment, Configuration, Topic, User
-from urllib.parse import urlparse
 
 
 def checkAndUpdateConfigDB():

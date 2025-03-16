@@ -39,7 +39,13 @@ api.include_router(coffee.router)
 @api.get("/openapi.json")
 async def openapi(
     roles: Annotated[dict, Depends(getRoles)],
-):
+) -> dict:
+    """
+    Returns the openapi.json for the API protected with OAuth
+
+    :param Annotated[dict, Depends roles: Dependency injection to force OAuth
+    :return Dict[str, Any]: OpenAPI spec as json
+    """
     return get_openapi(
         title="FastAPI", version="0.1.0", routes=api.routes, servers=[{"url": "/api"}]
     )
@@ -49,6 +55,13 @@ async def openapi(
 async def genericExceptionHandler(
     request: Request, exc: HTTPException
 ) -> Response.Error:
+    """
+    Exception handler for generic API exception
+
+    :param Request request: The request that triggered the exception
+    :param HTTPException exc: The raised exception
+    :return Response.Error: API compliant JSON error message and HTTP status code
+    """
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
@@ -59,6 +72,13 @@ async def genericExceptionHandler(
 async def http_exception_handler(
     request: Request, exc: StarletteHTTPException
 ) -> Response.Error:
+    """
+    Exception handler for generic starlette HTTP exception
+
+    :param Request request: The request that triggered the exception
+    :param StarletteHTTPException exc: The raised exception
+    :return Response.Error: API compliant JSON error message and HTTP status code
+    """
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
@@ -69,6 +89,13 @@ async def http_exception_handler(
 async def http_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> Response.Error:
+    """
+    Exception handler for validation errors
+
+    :param Request request: The request that triggered the exception
+    :param RequestValidationError exc: The raised validation error
+    :return Response.Error: API compliant JSON error message and HTTP status code
+    """
     return JSONResponse(
         {"status": 422, "error": type(exc).__name__, "message": exc.errors()},
         status_code=422,
@@ -77,6 +104,13 @@ async def http_exception_handler(
 
 @api.exception_handler(Exception)
 async def http_exception_handler(request: Request, exc: Exception) -> Response.Error:
+    """
+    Exception handler for generic python exception
+
+    :param Request request: The request that triggered the exception
+    :param Exception exc: The raised exception
+    :return Response.Error: API compliant JSON error message and HTTP status code
+    """
     return JSONResponse(
         {"status": 500, "error": type(exc).__name__, "message": str(exc)},
         status_code=500,
