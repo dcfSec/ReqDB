@@ -140,7 +140,7 @@ async def sendNotificationMailForNewComment(session: Session, commentID: int):
                 )
 
         for recipient in emailRecipientsFromRequirement:
-            if recipient.email not in emailRecipientsFromChain and (
+            if recipient.email not in emailRecipientsFromChain and recipient.active is True and (
                 AppConfig.EMAIL_SEND_SELF is True or recipient.id != comment.authorId
             ):
                 sendNotificationMail(
@@ -155,6 +155,6 @@ def checkParentCommentAuthor(comment: Comment) -> set:
     if comment is not None:
         if comment.parentId is not None:
             r += checkParentCommentAuthor(comment.parent)
-        if comment.author.notificationMailOnCommentChain is True:
+        if comment.author.notificationMailOnCommentChain is True and comment.author.active is True:
             r.append(comment.author.email)
     return set(r)
