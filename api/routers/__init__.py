@@ -8,7 +8,8 @@ from sqlmodel import Session
 
 from api.config import AppConfig
 from api.error import AuthConfigMissing, Forbidden, Unauthorized
-from api.models import audit, engine
+from api.models import audit as dbAudit
+from api.models import engine
 from api.models.db import User
 
 oauthParams = {
@@ -159,13 +160,13 @@ async def validateJWT(
             session.add(user)
             session.commit()
             session.refresh(user)
-            audit(session, 0, user, claims["sub"])
+            dbAudit(session, 0, user, claims["sub"])
         elif user.email != claims["email"]:
             user.email = claims["email"]
             session.add(user)
             session.commit()
             session.refresh(user)
-            audit(session, 1, user, claims["sub"])
+            dbAudit(session, 1, user, claims["sub"])
 
     return claims
 
