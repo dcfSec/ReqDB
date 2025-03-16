@@ -10,14 +10,13 @@ from sqlmodel import Session
 from api.config import AppConfig
 from api.error import AuthConfigMissing, Forbidden, Unauthorized
 from api.helper import RequestTimer
-from api.models import engine
+from api.models import audit, engine
 from api.models.db import User
 
 oauthParams = {
     "iss": {"essential": True, "values": [AppConfig.JWT_DECODE_ISSUER]},
     "sub": {"essential": True, "value": AppConfig.OAUTH_CLIENT_ID},
 }
-
 
 auth = {
     "getStaticConfig": {"required": False, "roles": []},
@@ -123,7 +122,7 @@ async def validateJWT(
     credentials: HTTPAuthorizationCredentials,
 ):
     token = credentials.credentials
-    jwt = JsonWebToken(["RS256"])
+    jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
         claims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
     except Exception as e:
@@ -133,8 +132,17 @@ async def validateJWT(
         user = session.get(User, claims["sub"])
         if not user:
             session.commit()
-            session.add(User(id=claims["sub"], email=claims["email"]))
+            user = User(id=claims["sub"], email=claims["email"])
+            session.add(user)
             session.commit()
+            session.refresh(user)
+            audit(session, 0, user, claims["sub"])
+        elif user.email != claims["email"]:
+            user.email = claims["email"]
+            session.add(user)
+            session.commit()
+            session.refresh(user)
+            audit(session, 1, user, claims["sub"])
 
     return claims
 
@@ -159,7 +167,7 @@ async def getRoles(
     ),
 ):
     token = credentials.credentials
-    jwt = JsonWebToken(["RS256"])
+    jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
         claims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
     except Exception as e:
@@ -173,7 +181,7 @@ async def getUserId(
     ),
 ) -> str:
     token = credentials.credentials
-    jwt = JsonWebToken(["RS256"])
+    jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
         claims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
     except Exception as e:
