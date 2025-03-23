@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from fastapi import Response
 from sqlmodel import Session, select
 
-from api.config import AppConfig, dynamicConfig
+from api.config import AppConfig
 from api.error import ConflictError, NotFound
 from api.models import engine
 from api.models.db import Comment, Configuration, Topic, User
@@ -18,7 +18,7 @@ def checkAndUpdateConfigDB():
     """
 
     with Session(engine) as session:
-        for key, config in dynamicConfig.items():
+        for key, config in AppConfig.getDynamicConfig().items():
             item = session.get(Configuration, key)
             if not item:
                 session.add(
@@ -74,6 +74,16 @@ def sendNotificationMail(recipient: str, subject: str, content: str):
 def checkParentTopicChildren(
     topicID: int, session: Session, forRequirements: bool = False
 ):
+    """
+    Checks if the topic has topic or requirements of children
+
+    :param int topicID: The topic ID to check
+    :param Session session: The DB session
+    :param bool forRequirements: True if you want to check for adding a requirement, defaults to False
+    :raises NotFound: Raises if the topic with the ID is not found
+    :raises ConflictError: Raises, if the topic already has requirements when searching for requirements
+    :raises ConflictError: Raises, if the topic has already children when searching for children
+    """
     if topicID:
         topic = session.get(Topic, topicID)
         if not topic:
@@ -116,6 +126,13 @@ class RequestTimer:
 
 
 async def sendNotificationMailForNewComment(session: Session, commentID: int):
+    """
+    Sends an email notification to users when they activated to receive those for new comments.
+    This is only activated when the AppConfig is set up correctly
+
+    :param Session session: DB Session
+    :param int commentID: Id for the new comment
+    """
 
     if AppConfig.EMAIL_ACTIVE is True:
         comment = session.get(Comment, commentID)
@@ -151,6 +168,12 @@ async def sendNotificationMailForNewComment(session: Session, commentID: int):
 
 
 def checkParentCommentAuthor(comment: Comment) -> set:
+    """
+    Returns a set of authors for a comment chain with activated notification on comment
+
+    :param Comment comment: The comment to search
+    :return set: A set of notification recipients
+    """
     r = []
     if comment is not None:
         if comment.parentId is not None:

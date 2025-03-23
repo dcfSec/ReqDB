@@ -23,7 +23,7 @@ class AppConfig:
     )
 
     OAUTH_CLIENT_ID = f"{getenv('OAUTH_CLIENT_ID')}"
-    OAUTH_SCOPE = f"openid email offline_access {OAUTH_CLIENT_ID}/openid"
+    OAUTH_SCOPE = getenv('OAUTH_SCOPE') or f"openid email offline_access {OAUTH_CLIENT_ID}/openid"
     OAUTH_PROVIDER = f"{getenv('OAUTH_PROVIDER')}"
 
     JWT_ALGORITHM = "RS256"
@@ -94,65 +94,70 @@ class AppConfig:
             if getenv(k) is None:
                 raise AssertionError(f"Required env variable missing: {k}")
 
+    @classmethod
+    def getDynamicConfig(cls) -> dict:
+        """
+        The dynamic configuration variables of ReqDB.
+        This will be loaded into the set DB and checked on application start.
+        This configuration can be set via the API or UI
 
-"""
-The dynamic configuration variables of ReqDB.
-This will be loaded into the set DB and checked on application start.
-This configuration can be set via the API or UI
-"""
-dynamicConfig = {
-    "HOME_TITLE": {
-        "value": "Welcome to ReqDB",
-        "description": "The title for the start and login page",
-        "type": "string",
-        "category": "static",
-    },
-    "HOME_MOTD_PRE": {
-        "value": "",
-        "description": "A text field before the buttons on the home page. Markdown is supported.",
-        "type": "text",
-        "category": "static",
-    },
-    "HOME_MOTD_POST": {
-        "value": "",
-        "description": "A text field after the buttons on the home page. Markdown is supported,",
-        "type": "text",
-        "category": "static",
-    },
-    "LOGIN_MOTD_PRE": {
-        "value": "",
-        "description": "A text field before the buttons on the login page. Markdown is supported.",
-        "type": "text",
-        "category": "static",
-    },
-    "LOGIN_MOTD_POST": {
-        "value": "",
-        "description": "A text field after the buttons on the home page. Markdown is supported.",
-        "type": "text",
-        "category": "static",
-    },
-    "SOFT_DELETE": {
-        "value": "false",
-        "description": "If enabled items are not deleted from the database and only marked as deleted. (NOT IMPLEMENTED. ONLY PLACEHOLDER)",
-        "type": "boolean",
-        "category": "behavior",
-    },
-    "JIRA_ACTIVE": {
-        "value": "false",
-        "description": "Activates export support for Jira.",
-        "type": "boolean",
-        "category": "jira",
-    },
-    "JIRA_URL": {
-        "value": "",
-        "description": "URL for the used Jira instance",
-        "type": "string",
-        "category": "jira",
-    },
-    "JIRA_STORE_API_KEYS": {
-        "value": "false",
-        "description": "Activates the possibility to store Jira API-Keys for the user",
-        "type": "boolean",
-        "category": "jira",
-    },
-}
+
+        :return dict: The dynamic configuration
+        """
+
+        return {
+            "HOME_TITLE": {
+                "value": "Welcome to ReqDB",
+                "description": "The title for the start and login page",
+                "type": "string",
+                "category": "static",
+            },
+            "HOME_MOTD_PRE": {
+                "value": "",
+                "description": "A text field before the buttons on the home page. Markdown is supported.",
+                "type": "text",
+                "category": "static",
+            },
+            "HOME_MOTD_POST": {
+                "value": "",
+                "description": "A text field after the buttons on the home page. Markdown is supported,",
+                "type": "text",
+                "category": "static",
+            },
+            "LOGIN_MOTD_PRE": {
+                "value": "",
+                "description": "A text field before the buttons on the login page. Markdown is supported.",
+                "type": "text",
+                "category": "static",
+            },
+            "LOGIN_MOTD_POST": {
+                "value": "",
+                "description": "A text field after the buttons on the home page. Markdown is supported.",
+                "type": "text",
+                "category": "static",
+            },
+            "SOFT_DELETE": {
+                "value": "false",
+                "description": "If enabled items are not deleted from the database and only marked as deleted. (NOT IMPLEMENTED. ONLY PLACEHOLDER)",
+                "type": "boolean",
+                "category": "behavior",
+            },
+            "JIRA_ACTIVE": {
+                "value": "false",
+                "description": "Activates export support for Jira.",
+                "type": "boolean",
+                "category": "jira",
+            },
+            "JIRA_URL": {
+                "value": "",
+                "description": "URL for the used Jira instance",
+                "type": "string",
+                "category": "jira",
+            },
+            "JIRA_STORE_API_KEYS": {
+                "value": "false",
+                "description": "Activates the possibility to store Jira API-Keys for the user",
+                "type": "boolean",
+                "category": "jira",
+            },
+        }
