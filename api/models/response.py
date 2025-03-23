@@ -105,7 +105,7 @@ class Response:
         data: ExtraEntryWithExtraTypeAndRequirement
 
     class ExtraEntries(ResponseBase):
-        data: ExtraEntryWithExtraTypeAndRequirement
+        data: list[ExtraEntryWithExtraTypeAndRequirement]
  
     class Audit(ResponseBase):
         data: list[Audit]
