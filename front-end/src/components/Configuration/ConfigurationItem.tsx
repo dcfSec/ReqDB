@@ -22,18 +22,18 @@ export function ConfigurationItem({ item }: Props) {
 
   switch (item.type) {
     case "string":
-      setting = <FloatingLabel controlId={item.key} label={`${item.key}: ${item.description}`}>
+      setting = <FloatingLabel controlId={item.key} label={`${item.key}`}>
           <Form.Control type="text" value={item.value} onChange={e => { dispatch(editConfigurationItem({ key: item.key, value: e.target.value })) }} />
         </FloatingLabel>
       break;
     case "text":
-      setting = <FloatingLabel controlId={item.key} label={`${item.key}: ${item.description}`}>
+      setting = <FloatingLabel controlId={item.key} label={`${item.key}`}>
           <Form.Control as="textarea" style={{ height: '5rem' }} value={item.value} onChange={e => { dispatch(editConfigurationItem({ key: item.key, value: e.target.value })) }} />
         </FloatingLabel>
       break;
     case "boolean":
-      setting = <FloatingLabel controlId={item.key} label={`${item.key}: ${item.description}`}>
-          <Form.Select aria-label={`${item.key}: ${item.description}`} defaultValue={item.value} onChange={e => { dispatch(editConfigurationItem({ key: item.key, value: e.target.value })) }}>
+      setting = <FloatingLabel controlId={item.key} label={`${item.key}`}>
+          <Form.Select aria-label={`${item.key}`} defaultValue={item.value} onChange={e => { dispatch(editConfigurationItem({ key: item.key, value: e.target.value })) }}>
             <option value="false">false</option>
             <option value="true">true</option>
           </Form.Select>
