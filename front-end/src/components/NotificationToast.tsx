@@ -4,6 +4,7 @@ import ToastContainer from 'react-bootstrap/ToastContainer';
 import { removeToast } from "../stateSlices/NotificationToastSlice";
 import { ErrorMessage } from './MiniComponents';
 import { useAppSelector, useAppDispatch } from "../hooks";
+import { useEffect } from 'react';
 
 
 /**
@@ -15,6 +16,11 @@ export default function NotificationToast() {
   const dispatch = useAppDispatch()
   const toasts = useAppSelector(state => state.notificationToast.toasts)
 
+  useEffect(() => {
+    const timers = toasts.map((_, index) => setTimeout(() => {dispatch(removeToast(index))}, 3000));
+    return () => timers.forEach(timer => clearTimeout(timer));
+  }, [toasts, dispatch]);
+
   return (
     <ToastContainer
       className="p-3"
@@ -22,7 +28,7 @@ export default function NotificationToast() {
       style={{ zIndex: 9999, position: "fixed" }}
     >
       {toasts.map((toast, index) => (
-      <Toast key={`toast-${index}`} onClose={() => {dispatch(removeToast(index))}} show={true} autohide delay={3000}>
+      <Toast key={`toast-${index}`}>
         <Toast.Header>
           <strong className="me-auto">{toast.header}</strong>
         </Toast.Header>
