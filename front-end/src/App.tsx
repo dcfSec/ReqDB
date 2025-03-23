@@ -68,3 +68,8 @@ window.addEventListener('storage', function (event) {
     dispatch(syncLocalStorage(JSON.parse(localStorage.getItem('darkMode') || String(darkMode))))
   }
 });
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+  const dispatch = store.dispatch;
+  dispatch(syncLocalStorage(event.matches));
+});

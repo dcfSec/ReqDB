@@ -20,7 +20,7 @@ import APIClient from './APIClient';
 function getUser() {
   const oidcStorage = localStorage.getItem(`oidc.user:${staticConfig.oauth.authority}:${staticConfig.oauth.client_id}`)
   if (!oidcStorage) {
-      return null;
+    return null;
   }
   return User.fromStorageString(oidcStorage);
 }
@@ -37,7 +37,15 @@ APIClient.interceptors.request.use(async (config) => {
   return config;
 });
 
-const darkMode = JSON.parse(localStorage.getItem('darkMode') || "false") || false
+let darkMode = false
+if (localStorage.getItem('darkMode') == undefined) {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    darkMode = true
+  }
+} else {
+  darkMode = JSON.parse(localStorage.getItem('darkMode') || "false") || false
+}
+
 document.getElementsByTagName('html')[0].setAttribute("data-bs-theme", darkMode ? "dark" : "light");
 const rootElement = document.getElementById('root');
 if (rootElement) {
