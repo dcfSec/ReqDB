@@ -2,7 +2,6 @@ import { Button } from "react-bootstrap";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { inSearchField } from "../MiniComponents";
 import { removeComment, updateComment } from "../../stateSlices/CommentSlice";
-import { useDispatch } from 'react-redux'
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { LinkContainer } from 'react-router-bootstrap'
@@ -12,6 +11,7 @@ import { useState } from "react";
 import { Item } from "../../types/API/Comments";
 import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClient";
 import { APISuccessData } from "../../types/Generics";
+import { useAppDispatch } from "../../hooks";
 
 type Props = {
   index: number;
@@ -28,7 +28,7 @@ type Props = {
  * @returns Table row for editing an object
  */
 export function CommentRow({ index, comment, search, searchFields, showCompleted }: Props) {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [force, setForce] = useState(false);

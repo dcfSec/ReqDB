@@ -2,7 +2,6 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import { Alert, Form } from 'react-bootstrap';
 import { useState } from "react";
-import { useDispatch } from 'react-redux'
 import { addComment } from '../../stateSlices/CommentSlice';
 
 import { toast } from "../../stateSlices/NotificationToastSlice";
@@ -13,7 +12,7 @@ import { APIErrorData, APISuccessData } from '../../types/Generics';
 import { Item as Comment } from "../../types/API/Comments";
 import { showSpinner } from '../../stateSlices/MainLogoSpinnerSlice';
 import { truncate } from '../MiniComponents';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 
 
 type Props = {
@@ -29,7 +28,7 @@ type Props = {
  * @returns A comment entry
  */
 export default function AddComment({ replyTo = null, replyToText = "", setReply }: Props) {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
 
   const requirementId = useAppSelector(state => state.comment.requirementId)

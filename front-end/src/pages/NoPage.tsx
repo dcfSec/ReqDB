@@ -1,7 +1,7 @@
 import { Alert, Col, Row } from "react-bootstrap";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
-import { useDispatch } from "react-redux";
 import { useEffect } from "react";
+import { useAppDispatch } from "../hooks";
 
 /**
  * View for a 404 page
@@ -9,7 +9,7 @@ import { useEffect } from "react";
  * @returns Returns a 404 page
  */
 export default function NoPage() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(setBreadcrumbs([{ href: "", title: "Page not Found", active: true }]))

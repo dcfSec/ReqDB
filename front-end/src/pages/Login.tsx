@@ -1,11 +1,11 @@
 import { Alert, Button, Col, Row, Stack } from "react-bootstrap";
 import Markdown from 'react-markdown'
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
-import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { staticConfig } from "../static";
 import { useAuth } from "react-oidc-context";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
+import { useAppDispatch } from "../hooks";
 
 /**
  * View to display the button to login with the oauth provider
@@ -13,7 +13,7 @@ import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
  * @returns View for login page
  */
 export default function Login({ authError = null }: { authError?: string | null; }) {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [buttonText, setButtonText] = useState(`Login with ${staticConfig.oauth.provider}`);
 

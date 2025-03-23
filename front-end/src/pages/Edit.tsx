@@ -1,4 +1,4 @@
-import { Col, Row } from "react-bootstrap";
+import { Col, Form, Row, Stack } from "react-bootstrap";
 import { useState, useEffect } from 'react';
 import DataLayout from '../components/DataLayout';
 import DataTable from '../components/DataTable';
@@ -8,7 +8,7 @@ import { ErrorMessage } from '../components/MiniComponents'
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../stateSlices/NotificationToastSlice";
-import { setItems } from "../stateSlices/EditSlice";
+import { setItems, toggleSelectAll } from "../stateSlices/EditSlice";
 import AddListRowSkeleton from "../components/Edit/AddListRowSkeleton";
 import EditListRowSkeleton from "../components/Edit/EditListRowSkeleton";
 import LoadingBar from '../components/LoadingBar';
@@ -22,6 +22,7 @@ import { Item as Tag } from "../types/API/Tags";
 import { Item as Topic } from "../types/API/Topics";
 import APIClient, { handleError, handleResult } from "../APIClient";
 import { APIErrorData, APISuccessData, GenericItem } from "../types/Generics";
+import { BatchActionDropdown } from "../components/Edit/BatchAction";
 
 type Props = {
   editPageName: string;
@@ -43,6 +44,7 @@ type Props = {
 function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, endpoint, needCascade, parameters = [] }: Props) {
   const dispatch = useAppDispatch()
   const items = useAppSelector(state => state.edit.items)
+  const selectedCount = useAppSelector(state => state.edit.selectedCount)
 
   useEffect(() => {
     dispatch(setPageTitle(editPageName))
@@ -54,6 +56,8 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const actionHeaders = [<>Action</>, <><Form.Check key={"selectAll"} inline id={"selectAll"} type="checkbox" aria-label="All" label={`(${selectedCount}/${items.length})`} onChange={() => { dispatch(toggleSelectAll()) }} checked={selectedCount == items.length} /></>]
 
   useEffect(() => {
     dispatch(showSpinner(true));
@@ -87,7 +91,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
-    body = <Row><Col><DataTable headers={headers}>
+    body = <Row><Col><DataTable headers={[...headers, ...actionHeaders]}>
       <AddListRowSkeleton endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} editPageName={editPageName} />
       {items.length > 0 ? items.map((item, index) => (
         renderItem(item, index, needCascade)
@@ -106,7 +110,6 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
         index={index}
         endpoint={endpoint}
         needCascade={needCascade}
-        originalItem={item}
         search={search}
         searchFields={searchFields}
         editPageName={editPageName}
@@ -119,6 +122,13 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
 
   return (<>
     <DataLayout title={editPageName} onSearch={onSearch}>
+      <Row>
+        <Col>
+          <Stack direction="horizontal" gap={0}>
+            <div className="ms-auto">{selectedCount > 0 ? <BatchActionDropdown needCascade={needCascade} endpoint={endpoint} humanKey={humanKey}/> : null}</div>
+          </Stack>
+        </Col>
+      </Row>
       {body}
     </DataLayout>
   </>
@@ -137,7 +147,6 @@ export function Tags() {
       "#",
       "Name",
       "Requirements",
-      "Action"
     ]}
     blankItem={{
       name: "",
@@ -163,7 +172,6 @@ export function Catalogues() {
       "Title",
       "Description",
       "Root Elements",
-      "Action"
     ]}
     blankItem={{
       title: "",
@@ -193,7 +201,6 @@ export function Topics() {
       "Description",
       "Parent",
       "Children",
-      "Action"
     ]}
     blankItem={{
       key: "",
@@ -226,7 +233,6 @@ export function Requirements() {
       "Tags",
       "Extras",
       "Visible",
-      "Action"
     ]}
     blankItem={{
       key: "",
@@ -257,7 +263,6 @@ export function ExtraTypes() {
       "Description",
       "Type",
       "Children",
-      "Action"
     ]}
     blankItem={{
       title: "",
@@ -285,7 +290,6 @@ export function ExtraEntries() {
       "Content",
       "ExtraType",
       "Requirement",
-      "Action"
     ]}
     blankItem={{
       content: "",
