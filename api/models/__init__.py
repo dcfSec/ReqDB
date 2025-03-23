@@ -22,7 +22,7 @@ if AppConfig.DATABASE_URI.startswith("sqlite"):
 else:
     connect_args = {}
 
-engine = create_engine(AppConfig.DATABASE_URI, connect_args=connect_args)
+engine = create_engine(AppConfig.DATABASE_URI, connect_args=connect_args, pool_pre_ping=True)
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
