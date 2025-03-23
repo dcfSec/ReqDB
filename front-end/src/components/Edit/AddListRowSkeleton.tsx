@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { useDispatch } from 'react-redux'
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { addItem } from "../../stateSlices/EditSlice";
 
@@ -20,6 +19,8 @@ import { Item as Topic } from "../../types/API/Topics";
 import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClient";
 import { APISuccessData, GenericItem } from "../../types/Generics";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
+import { Button } from "react-bootstrap";
+import { useAppDispatch } from "../../hooks";
 
 
 type Props = {
@@ -37,7 +38,7 @@ type Props = {
  */
 export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, editPageName }: Props) {
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [newItem, setNewItem] = useState(blankItem);
 
@@ -61,19 +62,21 @@ export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, edit
     setNewItem(tempItem)
   }
 
+  const post = <><td><Button variant="success" onClick={() => postItem()}>Add</Button></td><td></td></>
+
   switch (editPageName) {
     case "Catalogues":
-      return <CatalogueAddListRow newItem={newItem as Catalogue} updateNewItem={updateNewItem} postItem={postItem} />
+      return <tr><CatalogueAddListRow newItem={newItem as Catalogue} updateNewItem={updateNewItem} />{post}</tr>
     case "ExtraEntries":
-      return <ExtraEntryAddListRow newItem={newItem as Extra} updateNewItem={updateNewItem} postItem={postItem} />
+      return <tr><ExtraEntryAddListRow newItem={newItem as Extra} updateNewItem={updateNewItem} />{post}</tr>
     case "ExtraTypes":
-      return <ExtraTypeAddListRow newItem={newItem as Type} updateNewItem={updateNewItem} postItem={postItem} />
+      return <tr><ExtraTypeAddListRow newItem={newItem as Type} updateNewItem={updateNewItem} />{post}</tr>
     case "Requirements":
-      return <RequirementAddListRow newItem={newItem as Requirement} updateNewItem={updateNewItem} postItem={postItem} />
+      return <tr><RequirementAddListRow newItem={newItem as Requirement} updateNewItem={updateNewItem} />{post}</tr>
     case "Tags":
-      return <TagAddListRow newItem={newItem as Tag} updateNewItem={updateNewItem} postItem={postItem} />
+      return <tr><TagAddListRow newItem={newItem as Tag} updateNewItem={updateNewItem} />{post}</tr>
     case "Topics":
-      return <TopicAddListRow newItem={newItem as Topic} updateNewItem={updateNewItem} postItem={postItem} />
+      return <tr><TopicAddListRow newItem={newItem as Topic} updateNewItem={updateNewItem} />{post}</tr>
     default:
       return <></>
   }

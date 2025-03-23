@@ -1,12 +1,10 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
-import { JSX, } from "react";
 import { Type } from '../../../types/API/Extras';
 
 
 type Props = {
   item: Type
-  buttons: JSX.Element
   updateTempItem: (a: object) => void;
   edit: boolean
 }
@@ -17,10 +15,10 @@ type Props = {
  * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function ExtraTypeEditListRow({ item, buttons, updateTempItem, edit }: Props) {
+export function ExtraTypeEditListRow({ item, updateTempItem, edit }: Props) {
 
     return (
-      <tr>
+      <>
         <td>{item.id}</td>
         <td><Form.Control type="text" id="name" disabled={!edit} value={item.title} onChange={e => { updateTempItem({ title: e.target.value }) }} /></td>
         <td><Form.Control type="text" id="description" disabled={!edit} value={item.description} onChange={e => { updateTempItem({ description: e.target.value }) }} /></td>
@@ -32,7 +30,6 @@ export function ExtraTypeEditListRow({ item, buttons, updateTempItem, edit }: Pr
           </Form.Select>
         </td>
         <td><Button variant="primary">Show</Button></td>
-        <td>{buttons}</td>
-      </tr>
+      </>
     );
 }

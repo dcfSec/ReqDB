@@ -1,14 +1,13 @@
 import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import SelectMany from "../SelectManyModal";
-import { JSX, useState } from "react";
+import { useState } from "react";
 import SelectParentModal from "../SelectParentModal";
 import { Item } from '../../../types/API/Requirements';
 
 
 type Props = {
   item: Item
-  buttons: JSX.Element
   updateTempItem: (a: object) => void;
   edit: boolean
 }
@@ -19,13 +18,13 @@ type Props = {
  * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function RequirementEditListRow({ item, buttons, updateTempItem, edit }: Props) {
+export function RequirementEditListRow({ item, updateTempItem, edit }: Props) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
 
   return (
-    <tr>
+    <>
       <td>{item.id}</td>
       <td><Form.Control type="text" id="key" disabled={!edit} value={item.key} onChange={e => { updateTempItem({ key: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="title" disabled={!edit} value={item.title} onChange={e => { updateTempItem({ title: e.target.value }) }} /></td>
@@ -38,7 +37,6 @@ export function RequirementEditListRow({ item, buttons, updateTempItem, edit }: 
       }}>Set</Button></td>
       <td><Button variant="primary" disabled={!edit}>Show</Button></td>
       <td><Form.Check type="switch" id="visible" disabled={!edit} defaultChecked={item.visible} onChange={e => { updateTempItem({ visible: e.target.checked }) }} /></td>
-      <td>{buttons}</td>
       {showUpdateMany2Many ? <SelectMany
         humanKey={item.key}
         show={showUpdateMany2Many}
@@ -64,6 +62,6 @@ export function RequirementEditListRow({ item, buttons, updateTempItem, edit }: 
           columns={["key", "title"]}
           updateItem={updateTempItem}
         ></SelectParentModal> : null}
-    </tr>
+    </>
   );
 }

@@ -8,7 +8,6 @@ import { Item as Catalogue } from '../../../types/API/Catalogues';
 type Props = {
   newItem: Catalogue;
   updateNewItem: (a: object) => void;
-  postItem: () => void;
 }
 
 /**
@@ -17,17 +16,16 @@ type Props = {
  * @param {object} props Props for the component: newItem, updateNewItem
  * @returns A table row to add an item
  */
-export function CatalogueAddListRow({ newItem, updateNewItem, postItem }: Props) {
+export function CatalogueAddListRow({ newItem, updateNewItem }: Props) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
 
   return (
-    <tr>
+    <>
       <td></td>
       <td><Form.Control type="text" id="title" value={newItem.title} onChange={e => { updateNewItem({ title: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="description" value={newItem.description} onChange={e => { updateNewItem({ description: e.target.value }) }} /></td>
       <td><Button variant="primary" onClick={() => { setShowUpdateMany2Many(true) }}>Set elements</Button></td>
-      <td><Button variant="success" onClick={() => postItem()}>Add</Button></td>
       {showUpdateMany2Many ? <SelectMany
           humanKey={newItem.title}
           show={showUpdateMany2Many}
@@ -39,6 +37,6 @@ export function CatalogueAddListRow({ newItem, updateNewItem, postItem }: Props)
           updateItem={updateNewItem}
           name="topic"
         ></SelectMany> : null}
-    </tr>
+    </>
   );
 }

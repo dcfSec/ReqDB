@@ -1,7 +1,7 @@
+import { BaseItem } from "./Base";
 import { Item as Requirement } from "./Requirements";
 
-export interface Item extends Record<string, unknown> {
-    id: number;
+export interface Item extends BaseItem {
     content: string;
     extraTypeId: number;
     extraType: Type;
@@ -9,8 +9,7 @@ export interface Item extends Record<string, unknown> {
     requirement: Requirement
 }
 
-export interface Type extends Record<string, unknown> {
-    id: number;
+export interface Type extends BaseItem {
     title: string;
     description: string;
     children: Item;

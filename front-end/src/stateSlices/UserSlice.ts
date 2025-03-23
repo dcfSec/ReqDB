@@ -18,7 +18,7 @@ interface UserState {
 const initialState: UserState = {
   roles: [],
   preferences: {
-    darkMode: JSON.parse(localStorage.getItem('darkMode') || "false") || false,
+    darkMode: getDarkModeWithColorSchemaPreference(),
     notificationMailOnCommentChain: false,
     notificationMailOnRequirementComment: false,
   },
@@ -81,4 +81,16 @@ export default UserSlice.reducer
 
 function okCallback(response: APISuccessData) {
   store.dispatch(setUserConfiguration(response.data as Item))
+}
+
+function getDarkModeWithColorSchemaPreference() {
+  let darkMode = false
+  if (localStorage.getItem('darkMode') == undefined) {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      darkMode = true
+    }
+  } else {
+    darkMode = JSON.parse(localStorage.getItem('darkMode') || "false") || false
+  }
+  return darkMode
 }

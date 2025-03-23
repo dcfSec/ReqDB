@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 
 
 type Props = {
-  headers: Array<string>;
+  headers: Array<string | ReactNode>;
   children: ReactNode;
 }
 

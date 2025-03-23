@@ -1,10 +1,9 @@
 import { inSearchField, EditButtons } from "../MiniComponents";
 import { useState } from "react";
 
-import { useDispatch } from 'react-redux'
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { toast } from "../../stateSlices/NotificationToastSlice";
-import { removeItem, updateItem } from "../../stateSlices/EditSlice";
+import { removeItem, toggleSelected, updateItem } from "../../stateSlices/EditSlice";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 
 import { CatalogueEditListRow } from "./Catalogues/EditListRow"
@@ -22,12 +21,13 @@ import { Item as Tag } from "../../types/API/Tags";
 import { Item as Topic } from "../../types/API/Topics";
 import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClient";
 import { APISuccessData, GenericItem } from "../../types/Generics";
+import { Form } from "react-bootstrap";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 
 type Props = {
   index: number;
   endpoint: string;
   needCascade: boolean;
-  originalItem: Catalogue | Extra | Type | Requirement | Tag | Topic;
   humanKey: string;
   search: string;
   searchFields: Array<string>;
@@ -39,8 +39,9 @@ type Props = {
  * @param {object} props Props for this component: index, endpoint, originalItem, humanKey, search, searchFields, editPageName
  * @returns Table row for editing an object
  */
-export default function EditListRow({ index, endpoint, needCascade, originalItem, humanKey, search, searchFields, editPageName }: Props) {
-  const dispatch = useDispatch()
+export default function EditListRow({ index, endpoint, needCascade, humanKey, search, searchFields, editPageName }: Props) {
+  const dispatch = useAppDispatch()
+  const originalItem = useAppSelector(state => state.edit.items)[index]
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [force, setForce] = useState(false);
@@ -49,6 +50,7 @@ export default function EditListRow({ index, endpoint, needCascade, originalItem
   const [edit, setEdit] = useState(false);
 
   const [item, setItem] = useState(originalItem);
+
 
   function resetTempItem() {
     setItem(originalItem)
@@ -102,36 +104,37 @@ export default function EditListRow({ index, endpoint, needCascade, originalItem
   if (inSearchField(search, searchFields, item) || edit) {
     let row = <></>
     const deleteModal = <DeleteConfirmationModal show={showDeleteModal} item={String(item[humanKey])} onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()} onForceChange={e => setForce(e)} force={force} needCascade={needCascade} onCascadeChange={e => setCascade(e)} />
-    const buttons = <EditButtons saveItem={saveItem} edit={edit} setEdit={setEdit} resetTempItem={resetTempItem} setShowDeleteModal={setShowDeleteModal} />
 
     switch (editPageName) {
       case "Catalogues":
-        row = <CatalogueEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Catalogue} />
+        row = <CatalogueEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Catalogue} />
         break;
       case "ExtraEntries":
-        row = <ExtraEntryEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Extra} />
+        row = <ExtraEntryEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Extra} />
         break;
       case "ExtraTypes":
-        row = <ExtraTypeEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Type} />
+        row = <ExtraTypeEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Type} />
         break;
       case "Requirements":
-        row = <RequirementEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Requirement} />
+        row = <RequirementEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Requirement} />
         break;
       case "Tags":
-        row = <TagEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Tag} />
+        row = <TagEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Tag} />
         break;
       case "Topics":
-        row = <TopicEditListRow buttons={buttons} updateTempItem={updateTempItem} edit={edit} item={item as Topic} />
+        row = <TopicEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Topic} />
         break;
       default:
         row = <></>
         break;
     }
     return (
-      <>
+      <tr>
         {row}
+        <td><EditButtons saveItem={saveItem} edit={edit} setEdit={setEdit} resetTempItem={resetTempItem} setShowDeleteModal={setShowDeleteModal} /></td>
+        <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelected(index)) }} checked={originalItem.selected} /></td>
         {deleteModal}
-      </>
+      </tr>
     )
   }
 }

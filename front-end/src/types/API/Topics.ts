@@ -1,9 +1,9 @@
 import { Item as Requirement } from "./Requirements";
 import { Item as Catalogue } from "./Catalogues";
+import { BaseItem } from "./Base";
 
 
-export interface MinimalItem extends Record<string, unknown> {
-  id: number;
+export interface MinimalItem extends BaseItem {
   key: string;
   title: string;
   children: Array<Item>

@@ -8,7 +8,6 @@ import { Item as Topic } from "../../../types/API/Topics";
 type Props = {
   newItem: Topic
   updateNewItem: (a: object) => void;
-  postItem: () => void;
 }
 
 /**
@@ -17,12 +16,12 @@ type Props = {
  * @param {object} props Props for the component: newItem, updateNewItem, postItem
  * @returns A table row to add an item
  */
-export function TopicAddListRow({ newItem, updateNewItem, postItem }: Props) {
+export function TopicAddListRow({ newItem, updateNewItem }: Props) {
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
 
   return (
-    <tr>
+    <>
       <td></td>
       <td><Form.Control type="text" id="key" placeholder="New Topic key" value={newItem.key} onChange={e => { updateNewItem({ key: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="title" placeholder="New Topic name" value={newItem.title} onChange={e => { updateNewItem({ title: e.target.value }) }} /></td>
@@ -31,7 +30,6 @@ export function TopicAddListRow({ newItem, updateNewItem, postItem }: Props) {
         setShowSelectParentModal(true)
       }}>{newItem.parent ? newItem.parent.key : "Parent"}</Button></td>
       <td></td>
-      <td><Button variant="success" onClick={() => postItem()}>Add</Button></td>
       {showSelectParentModal ? <SelectParentModal
         itemId={newItem.id}
         humanKey={newItem.title}
@@ -45,6 +43,6 @@ export function TopicAddListRow({ newItem, updateNewItem, postItem }: Props) {
         checkCircle={true}
         columns={["key", "title"]}
       ></SelectParentModal> : null}
-    </tr>
+    </>
   );
 }

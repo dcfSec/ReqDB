@@ -8,7 +8,6 @@ import { Item as Extra } from '../../../types/API/Extras';
 type Props = {
   newItem: Extra;
   updateNewItem: (a: object) => void;
-  postItem: () => void;
 }
 
 /**
@@ -17,13 +16,13 @@ type Props = {
  * @param {object} props Props for the component: newItem, updateNewItem, postItem
  * @returns A table row to add an item
  */
-export function ExtraEntryAddListRow({ newItem, updateNewItem, postItem }: Props) {
+export function ExtraEntryAddListRow({ newItem, updateNewItem }: Props) {
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
   const [showSelectExtraModal, setShowSelectExtraModal] = useState(false);
 
   return (
-    <tr>
+    <>
       <td></td>
       <td><Form.Control as="textarea" rows={3} id="content" placeholder="New content" value={newItem.content} onChange={e => { updateNewItem({ content: e.target.value }) }} /></td>
       <td><Button variant="primary" onClick={() => {
@@ -32,7 +31,6 @@ export function ExtraEntryAddListRow({ newItem, updateNewItem, postItem }: Props
       <td><Button variant="primary" onClick={() => {
         setShowSelectParentModal(true)
       }}>{newItem.requirement ? newItem.requirement.key : "Requirement"}</Button></td>
-      <td><Button variant="success" onClick={() => postItem()}>Add</Button></td>
       {showSelectParentModal ? <SelectParentModal
         itemId={newItem.id}
         humanKey={"ExtraEntry"}
@@ -59,6 +57,6 @@ export function ExtraEntryAddListRow({ newItem, updateNewItem, postItem }: Props
         checkCircle={false}
         columns={["title"]}
       ></SelectParentModal> : null}
-    </tr>
+    </>
   );
 }

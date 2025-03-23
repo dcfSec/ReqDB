@@ -1,5 +1,6 @@
-export interface Item extends Record<string, unknown> {
-  id: string;
+import { BaseItem } from "./Base";
+
+export interface Item extends BaseItem {
   email: string;
   created: number;
   notificationMailOnCommentChain: boolean;

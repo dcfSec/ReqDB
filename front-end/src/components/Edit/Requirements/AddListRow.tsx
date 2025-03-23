@@ -7,7 +7,6 @@ import { Item as Requirement } from "../../../types/API/Requirements";
 type Props = {
   newItem: Requirement
   updateNewItem: (a: object) => void;
-  postItem: () => void;
 }
 
 /**
@@ -16,12 +15,12 @@ type Props = {
  * @param {object} props Props for the component: newItem, updateNewItem, postItem
  * @returns A table row to add an item
  */
-export function RequirementAddListRow({ newItem, updateNewItem, postItem }: Props) {
+export function RequirementAddListRow({ newItem, updateNewItem }: Props) {
 
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
 
   return (
-    <tr>
+    <>
       <td></td>
       <td><Form.Control type="text" id="key" placeholder="New Requirement key" value={newItem.key} onChange={e => { updateNewItem({ key: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="title" placeholder="New Requirement name" value={newItem.title} onChange={e => { updateNewItem({ title: e.target.value }) }} /></td>
@@ -31,7 +30,6 @@ export function RequirementAddListRow({ newItem, updateNewItem, postItem }: Prop
       }}>{newItem.parent ? newItem.parent.key : "Parent"}</Button></td>
       <td></td><td></td>
       <td><Form.Check  type="switch" id="visible" defaultChecked={true} onChange={e => { updateNewItem({ visible: e.target.value }) }} /></td>
-      <td><Button variant="success" onClick={() => postItem()}>Add</Button></td>
       {showSelectParentModal ? <SelectParentModal
         itemId={newItem.id}
         humanKey={newItem.title}
@@ -45,6 +43,6 @@ export function RequirementAddListRow({ newItem, updateNewItem, postItem }: Prop
         checkCircle={false}
         columns={["key", "title"]}
       ></SelectParentModal> : null}
-    </tr>
+    </>
   );
 }
