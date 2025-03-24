@@ -1,4 +1,4 @@
-import { Button, Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
+import { Badge, Button, Col, OverlayTrigger, Row, Stack, Tooltip } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import LoadingBar from "../components/LoadingBar";
@@ -17,6 +17,7 @@ export default function BrowseCatalogue() {
   const title = useAppSelector(state => state.layout.pageTitle)
   const description = useAppSelector(state => state.browse.description)
   const status = useAppSelector(state => state.browse.status)
+  const data = useAppSelector(state => state.browse.data) 
 
   const dispatch = useAppDispatch()
 
@@ -34,7 +35,15 @@ export default function BrowseCatalogue() {
   return (
     <>
       <Row>
-        <Col><h2>Browse <code>{title}</code>{status == "ok" ? overlay : null}</h2></Col>
+        <Col>
+          <Stack direction="horizontal" gap={1}>
+            <h2>Browse <code>{title}</code></h2>
+            {status == "ok" ? overlay : null}
+            {data?.tags.map((item) => (
+              <Badge key={`tag-${item.id}`} bg="secondary" className="lowerHeaderButton">{item.name}</Badge>
+            ))}
+          </Stack>
+        </Col>
       </Row>
       <BrowseContent id={id} />
       <LoadingBar />

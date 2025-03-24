@@ -26,6 +26,7 @@ export function CatalogueAddListRow({ newItem, updateNewItem }: Props) {
       <td><Form.Control type="text" id="title" value={newItem.title} onChange={e => { updateNewItem({ title: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="description" value={newItem.description} onChange={e => { updateNewItem({ description: e.target.value }) }} /></td>
       <td><Button variant="primary" onClick={() => { setShowUpdateMany2Many(true) }}>Set elements</Button></td>
+      <td></td>
       {showUpdateMany2Many ? <SelectMany
           humanKey={newItem.title}
           show={showUpdateMany2Many}

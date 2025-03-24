@@ -24,11 +24,11 @@ router = AuthRouter()
     },
 )
 async def getExtraEntries(
-    session: SessionDep, expandRelationships: bool = True
+    session: SessionDep, expandTopics: bool = True
 ) -> Response.ExtraEntries:
     extraEntries = session.exec(select(ExtraEntry)).unique().all()
 
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.ExtraEntries, extraEntries)
     else:
         return Response.buildResponse(Response.ExtraEntries, extraEntries)
@@ -46,13 +46,13 @@ async def getExtraEntries(
     },
 )
 async def getExtraEntry(
-    session: SessionDep, extraTypeID: int, expandRelationships: bool = True
+    session: SessionDep, extraTypeID: int, expandTopics: bool = True
 ) -> Union[Response.ExtraEntry, Response.ExtraEntry]:
     extraType = session.get(ExtraEntry, extraTypeID)
 
     if not extraType:
         raise NotFound(detail="ExtraEntry not found")
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.ExtraEntry, extraType)
     else:
         return Response.buildResponse(Response.ExtraEntry, extraType)

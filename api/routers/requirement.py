@@ -6,7 +6,7 @@ from sqlmodel import select
 from api.error import ConflictError, NotFound, ErrorResponses
 from api.helper import checkParentTopicChildren
 from api.models import SessionDep, audit
-from api.models.db import Requirement
+from api.models.db import Requirement, Tag
 from api.models.insert import Insert
 from api.models.response import Response
 from api.models.update import Update
@@ -25,11 +25,11 @@ router = AuthRouter()
     },
 )
 async def getRequirements(
-    session: SessionDep, expandRelationships: bool = False
+    session: SessionDep, expandTopics: bool = False
 ) -> Response.Requirements:
     requirements = session.exec(select(Requirement)).unique().all()
 
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.Requirements, requirements)
     else:
         return Response.buildResponse(Response.Requirements, requirements)
@@ -47,13 +47,13 @@ async def getRequirements(
     },
 )
 async def getRequirement(
-    session: SessionDep, requirementID: int, expandRelationships: bool = True
+    session: SessionDep, requirementID: int, expandTopics: bool = True
 ) -> Union[Response.Requirement, Response.Requirement]:
     requirement = session.get(Requirement, requirementID)
 
     if not requirement:
         raise NotFound(detail="Requirement not found")
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.Requirement, requirement)
     else:
         return Response.buildResponse(Response.Requirement, requirement)
@@ -83,6 +83,13 @@ async def patchRequirement(
     requirementData = requirement.model_dump(exclude_unset=True, mode="python")
     checkParentTopicChildren(requirement.parentId, session, False)
     requirementFromDB.sqlmodel_update(requirementData)
+    requirementFromDB.tags = []
+    for tag in requirementData["tags"]:
+        t = session.get(Tag, tag["id"])
+        if t:
+            requirementFromDB.tags.append(t)
+        else:
+            raise NotFound(detail=f"Tag with ID {tag['id']} not found")
     session.add(requirementFromDB)
     session.commit()
     session.refresh(requirementFromDB)

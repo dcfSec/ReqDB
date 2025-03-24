@@ -21,6 +21,12 @@ class TableBase(SQLModel):
     deleted: bool = Field(default=False)
 
 
+class CatalogueTag(SQLModel, table=True):
+    __tablename__ = "CatalogueTag"
+    catalogueId: int = Field(foreign_key="catalogue.id", primary_key=True)
+    tagId: int = Field(foreign_key="tag.id", primary_key=True)
+
+
 class RequirementTag(SQLModel, table=True):
     __tablename__ = "RequirementTag"
     requirementId: int = Field(foreign_key="requirement.id", primary_key=True)
@@ -104,6 +110,12 @@ class Catalogue(CatalogueBase, TableBase, table=True):
         sa_relationship_kwargs={"lazy": "joined"},
     )
 
+    tags: list["Tag"] = Relationship(
+        back_populates="catalogues",
+        link_model=CatalogueTag,
+        sa_relationship_kwargs={"lazy": "joined"},
+    )
+
     def __repr__(self):
         return f'<Catalogue "{self.title}">'
 
@@ -166,6 +178,9 @@ class ExtraEntry(ExtraEntryBase, TableBase, table=True):
 class Tag(TagBase, TableBase, table=True):
     requirements: list["Requirement"] = Relationship(
         back_populates="tags", link_model=RequirementTag
+    )
+    catalogues: list["Catalogue"] = Relationship(
+        back_populates="tags", link_model=CatalogueTag
     )
 
     def __repr__(self):

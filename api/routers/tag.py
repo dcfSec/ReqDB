@@ -5,7 +5,7 @@ from sqlmodel import select
 
 from api.error import ConflictError, NotFound, ErrorResponses
 from api.models import SessionDep, audit
-from api.models.db import Tag
+from api.models.db import Catalogue, Requirement, Tag
 from api.models.insert import Insert
 from api.models.response import Response
 from api.models.update import Update
@@ -24,11 +24,11 @@ router = AuthRouter()
     },
 )
 async def getTags(
-    session: SessionDep, expandRelationships: bool = True
+    session: SessionDep, expandTopics: bool = True
 ) -> Union[Response.Tags, Response.TagsWithRequirements]:
     tags = session.exec(select(Tag)).unique().all()
 
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.Tags, tags)
     else:
         return Response.buildResponse(Response.TagsWithRequirements, tags)
@@ -46,16 +46,16 @@ async def getTags(
     },
 )
 async def getTag(
-    session: SessionDep, tagID: int, expandRelationships: bool = True
-) -> Union[Response.Tag, Response.TagWithRequirements]:
+    session: SessionDep, tagID: int, expandTopics: bool = True
+) -> Union[Response.Tag, Response.TagWithRequirementsAndCatalogues]:
     tag = session.get(Tag, tagID)
 
     if not tag:
         raise NotFound(detail="Tag not found")
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.Tag, tag)
     else:
-        return Response.buildResponse(Response.TagWithRequirements, tag)
+        return Response.buildResponse(Response.TagWithRequirementsAndCatalogues, tag)
 
 
 @router.patch(
@@ -74,17 +74,31 @@ async def patchTag(
     tagID: int,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.TagWithRequirements:
+) -> Response.TagWithRequirementsAndCatalogues:
     tagFromDB = session.get(Tag, tagID)
     if not tagFromDB:
         raise NotFound(detail="Tag not found")
     tagData = tag.model_dump(exclude_unset=True, mode="python")
     tagFromDB.sqlmodel_update(tagData)
+    tagFromDB.requirements = []
+    for requirement in tagData["requirements"]:
+        t = session.get(Requirement, requirement["id"])
+        if t:
+            tagFromDB.requirements.append(t)
+        else:
+            raise NotFound(detail=f"Requirement with ID {requirement['id']} not found")
+    tagFromDB.catalogues = []
+    for catalogue in tagData["catalogues"]:
+        t = session.get(Catalogue, catalogue["id"])
+        if t:
+            tagFromDB.catalogues.append(t)
+        else:
+            raise NotFound(detail=f"Catalogue with ID {catalogue['id']} not found")
     session.add(tagFromDB)
     session.commit()
     session.refresh(tagFromDB)
     audit(session, 1, tagFromDB, userId)
-    return Response.buildResponse(Response.TagWithRequirements, tagFromDB)
+    return Response.buildResponse(Response.TagWithRequirementsAndCatalogues, tagFromDB)
 
 
 @router.post(

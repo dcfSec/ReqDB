@@ -19,25 +19,42 @@ type Props = {
  */
 export function TagEditListRow({ item, updateTempItem, edit }: Props) {
 
-  const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
+  const [showUpdateMany2ManyRequirements, setShowUpdateMany2ManyRequirements] = useState(false);
+  const [showUpdateMany2ManyCatalogues, setShowUpdateMany2ManyCatalogues] = useState(false);
+
+  console.log(item.catalogues)
 
   return (
     <>
       <td>{item.id}</td>
       <td><Form.Control type="text" id="name" disabled={!edit} value={item.name} onChange={e => { updateTempItem({ name: e.target.value }) }} /></td>
       <td><Button variant="primary" disabled={!edit} onClick={() => {
-        setShowUpdateMany2Many(true)
+        setShowUpdateMany2ManyRequirements(true)
       }}>Set</Button></td>
-      {showUpdateMany2Many ? <SelectMany
+      <td><Button variant="primary" disabled={!edit} onClick={() => {
+        setShowUpdateMany2ManyCatalogues(true)
+      }}>Set</Button></td>
+      {showUpdateMany2ManyRequirements ? <SelectMany
         humanKey={item.name}
-        show={showUpdateMany2Many}
-        setShow={setShowUpdateMany2Many}
-        initialSelectedItems={item.requirement}
+        show={showUpdateMany2ManyRequirements}
+        setShow={setShowUpdateMany2ManyRequirements}
+        initialSelectedItems={item.requirements}
         endpoint="requirements"
         columns={["key", "title"]}
-        updateKey={"requirement"}
+        updateKey={"requirements"}
         updateItem={updateTempItem}
         name="requirement"
+      ></SelectMany> : null}
+      {showUpdateMany2ManyCatalogues ? <SelectMany
+        humanKey={item.name}
+        show={showUpdateMany2ManyCatalogues}
+        setShow={setShowUpdateMany2ManyCatalogues}
+        initialSelectedItems={item.catalogues}
+        endpoint="catalogues"
+        columns={["title"]}
+        updateKey={"catalogues"}
+        updateItem={updateTempItem}
+        name="catalogue"
       ></SelectMany> : null}
     </>
   );

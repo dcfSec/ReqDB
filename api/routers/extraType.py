@@ -24,11 +24,11 @@ router = AuthRouter()
     },
 )
 async def getExtraTypes(
-    session: SessionDep, expandRelationships: bool = True
+    session: SessionDep, expandTopics: bool = True
 ) -> Response.ExtraTypes:
     extraTypes = session.exec(select(ExtraType)).unique().all()
 
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.ExtraTypes, extraTypes)
     else:
         return Response.buildResponse(Response.ExtraTypes, extraTypes)
@@ -46,13 +46,13 @@ async def getExtraTypes(
     },
 )
 async def getExtraType(
-    session: SessionDep, extraTypeID: int, expandRelationships: bool = True
+    session: SessionDep, extraTypeID: int, expandTopics: bool = True
 ) -> Union[Response.ExtraType, Response.ExtraType]:
     extraType = session.get(ExtraType, extraTypeID)
 
     if not extraType:
         raise NotFound(status_code=404, detail="ExtraType not found")
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.ExtraType, extraType)
     else:
         return Response.buildResponse(Response.ExtraType, extraType)

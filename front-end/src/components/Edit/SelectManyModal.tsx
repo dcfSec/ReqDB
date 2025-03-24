@@ -18,6 +18,7 @@ import LoadingBar from '../LoadingBar';
 import { Item as Topic } from '../../types/API/Topics';
 import { Item as Tag } from '../../types/API/Tags';
 import { Item as Requirement } from '../../types/API/Requirements';
+import { Item as Catalogue } from '../../types/API/Catalogues';
 import { APIErrorData, APISuccessData, RowObject } from '../../types/Generics';
 import APIClient, { handleError, handleResult } from '../../APIClient';
 
@@ -25,7 +26,7 @@ type Props = {
   humanKey: string;
   show: boolean;
   setShow: (a: boolean) => void;
-  initialSelectedItems?: Array<Topic | Tag | Requirement>;
+  initialSelectedItems?: Array<Topic | Tag | Requirement | Catalogue>;
   endpoint: string;
   columns: Array<string>;
   updateKey: string;
@@ -49,6 +50,8 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
   const initialSelectedItemIds = initialSelectedItems.map((item) => (item.id))
   const [selectedItemIds, setSelectedItemIds] = useState(initialSelectedItemIds);
 
+
+  console.log(initialSelectedItemIds)
 
   function okCallback(response: APISuccessData) {
     dispatch(updateCache({ endpoint, response: response }))

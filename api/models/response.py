@@ -17,11 +17,12 @@ from api.models.public import (
     ExtraType,
     RequirementWithExtrasAndTagsAndComments,
     Tag,
-    TagWithRequirements,
+    TagWithRequirementsAndCatalogues,
     TopicWithParent,
     TopicWithRequirements,
     StaticConfiguration,
     User,
+    CatalogueWithTags,
 )
 
 
@@ -35,11 +36,11 @@ class Response:
     class StaticConfiguration(ResponseBase):
         data: StaticConfiguration
 
-    class TagWithRequirements(ResponseBase):
-        data: TagWithRequirements
+    class TagWithRequirementsAndCatalogues(ResponseBase):
+        data: TagWithRequirementsAndCatalogues
 
     class TagsWithRequirements(ResponseBase):
-        data:  list[TagWithRequirements]
+        data:  list[TagWithRequirementsAndCatalogues]
 
     class Tag(ResponseBase):
         data: Tag
@@ -58,6 +59,9 @@ class Response:
 
     class Catalogue(ResponseBase):
         data: Catalogue
+
+    class CatalogueWithTags(ResponseBase):
+        data: list[CatalogueWithTags]
 
     class CataloguesWithTopics(ResponseBase):
         data: list[CatalogueWithTopics]

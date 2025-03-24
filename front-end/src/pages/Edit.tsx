@@ -95,7 +95,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
       <AddListRowSkeleton endpoint={endpoint} blankItem={blankItem} humanKey={humanKey} editPageName={editPageName} />
       {items.length > 0 ? items.map((item, index) => (
         renderItem(item, index, needCascade)
-      )) : <tr><td colSpan={headers.length} style={{ textAlign: 'center' }}>No items</td></tr>}
+      )) : <tr><td colSpan={[...headers, ...actionHeaders].length} style={{ textAlign: 'center' }}>No items</td></tr>}
     </DataTable></Col></Row>
   }
 
@@ -125,7 +125,7 @@ function EditParent({ editPageName, humanKey, headers, blankItem, searchFields, 
       <Row>
         <Col>
           <Stack direction="horizontal" gap={0}>
-            <div className="ms-auto">{selectedCount > 0 ? <BatchActionDropdown needCascade={needCascade} endpoint={endpoint} humanKey={humanKey}/> : null}</div>
+            <div className="ms-auto">{selectedCount > 0 ? <BatchActionDropdown needCascade={needCascade} endpoint={endpoint} humanKey={humanKey}></BatchActionDropdown> : null}</div>
           </Stack>
         </Col>
       </Row>
@@ -147,6 +147,7 @@ export function Tags() {
       "#",
       "Name",
       "Requirements",
+      "Catalogues",
     ]}
     blankItem={{
       name: "",
@@ -156,7 +157,7 @@ export function Tags() {
     ]}
     endpoint="tags"
     needCascade={false}
-    parameters={["expandRelationships=true"]}
+    parameters={["expandTopics=true"]}
   />
 }
 
@@ -172,6 +173,7 @@ export function Catalogues() {
       "Title",
       "Description",
       "Root Elements",
+      "Tags",
     ]}
     blankItem={{
       title: "",
@@ -183,7 +185,7 @@ export function Catalogues() {
     ]}
     endpoint="catalogues"
     needCascade={false}
-    parameters={["expandRelationships=true"]}
+    parameters={["expandTopics=true"]}
   />
 }
 

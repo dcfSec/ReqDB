@@ -22,7 +22,6 @@ class Tag(TagBase):
 class Catalogue(CatalogueBase):
     id: int
 
-
 class Topic(TopicBase):
     id: int
 
@@ -58,8 +57,9 @@ class ExtraEntryWithExtraTypeAndRequirement(ExtraEntry):
     extraType: ExtraType
     requirement: Requirement
 
-class TagWithRequirements(Tag):
+class TagWithRequirementsAndCatalogues(Tag):
     requirements: list[Requirement] | None = []
+    catalogues: list[Catalogue] | None = []
 
 class RequirementWithExtrasAndTags(Requirement):
     extras: list[ExtraEntryWithExtraType] | None = []
@@ -87,12 +87,19 @@ class TopicWithRequirementsAndComments(Topic):
 
 class CatalogueWithTopics(Catalogue):
     topics: list[Topic] | None = []
+    tags: list[Tag] | None = []
+
+class CatalogueWithTags(CatalogueBase):
+    id: int
+    tags: list[Tag] | None = []
 
 class CatalogueWithTopicsAndRequirements(Catalogue):
     topics: list[TopicWithRequirements] | None = []
+    tags: list[Tag] | None = []
 
 class CatalogueWithTopicsAndRequirementsAndComments(Catalogue):
     topics: list[TopicWithRequirementsAndComments] | None = []
+    tags: list[Tag] | None = []
 
 class Audit(AuditBase):
     id: int

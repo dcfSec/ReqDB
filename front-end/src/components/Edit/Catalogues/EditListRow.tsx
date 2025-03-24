@@ -19,7 +19,8 @@ type Props = {
  */
 export function CatalogueEditListRow({ item, updateTempItem, edit }: Props) {
 
-  const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
+  const [showUpdateMany2ManyElements, setShowUpdateMany2ManyElements] = useState(false);
+  const [showUpdateMany2ManyTags, setShowUpdateMany2ManyTags] = useState(false);
 
     return (
       <>
@@ -27,18 +28,32 @@ export function CatalogueEditListRow({ item, updateTempItem, edit }: Props) {
         <td><Form.Control disabled={!edit} type="text" id="title" value={item.title} onChange={e => { updateTempItem({ title: e.target.value }) }} /></td>
         <td><Form.Control disabled={!edit} type="text" id="description" value={item.description} onChange={e => { updateTempItem({ description: e.target.value }) }} /></td>
         <td><Button disabled={!edit} variant="primary" onClick={() => {
-          setShowUpdateMany2Many(true)
+          setShowUpdateMany2ManyElements(true)
         }}>Set elements</Button></td>
-        {showUpdateMany2Many ? <SelectMany
+        <td><Button variant="primary" disabled={!edit} onClick={() => {
+        setShowUpdateMany2ManyTags(true)
+        }}>Set</Button></td>
+        {showUpdateMany2ManyElements ? <SelectMany
           humanKey={item.title}
-          show={showUpdateMany2Many}
-          setShow={setShowUpdateMany2Many}
+          show={showUpdateMany2ManyElements}
+          setShow={setShowUpdateMany2ManyElements}
           initialSelectedItems={item.topics}
           endpoint="topics"
           columns={["key", "title"]}
           updateKey={"topics"}
           updateItem={updateTempItem}
           name="topic"
+        ></SelectMany> : null}
+        {showUpdateMany2ManyTags ? <SelectMany
+          humanKey={item.title}
+          show={showUpdateMany2ManyTags}
+          setShow={setShowUpdateMany2ManyTags}
+          initialSelectedItems={item.tags}
+          endpoint="tags"
+          columns={["name"]}
+          updateKey={"tags"}
+          updateItem={updateTempItem}
+          name="tag"
         ></SelectMany> : null}
       </>
     );

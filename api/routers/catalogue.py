@@ -5,7 +5,7 @@ from sqlmodel import select
 
 from api.error import ConflictError, ErrorResponses, NotFound
 from api.models import SessionDep, audit
-from api.models.db import Catalogue, Topic
+from api.models.db import Catalogue, Tag, Topic
 from api.models.insert import Insert
 from api.models.response import Response
 from api.models.update import Update
@@ -24,12 +24,12 @@ router = AuthRouter()
     },
 )
 async def getCatalogues(
-    session: SessionDep, expandRelationships: bool = True
-) -> Union[Response.Catalogues, Response.CataloguesWithTopicsAndRequirements]:
+    session: SessionDep, expandTopics: bool = True
+) -> Union[Response.CatalogueWithTags, Response.CataloguesWithTopicsAndRequirements]:
     catalogues = session.exec(select(Catalogue)).unique().all()
 
-    if expandRelationships is False:
-        return Response.buildResponse(Response.Catalogues, catalogues)
+    if expandTopics is False:
+        return Response.buildResponse(Response.CatalogueWithTags, catalogues)
     else:
         return Response.buildResponse(Response.CataloguesWithTopicsAndRequirements, catalogues)
 
@@ -49,9 +49,9 @@ async def getCatalogue(
     roles: Annotated[dict, Depends(getRoles)],
     session: SessionDep,
     catalogueID: int,
-    expandRelationships: bool = True,
+    expandTopics: bool = True,
 ) -> Union[
-    Response.Catalogue,
+    Response.CatalogueWithTags,
     Response.CatalogueWithTopicsAndRequirements,
     Response.CatalogueWithTopicsAndRequirementsAndComments,
 ]:
@@ -59,8 +59,8 @@ async def getCatalogue(
 
     if not catalogue:
         raise NotFound(detail="Catalogue not found")
-    if expandRelationships is False:
-        return Response.Catalogue(status=200, data=catalogue)
+    if expandTopics is False:
+        return Response.CatalogueWithTags(status=200, data=catalogue)
     else:
         if "Comments.Reader" in roles:
             return Response.buildResponse(Response.CatalogueWithTopicsAndRequirementsAndComments, catalogue)
@@ -96,6 +96,13 @@ async def patchCatalogue(
             catalogueFromDB.topics.append(t)
         else:
             raise NotFound(detail=f"Child with ID {topic['id']} not found")
+    catalogueFromDB.tags = []
+    for tag in catalogueData["tags"]:
+        t = session.get(Tag, tag["id"])
+        if t:
+            catalogueFromDB.tags.append(t)
+        else:
+            raise NotFound(detail=f"Tag with ID {tag['id']} not found")
     session.add(catalogueFromDB)
     session.commit()
     session.refresh(catalogueFromDB)

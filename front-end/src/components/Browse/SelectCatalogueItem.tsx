@@ -1,4 +1,4 @@
-import { ListGroup, OverlayTrigger, Tooltip, TooltipProps } from 'react-bootstrap';
+import { Badge, ListGroup, OverlayTrigger, Stack, Tooltip, TooltipProps } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Item } from '../../types/API/Catalogues';
 import { RefAttributes } from 'react';
@@ -25,7 +25,14 @@ export default function SelectCatalogueItem({ catalogue }: Props) {
       placement="left"
       overlay={renderTooltip}
     >
-      <ListGroup.Item action as={Link} to={`${catalogue.id}`}>{catalogue.title}</ListGroup.Item>
+      <ListGroup.Item action as={Link} to={`${catalogue.id}`}>
+        <Stack direction="horizontal" gap={1}>
+          {catalogue.title}
+          {catalogue.tags.map((item) => (
+            <Badge key={`tag-${item.id}`} bg="secondary" className={"lowerButton"}>{item.name}</Badge>
+          ))}
+        </Stack>
+      </ListGroup.Item>
     </OverlayTrigger>
   );
 }

@@ -25,11 +25,11 @@ router = AuthRouter()
     },
 )
 async def getTopics(
-    session: SessionDep, expandRelationships: bool = False
+    session: SessionDep, expandTopics: bool = False
 ) -> Union[Response.Topics, Response.TopicsWithRequirements]:
     topics = session.exec(select(Topic)).unique().all()
 
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.Topics, topics)
     else:
         return Response.buildResponse(Response.TopicsWithRequirements, topics)
@@ -47,13 +47,13 @@ async def getTopics(
     },
 )
 async def getTopic(
-    session: SessionDep, topicID: int, expandRelationships: bool = False
+    session: SessionDep, topicID: int, expandTopics: bool = False
 ) -> Union[Response.Topic, Response.TopicWithRequirements]:
     topic = session.get(Topic, topicID)
 
     if not topic:
         raise NotFound(detail="Topic not found")
-    if expandRelationships is False:
+    if expandTopics is False:
         return Response.buildResponse(Response.Topic, topic)
     else:
         return Response.buildResponse(Response.TopicWithRequirements, topic)

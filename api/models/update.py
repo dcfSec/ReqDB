@@ -1,14 +1,8 @@
 from pydantic import ConfigDict
 from sqlmodel import SQLModel
 
-from api.models.base import RequirementBase, TopicBase
-
 
 class Update:
-    class Tag(SQLModel):
-        model_config = ConfigDict(from_attributes=True)
-        name: str | None = None
-        requirements: list[RequirementBase] | None = None
 
     class Configuration(SQLModel):
         key: str | None = None
@@ -17,11 +11,30 @@ class Update:
     class CatalogueTopic(SQLModel):
         id: int
 
+    class CatalogueTag(SQLModel):
+        id: int
+
+    class TagCatalogue(SQLModel):
+        id: int
+
+    class TagRequirement(SQLModel):
+        id: int
+
+    class RequirementTag(SQLModel):
+        id: int
+
+    class Tag(SQLModel):
+        model_config = ConfigDict(from_attributes=True)
+        name: str | None = None
+        requirements: list["Update.TagRequirement"] | None = None
+        catalogues: list["Update.TagCatalogue"] | None = None
+
     class Catalogue(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         title: str | None = None
         description: str | None = None
         topics: list["Update.CatalogueTopic"] | None = None
+        tags: list["Update.CatalogueTag"] | None = None
 
     class Comment(SQLModel):
         model_config = ConfigDict(from_attributes=True)
@@ -41,6 +54,7 @@ class Update:
         title: str | None = None
         description: str | None = None
         parentId: int | None = None
+        tags: list["Update.RequirementTag"] | None = None
 
     class ExtraType(SQLModel):
         model_config = ConfigDict(from_attributes=True)

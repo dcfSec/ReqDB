@@ -19,6 +19,7 @@ export function TagAddListRow({ newItem, updateNewItem }: Props) {
       <td></td>
       <td><Form.Control type="text" id="name" placeholder="New Tag name" value={newItem.name} onChange={e => { updateNewItem({ name: e.target.value }) }} /></td>
       <td></td>
+      <td></td>
     </>
   );
 }

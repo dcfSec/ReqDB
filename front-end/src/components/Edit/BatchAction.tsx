@@ -1,7 +1,7 @@
 import { ButtonGroup, DropdownButton } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DeleteConfirmationModal from '../DeleteConfirmationModal';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { showSpinner } from '../../stateSlices/MainLogoSpinnerSlice';
 import { APISuccessData } from '../../types/Generics';
@@ -10,6 +10,7 @@ import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, hand
 import { addIndexToRemoveList, removeItems } from '../../stateSlices/EditSlice';
 
 type Props = {
+  children?: ReactNode;
   needCascade: boolean;
   endpoint: string;
   humanKey: string;
@@ -19,7 +20,7 @@ type Props = {
  * 
  * @returns Returns a dropdown for batch action selection
  */
-export function BatchActionDropdown({ needCascade, endpoint, humanKey }: Props) {
+export function BatchActionDropdown({ children = null, needCascade, endpoint, humanKey }: Props) {
   const dispatch = useAppDispatch()
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -68,6 +69,7 @@ export function BatchActionDropdown({ needCascade, endpoint, humanKey }: Props) 
   return (<>
     <DropdownButton title="Batch Action" variant="success" id="batch-action-dropdown" as={ButtonGroup} >
       <Dropdown.Item onClick={() => setShowDeleteModal(true)}>Delete</Dropdown.Item>
+      {children}
     </DropdownButton>
     <DeleteConfirmationModal show={showDeleteModal} item="all selected items" onCancel={() => setShowDeleteModal(false)} onConfirm={() => deleteBatch()} onForceChange={e => setForce(e)} force={force} needCascade={needCascade} onCascadeChange={e => setCascade(e)} />
   </>
