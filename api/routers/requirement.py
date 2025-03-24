@@ -112,8 +112,17 @@ async def addRequirement(
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
 ) -> Response.Requirement:
+    tags = requirement.tags
+    requirement.tags = []
     requirementDB = Requirement.model_validate(requirement)
     checkParentTopicChildren(requirement.parentId, session, False)
+    requirementDB.tags = []
+    for tag in tags:
+        t = session.get(Tag, tag.id)
+        if t:
+            requirementDB.tags.append(t)
+        else:
+            raise NotFound(detail=f"Tag with ID {tag['id']} not found")
     session.add(requirementDB)
     session.commit()
     session.refresh(requirementDB)

@@ -35,6 +35,7 @@ class Insert:
         description: str
         parentId: int
         visible: bool = True
+        tags: list["Insert.RequirementTag"] = []
 
     class ExtraType(SQLModel):
         model_config = ConfigDict(from_attributes=True)
@@ -49,5 +50,9 @@ class Insert:
         requirementId: int | None = None
 
     class CatalogueTopic(SQLModel):
+        model_config = ConfigDict(from_attributes=True)
+        id: int
+
+    class RequirementTag(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         id: int
