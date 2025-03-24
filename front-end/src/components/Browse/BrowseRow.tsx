@@ -29,13 +29,9 @@ type Props = {
 export default memo(function BrowseRow({ index, row }: Props) {
 
   const dispatch = useAppDispatch()
-  const selected = useAppSelector(state => state.browse.rows.selected)
   const extraHeaders = useAppSelector(state => state.browse.extraHeaders)
   const roles = useAppSelector(state => state.user.roles)
 
-  const visible = useAppSelector(state => state.browse.rows.visible)[row.id]
-
-  //const [visible, setVisible] = useState(true)
   const [showComments, setShowComments] = useState(false)
 
   function showCommentsModal() {
@@ -69,10 +65,10 @@ export default memo(function BrowseRow({ index, row }: Props) {
     <td>{row.Title}</td>
     <td><Markdown>{row.Description}</Markdown></td>
     {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader] as string} lineBreak={true}/></td>))}
-    <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectRow(row.id)) }} checked={selected[row.id]} /></td>
+    <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectRow(index)) }} checked={row.selected} /></td>
     { roles.includes(appRoles.Comments.Reader) ? <CommentModal requirementIndex={index} title={row.Title} show={showComments} setShow={setShowComments}></CommentModal> : null }
   </tr>
 
-  return (visible ? renderRow : null )
+  return (row.visible ? renderRow : null )
 
 })

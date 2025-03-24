@@ -14,9 +14,7 @@ const initialState: BrowseState = {
   search: "",
   rows: {
     items: [],
-    visible: {},
-    selected: {},
-    allSelected: false,
+    selectedCount: 0,
   },
   selected: {},
   tags: {
@@ -43,77 +41,52 @@ export const browseSlice = createSlice({
     },
     setSearch: (state, action: PayloadAction<string>) => {
       state.search = action.payload
-      state.rows.items.forEach((row) => {
-        state.rows.visible[row.id] = isVisible(state, row)
+      state.rows.items.forEach((row, index) => {
+        state.rows.items[index].visible = isVisible(state, row)
       })
     },
     addRow: (state, action: PayloadAction<Row>) => {
+      action.payload.selected = false
+      action.payload.visible = true
       state.rows.items = [
         ...state.rows.items,
         action.payload
       ]
-      const newSelected: { [key: string]: boolean } = {}
-      newSelected[action.payload.id] = false
-      state.rows.selected = {
-        ...state.rows.selected,
-        ...newSelected
-      }
-      const newVisible: { [key: string]: boolean } = {}
-      newVisible[action.payload.id] = true
-      state.rows.visible = {
-        ...state.rows.visible,
-        ...newVisible
-      }
     },
-    addRows: (state, action: PayloadAction<{ requirements: Array<Row>, selected: { [key: string]: boolean }, visible: { [key: string]: boolean } }>) => {
+    addRows: (state, action: PayloadAction<Array<Row>>) => {
+      action.payload.forEach((item, index) => {
+        action.payload[index].selected = false
+        action.payload[index].visible = true
+      });
       state.rows.items = [
         ...state.rows.items,
-        ...action.payload.requirements
+        ...action.payload
       ]
-      state.rows.selected = {
-        ...state.rows.selected,
-        ...action.payload.selected
-      }
-      state.rows.visible = {
-        ...state.rows.visible,
-        ...action.payload.visible
-      }
-    },
-    setVisibleRow: (state, action: PayloadAction<{ id: number, visible: boolean }>) => {
-      const newVisible: { [key: string]: boolean } = {}
-      newVisible[action.payload.id] = action.payload.visible
-      state.rows.visible = {
-        ...state.rows.visible,
-        ...newVisible
-      }
     },
     toggleSelectRow: (state, action: PayloadAction<number>) => {
-      const newSelected: { [key: string]: boolean } = {}
-      newSelected[action.payload] = !state.rows.selected[action.payload]
-      state.rows.selected = {
-        ...state.rows.selected,
-        ...newSelected
-      }
-      if (Object.values(state.rows.selected).every(r => r === true)) {
-        state.rows.allSelected = true;
+      const tmp = [...state.rows.items]
+      tmp[action.payload].selected = !tmp[action.payload].selected
+      state.rows.items = [...tmp]
+      if (tmp[action.payload].selected) {
+        state.rows.selectedCount++
       } else {
-        state.rows.allSelected = false;
+        state.rows.selectedCount--
       }
     },
     toggleSelectAll: state => {
-      const newSelected = { ...state.rows.selected };
-      const selectState = !state.rows.allSelected;
-      Object.keys(newSelected).forEach((key) => {
-        if (state.rows.visible[key]) {
-          newSelected[key] = selectState;
-        }
+      const tmp = [...state.rows.items]
+      const action = !(state.rows.selectedCount == state.rows.items.length)
+
+      tmp.forEach((item, index) => {
+        tmp[index].selected = action
       });
-      state.rows.selected = { ...newSelected };
-      if (Object.values(state.rows.selected).every(r => r === true)) {
-        state.rows.allSelected = true;
+
+      if (action) {
+        state.rows.selectedCount = state.rows.items.length
       } else {
-        state.rows.allSelected = false;
+        state.rows.selectedCount = 0
       }
+      state.rows.items = [...tmp]
     },
     sortRows: state => {
       const tmp = [...state.rows.items]
@@ -151,8 +124,8 @@ export const browseSlice = createSlice({
         ]
       }
       state.tags.allSelected = JSON.stringify([...state.tags.filterSelected].sort()) === JSON.stringify([...state.tags.filterItems].sort());
-      state.rows.items.forEach((row) => {
-        state.rows.visible[row.id] = isVisible(state, row)
+      state.rows.items.forEach((row, index) => {
+        state.rows.items[index].visible = isVisible(state, row)
       });
     },
     toggleTagFilterSelectedAll: (state, action: PayloadAction<boolean>) => {
@@ -166,8 +139,8 @@ export const browseSlice = createSlice({
       }
       state.tags.allSelected = JSON.stringify([...state.tags.filterSelected].sort()) === JSON.stringify([...state.tags.filterItems].sort());
 
-      state.rows.items.forEach((row) => {
-        state.rows.visible[row.id] = isVisible(state, row)
+      state.rows.items.forEach((row, index) => {
+        state.rows.items[index].visible = isVisible(state, row)
       });
     },
     addExtraHeader: (state, action: PayloadAction<{ [key: string]: 1 | 2 | 3 }>) => {
@@ -207,18 +180,18 @@ export const browseSlice = createSlice({
         ...action.payload.filter(n => !state.topics.filterSelected.includes(n)),
       ]
 
-      state.rows.items.forEach((row) => {
-        state.rows.visible[row.id] = isVisible(state, row)
-      })
+      state.rows.items.forEach((row, index) => {
+        state.rows.items[index].visible = isVisible(state, row)
+      });
     },
     removeTopicFilterSelected: (state, action: PayloadAction<Array<string>>) => {
       state.topics.filterSelected = [
         ...state.topics.filterSelected.filter(n => !action.payload.includes(n))
       ]
 
-      state.rows.items.forEach((row) => {
-        state.rows.visible[row.id] = isVisible(state, row)
-      })
+      state.rows.items.forEach((row, index) => {
+        state.rows.items[index].visible = isVisible(state, row)
+      });
     },
     setComments: (state, action: PayloadAction<{ index: number, comments: Comment[] }>) => {
       const tmp = [
@@ -244,6 +217,6 @@ export const browseSlice = createSlice({
   },
 })
 
-export const { trace, reset, setData, setDescription, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, setVisibleRow, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, setComments, setTitle, setStatus } = browseSlice.actions
+export const { trace, reset, setData, setDescription, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, setComments, setTitle, setStatus } = browseSlice.actions
 
 export default browseSlice.reducer

@@ -18,7 +18,8 @@ type Props = {
 export default function RequirementsTable({ children }: Props) {
 
   const dispatch = useAppDispatch()
-  const allSelected = useAppSelector(state => state.browse.rows.allSelected)
+  const selectedCount = useAppSelector(state => state.browse.rows.selectedCount)
+  const items = useAppSelector(state => state.browse.rows.items)
   const extraHeaders = useAppSelector(state => state.browse.extraHeaders)
 
   const headers = [
@@ -35,7 +36,7 @@ export default function RequirementsTable({ children }: Props) {
         <thead>
           <tr>
             {["", ...headers, ...Object.keys(extraHeaders)].map((item, index) => (<th key={index}>{item}</th>))}
-            <th><Form.Check inline id="_all" type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectAll()) }} checked={allSelected} /></th>
+            <th><Form.Check inline id="_all" type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectAll()) }} checked={selectedCount == items.length} /></th>
           </tr>
         </thead>
         <tbody>

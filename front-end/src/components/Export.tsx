@@ -16,9 +16,8 @@ import { saveAs } from './MiniComponents';
  */
 export function ExportTable() {
 
-  const selected = useAppSelector(state => state.browse.rows.selected)
-  const visible = useAppSelector(state => state.browse.rows.visible)
-  const dataToExport = [...useAppSelector(state => state.browse.rows.items).filter(function (v) { return selected[v.id] === true; })]
+  const items = useAppSelector(state => state.browse.rows.items)
+  const dataToExport = [...useAppSelector(state => state.browse.rows.items).filter(function (v) { return v.selected === true; })]
 
   const headers = [
     "Tags",
@@ -81,7 +80,7 @@ export function ExportTable() {
         overlay={renderTooltip}
       >
         <Dropdown.Toggle variant="success" id="export-dropdown">
-          Export {dataToExport.length}/{Object.values(visible).reduce((a, item) => a + Number(item), 0)} rows
+          Export {dataToExport.length}/{items.length} rows
         </Dropdown.Toggle>
       </OverlayTrigger>
       <Dropdown.Menu>

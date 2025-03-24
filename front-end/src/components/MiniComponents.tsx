@@ -149,7 +149,7 @@ export function ErrorMessage(message: string | Array<string> | Record<string, Ar
  * @param {Object} topics Object containing the topics of the requirements
  * @param {Object} item A requirement
  */
-export async function buildRows(extraHeaders: object, tagFilterItems: Array<string>, topics: Array<Topic>, item: Topic, requirements: Array<Row> = [], selected: { [key: string]: boolean } = {}, visible: { [key: string]: boolean } = {}, root: boolean = true) {
+export async function buildRows(extraHeaders: object, tagFilterItems: Array<string>, topics: Array<Topic>, item: Topic, requirements: Array<Row> = [], root: boolean = true) {
   const dispatch = store.dispatch;
   const topicFilterItems = store.getState().browse.topics.filterItems;
 
@@ -167,6 +167,8 @@ export async function buildRows(extraHeaders: object, tagFilterItems: Array<stri
       });
       const base = {
         id: requirement.id,
+        visible: true,
+        selected: false,
         Tags: tags,
         Topics: [...topics],
         Key: requirement.key,
@@ -184,8 +186,6 @@ export async function buildRows(extraHeaders: object, tagFilterItems: Array<stri
         }
       });
       requirements.push({ ...base, ...extraColumns });
-      selected[requirement.id] = false;
-      visible[requirement.id] = true;
     }
   };
 
@@ -193,7 +193,7 @@ export async function buildRows(extraHeaders: object, tagFilterItems: Array<stri
     if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
       dispatch(addTopicFilterItems(`${topic.key} ${topic.title}`));
     }
-    await buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic, requirements, selected, visible, false);
+    await buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic, requirements, false);
   };
 
   const requirementPromises = item.requirements ? item.requirements.map(processRequirement) : [];
@@ -202,7 +202,7 @@ export async function buildRows(extraHeaders: object, tagFilterItems: Array<stri
   await Promise.all([...requirementPromises, ...topicPromises]);
 
   if (root) {
-    dispatch(addRows({ requirements, selected, visible }));
+    dispatch(addRows(requirements));
   }
 }
 
@@ -244,7 +244,7 @@ export function EditButtons({saveItem, edit, setEdit, resetTempItem, setShowDele
 
 
 export function isVisible(state: BrowseState, row: Row) {
-  return state.rows.visible[row.id] = inSearchField(state.search, Object.keys(row), row)
+  return inSearchField(state.search, Object.keys(row), row)
     && (/* tagFilterSelected.length === 0 || */ row.Tags.some(r => state.tags.filterSelected.indexOf(r) >= 0) || (row.Tags.length === 0 && state.tags.filterSelected.indexOf("No Tags") >= 0))
     && row.Topics.some(r => state.topics.filterSelected.indexOf(`${r.key} ${r.title}`) >= 0)
 }

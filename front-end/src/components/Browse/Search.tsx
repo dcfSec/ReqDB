@@ -1,7 +1,8 @@
 import { SearchField } from "../MiniComponents";
 import { setSearch } from '../../stateSlices/BrowseSlice';
 import { useEffect, useState } from "react";
-import { useAppDispatch } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { Form } from "react-bootstrap";
 
 
 /**
@@ -12,12 +13,20 @@ import { useAppDispatch } from "../../hooks";
 export default function Search() {
   const dispatch = useAppDispatch()
 
-  const [ query, setQuery ] = useState("")
+
+  const items = useAppSelector(state => state.browse.rows.items)
+  const selectedCount = [...useAppSelector(state => state.browse.rows.items).filter(function (v) { return v.visible === true; })].length
+
+  const [query, setQuery] = useState("")
 
   useEffect(() => {
     dispatch(setSearch(query))
   }, [query]);
 
-  return <SearchField title="Requirements" onSearch={setQuery} />
-
+  return (
+    <>
+      <SearchField title="Requirements" onSearch={setQuery} />
+      {selectedCount != items.length ? <Form.Text id="searchHelp" muted>{selectedCount}/{items.length} rows visible</Form.Text> : null}
+    </>
+  )
 }

@@ -8,6 +8,8 @@ import { Item as Comment } from "./API/Comments";
 
 export interface Row {
   id: number
+  selected: boolean;
+  visible: boolean;
   Key: string
   Tags: Array<string>; // @TODO: define more precise
   Topics: Array<Topic>; // @TODO: define more precise
@@ -25,9 +27,7 @@ export interface BrowseState {
   search: string;
   rows: {
     items: Array<Row>;
-    visible: { [key: string]: boolean };
-    selected: { [key: string]: boolean };
-    allSelected: boolean;
+    selectedCount: number;
   };
   selected: { [key: string]: boolean };
   tags: {
