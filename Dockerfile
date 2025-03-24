@@ -2,6 +2,7 @@ FROM node:22-alpine AS build
 
 WORKDIR /src
 COPY front-end ./
+RUN npm install
 RUN npm run build
 
 FROM python:3.13-alpine
