@@ -26,7 +26,7 @@ export default function Search() {
   return (
     <>
       <SearchField title="Requirements" onSearch={setQuery} />
-      {selectedCount != items.length ? <Form.Text id="searchHelp" muted>{selectedCount}/{items.length} rows visible</Form.Text> : null}
+      {selectedCount != items.length ? <Form.Text id="searchHelp" muted>{selectedCount}/{items.length} requirements visible</Form.Text> : null}
     </>
   )
 }
