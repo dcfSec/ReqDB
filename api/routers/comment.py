@@ -70,8 +70,7 @@ async def patchComment(
     commentFromDB = session.get(Comment, commentID)
     if not commentFromDB:
         raise NotFound(detail="Comment not found")
-    commentData = comment.model_dump(exclude_unset=True, mode="python")
-    commentFromDB.sqlmodel_update(commentData)
+    commentFromDB.sqlmodel_update(comment.model_dump(exclude_unset=True))
     session.add(commentFromDB)
     session.commit()
     session.refresh(commentFromDB)

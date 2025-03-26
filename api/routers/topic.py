@@ -80,9 +80,8 @@ async def patchTopic(
     topicFromDB = session.get(Topic, topicID)
     if not topicFromDB:
         raise NotFound(detail="Topic not found")
-    topicData = topic.model_dump(exclude_unset=True, mode="python")
     checkParentTopicChildren(topic.parentId, session, True)
-    topicFromDB.sqlmodel_update(topicData)
+    topicFromDB.sqlmodel_update(topic.model_dump(exclude_unset=True))
     session.add(topicFromDB)
     session.commit()
     session.refresh(topicFromDB)

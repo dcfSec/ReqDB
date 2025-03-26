@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { Button } from "react-bootstrap";
 import SelectParentModal from "../SelectParentModal";
 import { Item as Requirement } from "../../../types/API/Requirements";
+import SelectMany from "../SelectManyModal";
 
 type Props = {
   newItem: Requirement
@@ -17,6 +18,7 @@ type Props = {
  */
 export function RequirementAddListRow({ newItem, updateNewItem }: Props) {
 
+  const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
 
   return (
@@ -28,8 +30,22 @@ export function RequirementAddListRow({ newItem, updateNewItem }: Props) {
       <td><Button variant="primary" onClick={() => {
         setShowSelectParentModal(true)
       }}>{newItem.parent ? newItem.parent.key : "Parent"}</Button></td>
-      <td></td><td></td>
+            <td><Button variant="primary" onClick={() => {
+        setShowUpdateMany2Many(true)
+      }}>Set</Button></td>
+      <td></td>
       <td><Form.Check  type="switch" id="visible" defaultChecked={true} onChange={e => { updateNewItem({ visible: e.target.value }) }} /></td>
+      {showUpdateMany2Many ? <SelectMany
+        humanKey={newItem.key}
+        show={showUpdateMany2Many}
+        setShow={setShowUpdateMany2Many}
+        initialSelectedItems={newItem.tags}
+        endpoint="tags"
+        columns={["name"]}
+        updateKey={"tags"}
+        updateItem={updateNewItem}
+        name="tag"
+      ></SelectMany> : null}
       {showSelectParentModal ? <SelectParentModal
         itemId={newItem.id}
         humanKey={newItem.title}

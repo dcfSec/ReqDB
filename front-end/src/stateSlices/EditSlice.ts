@@ -87,7 +87,6 @@ export const editSlice = createSlice({
       const tmp = [...state.removeList]
       tmp.push(action.payload)
       state.removeList = [...tmp]
-      console.log(tmp)
     },
     removeItems: (state) => {
       const tmp = [...state.items]

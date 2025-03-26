@@ -6,12 +6,15 @@ class Insert:
     class Tag(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         name: str | None = None
+        catalogues: list["Insert.TagCatalogue"] = []
+        requirements: list["Insert.TagRequirement"] = []
 
     class Catalogue(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         title: str | None = None
         description: str | None = None
         topics: list["Insert.CatalogueTopic"] = []
+        tags: list["Insert.RequirementTag"] = []
 
     class Comment(SQLModel):
         model_config = ConfigDict(from_attributes=True)
@@ -54,5 +57,17 @@ class Insert:
         id: int
 
     class RequirementTag(SQLModel):
+        model_config = ConfigDict(from_attributes=True)
+        id: int
+
+    class CatalogueTag(SQLModel):
+        model_config = ConfigDict(from_attributes=True)
+        id: int
+
+    class TagCatalogue(SQLModel):
+        model_config = ConfigDict(from_attributes=True)
+        id: int
+
+    class TagRequirement(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         id: int

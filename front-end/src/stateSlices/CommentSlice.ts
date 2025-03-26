@@ -31,9 +31,7 @@ export const commentSlice = createSlice({
     },
     removeComment: (state, action: PayloadAction<{ index: number, force: boolean }>) => {
       const tmp = [...state.comments]
-      const id = state.comments[action.payload.index].id
       tmp.splice(action.payload.index, 1);
-      console.log(action.payload.force, id)
       if (action.payload.force) {
         const toDelete = getChildrenCommentIDs(state.comments[action.payload.index])
         let i = tmp.length

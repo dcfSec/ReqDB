@@ -87,22 +87,21 @@ async def patchCatalogue(
     catalogueFromDB = session.get(Catalogue, catalogueID)
     if not catalogueFromDB:
         raise NotFound(detail="Catalogue not found")
-    catalogueData = catalogue.model_dump(exclude_unset=True, mode="python")
-    catalogueFromDB.sqlmodel_update(catalogueData)
+    catalogueFromDB.sqlmodel_update(catalogue.model_dump(exclude_unset=True))
     catalogueFromDB.topics = []
-    for topic in catalogueData["topics"]:
-        t = session.get(Topic, topic["id"])
+    for topic in catalogue.topics:
+        t = session.get(Topic, topic.id)
         if t:
             catalogueFromDB.topics.append(t)
         else:
-            raise NotFound(detail=f"Child with ID {topic['id']} not found")
+            raise NotFound(detail=f"Child with ID {topic.id} not found")
     catalogueFromDB.tags = []
-    for tag in catalogueData["tags"]:
-        t = session.get(Tag, tag["id"])
+    for tag in catalogue.tags:
+        t = session.get(Tag, tag.id)
         if t:
             catalogueFromDB.tags.append(t)
         else:
-            raise NotFound(detail=f"Tag with ID {tag['id']} not found")
+            raise NotFound(detail=f"Tag with ID {tag.id} not found")
     session.add(catalogueFromDB)
     session.commit()
     session.refresh(catalogueFromDB)
@@ -128,6 +127,8 @@ async def addCatalogue(
 ) -> Response.Catalogue:
     topics = catalogue.topics
     catalogue.topics = []
+    tags = catalogue.tags
+    catalogue.tags = []
     catalogueDB = Catalogue.model_validate(catalogue)
     session.add(catalogueDB)
     for topic in topics:
@@ -135,7 +136,13 @@ async def addCatalogue(
         if t:
             catalogueDB.topics.append(t)
         else:
-            raise NotFound(detail=f"Child with ID {topic['id']} not found")
+            raise NotFound(detail=f"Child with ID {topic.id} not found")
+    for tag in tags:
+        t = session.get(Tag, tag.id)
+        if t:
+            catalogueDB.tags.append(t)
+        else:
+            raise NotFound(detail=f"Child with ID {tag.id} not found")
     session.commit()
     session.refresh(catalogueDB)
     audit(session, 0, catalogueDB, userId)

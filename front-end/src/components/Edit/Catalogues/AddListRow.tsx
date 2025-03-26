@@ -18,26 +18,42 @@ type Props = {
  */
 export function CatalogueAddListRow({ newItem, updateNewItem }: Props) {
 
-  const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
+  const [showUpdateMany2ManyElements, setShowUpdateMany2ManyElements] = useState(false);
+  const [showUpdateMany2ManyTags, setShowUpdateMany2ManyTags] = useState(false);
 
   return (
     <>
       <td></td>
       <td><Form.Control type="text" id="title" value={newItem.title} onChange={e => { updateNewItem({ title: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="description" value={newItem.description} onChange={e => { updateNewItem({ description: e.target.value }) }} /></td>
-      <td><Button variant="primary" onClick={() => { setShowUpdateMany2Many(true) }}>Set elements</Button></td>
-      <td></td>
-      {showUpdateMany2Many ? <SelectMany
-          humanKey={newItem.title}
-          show={showUpdateMany2Many}
-          setShow={setShowUpdateMany2Many}
-          initialSelectedItems={newItem.topics}
-          endpoint="topics"
-          columns={["key", "title"]}
-          updateKey={"topics"}
-          updateItem={updateNewItem}
-          name="topic"
-        ></SelectMany> : null}
+      <td><Button variant="primary" onClick={() => {
+        setShowUpdateMany2ManyElements(true)
+      }}>Set elements</Button></td>
+      <td><Button variant="primary" onClick={() => {
+        setShowUpdateMany2ManyTags(true)
+      }}>Set</Button></td>
+      {showUpdateMany2ManyElements ? <SelectMany
+        humanKey={newItem.title}
+        show={showUpdateMany2ManyElements}
+        setShow={setShowUpdateMany2ManyElements}
+        initialSelectedItems={newItem.topics}
+        endpoint="topics"
+        columns={["key", "title"]}
+        updateKey={"topics"}
+        updateItem={updateNewItem}
+        name="topic"
+      ></SelectMany> : null}
+      {showUpdateMany2ManyTags ? <SelectMany
+        humanKey={newItem.title}
+        show={showUpdateMany2ManyTags}
+        setShow={setShowUpdateMany2ManyTags}
+        initialSelectedItems={newItem.tags}
+        endpoint="tags"
+        columns={["name"]}
+        updateKey={"tags"}
+        updateItem={updateNewItem}
+        name="tag"
+      ></SelectMany> : null}
     </>
   );
 }

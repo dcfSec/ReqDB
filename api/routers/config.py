@@ -97,8 +97,7 @@ async def patchSystemConfig(
     configurationFromDB = session.get(Configuration, configID)
     if not configurationFromDB:
         raise NotFound(detail="Configuration item not found")
-    configurationData = configuration.model_dump(exclude_unset=True)
-    configurationFromDB.sqlmodel_update(configurationData)
+    configurationFromDB.sqlmodel_update(configuration.model_dump(exclude_unset=True))
     session.add(configurationFromDB)
     session.commit()
     session.refresh(configurationFromDB)
@@ -145,8 +144,7 @@ async def patchSystemConfig(
     configurationFromDB = session.get(User, userId)
     if not configurationFromDB:
         raise NotFound(detail="Configuration item not found")
-    configurationData = configuration.model_dump(exclude_unset=True)
-    configurationFromDB.sqlmodel_update(configurationData)
+    configurationFromDB.sqlmodel_update(configuration.model_dump(exclude_unset=True))
     session.add(configurationFromDB)
     session.commit()
     session.refresh(configurationFromDB)

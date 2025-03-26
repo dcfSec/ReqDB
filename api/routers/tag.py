@@ -78,22 +78,21 @@ async def patchTag(
     tagFromDB = session.get(Tag, tagID)
     if not tagFromDB:
         raise NotFound(detail="Tag not found")
-    tagData = tag.model_dump(exclude_unset=True, mode="python")
-    tagFromDB.sqlmodel_update(tagData)
+    tagFromDB.sqlmodel_update(tag.model_dump(exclude_unset=True))
     tagFromDB.requirements = []
-    for requirement in tagData["requirements"]:
-        t = session.get(Requirement, requirement["id"])
+    for requirement in tag.requirements:
+        t = session.get(Requirement, requirement.id)
         if t:
             tagFromDB.requirements.append(t)
         else:
-            raise NotFound(detail=f"Requirement with ID {requirement['id']} not found")
+            raise NotFound(detail=f"Requirement with ID {requirement.id} not found")
     tagFromDB.catalogues = []
-    for catalogue in tagData["catalogues"]:
-        t = session.get(Catalogue, catalogue["id"])
+    for catalogue in tag.catalogues:
+        t = session.get(Catalogue, catalogue.id)
         if t:
             tagFromDB.catalogues.append(t)
         else:
-            raise NotFound(detail=f"Catalogue with ID {catalogue['id']} not found")
+            raise NotFound(detail=f"Catalogue with ID {catalogue.id} not found")
     session.add(tagFromDB)
     session.commit()
     session.refresh(tagFromDB)
@@ -115,13 +114,29 @@ async def addTag(
     tag: Insert.Tag,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.Tag:
+) -> Response.TagWithRequirementsAndCatalogues:
+    catalogues = tag.catalogues
+    tag.catalogues = []
+    requirement = tag.requirements
+    tag.requirements = []
     tagDB = Tag.model_validate(tag)
     session.add(tagDB)
+    for requirement in tag.requirements:
+        t = session.get(Requirement, requirement.id)
+        if t:
+            tagDB.requirements.append(t)
+        else:
+            raise NotFound(detail=f"Requirement with ID {requirement.id} not found")
+    for catalogue in catalogues:
+        t = session.get(Catalogue, catalogue.id)
+        if t:
+            tagDB.catalogues.append(t)
+        else:
+            raise NotFound(detail=f"Catalogue with ID {catalogue.id} not found")
     session.commit()
     session.refresh(tagDB)
     audit(session, 0, tagDB, userId)
-    return Response.buildResponse(Response.Tag, tagDB, 201)
+    return Response.buildResponse(Response.TagWithRequirementsAndCatalogues, tagDB, 201)
 
 
 @router.delete(

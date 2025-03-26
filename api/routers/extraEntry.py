@@ -78,8 +78,7 @@ async def patchExtraEntry(
     extraTypeFromDB = session.get(ExtraEntry, extraTypeID)
     if not extraTypeFromDB:
         raise NotFound(detail="ExtraEntry not found")
-    extraTypeData = extraType.model_dump(exclude_unset=True, mode="python")
-    extraTypeFromDB.sqlmodel_update(extraTypeData)
+    extraTypeFromDB.sqlmodel_update(extraType.model_dump(exclude_unset=True))
     session.add(extraTypeFromDB)
     session.commit()
     session.refresh(extraTypeFromDB)

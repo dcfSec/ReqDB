@@ -80,16 +80,15 @@ async def patchRequirement(
     requirementFromDB = session.get(Requirement, requirementID)
     if not requirementFromDB:
         raise NotFound(detail="Requirement not found")
-    requirementData = requirement.model_dump(exclude_unset=True, mode="python")
     checkParentTopicChildren(requirement.parentId, session, False)
-    requirementFromDB.sqlmodel_update(requirementData)
+    requirementFromDB.sqlmodel_update(requirement.model_dump(exclude_unset=True))
     requirementFromDB.tags = []
-    for tag in requirementData["tags"]:
-        t = session.get(Tag, tag["id"])
+    for tag in requirement.tags:
+        t = session.get(Tag, tag.id)
         if t:
             requirementFromDB.tags.append(t)
         else:
-            raise NotFound(detail=f"Tag with ID {tag['id']} not found")
+            raise NotFound(detail=f"Tag with ID {tag.id} not found")
     session.add(requirementFromDB)
     session.commit()
     session.refresh(requirementFromDB)
@@ -122,7 +121,7 @@ async def addRequirement(
         if t:
             requirementDB.tags.append(t)
         else:
-            raise NotFound(detail=f"Tag with ID {tag['id']} not found")
+            raise NotFound(detail=f"Tag with ID {tag.id} not found")
     session.add(requirementDB)
     session.commit()
     session.refresh(requirementDB)

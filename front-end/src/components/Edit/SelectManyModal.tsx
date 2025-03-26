@@ -50,9 +50,6 @@ export default function SelectMany({ humanKey, show, setShow, initialSelectedIte
   const initialSelectedItemIds = initialSelectedItems.map((item) => (item.id))
   const [selectedItemIds, setSelectedItemIds] = useState(initialSelectedItemIds);
 
-
-  console.log(initialSelectedItemIds)
-
   function okCallback(response: APISuccessData) {
     dispatch(updateCache({ endpoint, response: response }))
   }

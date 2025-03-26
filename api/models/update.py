@@ -26,8 +26,8 @@ class Update:
     class Tag(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         name: str | None = None
-        requirements: list["Update.TagRequirement"] | None = None
-        catalogues: list["Update.TagCatalogue"] | None = None
+        requirements: list["Update.TagRequirement"] = []
+        catalogues: list["Update.TagCatalogue"] = []
 
     class Catalogue(SQLModel):
         model_config = ConfigDict(from_attributes=True)

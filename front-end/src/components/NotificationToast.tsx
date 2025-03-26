@@ -17,7 +17,7 @@ export default function NotificationToast() {
   const toasts = useAppSelector(state => state.notificationToast.toasts)
 
   useEffect(() => {
-    const timers = toasts.map((_, index) => setTimeout(() => {dispatch(removeToast(index))}, 3000));
+    const timers = toasts.map((_, index) => setTimeout(() => {dispatch(removeToast(index))}, 2500));
     return () => timers.forEach(timer => clearTimeout(timer));
   }, [toasts, dispatch]);
 
@@ -28,7 +28,7 @@ export default function NotificationToast() {
       style={{ zIndex: 9999, position: "fixed" }}
     >
       {toasts.map((toast, index) => (
-      <Toast key={`toast-${index}`}>
+      <Toast key={`toast-${index}`} onClose={() => {dispatch(removeToast(index))}}>
         <Toast.Header>
           <strong className="me-auto">{toast.header}</strong>
         </Toast.Header>

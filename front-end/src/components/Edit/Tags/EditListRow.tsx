@@ -22,8 +22,6 @@ export function TagEditListRow({ item, updateTempItem, edit }: Props) {
   const [showUpdateMany2ManyRequirements, setShowUpdateMany2ManyRequirements] = useState(false);
   const [showUpdateMany2ManyCatalogues, setShowUpdateMany2ManyCatalogues] = useState(false);
 
-  console.log(item.catalogues)
-
   return (
     <>
       <td>{item.id}</td>
