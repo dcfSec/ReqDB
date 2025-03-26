@@ -29,7 +29,6 @@ export interface BrowseState {
     items: Array<Row>;
     selectedCount: number;
   };
-  selected: { [key: string]: boolean };
   tags: {
     filterItems: Array<string>;
     filterSelected: Array<string>;

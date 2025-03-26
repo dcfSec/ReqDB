@@ -16,7 +16,6 @@ const initialState: BrowseState = {
     items: [],
     selectedCount: 0,
   },
-  selected: {},
   tags: {
     filterItems: [],
     filterSelected: [],
@@ -123,7 +122,7 @@ export const browseSlice = createSlice({
           action.payload
         ]
       }
-      state.tags.allSelected = JSON.stringify([...state.tags.filterSelected].sort()) === JSON.stringify([...state.tags.filterItems].sort());
+      state.tags.allSelected = state.tags.filterSelected.length == state.tags.filterItems.length
       state.rows.items.forEach((row, index) => {
         state.rows.items[index].visible = isVisible(state, row)
       });
@@ -137,8 +136,7 @@ export const browseSlice = createSlice({
         state.tags.filterSelected = [
         ]
       }
-      state.tags.allSelected = JSON.stringify([...state.tags.filterSelected].sort()) === JSON.stringify([...state.tags.filterItems].sort());
-
+      state.tags.allSelected = state.tags.filterSelected.length == state.tags.filterItems.length
       state.rows.items.forEach((row, index) => {
         state.rows.items[index].visible = isVisible(state, row)
       });
@@ -211,12 +209,9 @@ export const browseSlice = createSlice({
     setDescription: (state, action: PayloadAction<string>) => {
       state.description = action.payload
     },
-    trace: (state, action: PayloadAction<string>) => {
-      console.log(action.payload)
-    }
   },
 })
 
-export const { trace, reset, setData, setDescription, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, setComments, setTitle, setStatus } = browseSlice.actions
+export const { reset, setData, setDescription, addRow, addRows, sortRows, setTagFilterItems, toggleSelectRow, toggleSelectAll, toggleTagFilterSelected, toggleTagFilterSelectedAll, addExtraHeader, setSearch, addTopicFilterItems, sortTopicFilterItems, addTopicFilterSelected, removeTopicFilterSelected, setComments, setTitle, setStatus } = browseSlice.actions
 
 export default browseSlice.reducer

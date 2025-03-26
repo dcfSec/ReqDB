@@ -50,7 +50,7 @@ export const auditSlice = createSlice({
           action.payload
         ]
       }
-      state.action.allSelected = JSON.stringify([...state.action.filterSelected].sort()) === JSON.stringify([...state.action.filterItems].sort());
+      state.action.allSelected = state.action.filterSelected.length == state.action.filterItems.length
     },
     toggleActionFilterSelectedAll: (state, action: PayloadAction<boolean>) => {
       if (action.payload === true) {
@@ -61,7 +61,7 @@ export const auditSlice = createSlice({
         state.action.filterSelected = [
         ]
       }
-      state.action.allSelected = JSON.stringify([...state.action.filterSelected].sort()) === JSON.stringify([...state.action.filterItems].sort());
+      state.action.allSelected = state.action.filterSelected.length == state.action.filterItems.length
     },
   },
 })
