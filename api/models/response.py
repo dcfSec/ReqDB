@@ -3,26 +3,18 @@ from typing import Union
 from fastapi import Response as FastAPIResponse
 from pydantic import BaseModel
 
-from api.models.public import Audit, Catalogue, CatalogueWithTopics
 from api.models.public import (
-    CatalogueWithTopicsAndRequirements as CatalogueWithTopicsAndRequirementsModel,
-)
-from api.models.public import (
-    CatalogueWithTopicsAndRequirementsAndComments as CatalogueWithTopicsAndRequirementsAndCommentsModel,
-)
-from api.models.public import (
-    CommentWithRequirement,
+    Audit,
+    Catalogue,
+    Comment,
     Configuration,
-    ExtraEntryWithExtraTypeAndRequirement,
+    ExtraEntry,
     ExtraType,
-    RequirementWithExtrasAndTagsAndComments,
-    Tag,
-    TagWithRequirementsAndCatalogues,
-    TopicWithParent,
-    TopicWithRequirements,
+    Requirement,
     StaticConfiguration,
+    Tag,
+    Topic,
     User,
-    CatalogueWithTags,
 )
 
 
@@ -37,67 +29,73 @@ class Response:
         data: StaticConfiguration
 
     class TagWithRequirementsAndCatalogues(ResponseBase):
-        data: TagWithRequirementsAndCatalogues
+        data: Tag.WithRequirementsAndCatalogues
 
     class TagsWithRequirements(ResponseBase):
-        data:  list[TagWithRequirementsAndCatalogues]
+        data:  list[Tag.WithRequirementsAndCatalogues]
 
     class Tag(ResponseBase):
-        data: Tag
+        data: Tag.Base
 
     class Tags(ResponseBase):
-        data: list[Tag]
+        data: list[Tag.Base]
 
     class CatalogueWithTopics(ResponseBase):
-        data:CatalogueWithTopics
+        data: Catalogue.WithTopics
 
     class CatalogueWithTopicsAndRequirements(ResponseBase):
-        data: CatalogueWithTopicsAndRequirementsModel
+        data: Catalogue.WithTagsAndTopicsAndRequirements
 
     class CatalogueWithTopicsAndRequirementsAndComments(ResponseBase):
-        data: CatalogueWithTopicsAndRequirementsAndCommentsModel
+        data: Catalogue.WithTagsAndTopicsAndRequirementsAndComments
 
     class Catalogue(ResponseBase):
-        data: Catalogue
+        data: Catalogue.Base
 
     class CatalogueWithTags(ResponseBase):
-        data: list[CatalogueWithTags]
+        data: list[Catalogue.WithTags]
 
     class CataloguesWithTopics(ResponseBase):
-        data: list[CatalogueWithTopics]
+        data: list[Catalogue.WithTopics]
 
     class CataloguesWithTopicsAndRequirements(ResponseBase):
-        data: list[CatalogueWithTopicsAndRequirementsModel]
+        data: list[Catalogue.WithTagsAndTopicsAndRequirements]
 
     class CataloguesWithTopicsAndRequirementsAndComments(ResponseBase):
-        data: list[CatalogueWithTopicsAndRequirementsAndCommentsModel]
+        data: list[Catalogue.WithTagsAndTopicsAndRequirementsAndComments]
 
     class Catalogues(ResponseBase):
-        data: list[Catalogue]
+        data: list[Catalogue.Base]
 
     class Comment(ResponseBase):
-        data:CommentWithRequirement
+        data: Comment.WithRequirement
     
     class Comments(ResponseBase):
-        data: list[CommentWithRequirement]
+        data: list[Comment.WithRequirement]
 
     class Topic(ResponseBase):
-        data: TopicWithParent
+        data: Topic.WithParent
 
     class TopicWithRequirements(ResponseBase):
-        data: TopicWithRequirements
+        data: Topic.WithChildrenAndRequirements
 
     class Topics(ResponseBase):
-        data: list[TopicWithParent]
+        data: list[Topic.WithParent]
 
     class TopicsWithRequirements(ResponseBase):
-        data: list[TopicWithRequirements]
+        data: list[Topic.WithChildrenAndRequirements]
 
     class Requirement(ResponseBase):
-        data: RequirementWithExtrasAndTagsAndComments
+        data: Requirement.WithExtrasAndTagsAndParent
+
+    class RequirementWithComments(ResponseBase):
+        data: Requirement.WithExtrasAndTagsAndCommentsAndParent
 
     class Requirements(ResponseBase):
-        data: list[RequirementWithExtrasAndTagsAndComments]
+        data: list[Requirement.WithExtrasAndTagsAndParent]
+
+    class RequirementsWithComments(ResponseBase):
+        data: list[Requirement.WithExtrasAndTagsAndCommentsAndParent]
 
     class ExtraType(ResponseBase):
         data: ExtraType
@@ -106,10 +104,10 @@ class Response:
         data: list[ExtraType]
 
     class ExtraEntry(ResponseBase):
-        data: ExtraEntryWithExtraTypeAndRequirement
+        data: ExtraEntry.WithExtraTypeAndRequirement
 
     class ExtraEntries(ResponseBase):
-        data: list[ExtraEntryWithExtraTypeAndRequirement]
+        data: list[ExtraEntry.WithExtraTypeAndRequirement]
  
     class Audit(ResponseBase):
         data: list[Audit]
