@@ -84,9 +84,9 @@ export function ExportTable() {
         </Dropdown.Toggle>
       </OverlayTrigger>
       <Dropdown.Menu>
-        <Dropdown.Item onClick={exportExcel}>As Excel</Dropdown.Item>
-        <Dropdown.Item onClick={exportJson}>As JSON</Dropdown.Item>
-        <Dropdown.Item onClick={exportYaml}>As Yaml</Dropdown.Item>
+        <Dropdown.Item onClick={exportExcel} disabled={dataToExport.length === 0}>As Excel</Dropdown.Item>
+        <Dropdown.Item onClick={exportJson} disabled={dataToExport.length === 0}>As JSON</Dropdown.Item>
+        <Dropdown.Item onClick={exportYaml} disabled={dataToExport.length === 0}>As Yaml</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );
