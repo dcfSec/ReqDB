@@ -10,7 +10,7 @@ from api.models.db import Requirement, Tag
 from api.models.insert import Insert
 from api.models.response import Response
 from api.models.update import Update
-from api.routers import AuthRouter, getUserId
+from api.routers import AuthRouter, getRoles, getUserId
 
 router = AuthRouter()
 
@@ -25,12 +25,13 @@ router = AuthRouter()
     },
 )
 async def getRequirements(
-    session: SessionDep, expandTopics: bool = False
-) -> Response.Requirements:
+    roles: Annotated[dict, Depends(getRoles)],
+    session: SessionDep
+) -> Union[Response.Requirements,Response.RequirementsWithComments]:
     requirements = session.exec(select(Requirement)).unique().all()
 
-    if expandTopics is False:
-        return Response.buildResponse(Response.Requirements, requirements)
+    if "Comments.Reader" in roles:
+        return Response.buildResponse(Response.RequirementsWithComments, requirements)
     else:
         return Response.buildResponse(Response.Requirements, requirements)
 
@@ -47,14 +48,16 @@ async def getRequirements(
     },
 )
 async def getRequirement(
-    session: SessionDep, requirementID: int, expandTopics: bool = True
-) -> Union[Response.Requirement, Response.Requirement]:
+    roles: Annotated[dict, Depends(getRoles)],
+    session: SessionDep, requirementID: int
+) -> Union[Response.Requirement, Response.RequirementWithComments]:
     requirement = session.get(Requirement, requirementID)
 
     if not requirement:
         raise NotFound(detail="Requirement not found")
-    if expandTopics is False:
-        return Response.buildResponse(Response.Requirement, requirement)
+
+    if "Comments.Reader" in roles:
+        return Response.buildResponse(Response.RequirementWithComments, requirement)
     else:
         return Response.buildResponse(Response.Requirement, requirement)
 
