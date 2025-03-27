@@ -71,6 +71,13 @@ export function SearchField({title, onSearch}: SearchFieldProps): JSX.Element {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function resolvePath(object: Record<string, any>, path: string): any {
+  return path
+    .split('.')
+    .reduce((o, p) => o ? o[p] : undefined, object);
+}
+
 
 /**
  * Searches in an item for the search string
@@ -84,11 +91,6 @@ export function inSearchField(search: string, fields: Array<string>, item: objec
   if (search === "") {
     return true
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const resolvePath = (object: Record<string, any>, path: string): any => path
-  .split('.')
-  .reduce((o, p) => o ? o[p] : undefined, object);
 
   let r = false
   fields.forEach(field => {
@@ -149,11 +151,11 @@ export function ErrorMessage(message: string | Array<string> | Record<string, Ar
  * @param {Object} topics Object containing the topics of the requirements
  * @param {Object} item A requirement
  */
-export async function buildRows(extraHeaders: object, tagFilterItems: Array<string>, topics: Array<Topic>, item: Topic, requirements: Array<Row> = [], root: boolean = true) {
+export async function buildRows(extraHeaders: object, tagFilterItems: Array<string>, topics: Array<Topic>, item: Topic, requirements: Array<Row> = [], root: boolean = true, basePath: string = "topics") {
   const dispatch = store.dispatch;
   const topicFilterItems = store.getState().browse.topics.filterItems;
 
-  const processRequirement = (requirement: Requirement) => {
+  const processRequirement = (requirement: Requirement, index: number) => {
     const tags: Array<string> = [];
     if (requirement.visible) {
       if (requirement.tags.length === 0 && !tagFilterItems.includes("No Tags")) {
@@ -169,6 +171,7 @@ export async function buildRows(extraHeaders: object, tagFilterItems: Array<stri
         id: requirement.id,
         visible: true,
         selected: false,
+        path: `${basePath}.requirements.${index}`,
         Tags: tags,
         Topics: [...topics],
         Key: requirement.key,
@@ -189,11 +192,11 @@ export async function buildRows(extraHeaders: object, tagFilterItems: Array<stri
     }
   };
 
-  const processTopic = async (topic: Topic) => {
+  const processTopic = async (topic: Topic, index: number) => {
     if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
       dispatch(addTopicFilterItems(`${topic.key} ${topic.title}`));
     }
-    await buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic, requirements, false);
+    await buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic, requirements, false, `${basePath}.${index}`);
   };
 
   const requirementPromises = item.requirements ? item.requirements.map(processRequirement) : [];

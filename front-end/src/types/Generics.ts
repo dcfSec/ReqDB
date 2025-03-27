@@ -10,6 +10,7 @@ export interface Row {
   id: number
   selected: boolean;
   visible: boolean;
+  path: string;
   Key: string
   Tags: Array<string>; // @TODO: define more precise
   Topics: Array<Topic>; // @TODO: define more precise
