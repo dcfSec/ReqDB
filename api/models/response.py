@@ -27,7 +27,6 @@ class Pagination(BaseModel):
 
 class ResponseBase(BaseModel):
     status: int = 200
-    _page: Optional[Pagination]
 
 
 class Response:
@@ -39,12 +38,14 @@ class Response:
 
         class List(ResponseBase):
             data: list[Tag.Base]
+            # page: Pagination
 
         class OneWithRequirementsAndCatalogues(ResponseBase):
             data: Tag.WithRequirementsAndCatalogues
 
         class ListWithRequirements(ResponseBase):
             data: list[Tag.WithRequirementsAndCatalogues]
+            # page: Pagination
 
     class Configuration:
 
@@ -54,6 +55,7 @@ class Response:
 
             class List(ResponseBase):
                 data: list[Configuration]
+                # page: Pagination
 
         class Static(ResponseBase):
             data: StaticConfiguration
@@ -65,15 +67,18 @@ class Response:
 
         class List(ResponseBase):
             data: list[Catalogue.Base]
+            # page: Pagination
 
         class OneWithTags(ResponseBase):
             data: Catalogue.WithTags
 
         class ListWithTags(ResponseBase):
             data: list[Catalogue.WithTags]
+            # page: Pagination
 
         class ListWithTopics(ResponseBase):
             data: list[Catalogue.WithTopics]
+            # page: Pagination
 
         class OneWithTopics(ResponseBase):
             data: Catalogue.WithTopics
@@ -86,9 +91,11 @@ class Response:
 
         class ListWithTopicsAndRequirements(ResponseBase):
             data: list[Catalogue.WithTagsAndTopicsAndRequirements]
+            # page: Pagination
 
         class ListWithTopicsAndRequirementsAndComments(ResponseBase):
             data: list[Catalogue.WithTagsAndTopicsAndRequirementsAndComments]
+            # page: Pagination
 
     class Comment:
 
@@ -97,6 +104,7 @@ class Response:
 
         class List(ResponseBase):
             data: list[Comment.WithRequirement]
+            # page: Pagination
 
     class Topic:
 
@@ -105,12 +113,14 @@ class Response:
 
         class List(ResponseBase):
             data: list[Topic.WithParent]
+            # page: Pagination
 
         class OneWithRequirements(ResponseBase):
             data: Topic.WithChildrenAndRequirements
 
         class ListWithRequirements(ResponseBase):
             data: list[Topic.WithChildrenAndRequirements]
+            # page: Pagination
 
     class Requirement:
 
@@ -119,12 +129,14 @@ class Response:
 
         class List(ResponseBase):
             data: list[Requirement.WithExtrasAndTagsAndParent]
+            # page: Pagination
 
         class OneWithComments(ResponseBase):
             data: Requirement.WithExtrasAndTagsAndCommentsAndParent
 
         class ListWithComments(ResponseBase):
             data: list[Requirement.WithExtrasAndTagsAndCommentsAndParent]
+            # page: Pagination
 
     class ExtraType:
 
@@ -133,6 +145,7 @@ class Response:
 
         class List(ResponseBase):
             data: list[ExtraType]
+            # page: Pagination
 
     class ExtraEntry:
 
@@ -141,6 +154,7 @@ class Response:
 
         class List(ResponseBase):
             data: list[ExtraEntry.WithExtraTypeAndRequirement]
+            # page: Pagination
 
     class Audit(ResponseBase):
         data: list[Audit]
