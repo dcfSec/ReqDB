@@ -17,7 +17,7 @@ type APIPathProps = {
  */
 export default function APIPath({ index, pathName, pathProperties }: APIPathProps) {
 
-  return <>{Object.keys(pathProperties).map((key, requestIndex) => { return <APIRequest key={`${index}-${requestIndex}`} index={`${index}-${requestIndex}`} method={key} path={pathName} operation={pathProperties[key as OpenAPIV3_1.HttpMethods] as OpenAPIV3_1.OperationObject} /> })}</>
+  return <>{Object.keys(pathProperties).map((key, requestIndex) => { return <APIRequest key={`path-${index}-${requestIndex}`} index={`path-${index}-${requestIndex}`} method={key} path={pathName} operation={pathProperties[key as OpenAPIV3_1.HttpMethods] as OpenAPIV3_1.OperationObject} /> })}</>
 
 }
 

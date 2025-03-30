@@ -1,4 +1,4 @@
-import { Accordion, Alert, Button, Col, Row } from "react-bootstrap";
+import { Accordion, Alert, Button, Col, Row, Tab, Tabs } from "react-bootstrap";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import { OpenAPI, OpenAPIV3_1 } from "openapi-types";
 import APIPath from "../components/APIDoc/Path";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { setSpec } from "../stateSlices/APIDocSlice";
+import APISchema from "../components/APIDoc/Schema";
 
 
 /**
@@ -92,11 +93,22 @@ export default function APIDoc() {
         <Col><Button onClick={exportJson}>Export openAPI.json</Button></Col>
       </Row>
       <Row>
-        <Accordion defaultActiveKey="0" flush>
-          {apiSpec.paths && Object.keys(apiSpec.paths).map((key, index) => { 
-            return apiSpec.paths && apiSpec.servers ? <APIPath key={index} index={index} pathName={`${apiSpec.servers[0].url}${key}`} pathProperties={apiSpec.paths[key] as OpenAPIV3_1.PathItemObject} /> : null 
-          })}
-        </Accordion>
+        <Tabs defaultActiveKey="endpoints" id="API-Tabs">
+          <Tab eventKey="endpoints" title="Endpoints">
+            <Accordion defaultActiveKey="0" flush>
+              {apiSpec.paths && Object.keys(apiSpec.paths).map((key, index) => { 
+                return apiSpec.paths && apiSpec.servers ? <APIPath key={index} index={index} pathName={`${apiSpec.servers[0].url}${key}`} pathProperties={apiSpec.paths[key] as OpenAPIV3_1.PathItemObject} /> : null 
+              })}
+            </Accordion>
+          </Tab>
+          <Tab eventKey="schemas" title="Schemas">
+          <Accordion defaultActiveKey="0" flush>
+              {apiSpec.components?.schemas && Object.keys(apiSpec.components?.schemas).map((key, index) => { 
+                return apiSpec.components?.schemas ? <APISchema key={`schema-${index}`} index={`schema-${index}`} name={key} object={apiSpec.components?.schemas[key] as OpenAPIV3_1.PathItemObject} /> : null
+              })}
+            </Accordion>
+          </Tab>
+        </Tabs>
       </Row>
     </>
   }
