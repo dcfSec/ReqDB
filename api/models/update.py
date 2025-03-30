@@ -8,33 +8,30 @@ class Update:
         key: str | None = None
         value: str | None = None
 
-    class CatalogueTopic(SQLModel):
+    class TopicIdOnly(SQLModel):
         id: int
 
-    class CatalogueTag(SQLModel):
+    class TagIdOnly(SQLModel):
         id: int
 
-    class TagCatalogue(SQLModel):
+    class CatalogueIdOnly(SQLModel):
         id: int
 
-    class TagRequirement(SQLModel):
-        id: int
-
-    class RequirementTag(SQLModel):
+    class RequirementIdOnly(SQLModel):
         id: int
 
     class Tag(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         name: str | None = None
-        requirements: list["Update.TagRequirement"] = []
-        catalogues: list["Update.TagCatalogue"] = []
+        requirements: list["Update.RequirementIdOnly"] = []
+        catalogues: list["Update.CatalogueIdOnly"] = []
 
     class Catalogue(SQLModel):
         model_config = ConfigDict(from_attributes=True)
         title: str | None = None
         description: str | None = None
-        topics: list["Update.CatalogueTopic"] | None = None
-        tags: list["Update.CatalogueTag"] | None = None
+        topics: list["Update.TopicIdOnly"] | None = None
+        tags: list["Update.TagIdOnly"] | None = None
 
     class Comment(SQLModel):
         model_config = ConfigDict(from_attributes=True)
@@ -54,7 +51,7 @@ class Update:
         title: str | None = None
         description: str | None = None
         parentId: int | None = None
-        tags: list["Update.RequirementTag"] | None = None
+        tags: list["Update.TagIdOnly"] | None = None
 
     class ExtraType(SQLModel):
         model_config = ConfigDict(from_attributes=True)
