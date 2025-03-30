@@ -17,10 +17,10 @@ type APISchemaProps = {
 export default function APISchema({ index, name, object }: APISchemaProps) {
   const markdownCode = "```"
 
-  return <Accordion.Item eventKey={index}>
-    <Accordion.Header>{name}</Accordion.Header>
+  return name.startsWith("api__models") ? <Accordion.Item eventKey={index}>
+    <Accordion.Header>{name.replace("api__models__update__", "#/update/").replace("api__models__response__", "#/response/").replace("api__models__insert__", "#/insert/").replace("api__models__public__", "#/public/").replace("api__models__base__", "#/base/").replace("api__models__db__", "#/db/").replaceAll("__", ".")}</Accordion.Header>
     <Accordion.Body>
       <Markdown>{`${markdownCode}json\n${JSON.stringify(object, null, 3)}\n${markdownCode}`}</Markdown>
     </Accordion.Body>
-  </Accordion.Item>
+  </Accordion.Item> : null
 }
