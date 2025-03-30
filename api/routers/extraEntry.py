@@ -25,13 +25,13 @@ router = AuthRouter()
 )
 async def getExtraEntries(
     session: SessionDep, expandTopics: bool = True
-) -> Response.ExtraEntries:
+) -> Response.ExtraEntry.List:
     extraEntries = session.exec(select(ExtraEntry)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraEntries, extraEntries)
+        return Response.buildResponse(Response.ExtraEntry.List, extraEntries)
     else:
-        return Response.buildResponse(Response.ExtraEntries, extraEntries)
+        return Response.buildResponse(Response.ExtraEntry.List, extraEntries)
 
 
 @router.get(
@@ -47,15 +47,15 @@ async def getExtraEntries(
 )
 async def getExtraEntry(
     session: SessionDep, extraTypeID: int, expandTopics: bool = True
-) -> Union[Response.ExtraEntry, Response.ExtraEntry]:
+) -> Union[Response.ExtraEntry.One, Response.ExtraEntry.One]:
     extraType = session.get(ExtraEntry, extraTypeID)
 
     if not extraType:
         raise NotFound(detail="ExtraEntry not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraEntry, extraType)
+        return Response.buildResponse(Response.ExtraEntry.One, extraType)
     else:
-        return Response.buildResponse(Response.ExtraEntry, extraType)
+        return Response.buildResponse(Response.ExtraEntry.One, extraType)
 
 
 @router.patch(
@@ -74,7 +74,7 @@ async def patchExtraEntry(
     extraTypeID: int,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.ExtraEntry:
+) -> Response.ExtraEntry.One:
     extraTypeFromDB = session.get(ExtraEntry, extraTypeID)
     if not extraTypeFromDB:
         raise NotFound(detail="ExtraEntry not found")
@@ -83,7 +83,7 @@ async def patchExtraEntry(
     session.commit()
     session.refresh(extraTypeFromDB)
     audit(session, 1, extraTypeFromDB, userId)
-    return Response.buildResponse(Response.ExtraEntry, extraTypeFromDB)
+    return Response.buildResponse(Response.ExtraEntry.One, extraTypeFromDB)
 
 
 @router.post(
@@ -100,13 +100,13 @@ async def addExtraEntry(
     extraType: Insert.ExtraEntry,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.ExtraEntry:
+) -> Response.ExtraEntry.One:
     extraTypeDB = ExtraEntry.model_validate(extraType)
     session.add(extraTypeDB)
     session.commit()
     session.refresh(extraTypeDB)
     audit(session, 0, extraTypeDB, userId)
-    return Response.buildResponse(Response.ExtraEntry, extraTypeDB, 201)
+    return Response.buildResponse(Response.ExtraEntry.One, extraTypeDB, 201)
 
 
 @router.delete(

@@ -27,13 +27,13 @@ router = AuthRouter()
 async def getRequirements(
     roles: Annotated[dict, Depends(getRoles)],
     session: SessionDep
-) -> Union[Response.Requirements,Response.RequirementsWithComments]:
+) -> Union[Response.Requirement.List,Response.Requirement.ListWithComments]:
     requirements = session.exec(select(Requirement)).unique().all()
 
     if "Comments.Reader" in roles:
-        return Response.buildResponse(Response.RequirementsWithComments, requirements)
+        return Response.buildResponse(Response.Requirement.ListWithComments, requirements)
     else:
-        return Response.buildResponse(Response.Requirements, requirements)
+        return Response.buildResponse(Response.Requirement.List, requirements)
 
 
 @router.get(
@@ -50,16 +50,16 @@ async def getRequirements(
 async def getRequirement(
     roles: Annotated[dict, Depends(getRoles)],
     session: SessionDep, requirementID: int
-) -> Union[Response.Requirement, Response.RequirementWithComments]:
+) -> Union[Response.Requirement.One, Response.Requirement.OneWithComments]:
     requirement = session.get(Requirement, requirementID)
 
     if not requirement:
         raise NotFound(detail="Requirement not found")
 
     if "Comments.Reader" in roles:
-        return Response.buildResponse(Response.RequirementWithComments, requirement)
+        return Response.buildResponse(Response.Requirement.OneWithComments, requirement)
     else:
-        return Response.buildResponse(Response.Requirement, requirement)
+        return Response.buildResponse(Response.Requirement.One, requirement)
 
 
 @router.patch(
@@ -79,7 +79,7 @@ async def patchRequirement(
     requirementID: int,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.Requirement:
+) -> Response.Requirement.One:
     requirementFromDB = session.get(Requirement, requirementID)
     if not requirementFromDB:
         raise NotFound(detail="Requirement not found")
@@ -96,7 +96,7 @@ async def patchRequirement(
     session.commit()
     session.refresh(requirementFromDB)
     audit(session, 1, requirementFromDB, userId)
-    return Response.buildResponse(Response.Requirement, requirementFromDB)
+    return Response.buildResponse(Response.Requirement.One, requirementFromDB)
 
 
 @router.post(
@@ -113,7 +113,7 @@ async def addRequirement(
     requirement: Insert.Requirement,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.Requirement:
+) -> Response.Requirement.One:
     tags = requirement.tags
     requirement.tags = []
     requirementDB = Requirement.model_validate(requirement)
@@ -129,7 +129,7 @@ async def addRequirement(
     session.commit()
     session.refresh(requirementDB)
     audit(session, 0, requirementDB, userId)
-    return Response.buildResponse(Response.Requirement, requirementDB, 201)
+    return Response.buildResponse(Response.Requirement.One, requirementDB, 201)
 
 
 @router.delete(

@@ -24,10 +24,10 @@ router = AuthRouter()
         200: {"description": "All comments"},
     },
 )
-async def getComments(session: SessionDep) -> Response.Comments:
+async def getComments(session: SessionDep) -> Response.Comment.List:
     comments = session.exec(select(Comment)).unique().all()
 
-    return Response.buildResponse(Response.Comments, comments)
+    return Response.buildResponse(Response.Comment.List, comments)
 
 
 @router.get(
@@ -41,13 +41,13 @@ async def getComments(session: SessionDep) -> Response.Comments:
         200: {"description": "the selected comment"},
     },
 )
-async def getComment(session: SessionDep, commentID: int) -> Response.Comment:
+async def getComment(session: SessionDep, commentID: int) -> Response.Comment.One:
     comment = session.get(Comment, commentID)
 
     if not comment:
         raise NotFound(detail="Comment not found")
 
-    return Response.buildResponse(Response.Comment, comment)
+    return Response.buildResponse(Response.Comment.One, comment)
 
 
 @router.patch(
@@ -66,7 +66,7 @@ async def patchComment(
     commentID: int,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.Comment:
+) -> Response.Comment.One:
     commentFromDB = session.get(Comment, commentID)
     if not commentFromDB:
         raise NotFound(detail="Comment not found")
@@ -75,7 +75,7 @@ async def patchComment(
     session.commit()
     session.refresh(commentFromDB)
     audit(session, 1, commentFromDB, userId)
-    return Response.buildResponse(Response.Comment, commentFromDB)
+    return Response.buildResponse(Response.Comment.One, commentFromDB)
 
 
 @router.post(
@@ -93,7 +93,7 @@ async def addComment(
     comment: Insert.Comment,
     session: SessionDep,
     backgroundTasks: BackgroundTasks
-) -> Response.Comment:
+) -> Response.Comment.One:
     comment.authorId = userId
     commentDB = Comment.model_validate(comment)
     session.add(commentDB)
@@ -102,7 +102,7 @@ async def addComment(
     audit(session, 0, commentDB, userId)
     #sendNotificationMailForNewComment(session, commentDB.id)
     backgroundTasks.add_task(sendNotificationMailForNewComment, session, commentDB.id)
-    return Response.buildResponse(Response.Comment, commentDB, 201)
+    return Response.buildResponse(Response.Comment.One, commentDB, 201)
 
 
 @router.delete(

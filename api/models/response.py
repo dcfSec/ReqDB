@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from fastapi import Response as FastAPIResponse
 from pydantic import BaseModel
@@ -18,110 +18,143 @@ from api.models.public import (
 )
 
 
+class Pagination(BaseModel):
+    offset: int
+    limit: int
+    count: int
+    total: int
+
+
 class ResponseBase(BaseModel):
     status: int = 200
+    _page: Optional[Pagination]
+
 
 class Response:
-    class Configuration(ResponseBase):
-        data: list[Configuration]
-        
-    class StaticConfiguration(ResponseBase):
-        data: StaticConfiguration
 
-    class TagWithRequirementsAndCatalogues(ResponseBase):
-        data: Tag.WithRequirementsAndCatalogues
+    class Tag:
 
-    class TagsWithRequirements(ResponseBase):
-        data:  list[Tag.WithRequirementsAndCatalogues]
+        class One(ResponseBase):
+            data: Tag.Base
 
-    class Tag(ResponseBase):
-        data: Tag.Base
+        class List(ResponseBase):
+            data: list[Tag.Base]
 
-    class Tags(ResponseBase):
-        data: list[Tag.Base]
+        class OneWithRequirementsAndCatalogues(ResponseBase):
+            data: Tag.WithRequirementsAndCatalogues
 
-    class CatalogueWithTopics(ResponseBase):
-        data: Catalogue.WithTopics
+        class ListWithRequirements(ResponseBase):
+            data: list[Tag.WithRequirementsAndCatalogues]
 
-    class CatalogueWithTopicsAndRequirements(ResponseBase):
-        data: Catalogue.WithTagsAndTopicsAndRequirements
+    class Configuration:
 
-    class CatalogueWithTopicsAndRequirementsAndComments(ResponseBase):
-        data: Catalogue.WithTagsAndTopicsAndRequirementsAndComments
+        class Dynamic:
+            class One(ResponseBase):
+                data: Configuration
 
-    class Catalogue(ResponseBase):
-        data: Catalogue.Base
+            class List(ResponseBase):
+                data: list[Configuration]
 
-    class CatalogueWithTags(ResponseBase):
-        data: list[Catalogue.WithTags]
+        class Static(ResponseBase):
+            data: StaticConfiguration
 
-    class CataloguesWithTopics(ResponseBase):
-        data: list[Catalogue.WithTopics]
+    class Catalogue:
 
-    class CataloguesWithTopicsAndRequirements(ResponseBase):
-        data: list[Catalogue.WithTagsAndTopicsAndRequirements]
+        class One(ResponseBase):
+            data: Catalogue.Base
 
-    class CataloguesWithTopicsAndRequirementsAndComments(ResponseBase):
-        data: list[Catalogue.WithTagsAndTopicsAndRequirementsAndComments]
+        class List(ResponseBase):
+            data: list[Catalogue.Base]
 
-    class Catalogues(ResponseBase):
-        data: list[Catalogue.Base]
+        class OneWithTags(ResponseBase):
+            data: Catalogue.WithTags
 
-    class Comment(ResponseBase):
-        data: Comment.WithRequirement
-    
-    class Comments(ResponseBase):
-        data: list[Comment.WithRequirement]
+        class ListWithTags(ResponseBase):
+            data: list[Catalogue.WithTags]
 
-    class Topic(ResponseBase):
-        data: Topic.WithParent
+        class ListWithTopics(ResponseBase):
+            data: list[Catalogue.WithTopics]
 
-    class TopicWithRequirements(ResponseBase):
-        data: Topic.WithChildrenAndRequirements
+        class OneWithTopics(ResponseBase):
+            data: Catalogue.WithTopics
 
-    class Topics(ResponseBase):
-        data: list[Topic.WithParent]
+        class OneWithTopicsAndRequirements(ResponseBase):
+            data: Catalogue.WithTagsAndTopicsAndRequirements
 
-    class TopicsWithRequirements(ResponseBase):
-        data: list[Topic.WithChildrenAndRequirements]
+        class OneWithTopicsAndRequirementsAndComments(ResponseBase):
+            data: Catalogue.WithTagsAndTopicsAndRequirementsAndComments
 
-    class Requirement(ResponseBase):
-        data: Requirement.WithExtrasAndTagsAndParent
+        class ListWithTopicsAndRequirements(ResponseBase):
+            data: list[Catalogue.WithTagsAndTopicsAndRequirements]
 
-    class RequirementWithComments(ResponseBase):
-        data: Requirement.WithExtrasAndTagsAndCommentsAndParent
+        class ListWithTopicsAndRequirementsAndComments(ResponseBase):
+            data: list[Catalogue.WithTagsAndTopicsAndRequirementsAndComments]
 
-    class Requirements(ResponseBase):
-        data: list[Requirement.WithExtrasAndTagsAndParent]
+    class Comment:
 
-    class RequirementsWithComments(ResponseBase):
-        data: list[Requirement.WithExtrasAndTagsAndCommentsAndParent]
+        class One(ResponseBase):
+            data: Comment.WithRequirement
 
-    class ExtraType(ResponseBase):
-        data: ExtraType
+        class List(ResponseBase):
+            data: list[Comment.WithRequirement]
 
-    class ExtraTypes(ResponseBase):
-        data: list[ExtraType]
+    class Topic:
 
-    class ExtraEntry(ResponseBase):
-        data: ExtraEntry.WithExtraTypeAndRequirement
+        class One(ResponseBase):
+            data: Topic.WithParent
 
-    class ExtraEntries(ResponseBase):
-        data: list[ExtraEntry.WithExtraTypeAndRequirement]
- 
+        class List(ResponseBase):
+            data: list[Topic.WithParent]
+
+        class OneWithRequirements(ResponseBase):
+            data: Topic.WithChildrenAndRequirements
+
+        class ListWithRequirements(ResponseBase):
+            data: list[Topic.WithChildrenAndRequirements]
+
+    class Requirement:
+
+        class One(ResponseBase):
+            data: Requirement.WithExtrasAndTagsAndParent
+
+        class List(ResponseBase):
+            data: list[Requirement.WithExtrasAndTagsAndParent]
+
+        class OneWithComments(ResponseBase):
+            data: Requirement.WithExtrasAndTagsAndCommentsAndParent
+
+        class ListWithComments(ResponseBase):
+            data: list[Requirement.WithExtrasAndTagsAndCommentsAndParent]
+
+    class ExtraType:
+
+        class One(ResponseBase):
+            data: ExtraType
+
+        class List(ResponseBase):
+            data: list[ExtraType]
+
+    class ExtraEntry:
+
+        class One(ResponseBase):
+            data: ExtraEntry.WithExtraTypeAndRequirement
+
+        class List(ResponseBase):
+            data: list[ExtraEntry.WithExtraTypeAndRequirement]
+
     class Audit(ResponseBase):
         data: list[Audit]
-    
+
     class TeePod(ResponseBase):
         data: str
-    
+
     class User(ResponseBase):
         data: User
 
     class Error(ResponseBase):
         error: str
-        message: Union[list[dict],str,dict]
-        
+        message: Union[list[dict], str, dict]
+
     class ErrorStr(ResponseBase):
         error: str
         message: str
@@ -131,11 +164,11 @@ class Response:
         message: list[str]
 
     @staticmethod
-    def buildResponse(responseClass: ResponseBase.__class__, data: ResponseBase, status: int = 200):
-        return FastAPIResponse(status_code=status, media_type='application/json', content=responseClass(status=status, data=data).model_dump_json())
-
-class ResponseUpdate:
-    class Configuration(ResponseBase):
-        data: Configuration
-
-
+    def buildResponse(
+        responseClass: ResponseBase.__class__, data: ResponseBase, status: int = 200
+    ):
+        return FastAPIResponse(
+            status_code=status,
+            media_type="application/json",
+            content=responseClass(status=status, data=data).model_dump_json(),
+        )

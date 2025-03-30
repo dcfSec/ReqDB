@@ -25,13 +25,13 @@ router = AuthRouter()
 )
 async def getTags(
     session: SessionDep, expandTopics: bool = True
-) -> Union[Response.Tags, Response.TagsWithRequirements]:
+) -> Union[Response.Tag.List, Response.Tag.ListWithRequirements]:
     tags = session.exec(select(Tag)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.Tags, tags)
+        return Response.buildResponse(Response.Tag.List, tags)
     else:
-        return Response.buildResponse(Response.TagsWithRequirements, tags)
+        return Response.buildResponse(Response.Tag.ListWithRequirements, tags)
 
 
 @router.get(
@@ -47,15 +47,15 @@ async def getTags(
 )
 async def getTag(
     session: SessionDep, tagID: int, expandTopics: bool = True
-) -> Union[Response.Tag, Response.TagWithRequirementsAndCatalogues]:
+) -> Union[Response.Tag.One, Response.Tag.OneWithRequirementsAndCatalogues]:
     tag = session.get(Tag, tagID)
 
     if not tag:
         raise NotFound(detail="Tag not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.Tag, tag)
+        return Response.buildResponse(Response.Tag.One, tag)
     else:
-        return Response.buildResponse(Response.TagWithRequirementsAndCatalogues, tag)
+        return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tag)
 
 
 @router.patch(
@@ -74,7 +74,7 @@ async def patchTag(
     tagID: int,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.TagWithRequirementsAndCatalogues:
+) -> Response.Tag.OneWithRequirementsAndCatalogues:
     tagFromDB = session.get(Tag, tagID)
     if not tagFromDB:
         raise NotFound(detail="Tag not found")
@@ -97,7 +97,7 @@ async def patchTag(
     session.commit()
     session.refresh(tagFromDB)
     audit(session, 1, tagFromDB, userId)
-    return Response.buildResponse(Response.TagWithRequirementsAndCatalogues, tagFromDB)
+    return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tagFromDB)
 
 
 @router.post(
@@ -114,7 +114,7 @@ async def addTag(
     tag: Insert.Tag,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.TagWithRequirementsAndCatalogues:
+) -> Response.Tag.OneWithRequirementsAndCatalogues:
     catalogues = tag.catalogues
     tag.catalogues = []
     requirement = tag.requirements
@@ -136,7 +136,7 @@ async def addTag(
     session.commit()
     session.refresh(tagDB)
     audit(session, 0, tagDB, userId)
-    return Response.buildResponse(Response.TagWithRequirementsAndCatalogues, tagDB, 201)
+    return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tagDB, 201)
 
 
 @router.delete(

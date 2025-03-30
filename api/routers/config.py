@@ -7,7 +7,7 @@ from api.config import AppConfig
 from api.error import NotFound, ErrorResponses
 from api.models import SessionDep
 from api.models.db import Configuration, User
-from api.models.response import Response, ResponseUpdate
+from api.models.response import Response
 from api.models.update import Update
 from api.routers import AuthRouter, getUserId
 
@@ -23,7 +23,7 @@ router = AuthRouter()
 )
 async def getStaticConfig(
     session: SessionDep,
-) -> Response.StaticConfiguration:
+) -> Response.Configuration.Static:
     homeTitle = session.get(Configuration, "HOME_TITLE")
     homeMOTDPre = session.get(Configuration, "HOME_MOTD_PRE")
     homeMOTDPost = session.get(Configuration, "HOME_MOTD_POST")
@@ -31,7 +31,7 @@ async def getStaticConfig(
     loginMOTDPost = session.get(Configuration, "LOGIN_MOTD_POST")
 
     return Response.buildResponse(
-        Response.StaticConfiguration,
+        Response.Configuration.Static,
         {
             "oauth": {
                 "provider": AppConfig.OAUTH_PROVIDER,
@@ -71,10 +71,10 @@ async def getStaticConfig(
 )
 async def getSystemConfig(
     session: SessionDep,
-) -> Response.Configuration:
+) -> Response.Configuration.Dynamic.List:
 
     conf = session.exec(select(Configuration)).unique().all()
-    return Response.buildResponse(Response.Configuration, conf)
+    return Response.buildResponse(Response.Configuration.Dynamic.List, conf)
 
 
 @router.patch(
@@ -93,7 +93,7 @@ async def patchSystemConfig(
     configID: str,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> ResponseUpdate.Configuration:
+) -> Response.Configuration.Dynamic.One:
     configurationFromDB = session.get(Configuration, configID)
     if not configurationFromDB:
         raise NotFound(detail="Configuration item not found")
@@ -104,7 +104,7 @@ async def patchSystemConfig(
     # if configurationFromDB.type == "secret":
     #     configurationFromDB.value = "******"
     # audit(session, 1, configurationFromDB, userId)
-    return Response.buildResponse(ResponseUpdate.Configuration, configurationFromDB)
+    return Response.buildResponse(Response.Configuration.Dynamic.One, configurationFromDB)
 
 
 @router.get(
@@ -136,7 +136,7 @@ async def getUserConfig(
         200: {"description": "The updated config element"},
     },
 )
-async def patchSystemConfig(
+async def patchUserConfig(
     configuration: Update.User,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],

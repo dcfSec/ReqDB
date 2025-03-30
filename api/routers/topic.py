@@ -26,13 +26,13 @@ router = AuthRouter()
 )
 async def getTopics(
     session: SessionDep, expandTopics: bool = False
-) -> Union[Response.Topics, Response.TopicsWithRequirements]:
+) -> Union[Response.Topic.List, Response.Topic.ListWithRequirements]:
     topics = session.exec(select(Topic)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.Topics, topics)
+        return Response.buildResponse(Response.Topic.List, topics)
     else:
-        return Response.buildResponse(Response.TopicsWithRequirements, topics)
+        return Response.buildResponse(Response.Topic.ListWithRequirements, topics)
 
 
 @router.get(
@@ -48,15 +48,15 @@ async def getTopics(
 )
 async def getTopic(
     session: SessionDep, topicID: int, expandTopics: bool = False
-) -> Union[Response.Topic, Response.TopicWithRequirements]:
+) -> Union[Response.Topic.One, Response.Topic.OneWithRequirements]:
     topic = session.get(Topic, topicID)
 
     if not topic:
         raise NotFound(detail="Topic not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.Topic, topic)
+        return Response.buildResponse(Response.Topic.One, topic)
     else:
-        return Response.buildResponse(Response.TopicWithRequirements, topic)
+        return Response.buildResponse(Response.Topic.OneWithRequirements, topic)
 
 
 @router.patch(
@@ -76,7 +76,7 @@ async def patchTopic(
     topicID: int,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.Topic:
+) -> Response.Topic.One:
     topicFromDB = session.get(Topic, topicID)
     if not topicFromDB:
         raise NotFound(detail="Topic not found")
@@ -86,7 +86,7 @@ async def patchTopic(
     session.commit()
     session.refresh(topicFromDB)
     audit(session, 1, topicFromDB, userId)
-    return Response.buildResponse(Response.Topic, topicFromDB)
+    return Response.buildResponse(Response.Topic.One, topicFromDB)
 
 
 @router.post(
@@ -103,14 +103,14 @@ async def addTopic(
     topic: Insert.Topic,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.Topic:
+) -> Response.Topic.One:
     topicDB = Topic.model_validate(topic)
     checkParentTopicChildren(topic.parentId, session, True)
     session.add(topicDB)
     session.commit()
     session.refresh(topicDB)
     audit(session, 0, topicDB, userId)
-    return Response.buildResponse(Response.Topic, topicDB, 201)
+    return Response.buildResponse(Response.Topic.One, topicDB, 201)
 
 
 @router.delete(

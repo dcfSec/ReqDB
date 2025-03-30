@@ -25,13 +25,13 @@ router = AuthRouter()
 )
 async def getExtraTypes(
     session: SessionDep, expandTopics: bool = True
-) -> Response.ExtraTypes:
+) -> Response.ExtraType.List:
     extraTypes = session.exec(select(ExtraType)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraTypes, extraTypes)
+        return Response.buildResponse(Response.ExtraType.List, extraTypes)
     else:
-        return Response.buildResponse(Response.ExtraTypes, extraTypes)
+        return Response.buildResponse(Response.ExtraType.List, extraTypes)
 
 
 @router.get(
@@ -47,15 +47,15 @@ async def getExtraTypes(
 )
 async def getExtraType(
     session: SessionDep, extraTypeID: int, expandTopics: bool = True
-) -> Union[Response.ExtraType, Response.ExtraType]:
+) -> Union[Response.ExtraType.One, Response.ExtraType.One]:
     extraType = session.get(ExtraType, extraTypeID)
 
     if not extraType:
         raise NotFound(status_code=404, detail="ExtraType not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraType, extraType)
+        return Response.buildResponse(Response.ExtraType.One, extraType)
     else:
-        return Response.buildResponse(Response.ExtraType, extraType)
+        return Response.buildResponse(Response.ExtraType.One, extraType)
 
 
 @router.patch(
@@ -74,7 +74,7 @@ async def patchExtraType(
     extraTypeID: int,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.ExtraType:
+) -> Response.ExtraType.One:
     extraTypeFromDB = session.get(ExtraType, extraTypeID)
     if not extraTypeFromDB:
         raise NotFound(detail="ExtraType not found")
@@ -84,7 +84,7 @@ async def patchExtraType(
     session.commit()
     session.refresh(extraTypeFromDB)
     audit(session, 1, extraTypeFromDB, userId)
-    return Response.buildResponse(Response.ExtraType, extraTypeFromDB)
+    return Response.buildResponse(Response.ExtraType.One, extraTypeFromDB)
 
 
 @router.post(
@@ -101,13 +101,13 @@ async def addExtraType(
     extraType: Insert.ExtraType,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.ExtraType:
+) -> Response.ExtraType.One:
     extraTypeDB = ExtraType.model_validate(extraType)
     session.add(extraTypeDB)
     session.commit()
     session.refresh(extraTypeDB)
     audit(session, 0, extraTypeDB, userId)
-    return Response.buildResponse(Response.ExtraType, extraTypeDB, 201)
+    return Response.buildResponse(Response.ExtraType.One, extraTypeDB, 201)
 
 
 @router.delete(

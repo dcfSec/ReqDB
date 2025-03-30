@@ -25,13 +25,13 @@ router = AuthRouter()
 )
 async def getCatalogues(
     session: SessionDep, expandTopics: bool = True
-) -> Union[Response.CatalogueWithTags, Response.CataloguesWithTopicsAndRequirements]:
+) -> Union[Response.Catalogue.ListWithTags, Response.Catalogue.ListWithTopicsAndRequirements]:
     catalogues = session.exec(select(Catalogue)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.CatalogueWithTags, catalogues)
+        return Response.buildResponse(Response.Catalogue.ListWithTags, catalogues)
     else:
-        return Response.buildResponse(Response.CataloguesWithTopicsAndRequirements, catalogues)
+        return Response.buildResponse(Response.Catalogue.ListWithTopicsAndRequirements, catalogues)
 
 
 @router.get(
@@ -51,20 +51,20 @@ async def getCatalogue(
     catalogueID: int,
     expandTopics: bool = True,
 ) -> Union[
-    Response.CatalogueWithTags,
-    Response.CatalogueWithTopicsAndRequirements,
-    Response.CatalogueWithTopicsAndRequirementsAndComments,
+    Response.Catalogue.OneWithTags,
+    Response.Catalogue.OneWithTopicsAndRequirements,
+    Response.Catalogue.OneWithTopicsAndRequirementsAndComments,
 ]:
     catalogue = session.get(Catalogue, catalogueID)
 
     if not catalogue:
         raise NotFound(detail="Catalogue not found")
     if expandTopics is False:
-        return Response.CatalogueWithTags(status=200, data=catalogue)
+        return Response.Catalogue.OneWithTags(status=200, data=catalogue)
     else:
         if "Comments.Reader" in roles:
-            return Response.buildResponse(Response.CatalogueWithTopicsAndRequirementsAndComments, catalogue)
-        return  Response.buildResponse(Response.CatalogueWithTopicsAndRequirements, catalogue)
+            return Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirementsAndComments, catalogue)
+        return  Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirements, catalogue)
 
 
 @router.patch(
@@ -83,7 +83,7 @@ async def patchCatalogue(
     catalogueID: int,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.CatalogueWithTopicsAndRequirements:
+) -> Response.Catalogue.OneWithTopicsAndRequirements:
     catalogueFromDB = session.get(Catalogue, catalogueID)
     if not catalogueFromDB:
         raise NotFound(detail="Catalogue not found")
@@ -106,7 +106,7 @@ async def patchCatalogue(
     session.commit()
     session.refresh(catalogueFromDB)
     audit(session, 1, catalogueFromDB, userId)
-    return Response.buildResponse(Response.CatalogueWithTopics, catalogueFromDB)
+    return Response.buildResponse(Response.Catalogue.OneWithTopics, catalogueFromDB)
 
 
 @router.post(
@@ -124,7 +124,7 @@ async def addCatalogue(
     catalogue: Insert.Catalogue,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.Catalogue:
+) -> Response.Catalogue.One:
     topics = catalogue.topics
     catalogue.topics = []
     tags = catalogue.tags
@@ -146,7 +146,7 @@ async def addCatalogue(
     session.commit()
     session.refresh(catalogueDB)
     audit(session, 0, catalogueDB, userId)
-    return Response.buildResponse(Response.Catalogue, catalogueDB, 201)
+    return Response.buildResponse(Response.Catalogue.One, catalogueDB, 201)
 
 
 @router.delete(
