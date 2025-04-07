@@ -14,7 +14,8 @@ from api.models.db import Comment, Configuration, Topic, User
 
 def checkAndUpdateConfigDB():
     """
-    Checks the configuration table if all dynamic configuration keys are available with the correct type and description
+    Checks the configuration table if all dynamic configuration keys are available with the correct type and description.
+    Also checks if there are vacant configuration keys in the DB and deletes them if needed
     """
 
     with Session(engine) as session:
@@ -38,6 +39,10 @@ def checkAndUpdateConfigDB():
                 if config["category"] != item.category:
                     item.category = config["category"]
                 session.add(item)
+        dbConfig = session.exec(select(Configuration)).all()
+        for dbConfigItem in dbConfig:
+            if dbConfigItem.key not in AppConfig.getDynamicConfig().keys():
+                session.delete(dbConfigItem)
         session.commit()
 
 
@@ -157,8 +162,13 @@ async def sendNotificationMailForNewComment(session: Session, commentID: int):
                 )
 
         for recipient in emailRecipientsFromRequirement:
-            if recipient.email not in emailRecipientsFromChain and recipient.active is True and (
-                AppConfig.EMAIL_SEND_SELF is True or recipient.id != comment.authorId
+            if (
+                recipient.email not in emailRecipientsFromChain
+                and recipient.active is True
+                and (
+                    AppConfig.EMAIL_SEND_SELF is True
+                    or recipient.id != comment.authorId
+                )
             ):
                 sendNotificationMail(
                     recipient.email,
@@ -178,6 +188,9 @@ def checkParentCommentAuthor(comment: Comment) -> set:
     if comment is not None:
         if comment.parentId is not None:
             r += checkParentCommentAuthor(comment.parent)
-        if comment.author.notificationMailOnCommentChain is True and comment.author.active is True:
+        if (
+            comment.author.notificationMailOnCommentChain is True
+            and comment.author.active is True
+        ):
             r.append(comment.author.email)
     return set(r)
