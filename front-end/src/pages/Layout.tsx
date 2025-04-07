@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import MainNavbar from '../components/MainNavbar';
 import NotificationToast from "../components/NotificationToast";
 import Footer from "../components/Footer";

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router";
 
 import Layout from '../pages/Layout';
 import Home from '../pages/Home';
@@ -22,7 +22,6 @@ import APIDoc from "../pages/APIDoc";
 export function Router() {
 
   return (
-    <BrowserRouter future={{v7_relativeSplatPath: true, v7_startTransition: true,}}>
       <Routes>
         <Route path="/" element={/*<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} title="Home">*/<Layout />/*</RouteGuard>*/}>
           <Route index element={<RouteGuard requiredRoles={[appRoles.Requirements.Reader]} /* title="Home" */><Home /></RouteGuard>} />
@@ -80,7 +79,6 @@ export function Router() {
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
-    </BrowserRouter>
   )
 }
 
@@ -92,13 +90,11 @@ export function Router() {
 export function LoginRouter({ authError = null }: { authError?: string | null; }) {
 
   return (
-    <BrowserRouter future={{v7_relativeSplatPath: true, v7_startTransition: true,}}>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Login authError={authError} />} />
           <Route path="*" element={<Login authError={authError} />} />
         </Route>
       </Routes>
-    </BrowserRouter>
   )
 }

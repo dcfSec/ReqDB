@@ -7,13 +7,13 @@ import Stack from 'react-bootstrap/Stack';
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { toggleSelectRow } from '../../stateSlices/BrowseSlice';
 import { appRoles } from '../../authConfig';
-import {LinkContainer} from 'react-router-bootstrap'
 
 import { useState, memo } from "react";
 import CommentModal from "../Comments/CommentModal";
 import ExtraField from "./ExtraField";
 import { Row } from "../../types/Generics";
 import { setComments, setRequirementId } from "../../stateSlices/CommentSlice";
+import LinkContainer from "../LinkContainer";
 
 
 type Props = {

@@ -16,6 +16,7 @@ import { User } from 'oidc-client-ts';
 import { AuthProvider, useAuth } from "react-oidc-context";
 
 import APIClient from './APIClient';
+import { BrowserRouter } from 'react-router';
 
 function getUser() {
   const oidcStorage = localStorage.getItem(`oidc.user:${staticConfig.oauth.authority}:${staticConfig.oauth.client_id}`)
@@ -54,7 +55,9 @@ if (rootElement) {
     <React.StrictMode>
       <Provider store={store}>
         <AuthProvider {...oidcConfig}>
-          <App />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
         </AuthProvider>
       </Provider>
     </React.StrictMode>

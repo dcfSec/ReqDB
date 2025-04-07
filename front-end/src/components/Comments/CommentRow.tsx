@@ -4,7 +4,6 @@ import { inSearchField } from "../MiniComponents";
 import { removeComment, updateComment } from "../../stateSlices/CommentSlice";
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
-import { LinkContainer } from 'react-router-bootstrap'
 import Form from 'react-bootstrap/Form';
 import { useState } from "react";
 
@@ -12,6 +11,7 @@ import { Item } from "../../types/API/Comments";
 import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClient";
 import { APISuccessData } from "../../types/Generics";
 import { useAppDispatch } from "../../hooks";
+import LinkContainer from "../LinkContainer";
 
 type Props = {
   index: number;

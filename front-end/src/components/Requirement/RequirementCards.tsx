@@ -70,8 +70,8 @@ export function DescriptionCard() {
   return (
     <Card>
       <Card.Header as="h3">Description</Card.Header>
-      <Card.Body>
-        <Markdown className="card-text">{description}</Markdown>
+      <Card.Body className="card-text">
+        <Markdown>{description}</Markdown>
       </Card.Body>
     </Card>
   )

@@ -6,7 +6,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { MainLogoSpinner } from './MiniComponents';
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { appRoles } from '../authConfig';
 
 import { useAppSelector, useAppDispatch } from "../hooks";

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ErrorMessage } from '../components/MiniComponents'
 import LoadingBar from "../components/LoadingBar";
 
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { reset, setRequirement } from "../stateSlices/RequirementSlice";

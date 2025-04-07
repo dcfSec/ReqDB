@@ -1,5 +1,5 @@
 import { Badge, ListGroup, OverlayTrigger, Stack, Tooltip, TooltipProps } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Item } from '../../types/API/Catalogues';
 import { RefAttributes } from 'react';
 import { JSX } from 'react/jsx-runtime';

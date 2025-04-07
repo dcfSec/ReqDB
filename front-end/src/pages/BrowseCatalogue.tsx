@@ -1,5 +1,5 @@
 import { Badge, Button, Col, OverlayTrigger, Row, Stack, Tooltip } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import LoadingBar from "../components/LoadingBar";
 import BrowseContent from "../components/Browse/BrowseContent";

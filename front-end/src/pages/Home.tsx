@@ -1,6 +1,5 @@
 import { Button, Col, Dropdown, Row, Stack } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import {LinkContainer} from 'react-router-bootstrap'
+import { Link } from "react-router";
 import { appRoles } from "../authConfig";
 import Markdown from 'react-markdown'
 import { staticConfig } from "../static";
@@ -9,6 +8,7 @@ import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { useEffect } from "react";
 import { loadConfiguration } from "../stateSlices/ConfigurationSlice";
+import LinkContainer from "../components/LinkContainer";
 
 
 /**
