@@ -116,7 +116,7 @@ export default function EditListRow({ index, endpoint, needCascade, humanKey, se
         row = <ExtraTypeEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Type} />
         break;
       case "Requirements":
-        row = <RequirementEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Requirement} />
+        row = <RequirementEditListRow index={index} updateTempItem={updateTempItem} edit={edit} item={item as Requirement} originalItem={originalItem as Requirement}/>
         break;
       case "Tags":
         row = <TagEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Tag} />

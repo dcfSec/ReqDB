@@ -8,11 +8,11 @@ import { useAuth } from 'react-oidc-context';
 import { showSpinner } from './stateSlices/MainLogoSpinnerSlice';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { faSun, faMoon, faDatabase, faLink, faComment, faPaperPlane, faEraser, faPen, faCheck, faArrowsRotate, faArrowRight, faCodeCompare, faReply, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faSun, faMoon, faDatabase, faLink, faComment, faPaperPlane, faEraser, faPen, faCheck, faArrowsRotate, faArrowRight, faCodeCompare, faReply, faXmark, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faCircleQuestion, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 
 
-library.add(faGithub, faSun, faMoon, faDatabase, faEyeSlash, faEye, faLink, faComment, faPaperPlane, faEraser, faPen, faCheck, faArrowsRotate, faArrowRight, faCircleQuestion, faCodeCompare, faReply, faXmark)
+library.add(faGithub, faSun, faMoon, faDatabase, faEyeSlash, faEye, faLink, faComment, faPaperPlane, faEraser, faPen, faCheck, faArrowsRotate, faArrowRight, faCircleQuestion, faCodeCompare, faReply, faXmark, faPlus)
 
 function App() {
   const auth = useAuth();

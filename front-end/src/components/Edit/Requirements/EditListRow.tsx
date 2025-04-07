@@ -4,10 +4,13 @@ import SelectMany from "../SelectManyModal";
 import { useState } from "react";
 import SelectParentModal from "../SelectParentModal";
 import { Item } from '../../../types/API/Requirements';
+import ExtrasEditModal from "../ExtrasEditModal";
 
 
 type Props = {
+  index: number
   item: Item
+  originalItem: Item
   updateTempItem: (a: object) => void;
   edit: boolean
 }
@@ -18,10 +21,11 @@ type Props = {
  * @param {object} props Props for this component: index, item, buttons, updateTempItem, edit
  * @returns Table row for editing an object
  */
-export function RequirementEditListRow({ item, updateTempItem, edit }: Props) {
+export function RequirementEditListRow({ index, item, originalItem, updateTempItem, edit }: Props) {
 
   const [showUpdateMany2Many, setShowUpdateMany2Many] = useState(false);
   const [showSelectParentModal, setShowSelectParentModal] = useState(false);
+  const [showExtraModal, setShowExtraModal] = useState(false);
 
   return (
     <>
@@ -35,7 +39,9 @@ export function RequirementEditListRow({ item, updateTempItem, edit }: Props) {
       <td><Button variant="primary" disabled={!edit} onClick={() => {
         setShowUpdateMany2Many(true)
       }}>Set</Button></td>
-      <td><Button variant="primary" disabled={!edit}>Show</Button></td>
+      <td><Button variant="primary" disabled={!edit} onClick={() => {
+        setShowExtraModal(true)
+      }}>Show</Button></td>
       <td><Form.Check type="switch" id="visible" disabled={!edit} defaultChecked={item.visible} onChange={e => { updateTempItem({ visible: e.target.checked }) }} /></td>
       {showUpdateMany2Many ? <SelectMany
         humanKey={item.key}
@@ -62,6 +68,7 @@ export function RequirementEditListRow({ item, updateTempItem, edit }: Props) {
           columns={["key", "title"]}
           updateItem={updateTempItem}
         ></SelectParentModal> : null}
+      {<ExtrasEditModal requirementIndex={index} requirementID={originalItem.id} extras={originalItem.extras} requirementKey={originalItem.key} show={showExtraModal} setShow={setShowExtraModal} />}
     </>
   );
 }
