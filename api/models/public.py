@@ -81,7 +81,7 @@ class Catalogue:
         tags: list[Tag.Base] | None = []
 
     class WithTagsAndTopicsAndRequirementsAndComments(Base):
-        topics: list[Topic.WithChildrenAndRequirements] | None = []
+        topics: list[Topic.WithChildrenAndRequirementsAndComments] | None = []
         tags: list[Tag.Base] | None = []
 
 
