@@ -8,6 +8,7 @@ import { useAppSelector } from '../hooks';
 import { RefAttributes } from 'react';
 import { JSX } from 'react/jsx-runtime';
 import { saveAs } from './MiniComponents';
+import { Item as Topic } from '../types/API/Topics';
 
 /**
  * Exports the browse table in different formats
@@ -16,8 +17,9 @@ import { saveAs } from './MiniComponents';
  */
 export function ExportTable() {
 
+  const data = useAppSelector(state => state.browse.data)
   const items = useAppSelector(state => state.browse.rows.items)
-  const dataToExport = [...useAppSelector(state => state.browse.rows.items).filter(function (v) { return v.selected === true; })]
+  const rowsToExport = [...useAppSelector(state => state.browse.rows.items).filter(function (v) { return v.selected === true; })]
 
   const headers = [
     "Tags",
@@ -30,7 +32,7 @@ export function ExportTable() {
 
   function exportExcel() {
 
-    const exportData = dataToExport.map((row) => ({ ...row, ...{ Tags: row.Tags.join("\r\n"), Topics: row.Topics.map((topic) => (topic.title)).join("\r\n") } }));
+    const exportData = rowsToExport.map((row) => ({ ...row, ...{ Tags: row.Tags.join("\r\n"), Topics: row.Topics.map((topic) => (topic.title)).join("\r\n") } }));
 
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'ReqDB';
@@ -52,7 +54,31 @@ export function ExportTable() {
       });
   }
 
+  function getExportObject(currentTopic: Topic): Topic | null {
+  
+    const requirements = currentTopic.requirements.filter(function (v) { return v.selected === true; })
+    const children = [...currentTopic.children.map((topic) => (getExportObject(topic))).filter(function (v) { return v !== null; })]
+
+    if (children.length == 0 && requirements.length == 0) {
+      return null;
+    } else {
+      return {
+        description: currentTopic.description,
+        parentId: currentTopic.parentId,
+        requirements: requirements,
+        key: currentTopic.key,
+        title: currentTopic.title,
+        children: children,
+        id: currentTopic.id
+      };
+    }
+  }
+
   function exportJson() {
+
+    const dataToExport = {...data}
+    dataToExport.topics = dataToExport.topics?.map((topic) => (getExportObject(topic))).filter(function (v) { return v !== null; });
+
     const fileType = 'data:text/json;charset=utf-8;';
     const json = JSON.stringify(dataToExport, null, 2);
     const blob = new Blob([json], { type: fileType });
@@ -60,16 +86,19 @@ export function ExportTable() {
   }
 
   function exportYaml() {
+
+    const dataToExport = {...data}
+    dataToExport.topics = dataToExport.topics?.map((topic) => (getExportObject(topic))).filter(function (v) { return v !== null; });
+
     const fileType = 'data:text/yaml;charset=utf-8;';
     const blob = new Blob([yaml.dump(dataToExport)], { type: fileType });
     saveAs(blob, "ReqDB-Export.yaml");
   }
 
   const renderTooltip = (props: JSX.IntrinsicAttributes & TooltipProps & RefAttributes<HTMLDivElement>) => (
-    dataToExport.length === 0 ?
     <Tooltip id="export-tooltip" {...props}>
-      First select the rows you want to export 
-    </Tooltip> : <></>
+      {rowsToExport.length === 0 ? "First select the rows you want to export" : "Export the selected requirements"} 
+    </Tooltip>
   );
 
   return (
@@ -80,13 +109,13 @@ export function ExportTable() {
         overlay={renderTooltip}
       >
         <Dropdown.Toggle variant="success" id="export-dropdown">
-          Export {dataToExport.length}/{items.length} rows
+          Export {rowsToExport.length}/{items.length} rows
         </Dropdown.Toggle>
       </OverlayTrigger>
       <Dropdown.Menu>
-        <Dropdown.Item onClick={exportExcel} disabled={dataToExport.length === 0}>As Excel</Dropdown.Item>
-        <Dropdown.Item onClick={exportJson} disabled={dataToExport.length === 0}>As JSON</Dropdown.Item>
-        <Dropdown.Item onClick={exportYaml} disabled={dataToExport.length === 0}>As Yaml</Dropdown.Item>
+        <Dropdown.Item onClick={exportExcel} disabled={rowsToExport.length === 0}>As Excel</Dropdown.Item>
+        <Dropdown.Item onClick={exportJson} disabled={rowsToExport.length === 0}>As JSON</Dropdown.Item>
+        <Dropdown.Item onClick={exportYaml} disabled={rowsToExport.length === 0}>As Yaml</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );

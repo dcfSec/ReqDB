@@ -12,7 +12,7 @@ export interface MinimalItem extends BaseItem {
 export interface Item extends MinimalItem {
   description: string;
   parentId: number;
-  parent: Item;
+  parent?: Item;
   requirements: Array<Requirement>;
-  catalogues: Array<Catalogue>;
+  catalogues?: Array<Catalogue>;
 }

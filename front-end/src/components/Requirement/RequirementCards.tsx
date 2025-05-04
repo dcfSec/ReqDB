@@ -41,7 +41,7 @@ export function TopicsCard() {
 
   function buildTopicsList(topic: Topic) {
     let r = [topic.title]
-    if (topic.parentId !== null) {
+    if (topic.parentId !== null && topic.parent) {
       r = buildTopicsList(topic.parent).concat(r)
     }
     return r

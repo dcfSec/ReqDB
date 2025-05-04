@@ -78,6 +78,13 @@ export function resolvePath(object: Record<string, any>, path: string): any {
     .reduce((o, p) => o ? o[p] : undefined, object);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function resolvePathAndSetElement(object: Record<string, any>, path: string, key: string, value: any): any {
+  const data = path
+    .split('.')
+    .reduce((o, p) => o ? o[p] : undefined, object);
+  data[key] = value
+}
 
 /**
  * Searches in an item for the search string
@@ -196,7 +203,13 @@ export async function buildRows(extraHeaders: object, tagFilterItems: Array<stri
     if (!topicFilterItems.includes(`${topic.key} ${topic.title}`)) {
       dispatch(addTopicFilterItems(`${topic.key} ${topic.title}`));
     }
-    await buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic, requirements, false, `${basePath}.${index}`);
+    let newPath = ""
+    if(basePath === "topics") {
+      newPath = `${basePath}.${index}`
+    } else {
+      newPath = `${basePath}.children.${index}`
+    }
+    await buildRows(extraHeaders, tagFilterItems, [...topics, topic], topic, requirements, false, newPath);
   };
 
   const requirementPromises = item.requirements ? item.requirements.map(processRequirement) : [];

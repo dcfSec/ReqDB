@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { isVisible } from '../components/MiniComponents'
+import { isVisible, resolvePathAndSetElement } from '../components/MiniComponents'
 import { Item as Comment } from '../types/API/Comments';
 import { Row } from '../types/Generics';
 import { BrowseState } from '../types/Generics';
@@ -66,6 +66,8 @@ export const browseSlice = createSlice({
       const tmp = [...state.rows.items]
       tmp[action.payload].selected = !tmp[action.payload].selected
       state.rows.items = [...tmp]
+      if (state.data) resolvePathAndSetElement(state.data, tmp[action.payload].path, "selected", tmp[action.payload].selected)
+
       if (tmp[action.payload].selected) {
         state.rows.selectedCount++
       } else {
@@ -78,6 +80,7 @@ export const browseSlice = createSlice({
 
       tmp.forEach((item, index) => {
         tmp[index].selected = action
+        if (state.data) resolvePathAndSetElement(state.data, tmp[index].path, "selected", tmp[index].selected)
       });
 
       if (action) {
