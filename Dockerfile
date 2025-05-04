@@ -10,7 +10,6 @@ RUN mkdir front-end
 COPY --from=build /src/dist ./front-end/dist
 
 COPY app.py ./
-COPY gunicorn.conf.py ./
 COPY requirements.txt ./
 COPY api/ ./api
 
