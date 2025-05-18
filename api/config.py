@@ -1,6 +1,7 @@
 from os import getenv, path
 from uuid import uuid4
 
+from authlib.jose.rfc7517.key_set import KeySet
 import requests
 from authlib.jose import JsonWebKey
 
@@ -28,7 +29,7 @@ class AppConfig:
 
     JWT_ALGORITHM = "RS256"
     JWT_DECODE_ISSUER = ""
-    JWT_PUBLIC_KEYS = ""
+    JWT_PUBLIC_KEYS: KeySet
     JWT_JWK_URI = ""
 
     BASE_URL = f"{getenv('BASE_URL', 'http://localhost')}"
@@ -51,9 +52,9 @@ class AppConfig:
         :return dict: Dict with kid: pem
         """
         r = {}
-        response = requests.get(AppConfig.JWT_JWK_URI)
+        response: requests.Response = requests.get(AppConfig.JWT_JWK_URI)
         response.raise_for_status()
-        cls.JWT_PUBLIC_KEYS = JsonWebKey.import_key_set(response.json()["keys"])
+        cls.JWT_PUBLIC_KEYS: KeySet = JsonWebKey.import_key_set(response.json()["keys"])
 
     @classmethod
     def getOpenIdConfig(cls):

@@ -17,24 +17,24 @@ from api.models.base import (
 
 
 class TableBase(SQLModel):
-    id: int | None = Field(default=None, primary_key=True)
+    id: int = Field(default=None, primary_key=True)
     deleted: bool = Field(default=False)
 
 
 class CatalogueTag(SQLModel, table=True):
-    __tablename__ = "CatalogueTag"
+    __tablename__ = "CatalogueTag" # type: ignore
     catalogueId: int = Field(foreign_key="catalogue.id", primary_key=True)
     tagId: int = Field(foreign_key="tag.id", primary_key=True)
 
 
 class RequirementTag(SQLModel, table=True):
-    __tablename__ = "RequirementTag"
+    __tablename__ = "RequirementTag" # type: ignore
     requirementId: int = Field(foreign_key="requirement.id", primary_key=True)
     tagId: int = Field(foreign_key="tag.id", primary_key=True)
 
 
 class CatalogueTopic(SQLModel, table=True):
-    __tablename__ = "CatalogueTopic"
+    __tablename__ = "CatalogueTopic" # type: ignore
     catalogueId: int = Field(foreign_key="catalogue.id", primary_key=True)
     topicId: int = Field(foreign_key="topic.id", primary_key=True)
 
@@ -53,7 +53,7 @@ class Audit(AuditBase, SQLModel, table=True):
     user: User = Relationship()
 
     def __repr__(self):
-        return f'<Audit "{self.verb}">'
+        return f'<Audit "{self.action}">'
 
 
 class Topic(TopicBase, TableBase, table=True):
@@ -150,7 +150,7 @@ class Configuration(ConfigurationBase, table=True):
 
 
 class ExtraType(ExtraTypeBase, TableBase, table=True):
-    __tablename__ = "extra_type"
+    __tablename__ = "extra_type" # type: ignore
 
     children: list["ExtraEntry"] = Relationship(
         back_populates="extraType",
@@ -163,7 +163,7 @@ class ExtraType(ExtraTypeBase, TableBase, table=True):
 
 
 class ExtraEntry(ExtraEntryBase, TableBase, table=True):
-    __tablename__ = "extra_entry"
+    __tablename__ = "extra_entry" # type: ignore
 
     extraType: ExtraType = Relationship(
         back_populates="children",

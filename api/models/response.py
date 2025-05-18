@@ -1,7 +1,8 @@
-from typing import Optional, Union
+from typing import Generic, Optional, TypeVar, Union
 
 from fastapi import Response as FastAPIResponse
 from pydantic import BaseModel
+from sqlmodel import SQLModel
 
 from api.models.public import (
     Audit,
@@ -25,9 +26,11 @@ class Pagination(BaseModel):
     total: int
 
 
-class ResponseBase(BaseModel):
-    status: int = 200
+Data = TypeVar("Data")
 
+class ResponseBase(BaseModel, Generic[Data]):
+    status: int = 200
+    data: Data
 
 class Response:
 
@@ -180,7 +183,7 @@ class Response:
     @staticmethod
     def buildResponse(
         responseClass: ResponseBase.__class__, data: ResponseBase, status: int = 200
-    ):
+     ) -> FastAPIResponse:
         return FastAPIResponse(
             status_code=status,
             media_type="application/json",

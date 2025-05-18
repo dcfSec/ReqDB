@@ -61,4 +61,4 @@ async def getAudit(
     )
     data = session.exec(statement)
 
-    return Response.buildResponse(Response.Audit, data)
+    return Response.buildResponse(Response.Audit, data) # type: ignore

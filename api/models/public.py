@@ -110,7 +110,7 @@ class Requirement:
         tags: list[Tag.Base] | None = []
 
     class WithParent(Base):
-        parent: Topic.WithParent | None = []
+        parent: Topic.WithParent
 
     class WithExtrasAndTags(WithExtras, WithTags):
         pass

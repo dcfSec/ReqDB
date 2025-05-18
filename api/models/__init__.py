@@ -4,6 +4,7 @@ from fastapi import Depends
 from sqlmodel import Field, Session, SQLModel, create_engine
 
 from api.config import AppConfig
+from api.models.base import UserBase
 from api.models.db import Audit, TableBase
 
 
@@ -26,12 +27,12 @@ engine = create_engine(AppConfig.DATABASE_URI, connect_args=connect_args, pool_p
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
-def audit(session: Session, action: int, model: TableBase, user: str):
+def audit(session: Session, action: int, model: TableBase | UserBase, user: str):
     session.add(
         Audit(
             userId=user,
             table=model.__tablename__,
-            target_id=model.id,
+            target_id=str(model.id),
             action=action,
             data=model.model_dump(mode="json") if action != 2 else {},
         )

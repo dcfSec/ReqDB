@@ -96,9 +96,10 @@ class RBACRoute(APIRoute):
                     detail=f"Authentication configuration missing for route {request.scope['route'].name}"
                 )
             if auth[request.scope["route"].name]["required"] is True:
-                jwt = await validateJWT(
-                    await HTTPBearerWithUnauthorizedError()(request)
-                )
+                credentials: HTTPAuthorizationCredentials | None = await HTTPBearerWithUnauthorizedError()(request)
+                if credentials is None:
+                    raise Unauthorized(detail="No credentials provided")
+                jwt = await validateJWT(credentials)
                 await checkAccess(jwt, auth[request.scope["route"].name]["roles"])
             response = await original_route_handler(request)
             return response
@@ -153,7 +154,7 @@ async def validateJWT(
         raise Unauthorized(detail=str(e))
 
     with Session(engine) as session:
-        user = session.get(User, claims["sub"])
+        user: User | None = session.get(User, claims["sub"])
         if not user:
             session.commit()
             user = User(id=claims["sub"], email=claims["email"])

@@ -29,9 +29,9 @@ async def getCatalogues(
     catalogues = session.exec(select(Catalogue)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.Catalogue.ListWithTags, catalogues)
+        return Response.buildResponse(Response.Catalogue.ListWithTags, catalogues) # type: ignore
     else:
-        return Response.buildResponse(Response.Catalogue.ListWithTopicsAndRequirements, catalogues)
+        return Response.buildResponse(Response.Catalogue.ListWithTopicsAndRequirements, catalogues) # type: ignore
 
 
 @router.get(
@@ -60,11 +60,11 @@ async def getCatalogue(
     if not catalogue:
         raise NotFound(detail="Catalogue not found")
     if expandTopics is False:
-        return Response.Catalogue.OneWithTags(status=200, data=catalogue)
+        return Response.buildResponse(Response.Catalogue.OneWithTags, catalogue) # type: ignore
     else:
         if "Comments.Reader" in roles:
-            return Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirementsAndComments, catalogue)
-        return  Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirements, catalogue)
+            return Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirementsAndComments, catalogue) # type: ignore
+        return  Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirements, catalogue) # type: ignore
 
 
 @router.patch(
@@ -89,14 +89,16 @@ async def patchCatalogue(
         raise NotFound(detail="Catalogue not found")
     catalogueFromDB.sqlmodel_update(catalogue.model_dump(exclude_unset=True))
     catalogueFromDB.topics = []
-    for topic in catalogue.topics:
+    topics = catalogue.topics or []
+    for topic in topics:
         t = session.get(Topic, topic.id)
         if t:
             catalogueFromDB.topics.append(t)
         else:
             raise NotFound(detail=f"Child with ID {topic.id} not found")
     catalogueFromDB.tags = []
-    for tag in catalogue.tags:
+    tags = catalogue.tags or []
+    for tag in tags:
         t = session.get(Tag, tag.id)
         if t:
             catalogueFromDB.tags.append(t)
@@ -106,7 +108,7 @@ async def patchCatalogue(
     session.commit()
     session.refresh(catalogueFromDB)
     audit(session, 1, catalogueFromDB, userId)
-    return Response.buildResponse(Response.Catalogue.OneWithTopics, catalogueFromDB)
+    return Response.buildResponse(Response.Catalogue.OneWithTopics, catalogueFromDB) # type: ignore
 
 
 @router.post(
@@ -146,7 +148,7 @@ async def addCatalogue(
     session.commit()
     session.refresh(catalogueDB)
     audit(session, 0, catalogueDB, userId)
-    return Response.buildResponse(Response.Catalogue.One, catalogueDB, 201)
+    return Response.buildResponse(Response.Catalogue.One, catalogueDB, 201) # type: ignore
 
 
 @router.delete(

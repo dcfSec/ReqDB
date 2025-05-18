@@ -56,8 +56,8 @@ async def getStaticConfig(
                     "post": loginMOTDPost.value if loginMOTDPost else "",
                 },
             },
-        },
-    )
+        }, # type: ignore
+    ) # type: ignore
 
 
 @router.get(
@@ -74,7 +74,7 @@ async def getSystemConfig(
 ) -> Response.Configuration.Dynamic.List:
 
     conf = session.exec(select(Configuration)).unique().all()
-    return Response.buildResponse(Response.Configuration.Dynamic.List, conf)
+    return Response.buildResponse(Response.Configuration.Dynamic.List, conf) # type: ignore
 
 
 @router.patch(
@@ -104,7 +104,7 @@ async def patchSystemConfig(
     # if configurationFromDB.type == "secret":
     #     configurationFromDB.value = "******"
     # audit(session, 1, configurationFromDB, userId)
-    return Response.buildResponse(Response.Configuration.Dynamic.One, configurationFromDB)
+    return Response.buildResponse(Response.Configuration.Dynamic.One, configurationFromDB) # type: ignore
 
 
 @router.get(
@@ -122,7 +122,7 @@ async def getUserConfig(
 ) -> Response.User:
 
     conf = session.get(User, userId)
-    return Response.buildResponse(Response.User, conf)
+    return Response.buildResponse(Response.User, conf) # type: ignore
 
 
 @router.patch(
@@ -148,4 +148,4 @@ async def patchUserConfig(
     session.add(configurationFromDB)
     session.commit()
     session.refresh(configurationFromDB)
-    return Response.buildResponse(Response.User, configurationFromDB)
+    return Response.buildResponse(Response.User, configurationFromDB) # type: ignore

@@ -16,4 +16,4 @@ router = AuthRouter()
     })
 async def getCoffee() -> Response.TeePod:
 
-    return Response.buildResponse(Response.TeePod, data="I'm a teapot", status=418)
+    return Response.buildResponse(Response.TeePod, data="I'm a teapot", status=418) # type: ignore

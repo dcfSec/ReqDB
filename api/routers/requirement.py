@@ -31,9 +31,9 @@ async def getRequirements(
     requirements = session.exec(select(Requirement)).unique().all()
 
     if "Comments.Reader" in roles:
-        return Response.buildResponse(Response.Requirement.ListWithComments, requirements)
+        return Response.buildResponse(Response.Requirement.ListWithComments, requirements) # type: ignore
     else:
-        return Response.buildResponse(Response.Requirement.List, requirements)
+        return Response.buildResponse(Response.Requirement.List, requirements) # type: ignore
 
 
 @router.get(
@@ -57,9 +57,9 @@ async def getRequirement(
         raise NotFound(detail="Requirement not found")
 
     if "Comments.Reader" in roles:
-        return Response.buildResponse(Response.Requirement.OneWithComments, requirement)
+        return Response.buildResponse(Response.Requirement.OneWithComments, requirement) # type: ignore
     else:
-        return Response.buildResponse(Response.Requirement.One, requirement)
+        return Response.buildResponse(Response.Requirement.One, requirement) # type: ignore
 
 
 @router.patch(
@@ -83,10 +83,11 @@ async def patchRequirement(
     requirementFromDB = session.get(Requirement, requirementID)
     if not requirementFromDB:
         raise NotFound(detail="Requirement not found")
-    checkParentTopicChildren(requirement.parentId, session, False)
     requirementFromDB.sqlmodel_update(requirement.model_dump(exclude_unset=True))
+    checkParentTopicChildren(requirementFromDB.parentId, session, False)
     requirementFromDB.tags = []
-    for tag in requirement.tags:
+    tags = requirement.tags or []
+    for tag in tags:
         t = session.get(Tag, tag.id)
         if t:
             requirementFromDB.tags.append(t)
@@ -96,7 +97,7 @@ async def patchRequirement(
     session.commit()
     session.refresh(requirementFromDB)
     audit(session, 1, requirementFromDB, userId)
-    return Response.buildResponse(Response.Requirement.One, requirementFromDB)
+    return Response.buildResponse(Response.Requirement.One, requirementFromDB) # type: ignore
 
 
 @router.post(
@@ -129,7 +130,7 @@ async def addRequirement(
     session.commit()
     session.refresh(requirementDB)
     audit(session, 0, requirementDB, userId)
-    return Response.buildResponse(Response.Requirement.One, requirementDB, 201)
+    return Response.buildResponse(Response.Requirement.One, requirementDB, 201) # type: ignore
 
 
 @router.delete(

@@ -21,32 +21,32 @@ class Update:
         id: int
 
     class Tag(SQLModel):
-        model_config = ConfigDict(from_attributes=True)
+        model_config = ConfigDict(from_attributes=True) # type: ignore
         name: str | None = None
         requirements: list["Update.RequirementIdOnly"] = []
         catalogues: list["Update.CatalogueIdOnly"] = []
 
     class Catalogue(SQLModel):
-        model_config = ConfigDict(from_attributes=True)
+        model_config = ConfigDict(from_attributes=True) # type: ignore
         title: str | None = None
         description: str | None = None
         topics: list["Update.TopicIdOnly"] | None = None
         tags: list["Update.TagIdOnly"] | None = None
 
     class Comment(SQLModel):
-        model_config = ConfigDict(from_attributes=True)
+        model_config = ConfigDict(from_attributes=True) # type: ignore
         comment: str | None = None
         completed: bool | None = None
 
     class Topic(SQLModel):
-        model_config = ConfigDict(from_attributes=True)
+        model_config = ConfigDict(from_attributes=True) # type: ignore
         key: str | None = None
         title: str | None = None
         description: str | None = None
         parentId: int | None = None
 
     class Requirement(SQLModel):
-        model_config = ConfigDict(from_attributes=True)
+        model_config = ConfigDict(from_attributes=True) # type: ignore
         key: str | None = None
         title: str | None = None
         description: str | None = None
@@ -54,18 +54,18 @@ class Update:
         tags: list["Update.TagIdOnly"] | None = None
 
     class ExtraType(SQLModel):
-        model_config = ConfigDict(from_attributes=True)
+        model_config = ConfigDict(from_attributes=True) # type: ignore
         title: str | None = None
         description: str | None = None
         extraType: int | None = None
 
     class ExtraEntry(SQLModel):
-        model_config = ConfigDict(from_attributes=True)
+        model_config = ConfigDict(from_attributes=True) # type: ignore
         content: str | None = None
         extraTypeId: int | None = None
         requirementId: int | None = None
 
     class User(SQLModel):
-        model_config = ConfigDict(from_attributes=True)
+        model_config = ConfigDict(from_attributes=True) # type: ignore
         notificationMailOnCommentChain: bool | None = None
         notificationMailOnRequirementComment: bool | None = None

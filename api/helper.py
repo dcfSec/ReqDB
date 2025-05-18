@@ -77,7 +77,7 @@ def sendNotificationMail(recipient: str, subject: str, content: str):
 
 
 def checkParentTopicChildren(
-    topicID: int, session: Session, forRequirements: bool = False
+    topicID: int | None, session: Session, forRequirements: bool = False
 ):
     """
     Checks if the topic has topic or requirements of children
@@ -113,7 +113,7 @@ class RequestTimer:
     def __init__(self, response: Response, target: str):
         self.response = response
         self.target = target
-        self.startTime = None
+        self.startTime: int
 
     def __enter__(self):
         self.startTime = time.perf_counter_ns()
@@ -141,43 +141,44 @@ async def sendNotificationMailForNewComment(session: Session, commentID: int):
 
     if AppConfig.EMAIL_ACTIVE is True:
         comment = session.get(Comment, commentID)
-        emailRecipientsFromChain = checkParentCommentAuthor(comment.parent)
-        emailRecipientsFromRequirement = (
-            session.exec(
-                select(User).where(User.notificationMailOnRequirementComment == True)
+        if comment:
+            emailRecipientsFromChain = checkParentCommentAuthor(comment.parent)
+            emailRecipientsFromRequirement = (
+                session.exec(
+                    select(User).where(User.notificationMailOnRequirementComment == True)
+                )
+                .unique()
+                .all()
             )
-            .unique()
-            .all()
-        )
 
-        for chainRecipient in emailRecipientsFromChain:
-            if (
-                AppConfig.EMAIL_SEND_SELF is True
-                or chainRecipient != comment.author.email
-            ):
-                sendNotificationMail(
-                    chainRecipient,
-                    f"A user added a comment to a chain you are participating in (Requirement: {comment.requirement.key})",
-                    f"{comment.author.email} added following comment to {comment.requirement.key} in reply to a comment from you:\n\n-------\n{comment.comment}\n-------\n\nGo to the requirement: {AppConfig.BASE_URL}/Browse/Requirement/{comment.requirement.id}",
-                )
-
-        for recipient in emailRecipientsFromRequirement:
-            if (
-                recipient.email not in emailRecipientsFromChain
-                and recipient.active is True
-                and (
+            for chainRecipient in emailRecipientsFromChain:
+                if (
                     AppConfig.EMAIL_SEND_SELF is True
-                    or recipient.id != comment.authorId
-                )
-            ):
-                sendNotificationMail(
-                    recipient.email,
-                    f"A user added a new comment to a requirement ({comment.requirement.key})",
-                    f"{comment.author.email} added following comment to {comment.requirement.key}:\n\n-------\n{comment.comment}\n-------\n\nGo to the requirement: {AppConfig.BASE_URL}/Browse/Requirement/{comment.requirement.id}",
-                )
+                    or chainRecipient != comment.author.email
+                ):
+                    sendNotificationMail(
+                        chainRecipient,
+                        f"A user added a comment to a chain you are participating in (Requirement: {comment.requirement.key})",
+                        f"{comment.author.email} added following comment to {comment.requirement.key} in reply to a comment from you:\n\n-------\n{comment.comment}\n-------\n\nGo to the requirement: {AppConfig.BASE_URL}/Browse/Requirement/{comment.requirement.id}",
+                    )
+
+            for recipient in emailRecipientsFromRequirement:
+                if (
+                    recipient.email not in emailRecipientsFromChain
+                    and recipient.active is True
+                    and (
+                        AppConfig.EMAIL_SEND_SELF is True
+                        or recipient.id != comment.authorId
+                    )
+                ):
+                    sendNotificationMail(
+                        recipient.email,
+                        f"A user added a new comment to a requirement ({comment.requirement.key})",
+                        f"{comment.author.email} added following comment to {comment.requirement.key}:\n\n-------\n{comment.comment}\n-------\n\nGo to the requirement: {AppConfig.BASE_URL}/Browse/Requirement/{comment.requirement.id}",
+                    )
 
 
-def checkParentCommentAuthor(comment: Comment) -> set:
+def checkParentCommentAuthor(comment: Comment | None) -> set:
     """
     Returns a set of authors for a comment chain with activated notification on comment
 

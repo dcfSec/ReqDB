@@ -29,9 +29,9 @@ async def getExtraEntries(
     extraEntries = session.exec(select(ExtraEntry)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraEntry.List, extraEntries)
+        return Response.buildResponse(Response.ExtraEntry.List, extraEntries) # type: ignore
     else:
-        return Response.buildResponse(Response.ExtraEntry.List, extraEntries)
+        return Response.buildResponse(Response.ExtraEntry.List, extraEntries) # type: ignore
 
 
 @router.get(
@@ -53,9 +53,9 @@ async def getExtraEntry(
     if not extraType:
         raise NotFound(detail="ExtraEntry not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraEntry.One, extraType)
+        return Response.buildResponse(Response.ExtraEntry.One, extraType) # type: ignore
     else:
-        return Response.buildResponse(Response.ExtraEntry.One, extraType)
+        return Response.buildResponse(Response.ExtraEntry.One, extraType) # type: ignore
 
 
 @router.patch(
@@ -83,7 +83,7 @@ async def patchExtraEntry(
     session.commit()
     session.refresh(extraTypeFromDB)
     audit(session, 1, extraTypeFromDB, userId)
-    return Response.buildResponse(Response.ExtraEntry.One, extraTypeFromDB)
+    return Response.buildResponse(Response.ExtraEntry.One, extraTypeFromDB) # type: ignore
 
 
 @router.post(
@@ -106,7 +106,7 @@ async def addExtraEntry(
     session.commit()
     session.refresh(extraTypeDB)
     audit(session, 0, extraTypeDB, userId)
-    return Response.buildResponse(Response.ExtraEntry.One, extraTypeDB, 201)
+    return Response.buildResponse(Response.ExtraEntry.One, extraTypeDB, 201) # type: ignore
 
 
 @router.delete(

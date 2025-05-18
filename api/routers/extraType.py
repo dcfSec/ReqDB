@@ -29,9 +29,9 @@ async def getExtraTypes(
     extraTypes = session.exec(select(ExtraType)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraType.List, extraTypes)
+        return Response.buildResponse(Response.ExtraType.List, extraTypes) # type: ignore
     else:
-        return Response.buildResponse(Response.ExtraType.List, extraTypes)
+        return Response.buildResponse(Response.ExtraType.List, extraTypes) # type: ignore
 
 
 @router.get(
@@ -53,9 +53,9 @@ async def getExtraType(
     if not extraType:
         raise NotFound(status_code=404, detail="ExtraType not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraType.One, extraType)
+        return Response.buildResponse(Response.ExtraType.One, extraType) # type: ignore
     else:
-        return Response.buildResponse(Response.ExtraType.One, extraType)
+        return Response.buildResponse(Response.ExtraType.One, extraType) # type: ignore
 
 
 @router.patch(
@@ -84,7 +84,7 @@ async def patchExtraType(
     session.commit()
     session.refresh(extraTypeFromDB)
     audit(session, 1, extraTypeFromDB, userId)
-    return Response.buildResponse(Response.ExtraType.One, extraTypeFromDB)
+    return Response.buildResponse(Response.ExtraType.One, extraTypeFromDB) # type: ignore
 
 
 @router.post(
@@ -107,7 +107,7 @@ async def addExtraType(
     session.commit()
     session.refresh(extraTypeDB)
     audit(session, 0, extraTypeDB, userId)
-    return Response.buildResponse(Response.ExtraType.One, extraTypeDB, 201)
+    return Response.buildResponse(Response.ExtraType.One, extraTypeDB, 201) # type: ignore
 
 
 @router.delete(

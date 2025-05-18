@@ -30,9 +30,9 @@ async def getTopics(
     topics = session.exec(select(Topic)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.Topic.List, topics)
+        return Response.buildResponse(Response.Topic.List, topics) # type: ignore
     else:
-        return Response.buildResponse(Response.Topic.ListWithRequirements, topics)
+        return Response.buildResponse(Response.Topic.ListWithRequirements, topics) # type: ignore
 
 
 @router.get(
@@ -54,9 +54,9 @@ async def getTopic(
     if not topic:
         raise NotFound(detail="Topic not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.Topic.One, topic)
+        return Response.buildResponse(Response.Topic.One, topic) # type: ignore
     else:
-        return Response.buildResponse(Response.Topic.OneWithRequirements, topic)
+        return Response.buildResponse(Response.Topic.OneWithRequirements, topic) # type: ignore
 
 
 @router.patch(
@@ -80,13 +80,12 @@ async def patchTopic(
     topicFromDB = session.get(Topic, topicID)
     if not topicFromDB:
         raise NotFound(detail="Topic not found")
-    checkParentTopicChildren(topic.parentId, session, True)
     topicFromDB.sqlmodel_update(topic.model_dump(exclude_unset=True))
     session.add(topicFromDB)
     session.commit()
     session.refresh(topicFromDB)
     audit(session, 1, topicFromDB, userId)
-    return Response.buildResponse(Response.Topic.One, topicFromDB)
+    return Response.buildResponse(Response.Topic.One, topicFromDB) # type: ignore
 
 
 @router.post(
@@ -110,7 +109,7 @@ async def addTopic(
     session.commit()
     session.refresh(topicDB)
     audit(session, 0, topicDB, userId)
-    return Response.buildResponse(Response.Topic.One, topicDB, 201)
+    return Response.buildResponse(Response.Topic.One, topicDB, 201) # type: ignore
 
 
 @router.delete(

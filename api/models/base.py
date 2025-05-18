@@ -20,7 +20,7 @@ class AuditBase(SQLModel):
     timestamp: float = Field(default_factory=timestamp)
 
     table: str = Field(max_length=200, index=True)
-    target_id: int = Field(index=True)
+    target_id: str = Field(index=True)
     action: int
     data: dict = Field(default_factory=dict, sa_column=Column(JSON))
 
