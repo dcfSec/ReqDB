@@ -11,7 +11,7 @@ class UserBase(SQLModel):
     id: str = Field(primary_key=True)
     email: str = Field(max_length=254)
     created: float = Field(default_factory=timestamp)
-    active: bool =  Field(default=True)
+    active: bool = Field(default=True)
     notificationMailOnCommentChain: bool = Field(default=False)
     notificationMailOnRequirementComment: bool = Field(default=False)
 
@@ -45,6 +45,7 @@ class RequirementBase(SQLModel):
 
 
 class CatalogueBase(SQLModel):
+    key: str = Field(max_length=20, unique=True)
     title: str = Field(max_length=200)
     description: str | None = Field(default=None)
 
@@ -58,7 +59,9 @@ class CommentBase(SQLModel):
 
     authorId: str = Field(foreign_key="user.id")
 
-    parentId: int | None = Field(foreign_key="comment.id", default=None, nullable=True, ondelete="CASCADE")
+    parentId: int | None = Field(
+        foreign_key="comment.id", default=None, nullable=True, ondelete="CASCADE"
+    )
 
 
 class ConfigurationBase(SQLModel):
@@ -88,20 +91,23 @@ class TagBase(SQLModel):
 
 
 class StaticConfiguration(SQLModel):
-        class OAuthClass(SQLModel):
-            provider: str
-            authority: str
-            client_id: str
-            scope: str
-        class MOTDClass(SQLModel):
-            pre: str
-            post: str
-        class HomeClass(SQLModel):
-            title: str
-            MOTD: 'StaticConfiguration.MOTDClass'
-        class LoginClass(SQLModel):
-            MOTD: 'StaticConfiguration.MOTDClass'
+    class OAuthClass(SQLModel):
+        provider: str
+        authority: str
+        client_id: str
+        scope: str
 
-        oauth: 'StaticConfiguration.OAuthClass'
-        home: 'StaticConfiguration.HomeClass'
-        login: 'StaticConfiguration.LoginClass'
+    class MOTDClass(SQLModel):
+        pre: str
+        post: str
+
+    class HomeClass(SQLModel):
+        title: str
+        MOTD: "StaticConfiguration.MOTDClass"
+
+    class LoginClass(SQLModel):
+        MOTD: "StaticConfiguration.MOTDClass"
+
+    oauth: "StaticConfiguration.OAuthClass"
+    home: "StaticConfiguration.HomeClass"
+    login: "StaticConfiguration.LoginClass"
