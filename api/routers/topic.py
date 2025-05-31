@@ -1,7 +1,7 @@
 from typing import Annotated, Union
 
 from fastapi import Depends, status
-from sqlmodel import select
+from sqlmodel import col, or_, select
 
 from api.error import ConflictError, NotFound, ErrorResponses
 from api.helper import checkParentTopicChildren
@@ -30,9 +30,37 @@ async def getTopics(
     topics = session.exec(select(Topic)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.Topic.List, topics) # type: ignore
+        return Response.buildResponse(Response.Topic.List, topics)  # type: ignore
     else:
-        return Response.buildResponse(Response.Topic.ListWithRequirements, topics) # type: ignore
+        return Response.buildResponse(Response.Topic.ListWithRequirements, topics)  # type: ignore
+
+
+@router.get(
+    "/topics/find",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All topics"},
+    },
+)
+async def findTopics(
+    session: SessionDep, query: str, expandTopics: bool = False
+) -> Union[Response.Topic.List, Response.Topic.ListWithRequirements]:
+    topics = (
+        session.exec(
+            select(Topic).where(
+                or_(col(Topic.key).contains(query), col(Topic.title).contains(query))
+            )
+        )
+        .unique()
+        .all()
+    )
+
+    if expandTopics is False:
+        return Response.buildResponse(Response.Topic.List, topics)  # type: ignore
+    else:
+        return Response.buildResponse(Response.Topic.ListWithRequirements, topics)  # type: ignore
 
 
 @router.get(
@@ -54,9 +82,9 @@ async def getTopic(
     if not topic:
         raise NotFound(detail="Topic not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.Topic.One, topic) # type: ignore
+        return Response.buildResponse(Response.Topic.One, topic)  # type: ignore
     else:
-        return Response.buildResponse(Response.Topic.OneWithRequirements, topic) # type: ignore
+        return Response.buildResponse(Response.Topic.OneWithRequirements, topic)  # type: ignore
 
 
 @router.patch(
@@ -85,7 +113,7 @@ async def patchTopic(
     session.commit()
     session.refresh(topicFromDB)
     audit(session, 1, topicFromDB, userId)
-    return Response.buildResponse(Response.Topic.One, topicFromDB) # type: ignore
+    return Response.buildResponse(Response.Topic.One, topicFromDB)  # type: ignore
 
 
 @router.post(
@@ -109,7 +137,7 @@ async def addTopic(
     session.commit()
     session.refresh(topicDB)
     audit(session, 0, topicDB, userId)
-    return Response.buildResponse(Response.Topic.One, topicDB, 201) # type: ignore
+    return Response.buildResponse(Response.Topic.One, topicDB, 201)  # type: ignore
 
 
 @router.delete(

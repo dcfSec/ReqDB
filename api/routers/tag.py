@@ -1,7 +1,7 @@
 from typing import Annotated, Union
 
 from fastapi import Depends, status
-from sqlmodel import select
+from sqlmodel import col, select
 
 from api.error import ConflictError, NotFound, ErrorResponses
 from api.models import SessionDep, audit
@@ -29,9 +29,29 @@ async def getTags(
     tags = session.exec(select(Tag)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.Tag.List, tags) # type: ignore
+        return Response.buildResponse(Response.Tag.List, tags)  # type: ignore
     else:
-        return Response.buildResponse(Response.Tag.ListWithRequirements, tags) # type: ignore
+        return Response.buildResponse(Response.Tag.ListWithRequirements, tags)  # type: ignore
+
+
+@router.get(
+    "/tags/find",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All tags"},
+    },
+)
+async def findTags(
+    session: SessionDep, query: str, expandTopics: bool = True
+) -> Response.Tag.List | Response.Tag.ListWithRequirements:
+    tags = session.exec(select(Tag).where(col(Tag.name).contains(query))).unique().all()
+
+    if expandTopics is False:
+        return Response.buildResponse(Response.Tag.List, tags)  # type: ignore
+    else:
+        return Response.buildResponse(Response.Tag.ListWithRequirements, tags)  # type: ignore
 
 
 @router.get(
@@ -53,9 +73,9 @@ async def getTag(
     if not tag:
         raise NotFound(detail="Tag not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.Tag.One, tag) # type: ignore
+        return Response.buildResponse(Response.Tag.One, tag)  # type: ignore
     else:
-        return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tag) # type: ignore
+        return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tag)  # type: ignore
 
 
 @router.patch(
@@ -97,7 +117,7 @@ async def patchTag(
     session.commit()
     session.refresh(tagFromDB)
     audit(session, 1, tagFromDB, userId)
-    return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tagFromDB) # type: ignore
+    return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tagFromDB)  # type: ignore
 
 
 @router.post(
@@ -134,7 +154,7 @@ async def addTag(
     session.commit()
     session.refresh(tagDB)
     audit(session, 0, tagDB, userId)
-    return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tagDB, 201) # type: ignore
+    return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tagDB, 201)  # type: ignore
 
 
 @router.delete(

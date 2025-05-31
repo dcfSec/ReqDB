@@ -1,7 +1,7 @@
 from typing import Annotated, Union
 
 from fastapi import Depends, status
-from sqlmodel import select
+from sqlmodel import col, select
 
 from api.error import NotFound, ErrorResponses
 from api.models import SessionDep, audit
@@ -29,9 +29,33 @@ async def getExtraEntries(
     extraEntries = session.exec(select(ExtraEntry)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraEntry.List, extraEntries) # type: ignore
+        return Response.buildResponse(Response.ExtraEntry.List, extraEntries)  # type: ignore
     else:
-        return Response.buildResponse(Response.ExtraEntry.List, extraEntries) # type: ignore
+        return Response.buildResponse(Response.ExtraEntry.List, extraEntries)  # type: ignore
+
+
+@router.get(
+    "/extraEntries/find",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All extra entries"},
+    },
+)
+async def findExtraEntries(
+    session: SessionDep, query: str, expandTopics: bool = True
+) -> Response.ExtraEntry.List:
+    extraEntries = (
+        session.exec(select(ExtraEntry).where(col(ExtraEntry.content).contains(query)))
+        .unique()
+        .all()
+    )
+
+    if expandTopics is False:
+        return Response.buildResponse(Response.ExtraEntry.List, extraEntries)  # type: ignore
+    else:
+        return Response.buildResponse(Response.ExtraEntry.List, extraEntries)  # type: ignore
 
 
 @router.get(
@@ -53,9 +77,9 @@ async def getExtraEntry(
     if not extraType:
         raise NotFound(detail="ExtraEntry not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.ExtraEntry.One, extraType) # type: ignore
+        return Response.buildResponse(Response.ExtraEntry.One, extraType)  # type: ignore
     else:
-        return Response.buildResponse(Response.ExtraEntry.One, extraType) # type: ignore
+        return Response.buildResponse(Response.ExtraEntry.One, extraType)  # type: ignore
 
 
 @router.patch(
@@ -83,7 +107,7 @@ async def patchExtraEntry(
     session.commit()
     session.refresh(extraTypeFromDB)
     audit(session, 1, extraTypeFromDB, userId)
-    return Response.buildResponse(Response.ExtraEntry.One, extraTypeFromDB) # type: ignore
+    return Response.buildResponse(Response.ExtraEntry.One, extraTypeFromDB)  # type: ignore
 
 
 @router.post(
@@ -106,7 +130,7 @@ async def addExtraEntry(
     session.commit()
     session.refresh(extraTypeDB)
     audit(session, 0, extraTypeDB, userId)
-    return Response.buildResponse(Response.ExtraEntry.One, extraTypeDB, 201) # type: ignore
+    return Response.buildResponse(Response.ExtraEntry.One, extraTypeDB, 201)  # type: ignore
 
 
 @router.delete(

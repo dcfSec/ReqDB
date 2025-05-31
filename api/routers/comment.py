@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import BackgroundTasks, Depends, status
-from sqlmodel import select
+from sqlmodel import col, or_, select
 
 from api.error import ConflictError, NotFound, ErrorResponses
 from api.helper import sendNotificationMailForNewComment
@@ -27,7 +27,33 @@ router = AuthRouter()
 async def getComments(session: SessionDep) -> Response.Comment.List:
     comments = session.exec(select(Comment)).unique().all()
 
-    return Response.buildResponse(Response.Comment.List, comments) # type: ignore
+    return Response.buildResponse(Response.Comment.List, comments)  # type: ignore
+
+
+@router.get(
+    "/comments/find",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All comments"},
+    },
+)
+async def findComments(session: SessionDep, query: str) -> Response.Comment.List:
+    comments = (
+        session.exec(
+            select(Comment).where(
+                or_(
+                    col(Comment.comment).contains(query),
+                    col(Comment.author.email).contains(query),
+                )
+            )
+        )
+        .unique()
+        .all()
+    )
+
+    return Response.buildResponse(Response.Comment.List, comments)  # type: ignore
 
 
 @router.get(
@@ -47,7 +73,7 @@ async def getComment(session: SessionDep, commentID: int) -> Response.Comment.On
     if not comment:
         raise NotFound(detail="Comment not found")
 
-    return Response.buildResponse(Response.Comment.One, comment) # type: ignore
+    return Response.buildResponse(Response.Comment.One, comment)  # type: ignore
 
 
 @router.patch(
@@ -75,7 +101,7 @@ async def patchComment(
     session.commit()
     session.refresh(commentFromDB)
     audit(session, 1, commentFromDB, userId)
-    return Response.buildResponse(Response.Comment.One, commentFromDB) # type: ignore
+    return Response.buildResponse(Response.Comment.One, commentFromDB)  # type: ignore
 
 
 @router.post(
@@ -92,7 +118,7 @@ async def addComment(
     userId: Annotated[str, Depends(getUserId)],
     comment: Insert.Comment,
     session: SessionDep,
-    backgroundTasks: BackgroundTasks
+    backgroundTasks: BackgroundTasks,
 ) -> Response.Comment.One:
     comment.authorId = userId
     commentDB = Comment.model_validate(comment)
@@ -100,9 +126,9 @@ async def addComment(
     session.commit()
     session.refresh(commentDB)
     audit(session, 0, commentDB, userId)
-    #sendNotificationMailForNewComment(session, commentDB.id)
+    # sendNotificationMailForNewComment(session, commentDB.id)
     backgroundTasks.add_task(sendNotificationMailForNewComment, session, commentDB.id)
-    return Response.buildResponse(Response.Comment.One, commentDB, 201) # type: ignore
+    return Response.buildResponse(Response.Comment.One, commentDB, 201)  # type: ignore
 
 
 @router.delete(

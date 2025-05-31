@@ -24,36 +24,43 @@ auth = {
     "getUserConfig": {"required": True, "roles": []},
     "patchUserConfig": {"required": True, "roles": []},
     "getTags": {"required": True, "roles": ["Requirements.Reader"]},
+    "findTags": {"required": True, "roles": ["Requirements.Reader"]},
     "getTag": {"required": True, "roles": ["Requirements.Reader"]},
     "patchTag": {"required": True, "roles": ["Requirements.Writer"]},
     "addTag": {"required": True, "roles": ["Requirements.Writer"]},
     "deleteTag": {"required": True, "roles": ["Requirements.Writer"]},
     "getCatalogues": {"required": True, "roles": ["Requirements.Reader"]},
+    "findCatalogues": {"required": True, "roles": ["Requirements.Reader"]},
     "getCatalogue": {"required": True, "roles": ["Requirements.Reader"]},
     "patchCatalogue": {"required": True, "roles": ["Requirements.Writer"]},
     "addCatalogue": {"required": True, "roles": ["Requirements.Writer"]},
     "deleteCatalogue": {"required": True, "roles": ["Requirements.Writer"]},
     "getComments": {"required": True, "roles": ["Requirements.Reader"]},
+    "findComments": {"required": True, "roles": ["Requirements.Reader"]},
     "getComment": {"required": True, "roles": ["Requirements.Reader"]},
     "patchComment": {"required": True, "roles": ["Requirements.Writer"]},
     "addComment": {"required": True, "roles": ["Requirements.Writer"]},
     "deleteComment": {"required": True, "roles": ["Requirements.Writer"]},
     "getTopics": {"required": True, "roles": ["Requirements.Reader"]},
+    "findTopics": {"required": True, "roles": ["Requirements.Reader"]},
     "getTopic": {"required": True, "roles": ["Requirements.Reader"]},
     "patchTopic": {"required": True, "roles": ["Requirements.Writer"]},
     "addTopic": {"required": True, "roles": ["Requirements.Writer"]},
     "deleteTopic": {"required": True, "roles": ["Requirements.Writer"]},
     "getRequirements": {"required": True, "roles": ["Requirements.Reader"]},
+    "findRequirements": {"required": True, "roles": ["Requirements.Reader"]},
     "getRequirement": {"required": True, "roles": ["Requirements.Reader"]},
     "patchRequirement": {"required": True, "roles": ["Requirements.Writer"]},
     "addRequirement": {"required": True, "roles": ["Requirements.Writer"]},
     "deleteRequirement": {"required": True, "roles": ["Requirements.Writer"]},
     "getExtraTypes": {"required": True, "roles": ["Requirements.Reader"]},
+    "findExtraTypes": {"required": True, "roles": ["Requirements.Reader"]},
     "getExtraType": {"required": True, "roles": ["Requirements.Reader"]},
     "patchExtraType": {"required": True, "roles": ["Requirements.Writer"]},
     "addExtraType": {"required": True, "roles": ["Requirements.Writer"]},
     "deleteExtraType": {"required": True, "roles": ["Requirements.Writer"]},
     "getExtraEntries": {"required": True, "roles": ["Requirements.Reader"]},
+    "findExtraEntries": {"required": True, "roles": ["Requirements.Reader"]},
     "getExtraEntry": {"required": True, "roles": ["Requirements.Reader"]},
     "patchExtraEntry": {"required": True, "roles": ["Requirements.Writer"]},
     "addExtraEntry": {"required": True, "roles": ["Requirements.Writer"]},
@@ -70,6 +77,7 @@ class HTTPBearerWithUnauthorizedError(HTTPBearer):
 
     :param HTTPBearer: HTTPBearer dependency from FastAPI
     """
+
     async def __call__(
         self, request: Request
     ) -> Optional[HTTPAuthorizationCredentials]:
@@ -87,6 +95,7 @@ class RBACRoute(APIRoute):
 
     :param APIRoute: APIRoute from FastAPI
     """
+
     def get_route_handler(self) -> Callable:
         original_route_handler = super().get_route_handler()
 
@@ -96,7 +105,9 @@ class RBACRoute(APIRoute):
                     detail=f"Authentication configuration missing for route {request.scope['route'].name}"
                 )
             if auth[request.scope["route"].name]["required"] is True:
-                credentials: HTTPAuthorizationCredentials | None = await HTTPBearerWithUnauthorizedError()(request)
+                credentials: HTTPAuthorizationCredentials | None = (
+                    await HTTPBearerWithUnauthorizedError()(request)
+                )
                 if credentials is None:
                     raise Unauthorized(detail="No credentials provided")
                 jwt = await validateJWT(credentials)
@@ -113,6 +124,7 @@ class AuthRouter(APIRouter):
 
     :param APIRouter: APIRouter from FastAPI
     """
+
     def __init__(self, **kwargs):
         super().__init__(route_class=RBACRoute, **kwargs)
 

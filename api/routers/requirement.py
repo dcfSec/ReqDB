@@ -1,7 +1,7 @@
 from typing import Annotated, Union
 
 from fastapi import Depends, status
-from sqlmodel import select
+from sqlmodel import col, select, or_
 
 from api.error import ConflictError, NotFound, ErrorResponses
 from api.helper import checkParentTopicChildren
@@ -25,15 +25,46 @@ router = AuthRouter()
     },
 )
 async def getRequirements(
-    roles: Annotated[dict, Depends(getRoles)],
-    session: SessionDep
-) -> Union[Response.Requirement.List,Response.Requirement.ListWithComments]:
+    roles: Annotated[dict, Depends(getRoles)], session: SessionDep
+) -> Union[Response.Requirement.List, Response.Requirement.ListWithComments]:
     requirements = session.exec(select(Requirement)).unique().all()
 
     if "Comments.Reader" in roles:
-        return Response.buildResponse(Response.Requirement.ListWithComments, requirements) # type: ignore
+        return Response.buildResponse(Response.Requirement.ListWithComments, requirements)  # type: ignore
     else:
-        return Response.buildResponse(Response.Requirement.List, requirements) # type: ignore
+        return Response.buildResponse(Response.Requirement.List, requirements)  # type: ignore
+
+
+@router.get(
+    "/requirements/find",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All requirements"},
+    },
+)
+async def findRequirements(
+    roles: Annotated[dict, Depends(getRoles)], query: str, session: SessionDep
+) -> Response.Requirement.List | Response.Requirement.ListWithComments:
+    requirements = (
+        session.exec(
+            select(Requirement).where(
+                or_(
+                    col(Requirement.key).contains(query),
+                    col(Requirement.title).contains(query),
+                    col(Requirement.description).contains(query),
+                )
+            )
+        )
+        .unique()
+        .all()
+    )
+
+    if "Comments.Reader" in roles:
+        return Response.buildResponse(Response.Requirement.ListWithComments, requirements)  # type: ignore
+    else:
+        return Response.buildResponse(Response.Requirement.List, requirements)  # type: ignore
 
 
 @router.get(
@@ -48,8 +79,7 @@ async def getRequirements(
     },
 )
 async def getRequirement(
-    roles: Annotated[dict, Depends(getRoles)],
-    session: SessionDep, requirementID: int
+    roles: Annotated[dict, Depends(getRoles)], session: SessionDep, requirementID: int
 ) -> Union[Response.Requirement.One, Response.Requirement.OneWithComments]:
     requirement = session.get(Requirement, requirementID)
 
@@ -57,9 +87,9 @@ async def getRequirement(
         raise NotFound(detail="Requirement not found")
 
     if "Comments.Reader" in roles:
-        return Response.buildResponse(Response.Requirement.OneWithComments, requirement) # type: ignore
+        return Response.buildResponse(Response.Requirement.OneWithComments, requirement)  # type: ignore
     else:
-        return Response.buildResponse(Response.Requirement.One, requirement) # type: ignore
+        return Response.buildResponse(Response.Requirement.One, requirement)  # type: ignore
 
 
 @router.patch(
@@ -97,7 +127,7 @@ async def patchRequirement(
     session.commit()
     session.refresh(requirementFromDB)
     audit(session, 1, requirementFromDB, userId)
-    return Response.buildResponse(Response.Requirement.One, requirementFromDB) # type: ignore
+    return Response.buildResponse(Response.Requirement.One, requirementFromDB)  # type: ignore
 
 
 @router.post(
@@ -130,7 +160,7 @@ async def addRequirement(
     session.commit()
     session.refresh(requirementDB)
     audit(session, 0, requirementDB, userId)
-    return Response.buildResponse(Response.Requirement.One, requirementDB, 201) # type: ignore
+    return Response.buildResponse(Response.Requirement.One, requirementDB, 201)  # type: ignore
 
 
 @router.delete(

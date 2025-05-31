@@ -1,7 +1,7 @@
 from typing import Annotated, Union
 
 from fastapi import Depends, status
-from sqlmodel import select
+from sqlmodel import col, or_, select
 
 from api.error import ConflictError, ErrorResponses, NotFound
 from api.models import SessionDep, audit
@@ -25,13 +25,48 @@ router = AuthRouter()
 )
 async def getCatalogues(
     session: SessionDep, expandTopics: bool = True
-) -> Union[Response.Catalogue.ListWithTags, Response.Catalogue.ListWithTopicsAndRequirements]:
+) -> Union[
+    Response.Catalogue.ListWithTags, Response.Catalogue.ListWithTopicsAndRequirements
+]:
     catalogues = session.exec(select(Catalogue)).unique().all()
 
     if expandTopics is False:
-        return Response.buildResponse(Response.Catalogue.ListWithTags, catalogues) # type: ignore
+        return Response.buildResponse(Response.Catalogue.ListWithTags, catalogues)  # type: ignore
     else:
-        return Response.buildResponse(Response.Catalogue.ListWithTopicsAndRequirements, catalogues) # type: ignore
+        return Response.buildResponse(Response.Catalogue.ListWithTopicsAndRequirements, catalogues)  # type: ignore
+
+
+@router.get(
+    "/catalogues/find",
+    status_code=status.HTTP_200_OK,
+    responses={
+        **ErrorResponses.forbidden,
+        **ErrorResponses.unauthorized,
+        200: {"description": "All catalogues"},
+    },
+)
+async def findCatalogues(
+    session: SessionDep, query: str, expandTopics: bool = True
+) -> Union[
+    Response.Catalogue.ListWithTags, Response.Catalogue.ListWithTopicsAndRequirements
+]:
+    catalogues = (
+        session.exec(
+            select(Catalogue).where(
+                or_(
+                    col(Catalogue.key).contains(query),
+                    col(Catalogue.title).contains(query),
+                )
+            )
+        )
+        .unique()
+        .all()
+    )
+
+    if expandTopics is False:
+        return Response.buildResponse(Response.Catalogue.ListWithTags, catalogues)  # type: ignore
+    else:
+        return Response.buildResponse(Response.Catalogue.ListWithTopicsAndRequirements, catalogues)  # type: ignore
 
 
 @router.get(
@@ -60,11 +95,11 @@ async def getCatalogue(
     if not catalogue:
         raise NotFound(detail="Catalogue not found")
     if expandTopics is False:
-        return Response.buildResponse(Response.Catalogue.OneWithTags, catalogue) # type: ignore
+        return Response.buildResponse(Response.Catalogue.OneWithTags, catalogue)  # type: ignore
     else:
         if "Comments.Reader" in roles:
-            return Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirementsAndComments, catalogue) # type: ignore
-        return  Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirements, catalogue) # type: ignore
+            return Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirementsAndComments, catalogue)  # type: ignore
+        return Response.buildResponse(Response.Catalogue.OneWithTopicsAndRequirements, catalogue)  # type: ignore
 
 
 @router.patch(
@@ -108,7 +143,7 @@ async def patchCatalogue(
     session.commit()
     session.refresh(catalogueFromDB)
     audit(session, 1, catalogueFromDB, userId)
-    return Response.buildResponse(Response.Catalogue.OneWithTopics, catalogueFromDB) # type: ignore
+    return Response.buildResponse(Response.Catalogue.OneWithTopics, catalogueFromDB)  # type: ignore
 
 
 @router.post(
@@ -148,7 +183,7 @@ async def addCatalogue(
     session.commit()
     session.refresh(catalogueDB)
     audit(session, 0, catalogueDB, userId)
-    return Response.buildResponse(Response.Catalogue.One, catalogueDB, 201) # type: ignore
+    return Response.buildResponse(Response.Catalogue.One, catalogueDB, 201)  # type: ignore
 
 
 @router.delete(
