@@ -170,6 +170,7 @@ export function Catalogues() {
   return <EditParent editPageName="Catalogues" humanKey="title"
     headers={[
       "#",
+      "Key",
       "Title",
       "Description",
       "Root Elements",

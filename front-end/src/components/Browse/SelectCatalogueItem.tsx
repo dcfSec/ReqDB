@@ -26,8 +26,10 @@ export default function SelectCatalogueItem({ catalogue }: Props) {
       overlay={renderTooltip}
     >
       <ListGroup.Item action as={Link} to={`${catalogue.id}`}>
-        <Stack direction="horizontal" gap={1}>
-          {catalogue.title}
+        <Stack direction="horizontal" gap={2}>
+          <span style={{ minWidth: "9%" }}>{catalogue.key}</span>
+          <div className="vr" />
+          <span className='p-4'>{catalogue.title}</span>
           {catalogue.tags.map((item) => (
             <Badge key={`tag-${item.id}`} bg="secondary" className={"lowerButton"}>{item.name}</Badge>
           ))}

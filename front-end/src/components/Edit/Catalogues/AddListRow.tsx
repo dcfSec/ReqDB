@@ -24,6 +24,7 @@ export function CatalogueAddListRow({ newItem, updateNewItem }: Props) {
   return (
     <>
       <td></td>
+      <td><Form.Control type="text" id="key" value={newItem.key} onChange={e => { updateNewItem({ key: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="title" value={newItem.title} onChange={e => { updateNewItem({ title: e.target.value }) }} /></td>
       <td><Form.Control type="text" id="description" value={newItem.description} onChange={e => { updateNewItem({ description: e.target.value }) }} /></td>
       <td><Button variant="primary" onClick={() => {

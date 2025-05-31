@@ -25,7 +25,6 @@ export default defineConfig({
   },
   plugins: [react(), macrosPlugin(), /*nodePolyfills()*/],
   define: {
-    'process.env': process.env,
     'process.platform': JSON.stringify(process.version),
     'process.version': JSON.stringify(process.version),
     'process.versions.node': JSON.stringify(process.versions.node),

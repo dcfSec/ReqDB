@@ -65,7 +65,7 @@ export default function BrowseSelectCatalogue() {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
     if (catalogueData.length > 0) {
-      body = <Stack gap={2} className="col-md-5 mx-auto"><ListGroup>
+      body = <Stack gap={2} className="col-md-6 mx-auto"><ListGroup>
         {catalogueData.map((catalogue, index) => (<SelectCatalogueItem key={index} catalogue={catalogue} />))}
       </ListGroup></Stack>
     } else {
