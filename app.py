@@ -1,13 +1,15 @@
 __version__ = "0.1.0"
 
 import multiprocessing
+from collections.abc import Callable, Coroutine
 from contextlib import asynccontextmanager
 from os import getenv
+from typing import Any
 
 import uvicorn
 from authlib.integrations.starlette_client import OAuth
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -24,11 +26,14 @@ from api.models.db import *
 
 load_dotenv()
 
-async def not_found(request: Request, exc: HTTPException):
+
+async def not_found(request: Request, exc: HTTPException) -> FileResponse:
     return FileResponse("front-end/dist/index.html", status_code=exc.status_code)
 
 
-exception_handlers = {
+exception_handlers: dict[
+    int | type[Exception], Callable[[Request, Any], Coroutine[Any, Any, Response]]
+] = {
     404: not_found,
 }
 
@@ -84,10 +89,11 @@ app.mount("/", SPAStaticFiles(directory="front-end/dist", html=True), name="inde
 
 if __name__ == "__main__":
 
-    workers = getenv("USE_UVICORN_WORKERS")
-    if workers:
+    workersEnv: str | None = getenv("USE_UVICORN_WORKERS")
+    workers = None
+    if workersEnv:
         try:
-            workers = int(workers)
+            workers = int(workersEnv)
         except ValueError:
             print("Can't parse 'USE_UVICORN_WORKERS'.")
             exit(-1)
