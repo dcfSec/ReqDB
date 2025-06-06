@@ -37,7 +37,7 @@ ReqDB can be deployed everywhere where python is supported as runtime environmen
 ```sh
 pip install -r requirements.txt
 
-cd front-end
+cd spa
 npm install
 npm run build
 ```
@@ -141,7 +141,7 @@ Lastly in in `API permissions` the permissions `email`, `openid` and `profile` n
 1. Clone the repository: `git clone git@github.com:dcfSec/ReqDB.git; cd ReqDB`
 2. Install the backend requirements: `poetry install --no-root` (`poetry` is used to manage the dependencies for development)
 3. Start the backend: `fastapi dev app.py`
-4. Install the frontend requirements: `cd front-end; npm install`
+4. Install the frontend requirements: `cd spa; npm install`
 5. Start the frontend for development `npm run start`
 
 ## Versioning

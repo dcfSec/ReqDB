@@ -28,7 +28,7 @@ load_dotenv()
 
 
 async def not_found(request: Request, exc: HTTPException) -> FileResponse:
-    return FileResponse("front-end/dist/index.html", status_code=exc.status_code)
+    return FileResponse("spa/dist/index.html", status_code=exc.status_code)
 
 
 exception_handlers: dict[
@@ -84,7 +84,7 @@ app.add_middleware(GZipMiddleware)
 
 app.mount("/api", api.api)
 
-app.mount("/", SPAStaticFiles(directory="front-end/dist", html=True), name="index")
+app.mount("/", SPAStaticFiles(directory="spa/dist", html=True), name="index")
 
 
 if __name__ == "__main__":

@@ -1,13 +1,13 @@
 FROM node:22-alpine AS build
 
 WORKDIR /src
-COPY front-end ./
+COPY spa ./
 RUN npm install
 RUN npm run build
 
 FROM python:3.13-alpine
-RUN mkdir front-end
-COPY --from=build /src/dist ./front-end/dist
+RUN mkdir spa
+COPY --from=build /src/dist ./spa/dist
 
 COPY app.py ./
 COPY requirements.txt ./

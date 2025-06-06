@@ -10,4 +10,4 @@ The frontend is built with vite and react-bootstrap.
 
 ## Build
 
-Run `npm run build`. The built files are in `front-end/dist`
+Run `npm run build`. The built files are in `spa/dist`
