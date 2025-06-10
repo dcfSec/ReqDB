@@ -100,6 +100,7 @@ async def parseCallback(request: Request, response: FastResponse):
                 value=authSession.startSession(token),
                 samesite="strict",
                 max_age=authSession.maxAge,
+                secure=True,
             )
             user = dict(userInfo)  # type: ignore
             return {
@@ -180,6 +181,7 @@ async def getToken(request: Request, response: FastResponse):
                     value=authSession.startSession(token),
                     samesite="strict",
                     max_age=authSession.maxAge,
+                    secure=True,
                 )
                 authSession.removeSession(sessionId)
             return {
