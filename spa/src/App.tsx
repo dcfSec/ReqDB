@@ -9,6 +9,7 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faSun, faMoon, faDatabase, faLink, faComment, faPaperPlane, faEraser, faPen, faCheck, faArrowsRotate, faArrowRight, faCodeCompare, faReply, faXmark, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faCircleQuestion, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { useSearchParams } from 'react-router';
+import { useEffect } from 'react';
 
 
 library.add(faGithub, faSun, faMoon, faDatabase, faEyeSlash, faEye, faLink, faComment, faPaperPlane, faEraser, faPen, faCheck, faArrowsRotate, faArrowRight, faCircleQuestion, faCodeCompare, faReply, faXmark, faPlus)
@@ -21,13 +22,16 @@ function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const login = searchParams.get("login")
 
-  if (login == "") {
-    if (token !== "") {
-      dispatch(setAuthenticated(true))
-      searchParams.delete("login")
-      setSearchParams(searchParams);
+  useEffect(() => {
+    if (login == "") {
+      if (token !== "") {
+        dispatch(setAuthenticated(true))
+        searchParams.delete("login")
+        setSearchParams(searchParams);
+      }
     }
-  }
+  }, [login]);
+
 
   if (authenticated) {
     // store.dispatch(showSpinner(false))
