@@ -24,6 +24,8 @@ from api.helper import checkAndUpdateConfigDB
 from api.models import engine
 from api.models.db import *
 
+import auth
+
 load_dotenv()
 
 
@@ -79,10 +81,10 @@ app = FastAPI(
     title="ReqDB",
 )
 
-# app.add_middleware(SessionMiddleware, secret_key=AppConfig.SECRET_KEY)
 app.add_middleware(GZipMiddleware)
 
 app.mount("/api", api.api)
+app.mount("/auth", auth.auth)
 
 app.mount("/", SPAStaticFiles(directory="spa/dist", html=True), name="index")
 

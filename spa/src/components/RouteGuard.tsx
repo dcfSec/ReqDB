@@ -1,7 +1,9 @@
 import { Button, Col, Row } from "react-bootstrap";
-import { useAppSelector } from "../hooks";
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { ReactNode } from "react";
-import { useAuth } from "react-oidc-context";
+import { APIErrorToastCallback, authClient, errorToastCallback, handleError, handleResult } from "../APIClient";
+import { APISuccessData } from "../types/Generics";
+import { setAuthenticated, setExpiresAt, setToken } from "../stateSlices/UserSlice";
 
 
 type Props = {
@@ -14,14 +16,34 @@ type Props = {
  * @param {object} props Props for this component: roles, title, children
  * @returns Route gard container for the jwt secured routes
  */
-export default function RouteGuard({ requiredRoles, children } : Props) {
+export default function RouteGuard({ requiredRoles, children }: Props) {
+  const dispatch = useAppDispatch()
+
   const roles = useAppSelector(state => state.user.roles)
   const isAuthorized = (requiredRoles.filter((role) => roles.includes(role)).length > 0);
-  const auth = useAuth();
-  
+  const isAuthenticated = useAppSelector(state => state.user.authenticated)
+
+  function onLogout() { //May
+    authClient.get("/logout").then((response) => {
+      handleResult(response, okCallback, APIErrorToastCallback)
+
+    }).catch((error) => {
+      handleError(error, APIErrorToastCallback, errorToastCallback)
+
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    function okCallback(response: APISuccessData) {
+      dispatch(setToken(""))
+      dispatch(setExpiresAt(0))
+      dispatch(setAuthenticated(false))
+    }
+  }
+
+
   return (
     <>
-      {auth.isAuthenticated && isAuthorized ? (children) :
+      {isAuthenticated && isAuthorized ? (children) :
         <>
           <Row>
             <Col><h1>Unauthorized</h1></Col>
@@ -45,7 +67,7 @@ export default function RouteGuard({ requiredRoles, children } : Props) {
           <Row>
             <Col>
               <p>Logout to refresh your token if you think this is an error:</p>
-              <Button onClick={() => void auth.removeUser()} variant="outline-secondary">Logout</Button>
+              <Button onClick={onLogout} variant="outline-secondary">Logout</Button>
             </Col>
           </Row>
         </>

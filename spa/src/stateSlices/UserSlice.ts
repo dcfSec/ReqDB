@@ -13,6 +13,9 @@ interface UserState {
     notificationMailOnRequirementComment: boolean,
   },
   name: string,
+  token: string,
+  expiresAt: number
+  authenticated: boolean
 }
 
 const initialState: UserState = {
@@ -23,6 +26,9 @@ const initialState: UserState = {
     notificationMailOnRequirementComment: false,
   },
   name: "Nobody",
+  token: "",
+  expiresAt: 0,
+  authenticated: false
 }
 
 export const UserSlice = createSlice({
@@ -34,6 +40,15 @@ export const UserSlice = createSlice({
     },
     setRoles: (state, action: PayloadAction<Array<string>>) => {
       state.roles = [...action.payload]
+    },
+    setToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload
+    },
+    setExpiresAt: (state, action: PayloadAction<number>) => {
+      state.expiresAt = action.payload
+    },
+    setAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.authenticated = action.payload
     },
     setDarkMode: (state, action: PayloadAction<boolean>) => {
       state.preferences.darkMode = action.payload
@@ -75,7 +90,7 @@ export const UserSlice = createSlice({
   }
 })
 
-export const { setName, setRoles, setDarkMode, toggleDarkMode, syncLocalStorage, loadUserConfiguration, setUserConfiguration, toggleUserConfiguration } = UserSlice.actions
+export const { setName, setRoles, setToken, setExpiresAt, setAuthenticated, setDarkMode, toggleDarkMode, syncLocalStorage, loadUserConfiguration, setUserConfiguration, toggleUserConfiguration } = UserSlice.actions
 
 export default UserSlice.reducer
 

@@ -18,19 +18,25 @@ class AppConfig:
     :return AppConfig: Static configuration used by ReqDB
     """
 
-    SECRET_KEY = getenv("SECRET_KEY", uuid4().hex)
+    SESSION_SECRET_KEY = getenv("SESSION_SECRET_KEY", "")
     DATABASE_URI = (
         getenv("DATABASE_URI") or f"sqlite:///{path.join(basedir, 'app.sqlite')}"
     )
 
     OAUTH_CLIENT_ID = f"{getenv('OAUTH_CLIENT_ID')}"
-    OAUTH_SCOPE = getenv('OAUTH_SCOPE') or f"openid email offline_access {OAUTH_CLIENT_ID}/openid"
+    OAUTH_CLIENT_SECRET = getenv("OAUTH_CLIENT_SECRET", "")
+    OAUTH_CONFIG = getenv("OAUTH_CONFIG", "")
+    OAUTH_SCOPE = (
+        getenv("OAUTH_SCOPE")
+        or f"openid email offline_access {OAUTH_CLIENT_ID}/.default"
+    )
     OAUTH_PROVIDER = f"{getenv('OAUTH_PROVIDER')}"
+    OAUTH_TOKEN_ENDPOINT: str = ""
 
     JWT_ALGORITHM = "RS256"
-    JWT_DECODE_ISSUER = ""
+    JWT_DECODE_ISSUER: str = ""
     JWT_PUBLIC_KEYS: KeySet
-    JWT_JWK_URI = ""
+    JWT_JWK_URI: str = ""
 
     BASE_URL = f"{getenv('BASE_URL', 'http://localhost')}"
 
@@ -65,16 +71,17 @@ class AppConfig:
         :raises HTTPError: Raises if the HTTP status is not ok
         :raises requests.exceptions.JSONDecodeError: Raises if oauth config can't be decoded as json
         """
-        response = requests.get(f"{getenv('OAUTH_CONFIG')}")
+        response = requests.get(cls.OAUTH_CONFIG)
         response.raise_for_status()
         openIdConfig = response.json()
 
-        for k in ["issuer", "jwks_uri"]:
+        for k in ["issuer", "jwks_uri", "token_endpoint"]:
             if k not in openIdConfig:
                 raise AssertionError(f"Required key missing in oidc config URL: {k}")
 
         cls.JWT_DECODE_ISSUER = openIdConfig["issuer"]
         cls.JWT_JWK_URI = openIdConfig["jwks_uri"]
+        cls.OAUTH_TOKEN_ENDPOINT = openIdConfig["token_endpoint"]
 
     @classmethod
     def setEmailActiveStatus(cls):
@@ -91,7 +98,13 @@ class AppConfig:
 
         :raises AssertionError: Raises, if the needed environment variables are missing
         """
-        for k in ["OAUTH_CLIENT_ID", "OAUTH_CONFIG", "OAUTH_PROVIDER"]:
+        for k in [
+            "OAUTH_CLIENT_ID",
+            "OAUTH_CONFIG",
+            "OAUTH_PROVIDER",
+            "OAUTH_CLIENT_SECRET",
+            "SESSION_SECRET_KEY",
+        ]:
             if getenv(k) is None:
                 raise AssertionError(f"Required env variable missing: {k}")
 

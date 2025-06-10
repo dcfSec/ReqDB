@@ -10,13 +10,15 @@ import { Link } from 'react-router';
 import { appRoles } from '../authConfig';
 
 import { useAppSelector, useAppDispatch } from "../hooks";
-import { loadUserConfiguration, toggleDarkMode } from "../stateSlices/UserSlice";
+import { loadUserConfiguration, setAuthenticated, setExpiresAt, setToken, toggleDarkMode } from "../stateSlices/UserSlice";
 import { useState } from 'react';
 import RolesModal from './RolesModal';
 import Preferences from './Preferences';
-import { useAuth } from 'react-oidc-context';
 import { ReactNode } from 'react';
 import ConfigurationModal from './Configuration/ConfigurationModal';
+import { showSpinner } from '../stateSlices/MainLogoSpinnerSlice';
+import { APIErrorToastCallback, authClient, errorToastCallback, handleError, handleResult } from '../APIClient';
+import { APISuccessData } from '../types/Generics';
 
 /**
  * Component for the main navigation bar
@@ -30,9 +32,32 @@ export default function MainNavbar() {
   const [showPreferences, setShowPreferences] = useState(false)
   const [showConfiguration, setShowConfiguration] = useState(false)
 
-  const auth = useAuth();
+  function onAuth() {
+    dispatch(showSpinner(true))
+    window.location.href = '/auth/login';
+  }
 
-  if (auth.isAuthenticated) {
+  function onLogout() {
+    authClient.get("/logout").then((response) => {
+      handleResult(response, okCallback, APIErrorToastCallback)
+
+    }).catch((error) => {
+      handleError(error, APIErrorToastCallback, errorToastCallback)
+
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    function okCallback(response: APISuccessData) {
+      dispatch(setToken(""))
+      dispatch(setExpiresAt(0))
+      dispatch(setAuthenticated(false))
+    }
+  }
+
+
+  // const auth = useAuth();
+  const authenticated = useAppSelector(state => state.user.authenticated)
+  if (authenticated) {
 
     const roles = useAppSelector(state => state.user.roles)
     const name = useAppSelector(state => state.user.name)
@@ -69,17 +94,17 @@ export default function MainNavbar() {
       </MainNavbarLeftParent>
       <MainNavbarRightParent>
         <NavDropdown title={name} id="accountDropdown" align="end">
-          {auth.isAuthenticated ?
+          {authenticated ?
             <>
               <NavDropdown.Item onClick={() => { setShowRoles(true) }}>My Roles</NavDropdown.Item>
               <NavDropdown.Item onClick={() => { dispatch(loadUserConfiguration()); setShowPreferences(true) }}>Preferences</NavDropdown.Item>
-            {roles.includes(appRoles.Configuration.Reader) ?
-              <NavDropdown.Item onClick={() => { setShowConfiguration(true) }}>Configuration</NavDropdown.Item>
-              : null}
+              {roles.includes(appRoles.Configuration.Reader) ?
+                <NavDropdown.Item onClick={() => { setShowConfiguration(true) }}>Configuration</NavDropdown.Item>
+                : null}
               <NavDropdown.Item as={Link} to="/APIDoc">API Doc</NavDropdown.Item>
-              <NavDropdown.Item onClick={() => void auth.removeUser()}>Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={onLogout}>Logout</NavDropdown.Item>
             </> :
-            <NavDropdown.Item onClick={() => void auth.signinRedirect()}>Login</NavDropdown.Item>
+            <NavDropdown.Item onClick={onAuth}>Login</NavDropdown.Item>
           }
         </NavDropdown>
       </MainNavbarRightParent>
@@ -91,7 +116,7 @@ export default function MainNavbar() {
       <MainNavbarLeftParent />
       <MainNavbarRightParent>
         <NavDropdown title={"Nobody"} id="accountDropdown" align="end">
-          <NavDropdown.Item onClick={() => void auth.signinRedirect()}>Login</NavDropdown.Item>
+          <NavDropdown.Item onClick={onAuth}>Login</NavDropdown.Item>
         </NavDropdown>
       </MainNavbarRightParent>
     </MainNavbarParent>

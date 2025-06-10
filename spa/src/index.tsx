@@ -6,37 +6,9 @@ import App from './App';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { oidcConfig } from "./authConfig.js";
-
 import store from './store'
 import { Provider } from 'react-redux'
-
-import { staticConfig } from "./static";
-import { User } from 'oidc-client-ts';
-import { AuthProvider, useAuth } from "react-oidc-context";
-
-import APIClient from './APIClient';
 import { BrowserRouter } from 'react-router';
-
-function getUser() {
-  const oidcStorage = localStorage.getItem(`oidc.user:${staticConfig.oauth.authority}:${staticConfig.oauth.client_id}`)
-  if (!oidcStorage) {
-    return null;
-  }
-  return User.fromStorageString(oidcStorage);
-}
-
-APIClient.interceptors.request.use(async (config) => {
-  const user = getUser();
-  const token = user?.access_token;
-  if (user && user.expired) {
-    await useAuth().signinSilent()
-  }
-  if (token != undefined) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 let darkMode = false
 if (localStorage.getItem('darkMode') == undefined) {
@@ -54,11 +26,11 @@ if (rootElement) {
   root.render(
     <React.StrictMode>
       <Provider store={store}>
-        <AuthProvider {...oidcConfig}>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </AuthProvider>
+        {/* <AuthProvider {...oidcConfig}> */}
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+        {/* </AuthProvider> */}
       </Provider>
     </React.StrictMode>
   );
