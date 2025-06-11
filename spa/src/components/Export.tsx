@@ -1,8 +1,8 @@
 import Dropdown from 'react-bootstrap/Dropdown';
-import ExcelJS from "exceljs";
 import * as yaml from 'js-yaml';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip, { TooltipProps } from 'react-bootstrap/Tooltip';
+import { stringify } from 'csv-stringify/browser/esm';
 
 import { useAppSelector } from '../hooks';
 import { RefAttributes } from 'react';
@@ -21,41 +21,32 @@ export function ExportTable() {
   const items = useAppSelector(state => state.browse.rows.items)
   const rowsToExport = [...useAppSelector(state => state.browse.rows.items).filter(function (v) { return v.selected === true; })]
 
-  const headers = [
-    "Tags",
-    "Topics",
-    "Key",
-    "Title",
-    "Description",
-    ...Object.keys(useAppSelector(state => state.browse.extraHeaders))
-  ]
+  function exportCSV() {
 
-  function exportExcel() {
+    const exportData = rowsToExport.map((row) => ({
+      ...Object.keys(row).filter((key) =>
+        !["id", "visible", "selected", "Comments", "path"].includes(key)
+      ).reduce((obj: { [key: string]: unknown }, key) => {
+        obj[key] = row[key];
+        return obj;
+      }, {}), ...{ Tags: row.Tags.join("\r\n"), Topics: row.Topics.map((topic) => (topic.title)).join("\r\n") }
+    }));
 
-    const exportData = rowsToExport.map((row) => ({ ...row, ...{ Tags: row.Tags.join("\r\n"), Topics: row.Topics.map((topic) => (topic.title)).join("\r\n") } }));
-
-    const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'ReqDB';
-    const sheet = workbook.addWorksheet('ReqDB export', { views: [{ state: 'frozen', ySplit: 1 }] });
-
-    sheet.columns = headers.map((header) => ({ header, key: header, width: 30, style: { alignment: { wrapText: true } } }));
-
-    sheet.addRows(exportData);
-
-    sheet.autoFilter = `A1:${String.fromCharCode(64 + headers.length)}1`;
-
-    workbook.xlsx.writeBuffer().then(data => {
-      const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-      const blob = new Blob([data], { type: fileType });
-      saveAs(blob, "ReqDB-Export.xlsx");
-    })
-      .catch(err => {
-        console.error(err.message)
-      });
+    stringify(
+      exportData,
+      {
+        header: true,
+      },
+      function (err, data) {
+        const fileType = 'data:text/csv;charset=utf-8;';
+        const blob = new Blob([data], { type: fileType });
+        saveAs(blob, "ReqDB-Export.csv");
+      },
+    );
   }
 
   function getExportObject(currentTopic: Topic): Topic | null {
-  
+
     const requirements = currentTopic.requirements.filter(function (v) { return v.selected === true; })
     const children = [...currentTopic.children.map((topic) => (getExportObject(topic))).filter(function (v) { return v !== null; })]
 
@@ -76,7 +67,7 @@ export function ExportTable() {
 
   function exportJson() {
 
-    const dataToExport = {...data}
+    const dataToExport = { ...data }
     dataToExport.topics = dataToExport.topics?.map((topic) => (getExportObject(topic))).filter(function (v) { return v !== null; });
 
     const fileType = 'data:text/json;charset=utf-8;';
@@ -87,7 +78,7 @@ export function ExportTable() {
 
   function exportYaml() {
 
-    const dataToExport = {...data}
+    const dataToExport = { ...data }
     dataToExport.topics = dataToExport.topics?.map((topic) => (getExportObject(topic))).filter(function (v) { return v !== null; });
 
     const fileType = 'data:text/yaml;charset=utf-8;';
@@ -97,7 +88,7 @@ export function ExportTable() {
 
   const renderTooltip = (props: JSX.IntrinsicAttributes & TooltipProps & RefAttributes<HTMLDivElement>) => (
     <Tooltip id="export-tooltip" {...props}>
-      {rowsToExport.length === 0 ? "First select the rows you want to export" : "Export the selected requirements"} 
+      {rowsToExport.length === 0 ? "First select the rows you want to export" : "Export the selected requirements"}
     </Tooltip>
   );
 
@@ -113,7 +104,7 @@ export function ExportTable() {
         </Dropdown.Toggle>
       </OverlayTrigger>
       <Dropdown.Menu>
-        <Dropdown.Item onClick={exportExcel} disabled={rowsToExport.length === 0}>As Excel</Dropdown.Item>
+        <Dropdown.Item onClick={exportCSV} disabled={rowsToExport.length === 0}>As CSV</Dropdown.Item>
         <Dropdown.Item onClick={exportJson} disabled={rowsToExport.length === 0}>As JSON</Dropdown.Item>
         <Dropdown.Item onClick={exportYaml} disabled={rowsToExport.length === 0}>As Yaml</Dropdown.Item>
       </Dropdown.Menu>
