@@ -116,8 +116,9 @@ async def parseCallback(request: Request, response: FastResponse):
 
 @auth.get("/login")
 async def login(request: Request, spa: bool = False):
-    # redirect_uri = request.url_for("getCallback" if not spa else "getSPACallback")
-    redirect_uri = "http://localhost:3000/auth/spaCallback"
+    redirect_uri = request.url_for("getCallback" if not spa else "getSPACallback")
+    if AppConfig.AUTH_FRONTEND_DEV_MODE and spa:
+        redirect_uri = "http://localhost:3000/auth/spaCallback"
     return await oauth._clients[AppConfig.OAUTH_PROVIDER].authorize_redirect(
         request,
         redirect_uri,
@@ -146,8 +147,12 @@ async def getCallback(request: Request, response: FastResponse):
 )
 async def getSPACallback(request: Request, response: FastResponse):
     callback = await parseCallback(request, response)
+    if AppConfig.AUTH_FRONTEND_DEV_MODE:
+        redirect_uri = "hhttp://localhost:3000/oauth/callback"
+    else:
+        redirect_uri = "/oauth/callback"
     return RedirectResponse(
-        f"http://localhost:3000/oauth/callback?data={base64.b64encode(json.dumps(callback).encode()).decode()}",
+        f"{redirect_uri}?data={base64.b64encode(json.dumps(callback).encode()).decode()}",
         headers=response.headers,
     )
 

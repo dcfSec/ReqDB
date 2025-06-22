@@ -49,6 +49,8 @@ class AppConfig:
     EMAIL_TLS = bool(getenv("EMAIL_TLS", 1))
     EMAIL_SEND_SELF = bool(getenv("EMAIL_SEND_SELF", 0))
 
+    AUTH_FRONTEND_DEV_MODE = bool(getenv("AUTH_FRONTEND_DEV_MODE", 0))
+
     @classmethod
     def getJWKs(cls):
         """
