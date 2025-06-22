@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from authlib.jose import JsonWebToken
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -78,9 +78,7 @@ class HTTPBearerWithUnauthorizedError(HTTPBearer):
     :param HTTPBearer: HTTPBearer dependency from FastAPI
     """
 
-    async def __call__(
-        self, request: Request
-    ) -> Optional[HTTPAuthorizationCredentials]:
+    async def __call__(self, request: Request) -> HTTPAuthorizationCredentials | None:
         try:
             return await super().__call__(request)
         except HTTPException as e:

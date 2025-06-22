@@ -28,9 +28,11 @@ class Pagination(BaseModel):
 
 Data = TypeVar("Data")
 
+
 class ResponseBase(BaseModel, Generic[Data]):
     status: int = 200
     data: Data
+
 
 class Response:
 
@@ -168,9 +170,14 @@ class Response:
     class User(ResponseBase):
         data: User
 
+    class Export:
+        class Jira:
+            class Configuration(ResponseBase):
+                data: list[Audit]
+
     class Error(ResponseBase):
         error: str
-        message: Union[list[dict], str, dict]
+        message: list[dict] | str | dict
 
     class ErrorStr(ResponseBase):
         error: str
@@ -183,7 +190,7 @@ class Response:
     @staticmethod
     def buildResponse(
         responseClass: ResponseBase.__class__, data: ResponseBase, status: int = 200
-     ) -> FastAPIResponse:
+    ) -> FastAPIResponse:
         return FastAPIResponse(
             status_code=status,
             media_type="application/json",

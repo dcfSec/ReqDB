@@ -65,11 +65,11 @@ async def genericExceptionHandler(
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
-    )
+    )  # type: ignore
 
 
 @api.exception_handler(StarletteHTTPException)
-async def http_exception_handler(
+async def starletteHTTPExceptionHandler(
     request: Request, exc: StarletteHTTPException
 ) -> Response.Error:
     """
@@ -82,11 +82,11 @@ async def http_exception_handler(
     return JSONResponse(
         {"status": exc.status_code, "error": type(exc).__name__, "message": exc.detail},
         status_code=exc.status_code,
-    )
+    )  # type: ignore
 
 
 @api.exception_handler(RequestValidationError)
-async def http_exception_handler(
+async def requestValidationErrorHandler(
     request: Request, exc: RequestValidationError
 ) -> Response.Error:
     """
@@ -99,11 +99,11 @@ async def http_exception_handler(
     return JSONResponse(
         {"status": 422, "error": type(exc).__name__, "message": exc.errors()},
         status_code=422,
-    )
+    )  # type: ignore
 
 
 @api.exception_handler(Exception)
-async def http_exception_handler(request: Request, exc: Exception) -> Response.Error:
+async def exceptionHandler(request: Request, exc: Exception) -> Response.Error:
     """
     Exception handler for generic python exception
 
@@ -114,7 +114,7 @@ async def http_exception_handler(request: Request, exc: Exception) -> Response.E
     return JSONResponse(
         {"status": 500, "error": type(exc).__name__, "message": str(exc)},
         status_code=500,
-    )
+    )  # type: ignore
 
 
 @api.middleware("http")

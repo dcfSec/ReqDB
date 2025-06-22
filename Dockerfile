@@ -12,6 +12,7 @@ COPY --from=build /src/dist ./spa/dist
 COPY app.py ./
 COPY requirements.txt ./
 COPY api/ ./api
+COPY auth/ ./auth
 
 RUN apk update && \
     apk add --no-cache g++ unixodbc-dev gnupg curl && \
