@@ -16,15 +16,13 @@ from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel
 from starlette.config import Config
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.middleware.sessions import SessionMiddleware
 
 import api
+import auth
 from api.config import AppConfig
 from api.helper import checkAndUpdateConfigDB
 from api.models import engine
 from api.models.db import *
-
-import auth
 
 load_dotenv()
 
