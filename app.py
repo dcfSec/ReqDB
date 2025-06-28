@@ -57,6 +57,7 @@ async def lifespan(app: FastAPI):
     AppConfig.getJWKs()
     checkAndUpdateConfigDB()
     yield
+    await auth.authSession.sessionStore.close()
 
 
 class SPAStaticFiles(StaticFiles):
@@ -108,4 +109,5 @@ if __name__ == "__main__":
         access_log=True,
         workers=workers,
         server_header=False,
+        forwarded_allow_ips="*",
     )
