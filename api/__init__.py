@@ -36,6 +36,14 @@ api.include_router(audit.router)
 api.include_router(coffee.router)
 
 
+@api.head("/", status_code=200)
+async def head():
+    """
+    Health check for the container
+    """
+    pass
+
+
 @api.get("/openapi.json")
 async def openapi(
     roles: Annotated[dict, Depends(getRoles)],
