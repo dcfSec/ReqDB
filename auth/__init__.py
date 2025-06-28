@@ -23,6 +23,12 @@ from api.config import AppConfig
 from api.error import ErrorResponses, Unauthorized
 from api.models.response import Response
 import base64
+import redis.asyncio as redis
+
+
+class UserInfo(BaseModel):
+    email: str
+    roles: list[str]
 
 
 class Token(BaseModel):
@@ -30,44 +36,66 @@ class Token(BaseModel):
     refresh_token: str
     id_token: str
     expires_at: int
+    userinfo: UserInfo
 
 
 class AuthSession:
-    manager: SyncManager = (
-        Manager()
-    )  # TODO: Move to proper caching backend like memcached or redis
-    sessionStore: DictProxy[str, Token] = manager.dict()
+    sessionStore = redis.Redis(
+        host=AppConfig.REDIS_HOST,
+        port=AppConfig.REDIS_PORT,
+        password=AppConfig.REDIS_PASSWORD,
+        db=AppConfig.REDIS_PASSWORD,
+        decode_responses=True,
+    )
     signer = TimestampSigner(AppConfig.SESSION_SECRET_KEY, b"AuthSession")
     maxAge: int = 14 * 24 * 60 * 60
 
     def __init__(self) -> None:
         pass
 
-    def startSession(self, token: dict) -> str:
+    async def startSession(self, token: dict) -> str:
         sessionId = secrets.token_urlsafe(32)
-        self.sessionStore[sessionId] = Token.model_validate(token)
+        await self.sessionStore.set(
+            sessionId, Token.model_validate(token).model_dump_json(), self.maxAge
+        )
         return self.signer.sign(sessionId).decode("utf-8")
 
-    def getSession(self, signedSessionId: str) -> tuple[str, Token] | tuple[None, None]:
+    async def getSession(
+        self, signedSessionId: str
+    ) -> tuple[str, Token] | tuple[None, None]:
         try:
             sessionId = self.signer.unsign(signedSessionId, max_age=self.maxAge).decode(
                 "utf-8"
             )
 
-            if sessionId in self.sessionStore.keys():
-                return sessionId, self.sessionStore[sessionId]
+            if await self.sessionStore.exists(sessionId):
+                return sessionId, Token.model_validate_json(
+                    await self.sessionStore.get(sessionId)
+                )
             else:
                 return None, None
         except BadSignature:
             return None, None
 
-    def refreshToken(self, sessionId: str, token: dict) -> None:
-        if sessionId in self.sessionStore.keys():
-            self.sessionStore[sessionId] = Token.model_validate(token)
+    async def refreshSession(self, sessionId: str, newToken: dict) -> tuple[str, Token]:
+        sessionToken: Token = Token.model_validate_json(
+            await self.sessionStore.get(sessionId)
+        )
+        sessionToken.id_token = newToken["id_token"]
+        sessionToken.refresh_token = newToken["refresh_token"]
+        sessionToken.access_token = newToken["access_token"]
+        sessionToken.expires_at = newToken["expires_at"]
 
-    def removeSession(self, sessionId: str) -> None:
-        if sessionId in self.sessionStore.keys():
-            self.sessionStore.pop(sessionId)
+        newSessionId = secrets.token_urlsafe(32)
+        await self.sessionStore.set(
+            newSessionId, sessionToken.model_dump_json(), self.maxAge
+        )
+        await self.removeSession(sessionId)
+        return self.signer.sign(newSessionId).decode("utf-8"), sessionToken
+
+    async def removeSession(self, sessionId: str) -> None:
+        if await self.sessionStore.exists(sessionId):
+            await self.sessionStore.delete(sessionId)
 
 
 auth = FastAPI(title="ReqDB - Auth", docs_url=None, redoc_url=None, openapi_url=None)
@@ -97,7 +125,7 @@ async def parseCallback(request: Request, response: FastResponse):
         if userInfo:
             response.set_cookie(
                 key="ReqDBSession",
-                value=authSession.startSession(token),
+                value=await authSession.startSession(token),
                 samesite="strict",
                 max_age=authSession.maxAge,
                 secure=True,
@@ -148,7 +176,7 @@ async def getCallback(request: Request, response: FastResponse):
 async def getSPACallback(request: Request, response: FastResponse):
     callback = await parseCallback(request, response)
     if AppConfig.AUTH_FRONTEND_DEV_MODE:
-        redirect_uri = "hhttp://localhost:3000/oauth/callback"
+        redirect_uri = "http://localhost:3000/oauth/callback"
     else:
         redirect_uri = "/oauth/callback"
     return RedirectResponse(
@@ -167,7 +195,7 @@ async def getSPACallback(request: Request, response: FastResponse):
 )
 async def getToken(request: Request, response: FastResponse):
     if "ReqDBSession" in request.cookies:
-        sessionId, token = authSession.getSession(request.cookies["ReqDBSession"])
+        sessionId, token = await authSession.getSession(request.cookies["ReqDBSession"])
         if sessionId and token:
             tokenExpireTimestamp = datetime.datetime.fromtimestamp(
                 token.expires_at, datetime.timezone.utc
@@ -179,23 +207,29 @@ async def getToken(request: Request, response: FastResponse):
             if tokenExpireTimestamp < tokenMaxAgeNow:
                 oauthApp: StarletteOAuth2App = oauth._clients[AppConfig.OAUTH_PROVIDER]
                 client: OAuth2Session = oauthApp._get_oauth_client()
-                token = await client.refresh_token(
-                    AppConfig.OAUTH_TOKEN_ENDPOINT, refresh_token=token.refresh_token
+                sessionId, token = await authSession.refreshSession(
+                    sessionId,
+                    await client.refresh_token(
+                        AppConfig.OAUTH_TOKEN_ENDPOINT,
+                        refresh_token=token.refresh_token,
+                    ),
                 )
                 response.set_cookie(
                     key="ReqDBSession",
-                    value=authSession.startSession(token),
+                    value=sessionId,
                     samesite="strict",
                     max_age=authSession.maxAge,
                     secure=True,
                     httponly=True,
                 )
-                authSession.removeSession(sessionId)
+                await authSession.removeSession(sessionId)
             return {
                 "status": 200,
                 "data": {
                     "access_token": token.access_token,
                     "expires_at": token.expires_at,
+                    "email": token.userinfo.email,
+                    "roles": token.userinfo.roles,
                 },
             }
         else:
@@ -213,9 +247,9 @@ async def getToken(request: Request, response: FastResponse):
 )
 async def logout(request: Request):
     if "ReqDBSession" in request.cookies:
-        sessionId, token = authSession.getSession(request.cookies["ReqDBSession"])
+        sessionId, token = await authSession.getSession(request.cookies["ReqDBSession"])
         if sessionId and token:
-            authSession.removeSession(sessionId)  # TODO: Send logout to IDP
+            await authSession.removeSession(sessionId)  # TODO: Send logout to IDP
 
 
 @auth.exception_handler(HTTPException)

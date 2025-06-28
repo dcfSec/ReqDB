@@ -1,0 +1,22 @@
+services:
+  cache:
+    image: redis
+    restart: always
+    ports:
+      - '6379:6379'
+  app:
+    image: dcfsec/reqdb
+    restart: always
+    depends_on:
+      - cache
+    environment:
+      - DATABASE_URI=sqlite:///app.sqlite 
+      - OAUTH_PROVIDER=XXX
+      - OAUTH_CLIENT_ID=XXX
+      - OAUTH_CLIENT_SECRET=XXX
+      - OAUTH_CONFIG=https://example.com/.well-known/openid-configuration
+      - SESSION_SECRET_KEY=XXX
+      - REDIS_HOST=localhost
+    ports:
+      - '8000:8000'
+

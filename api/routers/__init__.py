@@ -1,6 +1,7 @@
 from collections.abc import Callable
 
 from authlib.jose import JsonWebToken
+from authlib.jose import JWTClaims
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.routing import APIRoute
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -13,8 +14,8 @@ from api.models import engine
 from api.models.db import User
 
 oauthParams = {
-    "iss": {"essential": True, "values": [AppConfig.JWT_DECODE_ISSUER]},
-    "sub": {"essential": True, "value": AppConfig.OAUTH_CLIENT_ID},
+    "iss": {"essential": True, "value": AppConfig.JWT_DECODE_ISSUER},
+    "aud": {"essential": True, "value": AppConfig.OAUTH_CLIENT_ID},
 }
 
 auth = {
@@ -159,7 +160,13 @@ async def validateJWT(
     token = credentials.credentials
     jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
-        claims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
+        claims: JWTClaims = jwt.decode(
+            token,
+            getDecodeKey,
+            claims_params=oauthParams,
+            claims_options=oauthParams,
+        )
+        claims.validate()
     except Exception as e:
         raise Unauthorized(detail=str(e))
 

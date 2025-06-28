@@ -65,16 +65,21 @@ ReqDB can be deployed with our docker image. The image is available at [docker h
 The base configuration is done via environment variables:
 
 ```sh
-SECRET_KEY=CHANGEME                # The secret key for Flask
+SESSION_SECRET_KEY=xxx             # The secret key for Flask
                                    # See https://flask.palletsprojects.com/en/stable/config/#SECRET_KEY for details
 
 DATABASE_URI=sqlite:///app.sqlite  # Database URI for sqlalchemy
                                    # See https://docs.sqlalchemy.org/en/20/core/engines.html for details
 
-OAUTH_PROVIDER=xxx                 # Use oauth provider in human readable way (E.g. Entra ID or Octa).
+OAUTH_PROVIDER=xxx                 # Used oauth provider in human readable way (E.g. Entra ID or Octa).
                                    # This will be displayed as login button description
 OAUTH_CLIENT_ID=xxx                # Client ID for oauth
+OAUTH_CLIENT_SECRET=xxx            # Client Secret for oauth
 OAUTH_CONFIG=xxx                   # OAuth config URL (something like <AUTHORITY>/.well-known/openid-configuration)
+
+REDIS_HOST=xxx                     # Redis host for session sync
+REDIS_PORT=6379                    # Redis port for session sync
+REDIS_PASSWORD=xxx                 # Redis password for session sync
 
 USE_UVICORN_WORKERS=-1             # Use this if you want to use workers for uvicorn (-1 uses the max available workers) Don't set this if you don't want to use workers   
 
@@ -126,7 +131,7 @@ ReqDB defines following roles:
 
 ### Redirect URL
 
-The application uses `https://<YOUR_FQDN>/oauth/callback` as redirect URL for the web app and `http://localhost` is needed if you use the python client.
+The application uses `https://<YOUR_FQDN>/auth/callback` and `https://<YOUR_FQDN>/auth/SPACallback` as redirect URLs for the web app and `http://localhost` is needed if you use the python client.
 
 ### Azure Entra Configuration
 

@@ -19,18 +19,18 @@ class AppConfig:
     """
 
     SESSION_SECRET_KEY = getenv("SESSION_SECRET_KEY", "")
-    DATABASE_URI = (
-        getenv("DATABASE_URI") or f"sqlite:///{path.join(basedir, 'app.sqlite')}"
+    DATABASE_URI = getenv(
+        "DATABASE_URI", f"sqlite:///{path.join(basedir, 'app.sqlite')}"
     )
 
-    OAUTH_CLIENT_ID = f"{getenv('OAUTH_CLIENT_ID')}"
+    OAUTH_CLIENT_ID = getenv("OAUTH_CLIENT_ID", "")
     OAUTH_CLIENT_SECRET = getenv("OAUTH_CLIENT_SECRET", "")
     OAUTH_CONFIG = getenv("OAUTH_CONFIG", "")
     OAUTH_SCOPE = (
         getenv("OAUTH_SCOPE")
         or f"openid email offline_access {OAUTH_CLIENT_ID}/.default"
     )
-    OAUTH_PROVIDER = f"{getenv('OAUTH_PROVIDER')}"
+    OAUTH_PROVIDER = getenv("OAUTH_PROVIDER", "")
     OAUTH_TOKEN_ENDPOINT: str = ""
 
     JWT_ALGORITHM = "RS256"
@@ -38,18 +38,22 @@ class AppConfig:
     JWT_PUBLIC_KEYS: KeySet
     JWT_JWK_URI: str = ""
 
-    BASE_URL = f"{getenv('BASE_URL', 'http://localhost')}"
+    BASE_URL = getenv("BASE_URL", "http://localhost")
 
     EMAIL_ACTIVE = False
-    EMAIL_HOST = f"{getenv('EMAIL_HOST', '')}"
+    EMAIL_HOST = getenv("EMAIL_HOST", "")
     EMAIL_PORT = int(getenv("EMAIL_PORT", 587))
-    EMAIL_USER = f"{getenv('EMAIL_USER', '')}"
-    EMAIL_PASSWORD = f"{getenv('EMAIL_PASSWORD', '')}"
-    EMAIL_FROM = f"{getenv('EMAIL_FROM', '')}"
+    EMAIL_USER = getenv("EMAIL_USER", "")
+    EMAIL_PASSWORD = getenv("EMAIL_PASSWORD", "")
+    EMAIL_FROM = getenv("EMAIL_FROM", "")
     EMAIL_TLS = bool(getenv("EMAIL_TLS", 1))
     EMAIL_SEND_SELF = bool(getenv("EMAIL_SEND_SELF", 0))
 
     AUTH_FRONTEND_DEV_MODE = bool(getenv("AUTH_FRONTEND_DEV_MODE", 0))
+
+    REDIS_HOST = getenv("REDIS_HOST", "")
+    REDIS_PORT = int(getenv("REDIS_PORT", 6379))
+    REDIS_PASSWORD = getenv("REDIS_PASSWORD", "")
 
     @classmethod
     def getJWKs(cls):
@@ -75,7 +79,7 @@ class AppConfig:
         """
         response = requests.get(cls.OAUTH_CONFIG)
         response.raise_for_status()
-        openIdConfig = response.json()
+        openIdConfig: dict = response.json()
 
         for k in ["issuer", "jwks_uri", "token_endpoint"]:
             if k not in openIdConfig:
@@ -99,6 +103,7 @@ class AppConfig:
         Checks if all needed environment variables are set. At the moment only the oauth configuration is needed
 
         :raises AssertionError: Raises, if the needed environment variables are missing
+        :raises AssertionError: Raises, if the needed environment variables has the default value (xxx)
         """
         for k in [
             "OAUTH_CLIENT_ID",
@@ -109,6 +114,10 @@ class AppConfig:
         ]:
             if getenv(k) is None:
                 raise AssertionError(f"Required env variable missing: {k}")
+            if getenv(k, "xxx").lower == "xxx":
+                raise AssertionError(
+                    f"Required env variable can't have the default value: {k}"
+                )
 
     @classmethod
     def getDynamicConfig(cls) -> dict:
