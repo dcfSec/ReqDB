@@ -34,7 +34,7 @@ export default function MainNavbar() {
 
   function onAuth() {
     dispatch(showSpinner(true))
-    window.location.href = '/auth/login';
+    window.location.href = '/auth/login?spa=1';
   }
 
   function onLogout() {

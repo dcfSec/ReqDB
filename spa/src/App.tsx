@@ -32,7 +32,6 @@ function App() {
     }
   }, [login]);
 
-
   if (authenticated) {
     // store.dispatch(showSpinner(false))
     return <Router />

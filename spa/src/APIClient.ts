@@ -34,10 +34,10 @@ apiClient.interceptors.response.use(
     }
     return authClient.get("/token").then((response) => {
 
-      store.dispatch(setToken(response.data["access_token"]))
-      store.dispatch(setExpiresAt(response.data["expires_at"]))
+      store.dispatch(setToken(response.data.data["access_token"]))
+      store.dispatch(setExpiresAt(response.data.data["expires_at"]))
       error.response.config.headers["Authorization"] =
-        "Bearer " + response.data["access_token"];
+        "Bearer " + response.data.data["access_token"];
       return axios(error.response.config);
     })
       .catch((authError) => {

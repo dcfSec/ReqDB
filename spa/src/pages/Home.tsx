@@ -22,10 +22,8 @@ export default function Home() {
   useEffect(() => {
     dispatch(setBreadcrumbs([{ href: "", title: "Home", active: true }]))
     dispatch(setPageTitle("Home"))
-
     dispatch(showSpinner(true))
     dispatch(loadConfiguration())
-
   }, []);
 
   const roles = useAppSelector(state => state.user.roles)
@@ -41,7 +39,7 @@ export default function Home() {
           <Markdown>{staticConfig.home.MOTD.pre}</Markdown>
           <LinkContainer to="Browse"><Button variant="outline-secondary">Browse Catalogues</Button></LinkContainer>
           {roles.includes(appRoles.Comments.Moderator) ?
-             <LinkContainer to="Comments"><Button variant="outline-secondary">Comments</Button></LinkContainer>
+            <LinkContainer to="Comments"><Button variant="outline-secondary">Comments</Button></LinkContainer>
             : null}
           {roles.includes(appRoles.Requirements.Writer) ?
             <Dropdown className="d-inline-block">
@@ -57,7 +55,7 @@ export default function Home() {
                 <Dropdown.Item as={Link} to="/Edit/ExtraEntries">ExtraEntries</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown> : null}
-          {roles.includes(appRoles.Requirements.Auditor) ||  roles.includes(appRoles.Comments.Auditor) ?
+          {roles.includes(appRoles.Requirements.Auditor) || roles.includes(appRoles.Comments.Auditor) ?
             <Dropdown className="d-inline-block">
               <Dropdown.Toggle as={Button} variant="outline-secondary" id="dropdown-edit" className="mx-auto w-100">
                 Audit

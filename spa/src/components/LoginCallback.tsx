@@ -20,9 +20,11 @@ export default function LoginCallback() {
 
   const [searchParams,] = useSearchParams();
   const b64data = searchParams.get("data")
+  const [init, setInit] = useState(false)
 
   useEffect(() => {
-    if (b64data) {
+    if (b64data && !init) {
+      setInit(true)
       const data = JSON.parse(atob(b64data))
 
       dispatch(setName(data["email"]))
@@ -35,7 +37,6 @@ export default function LoginCallback() {
       }).catch((error) => {
         handleError(error, APIErrorCallback, errorCallback)
         setOk(true)
-
       });
 
       function okCallback(response: APISuccessData) {
