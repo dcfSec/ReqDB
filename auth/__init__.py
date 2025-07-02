@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import secrets
 from multiprocessing import Manager
 from multiprocessing.managers import DictProxy, SyncManager
@@ -24,6 +25,10 @@ from api.error import ErrorResponses, Unauthorized
 from api.models.response import Response
 import base64
 import redis.asyncio as redis
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.exceptions import InvalidTag
+
+logger = logging.getLogger(__name__)
 
 
 class UserInfo(BaseModel):
@@ -44,34 +49,59 @@ class AuthSession:
         host=AppConfig.REDIS_HOST,
         port=AppConfig.REDIS_PORT,
         password=AppConfig.REDIS_PASSWORD,
-        db=AppConfig.REDIS_PASSWORD,
+        db=AppConfig.REDIS_DB,
+        ssl=AppConfig.REDIS_TLS,
         decode_responses=True,
     )
     signer = TimestampSigner(AppConfig.SESSION_SECRET_KEY, b"AuthSession")
     maxAge: int = 14 * 24 * 60 * 60
+    key = secrets.token_bytes(32)
 
     def __init__(self) -> None:
         pass
 
     async def startSession(self, token: dict) -> str:
         sessionId = secrets.token_urlsafe(32)
+        nonce = secrets.token_bytes(12)  # GCM mode needs 12 fresh bytes every time
+
         await self.sessionStore.set(
-            sessionId, Token.model_validate(token).model_dump_json(), self.maxAge
+            sessionId,
+            base64.b64encode(
+                nonce
+                + AESGCM(self.key).encrypt(
+                    nonce, Token.model_validate(token).model_dump_json().encode(), b""
+                )
+            ).decode(),
+            self.maxAge,
         )
-        return self.signer.sign(sessionId).decode("utf-8")
+        return self.signer.sign(sessionId).decode()
 
     async def getSession(
         self, signedSessionId: str
     ) -> tuple[str, Token] | tuple[None, None]:
         try:
-            sessionId = self.signer.unsign(signedSessionId, max_age=self.maxAge).decode(
-                "utf-8"
-            )
+            sessionId = self.signer.unsign(
+                signedSessionId, max_age=self.maxAge
+            ).decode()
 
             if await self.sessionStore.exists(sessionId):
-                return sessionId, Token.model_validate_json(
-                    await self.sessionStore.get(sessionId)
-                )
+                try:
+                    storedEncryptedSession = base64.b64decode(
+                        await self.sessionStore.get(sessionId)
+                    )
+                    decryptedSession = (
+                        AESGCM(self.key)
+                        .decrypt(
+                            storedEncryptedSession[:12],
+                            storedEncryptedSession[12:],
+                            b"",
+                        )
+                        .decode()
+                    )
+                    return sessionId, Token.model_validate_json(decryptedSession)
+                except InvalidTag as error:
+                    logger.error(f"Can't decrypt session with ID: {sessionId}")
+                    return None, None
             else:
                 return None, None
         except BadSignature:
