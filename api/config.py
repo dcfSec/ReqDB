@@ -1,9 +1,9 @@
 from os import getenv, path
-from uuid import uuid4
+from typing import Any
 
-from authlib.jose.rfc7517.key_set import KeySet
 import requests
 from authlib.jose import JsonWebKey
+from authlib.jose.rfc7517.key_set import KeySet
 
 basedir = path.abspath(path.dirname(__file__))
 
@@ -54,6 +54,51 @@ class AppConfig:
     REDIS_HOST = getenv("REDIS_HOST", "")
     REDIS_PORT = int(getenv("REDIS_PORT", 6379))
     REDIS_PASSWORD = getenv("REDIS_PASSWORD", "")
+    REDIS_DB = getenv("REDIS_DBD", 0)
+    REDIS_TLS = bool(getenv("REDIS_TLS", 0))
+
+    LOGGING_CONFIG: dict[str, Any] = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "default": {
+                "()": "uvicorn.logging.DefaultFormatter",
+                "fmt": "[%(asctime)s.%(msecs)03d][%(levelname)s] %(name)s - %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            },
+            "access": {
+                "()": "uvicorn.logging.AccessFormatter",
+                "fmt": '[%(asctime)s.%(msecs)03d][%(levelname)s] %(name)s - %(client_addr)s - "%(request_line)s" %(status_code)s',
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            },
+        },
+        "handlers": {
+            "default": {
+                "formatter": "default",
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stderr",
+            },
+            "access": {
+                "formatter": "access",
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+            },
+        },
+        "loggers": {
+            "uvicorn": {"handlers": ["default"], "level": "INFO", "propagate": True},
+            # "uvicorn.error": {"level": "INFO"},
+            "uvicorn.access": {
+                "handlers": ["access"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            "watchfiles": {
+                "handlers": ["default"],
+                "level": "INFO",
+            },
+            "": {"handlers": ["default"], "level": "INFO", "propagate": True},
+        },
+    }
 
     @classmethod
     def getJWKs(cls):
@@ -111,6 +156,7 @@ class AppConfig:
             "OAUTH_PROVIDER",
             "OAUTH_CLIENT_SECRET",
             "SESSION_SECRET_KEY",
+            "REDIS_HOST",
         ]:
             if getenv(k) is None:
                 raise AssertionError(f"Required env variable missing: {k}")

@@ -1,5 +1,7 @@
 __version__ = "0.1.0"
 
+import logging
+import logging.config
 import multiprocessing
 from collections.abc import Callable, Coroutine
 from contextlib import asynccontextmanager
@@ -25,6 +27,7 @@ from api.models import engine
 from api.models.db import *
 
 load_dotenv()
+logging.config.dictConfig(AppConfig.LOGGING_CONFIG)
 
 
 async def not_found(request: Request, exc: HTTPException) -> FileResponse:
