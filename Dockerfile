@@ -16,7 +16,7 @@ COPY auth/ ./auth
 
 RUN apk update && \
     apk add --no-cache g++ unixodbc-dev curl && \
-    pip install --no-cache-dir --upgrade -r requirements.txt && rm requirements.txt && \
+    pip install --no-cache-dir --upgrade --no-deps -r requirements.txt && rm requirements.txt && \
     apk del -r g++
 # RUN chown -R nobody:nobody app.py api auth spa
 
