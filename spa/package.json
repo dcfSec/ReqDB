@@ -9,7 +9,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@reduxjs/toolkit": "^2.6.1",
-    "axios": "^1.8.4",
+    "axios": "^1.11.0",
     "bootstrap": "^5.3.5",
     "csv-stringify": "^6.5.2",
     "openapi-types": "^12.1.3",
