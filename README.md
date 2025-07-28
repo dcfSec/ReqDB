@@ -80,6 +80,7 @@ OAUTH_CONFIG=xxx                   # OAuth config URL (something like <AUTHORITY
 REDIS_HOST=xxx                     # Redis host for session sync
 REDIS_PORT=6379                    # Redis port for session sync
 REDIS_PASSWORD=xxx                 # Redis password for session sync
+REDIS_DB=0                         # Redis database for session sync
 
 USE_UVICORN_WORKERS=-1             # Use this if you want to use workers for uvicorn (-1 uses the max available workers) Don't set this if you don't want to use workers   
 
