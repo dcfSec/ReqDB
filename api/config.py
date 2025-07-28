@@ -1,11 +1,9 @@
-from os import getenv, path
+from os import getenv
 from typing import Any
 
 import requests
 from authlib.jose import JsonWebKey
 from authlib.jose.rfc7517.key_set import KeySet
-
-basedir = path.abspath(path.dirname(__file__))
 
 
 class AppConfig:
@@ -18,19 +16,17 @@ class AppConfig:
     :return AppConfig: Static configuration used by ReqDB
     """
 
-    SESSION_SECRET_KEY = getenv("SESSION_SECRET_KEY", "")
-    DATABASE_URI = getenv(
-        "DATABASE_URI", f"sqlite:///{path.join(basedir, 'app.sqlite')}"
+    SESSION_SECRET_KEY: str = getenv("SESSION_SECRET_KEY", "")
+    DATABASE_URI: str = getenv("DATABASE_URI", "sqlite:////tmp/ReqDB.sqlite')")
+
+    OAUTH_CLIENT_ID: str = getenv("OAUTH_CLIENT_ID", "")
+    OAUTH_CLIENT_SECRET: str = getenv("OAUTH_CLIENT_SECRET", "")
+    OAUTH_CONFIG: str = getenv("OAUTH_CONFIG", "")
+    OAUTH_SCOPE: str = getenv(
+        "OAUTH_SCOPE", f"openid email offline_access {OAUTH_CLIENT_ID}/.default"
     )
 
-    OAUTH_CLIENT_ID = getenv("OAUTH_CLIENT_ID", "")
-    OAUTH_CLIENT_SECRET = getenv("OAUTH_CLIENT_SECRET", "")
-    OAUTH_CONFIG = getenv("OAUTH_CONFIG", "")
-    OAUTH_SCOPE = (
-        getenv("OAUTH_SCOPE")
-        or f"openid email offline_access {OAUTH_CLIENT_ID}/.default"
-    )
-    OAUTH_PROVIDER = getenv("OAUTH_PROVIDER", "")
+    OAUTH_PROVIDER: str = getenv("OAUTH_PROVIDER", "")
     OAUTH_TOKEN_ENDPOINT: str = ""
 
     JWT_ALGORITHM = "RS256"
@@ -38,23 +34,23 @@ class AppConfig:
     JWT_PUBLIC_KEYS: KeySet
     JWT_JWK_URI: str = ""
 
-    BASE_URL = getenv("BASE_URL", "http://localhost")
+    BASE_URL: str = getenv("BASE_URL", "http://localhost")
 
-    EMAIL_ACTIVE = False
-    EMAIL_HOST = getenv("EMAIL_HOST", "")
-    EMAIL_PORT = int(getenv("EMAIL_PORT", 587))
-    EMAIL_USER = getenv("EMAIL_USER", "")
-    EMAIL_PASSWORD = getenv("EMAIL_PASSWORD", "")
-    EMAIL_FROM = getenv("EMAIL_FROM", "")
-    EMAIL_TLS = bool(getenv("EMAIL_TLS", 1))
-    EMAIL_SEND_SELF = bool(getenv("EMAIL_SEND_SELF", 0))
+    EMAIL_ACTIVE: bool = False
+    EMAIL_HOST: str = getenv("EMAIL_HOST", "")
+    EMAIL_PORT: int = int(getenv("EMAIL_PORT", 587))
+    EMAIL_USER: str = getenv("EMAIL_USER", "")
+    EMAIL_PASSWORD: str = getenv("EMAIL_PASSWORD", "")
+    EMAIL_FROM: str = getenv("EMAIL_FROM", "")
+    EMAIL_TLS: bool = bool(getenv("EMAIL_TLS", 1))
+    EMAIL_SEND_SELF: bool = bool(getenv("EMAIL_SEND_SELF", 0))
 
-    AUTH_FRONTEND_DEV_MODE = bool(getenv("AUTH_FRONTEND_DEV_MODE", 0))
+    AUTH_FRONTEND_DEV_MODE: bool = bool(getenv("AUTH_FRONTEND_DEV_MODE", 0))
 
-    REDIS_HOST = getenv("REDIS_HOST", "")
-    REDIS_PORT = int(getenv("REDIS_PORT", 6379))
-    REDIS_PASSWORD = getenv("REDIS_PASSWORD", "")
-    REDIS_DB = getenv("REDIS_DBD", 0)
+    REDIS_HOST: str = getenv("REDIS_HOST", "")
+    REDIS_PORT: int = int(getenv("REDIS_PORT", 6379))
+    REDIS_PASSWORD: str = getenv("REDIS_PASSWORD", "")
+    REDIS_DB: str | int = getenv("REDIS_DB", 0)
     REDIS_TLS = bool(getenv("REDIS_TLS", 0))
 
     LOGGING_CONFIG: dict[str, Any] = {
@@ -96,25 +92,25 @@ class AppConfig:
                 "handlers": ["default"],
                 "level": "INFO",
             },
+            "httpx": {"level": "ERROR"},
             "": {"handlers": ["default"], "level": "INFO", "propagate": True},
         },
     }
 
     @classmethod
-    def getJWKs(cls):
+    def getJWKs(cls) -> None:
         """
         Returns the jwt signing keys from the authorities jwk list as dictionary
         with kid -> pem
 
         :return dict: Dict with kid: pem
         """
-        r = {}
         response: requests.Response = requests.get(AppConfig.JWT_JWK_URI)
         response.raise_for_status()
         cls.JWT_PUBLIC_KEYS: KeySet = JsonWebKey.import_key_set(response.json()["keys"])
 
     @classmethod
-    def getOpenIdConfig(cls):
+    def getOpenIdConfig(cls) -> None:
         """
         Fetches the oidc config from the provided config URL and sets the issuer and the jwk URI
 
@@ -122,7 +118,7 @@ class AppConfig:
         :raises HTTPError: Raises if the HTTP status is not ok
         :raises requests.exceptions.JSONDecodeError: Raises if oauth config can't be decoded as json
         """
-        response = requests.get(cls.OAUTH_CONFIG)
+        response: requests.Response = requests.get(cls.OAUTH_CONFIG)
         response.raise_for_status()
         openIdConfig: dict = response.json()
 
@@ -135,7 +131,7 @@ class AppConfig:
         cls.OAUTH_TOKEN_ENDPOINT = openIdConfig["token_endpoint"]
 
     @classmethod
-    def setEmailActiveStatus(cls):
+    def setEmailActiveStatus(cls) -> None:
         """
         Checks if the email host and the from address is set and set EMAIL_ACTIVE to indicate that the app should be able to send emails.
         """
@@ -143,7 +139,7 @@ class AppConfig:
             cls.EMAIL_ACTIVE = True
 
     @classmethod
-    def checkNeededEnvVariables(cls):
+    def checkNeededEnvVariables(cls) -> None:
         """
         Checks if all needed environment variables are set. At the moment only the oauth configuration is needed
 

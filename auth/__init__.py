@@ -1,15 +1,17 @@
+import base64
 import datetime
 import json
 import logging
 import secrets
-from multiprocessing import Manager
-from multiprocessing.managers import DictProxy, SyncManager
-from typing import Any
 
+from fastapi.datastructures import URL
+import redis.asyncio as redis
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from authlib.integrations.starlette_client.apps import StarletteOAuth2App
 from authlib.oauth2.rfc6749.wrappers import OAuth2Token
+from cryptography.exceptions import InvalidTag
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from fastapi import FastAPI, HTTPException, Request
 from fastapi import Response as FastResponse
 from fastapi import status
@@ -23,12 +25,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from api.config import AppConfig
 from api.error import ErrorResponses, Unauthorized
 from api.models.response import Response
-import base64
-import redis.asyncio as redis
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.exceptions import InvalidTag
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class UserInfo(BaseModel):
@@ -55,14 +53,16 @@ class AuthSession:
     )
     signer = TimestampSigner(AppConfig.SESSION_SECRET_KEY, b"AuthSession")
     maxAge: int = 14 * 24 * 60 * 60
-    key = secrets.token_bytes(32)
+    key: bytes = secrets.token_bytes(32)
 
     def __init__(self) -> None:
         pass
 
     async def startSession(self, token: dict) -> str:
-        sessionId = secrets.token_urlsafe(32)
-        nonce = secrets.token_bytes(12)  # GCM mode needs 12 fresh bytes every time
+        sessionId: str = secrets.token_urlsafe(32)
+        nonce: bytes = secrets.token_bytes(
+            12
+        )  # GCM mode needs 12 fresh bytes every time
 
         await self.sessionStore.set(
             sessionId,
@@ -80,16 +80,16 @@ class AuthSession:
         self, signedSessionId: str
     ) -> tuple[str, Token] | tuple[None, None]:
         try:
-            sessionId = self.signer.unsign(
+            sessionId: str = self.signer.unsign(
                 signedSessionId, max_age=self.maxAge
             ).decode()
 
             if await self.sessionStore.exists(sessionId):
                 try:
-                    storedEncryptedSession = base64.b64decode(
+                    storedEncryptedSession: bytes = base64.b64decode(
                         await self.sessionStore.get(sessionId)
                     )
-                    decryptedSession = (
+                    decryptedSession: str = (
                         AESGCM(self.key)
                         .decrypt(
                             storedEncryptedSession[:12],
@@ -116,7 +116,7 @@ class AuthSession:
         sessionToken.access_token = newToken["access_token"]
         sessionToken.expires_at = newToken["expires_at"]
 
-        newSessionId = secrets.token_urlsafe(32)
+        newSessionId: str = secrets.token_urlsafe(32)
         await self.sessionStore.set(
             newSessionId, sessionToken.model_dump_json(), self.maxAge
         )
@@ -161,7 +161,7 @@ async def parseCallback(request: Request, response: FastResponse):
                 secure=True,
                 httponly=True,
             )
-            user = dict(userInfo)  # type: ignore
+            user: dict[bytes, bytes] = dict(userInfo)  # type: ignore
             return {
                 "email": user["email"],  # type: ignore
                 "roles": user["roles"],  # type: ignore
@@ -174,9 +174,9 @@ async def parseCallback(request: Request, response: FastResponse):
 
 @auth.get("/login")
 async def login(request: Request, spa: bool = False):
-    redirect_uri = request.url_for("getCallback" if not spa else "getSPACallback")
+    redirect_uri: URL = request.url_for("getCallback" if not spa else "getSPACallback")
     if AppConfig.AUTH_FRONTEND_DEV_MODE and spa:
-        redirect_uri = "http://localhost:3000/auth/spaCallback"
+        redirect_uri = URL("http://localhost:3000/auth/spaCallback")
     return await oauth._clients[AppConfig.OAUTH_PROVIDER].authorize_redirect(
         request,
         redirect_uri,
@@ -203,8 +203,8 @@ async def getCallback(request: Request, response: FastResponse):
         500: {"description": "OAuth Error"},
     },
 )
-async def getSPACallback(request: Request, response: FastResponse):
-    callback = await parseCallback(request, response)
+async def getSPACallback(request: Request, response: FastResponse) -> RedirectResponse:
+    callback: dict[str, bytes] = await parseCallback(request, response)
     if AppConfig.AUTH_FRONTEND_DEV_MODE:
         redirect_uri = "http://localhost:3000/oauth/callback"
     else:
@@ -227,10 +227,10 @@ async def getToken(request: Request, response: FastResponse):
     if "ReqDBSession" in request.cookies:
         sessionId, token = await authSession.getSession(request.cookies["ReqDBSession"])
         if sessionId and token:
-            tokenExpireTimestamp = datetime.datetime.fromtimestamp(
+            tokenExpireTimestamp: datetime.datetime = datetime.datetime.fromtimestamp(
                 token.expires_at, datetime.timezone.utc
             )
-            tokenMaxAgeNow = datetime.datetime.now(
+            tokenMaxAgeNow: datetime.datetime = datetime.datetime.now(
                 datetime.timezone.utc
             ) - datetime.timedelta(minutes=2)
 
@@ -275,7 +275,7 @@ async def getToken(request: Request, response: FastResponse):
         204: {"description": "Successful logout"},
     },
 )
-async def logout(request: Request):
+async def logout(request: Request) -> None:
     if "ReqDBSession" in request.cookies:
         sessionId, token = await authSession.getSession(request.cookies["ReqDBSession"])
         if sessionId and token:

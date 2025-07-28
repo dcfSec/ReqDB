@@ -94,7 +94,7 @@ app.mount("/", SPAStaticFiles(directory="spa/dist", html=True), name="index")
 if __name__ == "__main__":
 
     workersEnv: str | None = getenv("USE_UVICORN_WORKERS")
-    workers = None
+    workers: int | None = None
     if workersEnv:
         try:
             workers = int(workersEnv)

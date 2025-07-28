@@ -1,7 +1,7 @@
 from collections.abc import Callable
+from typing import Any, Coroutine
 
-from authlib.jose import JsonWebToken
-from authlib.jose import JWTClaims
+from authlib.jose import JsonWebToken, JWTClaims
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.routing import APIRoute
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -96,7 +96,9 @@ class RBACRoute(APIRoute):
     """
 
     def get_route_handler(self) -> Callable:
-        original_route_handler = super().get_route_handler()
+        original_route_handler: Callable[[Request], Coroutine[Any, Any, Response]] = (
+            super().get_route_handler()
+        )
 
         async def checkAccessRouteHandler(request: Request) -> Response:
             if request.scope["route"].name not in auth:
@@ -109,9 +111,9 @@ class RBACRoute(APIRoute):
                 )
                 if credentials is None:
                     raise Unauthorized(detail="No credentials provided")
-                jwt = await validateJWT(credentials)
+                jwt: dict[str, str] = await validateJWT(credentials)
                 await checkAccess(jwt, auth[request.scope["route"].name]["roles"])
-            response = await original_route_handler(request)
+            response: Response = await original_route_handler(request)
             return response
 
         return checkAccessRouteHandler
@@ -124,11 +126,11 @@ class AuthRouter(APIRouter):
     :param APIRouter: APIRouter from FastAPI
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(route_class=RBACRoute, **kwargs)
 
 
-def getDecodeKey(header: dict, payload: dict):
+def getDecodeKey(header: dict, payload: dict) -> str:
     """
     Returns the correct decoding key for the jwt
 
@@ -149,7 +151,7 @@ def getDecodeKey(header: dict, payload: dict):
 
 async def validateJWT(
     credentials: HTTPAuthorizationCredentials,
-) -> dict:
+) -> dict[str, str]:
     """
     VAlidates the JWT and adds (or updates) to the Users table
 
@@ -157,7 +159,7 @@ async def validateJWT(
     :raises Unauthorized: Raises, if the JWT is not valid
     :return dict: A dict of the given JWT claims
     """
-    token = credentials.credentials
+    token: str = credentials.credentials
     jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
         claims: JWTClaims = jwt.decode(
@@ -189,7 +191,7 @@ async def validateJWT(
     return claims
 
 
-async def checkAccess(jwt: dict, neededRoles: list[str]):
+async def checkAccess(jwt: dict, neededRoles: list[str]) -> None:
     """
     Checks the access for a request. Checks if the jwt contains the needed roles.
     Aborts if the required roles are not met
@@ -215,10 +217,10 @@ async def getRoles(
     :raises Unauthorized: Raises, if the claim can't be decoded
     :return list[str]: List of given roles
     """
-    token = credentials.credentials
+    token: str = credentials.credentials
     jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
-        claims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
+        claims: JWTClaims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
     except Exception as e:
         raise Unauthorized(detail=str(e))
     return claims["roles"] if "roles" in claims else []
@@ -236,10 +238,10 @@ async def getUserId(
     :raises Unauthorized: Raises, if the claim can't be decoded
     :return str: The user id (sub)
     """
-    token = credentials.credentials
+    token: str = credentials.credentials
     jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
-        claims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
+        claims: JWTClaims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
     except Exception as e:
         raise Unauthorized(detail=str(e))
     return claims["sub"]
