@@ -24,7 +24,7 @@ export default function Login({ authError = null, authErrorMessage = null }: { a
       dispatch(setName(response.data.data["email"]))
       dispatch(setRoles(response.data.data["roles"]))
       dispatch(setAuthenticated(true))
-    }).catch((error) => { console.log(error) })
+    }).catch((/*error*/) => { /*console.log(error)*/ })
     dispatch(setBreadcrumbs([{ href: "", title: "Login", active: true }]))
     dispatch(setPageTitle("Login"))
     setInit(true)
