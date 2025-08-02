@@ -1,10 +1,11 @@
-from collections.abc import Callable
-from typing import Any, Coroutine
+from collections.abc import Callable, Coroutine
+from typing import Any
 
-from authlib.jose import JsonWebToken, JWTClaims
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.routing import APIRoute
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from joserfc import jwt
+from joserfc.jwk import Key
 from sqlmodel import Session
 
 from api.config import AppConfig
@@ -13,17 +14,14 @@ from api.models import audit as dbAudit
 from api.models import engine
 from api.models.db import User
 
-oauthParams = {
-    "iss": {"essential": True, "value": AppConfig.JWT_DECODE_ISSUER},
-    "aud": {"essential": True, "value": AppConfig.OAUTH_CLIENT_ID},
-}
-
 auth = {
     "getStaticConfig": {"required": False, "roles": []},
     "getSystemConfig": {"required": True, "roles": []},
     "patchSystemConfig": {"required": True, "roles": ["Configuration.Writer"]},
     "getUserConfig": {"required": True, "roles": []},
     "patchUserConfig": {"required": True, "roles": []},
+    "addServiceIdentity": {"required": True, "roles": ["ServiceUser.Writer"]},
+    "patchServiceIdentity": {"required": True, "roles": ["ServiceUser.Writer"]},
     "getTags": {"required": True, "roles": ["Requirements.Reader"]},
     "findTags": {"required": True, "roles": ["Requirements.Reader"]},
     "getTag": {"required": True, "roles": ["Requirements.Reader"]},
@@ -130,63 +128,45 @@ class AuthRouter(APIRouter):
         super().__init__(route_class=RBACRoute, **kwargs)
 
 
-def getDecodeKey(header: dict, payload: dict) -> str:
+def getClaims(credentials: str) -> dict[str, Any]:
     """
-    Returns the correct decoding key for the jwt
+    Validates the OAuth JWT and returns the claims
 
-    :param dict header: jwt header
-    :param dict payload: jwt payload
-    :raises KeyError: Returns if the key ID is not found in the dict
-    :return str: Key in PEM format
+    :param str credentials: JWT from the Authentication header
+    :return dict[str, Any]: Parsed and validated claims
     """
-    try:
-        return AppConfig.JWT_PUBLIC_KEYS.find_by_kid(header["kid"])
-    except ValueError:
-        AppConfig.getJWKs()
-        try:
-            return AppConfig.JWT_PUBLIC_KEYS.find_by_kid(header["kid"])
-        except ValueError:
-            raise KeyError(f"kid {header['kid']} is not a supported key ID")
+    token: jwt.Token = jwt.decode(credentials, AppConfig.JWT_PUBLIC_KEYS)
+    claims_requests = jwt.JWTClaimsRegistry(
+        iss={"essential": True, "value": AppConfig.JWT_DECODE_ISSUER},
+        aud={"essential": True, "value": AppConfig.OAUTH_CLIENT_ID},
+    )
+    claims_requests.validate(token.claims)
+
+    return token.claims
 
 
 async def validateJWT(
     credentials: HTTPAuthorizationCredentials,
 ) -> dict[str, str]:
     """
-    VAlidates the JWT and adds (or updates) to the Users table
+    Validates the JWT and checks if a user is already known with the given sub
+    If none is known an error is thrown (This is only needed for users not used the auth endpoints)
 
     :param HTTPAuthorizationCredentials credentials: The given JWT
     :raises Unauthorized: Raises, if the JWT is not valid
     :return dict: A dict of the given JWT claims
     """
-    token: str = credentials.credentials
-    jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
-        claims: JWTClaims = jwt.decode(
-            token,
-            getDecodeKey,
-            claims_params=oauthParams,
-            claims_options=oauthParams,
-        )
-        claims.validate()
+        claims: dict[str, Any] = getClaims(credentials.credentials)
     except Exception as e:
         raise Unauthorized(detail=str(e))
 
     with Session(engine) as session:
         user: User | None = session.get(User, claims["sub"])
         if not user:
-            session.commit()
-            user = User(id=claims["sub"], email=claims["email"])
-            session.add(user)
-            session.commit()
-            session.refresh(user)
-            dbAudit(session, 0, user, claims["sub"])
-        elif user.email != claims["email"]:
-            user.email = claims["email"]
-            session.add(user)
-            session.commit()
-            session.refresh(user)
-            dbAudit(session, 1, user, claims["sub"])
+            raise Forbidden(
+                detail="User not registered. Use /config/service/identity to register the user with an id token"
+            )
 
     return claims
 
@@ -217,10 +197,8 @@ async def getRoles(
     :raises Unauthorized: Raises, if the claim can't be decoded
     :return list[str]: List of given roles
     """
-    token: str = credentials.credentials
-    jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
-        claims: JWTClaims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
+        claims: dict[str, Any] = getClaims(credentials.credentials)
     except Exception as e:
         raise Unauthorized(detail=str(e))
     return claims["roles"] if "roles" in claims else []
@@ -238,10 +216,8 @@ async def getUserId(
     :raises Unauthorized: Raises, if the claim can't be decoded
     :return str: The user id (sub)
     """
-    token: str = credentials.credentials
-    jwt = JsonWebToken([AppConfig.JWT_ALGORITHM])
     try:
-        claims: JWTClaims = jwt.decode(token, getDecodeKey, claims_params=oauthParams)
+        claims: dict[str, Any] = getClaims(credentials.credentials)
     except Exception as e:
         raise Unauthorized(detail=str(e))
     return claims["sub"]

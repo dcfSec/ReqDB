@@ -1,10 +1,8 @@
 import base64
 import datetime
-import json
 import logging
 import secrets
 
-from fastapi.datastructures import URL
 import redis.asyncio as redis
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.integrations.starlette_client import OAuth, OAuthError
@@ -15,21 +13,27 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from fastapi import FastAPI, HTTPException, Request
 from fastapi import Response as FastResponse
 from fastapi import status
+from fastapi.datastructures import URL
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, RedirectResponse
 from itsdangerous import BadSignature, TimestampSigner
 from pydantic import BaseModel
+from sqlmodel import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
 from api.config import AppConfig
 from api.error import ErrorResponses, Unauthorized
+from api.models import audit as dbAudit
+from api.models import engine
+from api.models.db import User
 from api.models.response import Response
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
 class UserInfo(BaseModel):
+    sub: str
     email: str
     roles: list[str]
 
@@ -144,14 +148,14 @@ oauth.register(
     client_secret=AppConfig.OAUTH_CLIENT_SECRET,
 )
 
+oauthClient: StarletteOAuth2App = oauth._clients[AppConfig.OAUTH_PROVIDER]
 
-async def parseCallback(request: Request, response: FastResponse):
+
+async def parseCallback(request: Request, response: FastResponse) -> UserInfo:
     try:
-        token: OAuth2Token = await oauth._clients[
-            AppConfig.OAUTH_PROVIDER
-        ].authorize_access_token(request)
-
-        userInfo = token.get("userinfo")
+        token: OAuth2Token = await oauthClient.authorize_access_token(request)
+        print(token)
+        userInfo: object | None = token.get("userinfo", None)
         if userInfo:
             response.set_cookie(
                 key="ReqDBSession",
@@ -161,11 +165,35 @@ async def parseCallback(request: Request, response: FastResponse):
                 secure=True,
                 httponly=True,
             )
-            user: dict[bytes, bytes] = dict(userInfo)  # type: ignore
-            return {
-                "email": user["email"],  # type: ignore
-                "roles": user["roles"],  # type: ignore
-            }
+            if isinstance(userInfo, dict):
+
+                user: UserInfo = UserInfo.model_validate(
+                    {
+                        "sub": userInfo.get("sub"),
+                        "email": userInfo.get("email"),
+                        "roles": userInfo.get("roles", []),
+                    }
+                )
+
+                with Session(engine) as session:
+                    dbUser: User | None = session.get(User, user.sub)
+                    if not dbUser:
+                        session.commit()
+                        dbUser = User(id=user.sub, email=user.email)
+                        session.add(dbUser)
+                        session.commit()
+                        session.refresh(dbUser)
+                        dbAudit(session, 0, dbUser, user.sub)
+                    elif dbUser.email != user.email:
+                        dbUser.email = user.email
+                        session.add(dbUser)
+                        session.commit()
+                        session.refresh(dbUser)
+                        dbAudit(session, 1, dbUser, user.sub)
+
+                return user
+            else:
+                raise Unauthorized(detail="No valid user found")
         else:
             raise Unauthorized(detail="No valid user found")
     except OAuthError as error:
@@ -191,7 +219,7 @@ async def login(request: Request, spa: bool = False):
         500: {"description": "OAuth Error"},
     },
 )
-async def getCallback(request: Request, response: FastResponse):
+async def getCallback(request: Request, response: FastResponse) -> UserInfo:
     return await parseCallback(request, response)
 
 
@@ -204,13 +232,13 @@ async def getCallback(request: Request, response: FastResponse):
     },
 )
 async def getSPACallback(request: Request, response: FastResponse) -> RedirectResponse:
-    callback: dict[str, bytes] = await parseCallback(request, response)
+    callback: UserInfo = await parseCallback(request, response)
     if AppConfig.AUTH_FRONTEND_DEV_MODE:
         redirect_uri = "http://localhost:3000/oauth/callback"
     else:
         redirect_uri = "/oauth/callback"
     return RedirectResponse(
-        f"{redirect_uri}?data={base64.b64encode(json.dumps(callback).encode()).decode()}",
+        f"{redirect_uri}?data={base64.b64encode(callback.model_dump_json().encode()).decode()}",
         headers=response.headers,
     )
 

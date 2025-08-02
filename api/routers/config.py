@@ -4,9 +4,10 @@ from fastapi import Depends, status
 from sqlmodel import select
 
 from api.config import AppConfig
-from api.error import NotFound, ErrorResponses
-from api.models import SessionDep
+from api.error import ErrorResponses, NotFound
+from api.models import SessionDep, audit
 from api.models.db import Configuration, User
+from api.models.insert import Insert
 from api.models.response import Response
 from api.models.update import Update
 from api.routers import AuthRouter, getUserId
@@ -56,8 +57,8 @@ async def getStaticConfig(
                     "post": loginMOTDPost.value if loginMOTDPost else "",
                 },
             },
-        }, # type: ignore
-    ) # type: ignore
+        },  # type: ignore
+    )  # type: ignore
 
 
 @router.get(
@@ -74,7 +75,7 @@ async def getSystemConfig(
 ) -> Response.Configuration.Dynamic.List:
 
     conf = session.exec(select(Configuration)).unique().all()
-    return Response.buildResponse(Response.Configuration.Dynamic.List, conf) # type: ignore
+    return Response.buildResponse(Response.Configuration.Dynamic.List, conf)  # type: ignore
 
 
 @router.patch(
@@ -104,7 +105,7 @@ async def patchSystemConfig(
     # if configurationFromDB.type == "secret":
     #     configurationFromDB.value = "******"
     # audit(session, 1, configurationFromDB, userId)
-    return Response.buildResponse(Response.Configuration.Dynamic.One, configurationFromDB) # type: ignore
+    return Response.buildResponse(Response.Configuration.Dynamic.One, configurationFromDB)  # type: ignore
 
 
 @router.get(
@@ -121,8 +122,8 @@ async def getUserConfig(
     userId: Annotated[str, Depends(getUserId)],
 ) -> Response.User:
 
-    conf = session.get(User, userId)
-    return Response.buildResponse(Response.User, conf) # type: ignore
+    conf: User | None = session.get(User, userId)
+    return Response.buildResponse(Response.User, conf)  # type: ignore
 
 
 @router.patch(
@@ -148,4 +149,48 @@ async def patchUserConfig(
     session.add(configurationFromDB)
     session.commit()
     session.refresh(configurationFromDB)
-    return Response.buildResponse(Response.User, configurationFromDB) # type: ignore
+    return Response.buildResponse(Response.User, configurationFromDB)  # type: ignore
+
+
+@router.post(
+    "/config/service/identity",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        201: {"description": "Service user was created"},
+    },
+)
+async def addServiceIdentity(
+    session: SessionDep,
+    service: Insert.ServiceUser,
+) -> Response.User:
+    service.service = True
+    serviceDB: User = User.model_validate(service)
+    session.add(serviceDB)
+    session.commit()
+    session.refresh(serviceDB)
+    audit(session, 0, serviceDB, service.id)
+    return Response.buildResponse(Response.User, serviceDB)  # type: ignore
+
+
+@router.patch(
+    "/config/service/identity/{id}",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        201: {"description": "Service user was updated"},
+    },
+)
+async def patchServiceIdentity(
+    session: SessionDep,
+    id: str,
+    service: Update.ServiceUser,
+    userId: Annotated[str, Depends(getUserId)],
+) -> Response.User:
+    userFromDB: User | None = session.get(User, id)
+    if not userFromDB or not userFromDB.service:
+        raise NotFound(detail="Service user not found")
+    userFromDB.sqlmodel_update(service.model_dump(exclude_unset=True))
+    session.add(userFromDB)
+    session.commit()
+    session.refresh(userFromDB)
+    audit(session, 1, userFromDB, userId)
+    return Response.buildResponse(Response.User, userFromDB)  # type: ignore

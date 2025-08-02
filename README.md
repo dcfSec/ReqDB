@@ -95,40 +95,30 @@ EMAIL_TLS=1                        # Flag to use STARTTLS for the SMTP server. D
 
 ## OAuth Server Configuration
 
-### Token configuration
-
-ReqDB accesses some user identifiers from OAuth claims. Following claims are needed:
-
-| Claim   | Reason                                                                                                                                                                   |
-|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `email` | Used for displaying the logged in user in the front end and send it to the back end for human readable identification JWTs `sub` is used as primary identifier for users |
-
-
 ### Scopes
 
-To get our claim and roles for ReqDB we request the needed scopes from the oidc server:
+To get our claim and roles for ReqDB we request the needed scopes from the OIDC provider:
 
 * `email`
 * `openid`
 * `<OAUTH_CLIENT_ID>/.default`
 
-
 ### App Roles
 
 ReqDB defines following roles:
 
-| Role                   | Description                                             |
-|------------------------|---------------------------------------------------------|
-| `Requirements.Reader`  | Read access to the requirements API                     |
-| `Requirements.Writer`  | Write access to the requirements API                    |
-| `Requirements.Auditor` | Read access to view the requirement audit log API       |
-| `Comments.Reader`      | Read access to the comment API                          |
-| `Comments.Writer`      | Write (add) access to the comment API                   |
-| `Comments.Moderator`   | Write (edit, delete) access to the comment API          |
-| `Comments.Auditor`     | Read access to view the comment audit log API           |
-| `Configuration.Reader` | Read access to the configuration API                     |
-| `Configuration.Writer` | Write access to the configuration API                    |
-
+| Role                   | Description                                                                         |
+|------------------------|-------------------------------------------------------------------------------------|
+| `Requirements.Reader`  | Read access to the requirements API                                                 |
+| `Requirements.Writer`  | Write access to the requirements API                                                |
+| `Requirements.Auditor` | Read access to view the requirement audit log API                                   |
+| `Comments.Reader`      | Read access to the comment API                                                      |
+| `Comments.Writer`      | Write (add) access to the comment API                                               |
+| `Comments.Moderator`   | Write (edit, delete) access to the comment API                                      |
+| `Comments.Auditor`     | Read access to view the comment audit log API                                       |
+| `Configuration.Reader` | Read access to the configuration API                                                |
+| `Configuration.Writer` | Write access to the configuration API                                               |
+| `ServiceUser.Writer`   | Write user information for service accounts (oauth clients without login via /auth) |
 
 ### Redirect URL
 
@@ -138,9 +128,12 @@ The application uses `https://<YOUR_FQDN>/auth/callback` and `https://<YOUR_FQDN
 
 The configuration for Entra ID is of course special. To get a proper access token the applications manifest needs to be edited: Go to `Manifest` and set `requestedAccessTokenVersion` to `2`.
 
-Also in `Token configuration` the `email` claim needs to be set for `ID` and `Access`.
-
 Lastly in in `API permissions` the permissions `email`, `openid` and `profile` needs to be set.
+
+### Users who do not use `/auth/login` for authentication and authorization
+
+When using `/auth/login` for authentication and authorization ReqDB will request an access and id token from the OIDC provider to get the email.
+If you get your access token another way (E.g. via a different oauth client and the ReqDB scope) ReqDB does not know the user and an admin needs to register the application (client id) with the `/config/service/identity` endpoint. With that a display name/email is set for the client.
 
 ## Development
 

@@ -12,6 +12,7 @@ class UserBase(SQLModel):
     email: str = Field(max_length=254)
     created: float = Field(default_factory=timestamp)
     active: bool = Field(default=True)
+    service: bool = Field(default=False)
     notificationMailOnCommentChain: bool = Field(default=False)
     notificationMailOnRequirementComment: bool = Field(default=False)
 

@@ -72,3 +72,9 @@ class Insert:
     class TagRequirement(SQLModel):
         model_config = ConfigDict(from_attributes=True)  # type: ignore
         id: int
+
+    class ServiceUser(SQLModel):
+        model_config = ConfigDict(from_attributes=True)  # type: ignore
+        id: str
+        email: str | None = None
+        service: bool = True

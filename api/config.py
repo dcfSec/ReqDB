@@ -2,8 +2,7 @@ from os import getenv
 from typing import Any
 
 import requests
-from authlib.jose import JsonWebKey
-from authlib.jose.rfc7517.key_set import KeySet
+from joserfc.jwk import KeySet
 
 
 class AppConfig:
@@ -107,7 +106,7 @@ class AppConfig:
         """
         response: requests.Response = requests.get(AppConfig.JWT_JWK_URI)
         response.raise_for_status()
-        cls.JWT_PUBLIC_KEYS: KeySet = JsonWebKey.import_key_set(response.json()["keys"])
+        cls.JWT_PUBLIC_KEYS: KeySet = KeySet.import_key_set(response.json())
 
     @classmethod
     def getOpenIdConfig(cls) -> None:

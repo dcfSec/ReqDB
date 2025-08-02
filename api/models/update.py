@@ -70,3 +70,7 @@ class Update:
         model_config = ConfigDict(from_attributes=True)  # type: ignore
         notificationMailOnCommentChain: bool | None = None
         notificationMailOnRequirementComment: bool | None = None
+
+    class ServiceUser(SQLModel):
+        model_config = ConfigDict(from_attributes=True)  # type: ignore
+        email: str | None = None

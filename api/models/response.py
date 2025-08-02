@@ -1,8 +1,7 @@
-from typing import Generic, Optional, TypeVar, Union
+from typing import Generic, TypeVar
 
 from fastapi import Response as FastAPIResponse
 from pydantic import BaseModel
-from sqlmodel import SQLModel
 
 from api.models.public import (
     Audit,
