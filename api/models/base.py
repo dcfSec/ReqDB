@@ -92,12 +92,6 @@ class TagBase(SQLModel):
 
 
 class StaticConfiguration(SQLModel):
-    class OAuthClass(SQLModel):
-        provider: str
-        authority: str
-        client_id: str
-        scope: str
-
     class MOTDClass(SQLModel):
         pre: str
         post: str
@@ -109,6 +103,5 @@ class StaticConfiguration(SQLModel):
     class LoginClass(SQLModel):
         MOTD: "StaticConfiguration.MOTDClass"
 
-    oauth: "StaticConfiguration.OAuthClass"
     home: "StaticConfiguration.HomeClass"
     login: "StaticConfiguration.LoginClass"

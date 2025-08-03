@@ -3,7 +3,6 @@ from typing import Annotated
 from fastapi import Depends, status
 from sqlmodel import select
 
-from api.config import AppConfig
 from api.error import ErrorResponses, NotFound
 from api.models import SessionDep, audit
 from api.models.db import Configuration, User
@@ -34,12 +33,6 @@ async def getStaticConfig(
     return Response.buildResponse(
         Response.Configuration.Static,
         {
-            "oauth": {
-                "provider": AppConfig.OAUTH_PROVIDER,
-                "authority": AppConfig.JWT_DECODE_ISSUER,
-                "client_id": AppConfig.OAUTH_CLIENT_ID,
-                "scope": AppConfig.OAUTH_SCOPE,
-            },
             "home": {
                 "title": (
                     homeTitle.value

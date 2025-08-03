@@ -1,7 +1,7 @@
 import time
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
@@ -36,7 +36,7 @@ api.include_router(audit.router)
 api.include_router(coffee.router)
 
 
-@api.head("/", status_code=200)
+@api.head("/health", status_code=status.HTTP_200_OK)
 async def head() -> None:
     """
     Health check for the container
