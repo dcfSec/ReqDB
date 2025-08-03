@@ -9,6 +9,7 @@ import { RefAttributes } from 'react';
 import { JSX } from 'react/jsx-runtime';
 import { saveAs } from './MiniComponents';
 import { Item as Topic } from '../types/API/Topics';
+import { Item as Requirement } from '../types/API/Requirements';
 
 /**
  * Exports the browse table in different formats
@@ -76,6 +77,36 @@ export function ExportTable() {
     saveAs(blob, "ReqDB-Export.json");
   }
 
+  function exportMarkdown() {
+
+    const dataToExport = { ...data }
+    dataToExport.topics = dataToExport.topics?.map((topic) => (getExportObject(topic))).filter(function (v) { return v !== null; });
+
+    const fileType = 'data:text/plain;charset=utf-8;';
+    let mdToExport = `# [${dataToExport.key}] ${dataToExport.title}\n\n`
+    mdToExport = mdToExport + dataToExport.topics?.map((topic) => (buildMarkdownTopics(2, topic))).join("\n\n");
+    const blob = new Blob([mdToExport], { type: fileType });
+    saveAs(blob, "ReqDB-Export.md");
+  }
+
+  function buildMarkdownTopics(titleDepth: number, topic: Topic): string {
+    let r = `${"#".repeat(titleDepth)} [${topic.key}] ${topic.title}\n\n${topic.description}\n\n`;
+
+    if (topic.children.length != 0)
+      r = r + topic.children?.map((child) => (buildMarkdownTopics(titleDepth + 1, child))).join("\n\n");
+    if (topic.requirements.length != 0)
+      r = r + topic.requirements?.map((child) => (buildMarkdownRequirements(titleDepth + 1, child))).join("\n\n");
+
+    return r;
+  }
+
+  function buildMarkdownRequirements(titleDepth: number, requirement: Requirement): string {
+    let r = `${"#".repeat(titleDepth)} [${requirement.key}] ${requirement.title}\n\n${requirement.tags.map((tag) => (`${tag.name}`)).join(", ")}\n\n${requirement.description}\n\n`;
+
+    r = r + requirement.extras?.map((extra) => (`${"#".repeat(titleDepth + 1)} ${extra.extraType.title}\n\n${extra.content}\n\n`)).join("\n\n");
+    return r;
+  }
+
   function exportYaml() {
 
     const dataToExport = { ...data }
@@ -107,6 +138,7 @@ export function ExportTable() {
         <Dropdown.Item onClick={exportCSV} disabled={rowsToExport.length === 0}>As CSV</Dropdown.Item>
         <Dropdown.Item onClick={exportJson} disabled={rowsToExport.length === 0}>As JSON</Dropdown.Item>
         <Dropdown.Item onClick={exportYaml} disabled={rowsToExport.length === 0}>As Yaml</Dropdown.Item>
+        <Dropdown.Item onClick={exportMarkdown} disabled={rowsToExport.length === 0}>As Markdown</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );
