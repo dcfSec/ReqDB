@@ -112,20 +112,34 @@ class AuthSession:
             return None, None
 
     async def refreshSession(self, sessionId: str, newToken: dict) -> tuple[str, Token]:
-        sessionToken: Token = Token.model_validate_json(
-            await self.sessionStore.get(sessionId)
-        )
-        sessionToken.id_token = newToken["id_token"]
-        sessionToken.refresh_token = newToken["refresh_token"]
-        sessionToken.access_token = newToken["access_token"]
-        sessionToken.expires_at = newToken["expires_at"]
+        try:
+            storedEncryptedSession: bytes = base64.b64decode(
+                await self.sessionStore.get(sessionId)
+            )
+            decryptedSession: str = (
+                AESGCM(self.key)
+                .decrypt(
+                    storedEncryptedSession[:12],
+                    storedEncryptedSession[12:],
+                    b"",
+                )
+                .decode()
+            )
+            sessionToken: Token = Token.model_validate_json(decryptedSession)
+            sessionToken.id_token = newToken["id_token"]
+            sessionToken.refresh_token = newToken["refresh_token"]
+            sessionToken.access_token = newToken["access_token"]
+            sessionToken.expires_at = newToken["expires_at"]
 
-        newSessionId: str = secrets.token_urlsafe(32)
-        await self.sessionStore.set(
-            newSessionId, sessionToken.model_dump_json(), self.maxAge
-        )
-        await self.removeSession(sessionId)
-        return self.signer.sign(newSessionId).decode("utf-8"), sessionToken
+            newSessionId: str = secrets.token_urlsafe(32)
+            await self.sessionStore.set(
+                newSessionId, sessionToken.model_dump_json(), self.maxAge
+            )
+            await self.removeSession(sessionId)
+            return self.signer.sign(newSessionId).decode("utf-8"), sessionToken
+        except InvalidTag as error:
+            logger.error(f"Can't decrypt session with ID: {sessionId}")
+            raise HTTPException(500, "Error refreshing the given session")
 
     async def removeSession(self, sessionId: str) -> None:
         if await self.sessionStore.exists(sessionId):
@@ -280,7 +294,6 @@ async def getToken(request: Request, response: FastResponse):
                     secure=True,
                     httponly=True,
                 )
-                await authSession.removeSession(sessionId)
             return {
                 "status": 200,
                 "data": {
