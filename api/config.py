@@ -41,16 +41,16 @@ class AppConfig:
     EMAIL_USER: str = getenv("EMAIL_USER", "")
     EMAIL_PASSWORD: str = getenv("EMAIL_PASSWORD", "")
     EMAIL_FROM: str = getenv("EMAIL_FROM", "")
-    EMAIL_TLS: bool = bool(getenv("EMAIL_TLS", 1))
-    EMAIL_SEND_SELF: bool = bool(getenv("EMAIL_SEND_SELF", 0))
+    EMAIL_TLS: bool = bool(int(getenv("EMAIL_TLS", 1)))
+    EMAIL_SEND_SELF: bool = bool(int(getenv("EMAIL_SEND_SELF", 0)))
 
-    AUTH_FRONTEND_DEV_MODE: bool = bool(getenv("AUTH_FRONTEND_DEV_MODE", 0))
+    AUTH_FRONTEND_DEV_MODE: bool = bool(int(getenv("AUTH_FRONTEND_DEV_MODE", 0)))
 
     REDIS_HOST: str = getenv("REDIS_HOST", "")
     REDIS_PORT: int = int(getenv("REDIS_PORT", 6379))
     REDIS_PASSWORD: str = getenv("REDIS_PASSWORD", "")
     REDIS_DB: str | int = getenv("REDIS_DB", 0)
-    REDIS_TLS = bool(getenv("REDIS_TLS", 0))
+    REDIS_TLS = bool(int(getenv("REDIS_TLS", 0)))
 
     LOGGING_CONFIG: dict[str, Any] = {
         "version": 1,
