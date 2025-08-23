@@ -1,9 +1,10 @@
 from typing import Annotated
 
 from fastapi import BackgroundTasks, Depends, status
+from sqlalchemy.exc import DatabaseError
 from sqlmodel import col, or_, select
 
-from api.error import ConflictError, NotFound, ErrorResponses
+from api.error import ConflictError, ErrorResponses, NotFound, raiseDBErrorReadable
 from api.helper import sendNotificationMailForNewComment
 from api.models import SessionDep, audit
 from api.models.db import Comment
@@ -98,7 +99,10 @@ async def patchComment(
         raise NotFound(detail="Comment not found")
     commentFromDB.sqlmodel_update(comment.model_dump(exclude_unset=True))
     session.add(commentFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(commentFromDB)
     audit(session, 1, commentFromDB, userId)
     return Response.buildResponse(Response.Comment.One, commentFromDB)  # type: ignore
@@ -123,7 +127,10 @@ async def addComment(
     comment.authorId = userId
     commentDB = Comment.model_validate(comment)
     session.add(commentDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(commentDB)
     audit(session, 0, commentDB, userId)
     # sendNotificationMailForNewComment(session, commentDB.id)
@@ -160,6 +167,9 @@ async def deleteComment(
             ]
         )
     session.delete(comment)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     audit(session, 2, comment, userId)
     return None

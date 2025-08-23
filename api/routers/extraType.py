@@ -1,9 +1,10 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 from fastapi import Depends, status
+from sqlalchemy.exc import DatabaseError
 from sqlmodel import col, select
 
-from api.error import ConflictError, NotFound, ErrorResponses
+from api.error import ConflictError, ErrorResponses, NotFound, raiseDBErrorReadable
 from api.models import SessionDep, audit
 from api.models.db import ExtraType
 from api.models.insert import Insert
@@ -71,7 +72,7 @@ async def findExtraTypes(
 )
 async def getExtraType(
     session: SessionDep, extraTypeID: int, expandTopics: bool = True
-) -> Union[Response.ExtraType.One, Response.ExtraType.One]:
+) -> Response.ExtraType.One | Response.ExtraType.One:
     extraType = session.get(ExtraType, extraTypeID)
 
     if not extraType:
@@ -105,7 +106,10 @@ async def patchExtraType(
     extraTypeData = extraType.model_dump(exclude_unset=True, mode="python")
     extraTypeFromDB.sqlmodel_update(extraTypeData)
     session.add(extraTypeFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(extraTypeFromDB)
     audit(session, 1, extraTypeFromDB, userId)
     return Response.buildResponse(Response.ExtraType.One, extraTypeFromDB)  # type: ignore
@@ -128,7 +132,10 @@ async def addExtraType(
 ) -> Response.ExtraType.One:
     extraTypeDB = ExtraType.model_validate(extraType)
     session.add(extraTypeDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(extraTypeDB)
     audit(session, 0, extraTypeDB, userId)
     return Response.buildResponse(Response.ExtraType.One, extraTypeDB, 201)  # type: ignore
@@ -164,6 +171,9 @@ async def deleteExtraType(
             ]
         )
     session.delete(extraType)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     audit(session, 2, extraType, userId)
     return None

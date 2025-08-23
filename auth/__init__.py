@@ -18,12 +18,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, RedirectResponse
 from itsdangerous import BadSignature, TimestampSigner
 from pydantic import BaseModel
+from sqlalchemy.exc import DatabaseError
 from sqlmodel import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
 from api.config import AppConfig
-from api.error import ErrorResponses, Unauthorized
+from api.error import ErrorResponses, Unauthorized, raiseDBErrorReadable
 from api.models import audit as dbAudit
 from api.models import engine
 from api.models.db import User
@@ -168,7 +169,6 @@ oauthClient: StarletteOAuth2App = oauth._clients[AppConfig.OAUTH_PROVIDER]
 async def parseCallback(request: Request, response: FastResponse) -> UserInfo:
     try:
         token: OAuth2Token = await oauthClient.authorize_access_token(request)
-        print(token)
         userInfo: object | None = token.get("userinfo", None)
         if userInfo:
             response.set_cookie(
@@ -192,16 +192,25 @@ async def parseCallback(request: Request, response: FastResponse) -> UserInfo:
                 with Session(engine) as session:
                     dbUser: User | None = session.get(User, user.sub)
                     if not dbUser:
-                        session.commit()
+                        try:
+                            session.commit()
+                        except DatabaseError as e:
+                            raiseDBErrorReadable(e)
                         dbUser = User(id=user.sub, email=user.email)
                         session.add(dbUser)
-                        session.commit()
+                        try:
+                            session.commit()
+                        except DatabaseError as e:
+                            raiseDBErrorReadable(e)
                         session.refresh(dbUser)
                         dbAudit(session, 0, dbUser, user.sub)
                     elif dbUser.email != user.email:
                         dbUser.email = user.email
                         session.add(dbUser)
-                        session.commit()
+                        try:
+                            session.commit()
+                        except DatabaseError as e:
+                            raiseDBErrorReadable(e)
                         session.refresh(dbUser)
                         dbAudit(session, 1, dbUser, user.sub)
 

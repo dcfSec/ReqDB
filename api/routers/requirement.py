@@ -1,9 +1,10 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 from fastapi import Depends, status
-from sqlmodel import col, select, or_
+from sqlalchemy.exc import DatabaseError
+from sqlmodel import col, or_, select
 
-from api.error import ConflictError, NotFound, ErrorResponses
+from api.error import ConflictError, ErrorResponses, NotFound, raiseDBErrorReadable
 from api.helper import checkParentTopicChildren
 from api.models import SessionDep, audit
 from api.models.db import Requirement, Tag
@@ -26,7 +27,7 @@ router = AuthRouter()
 )
 async def getRequirements(
     roles: Annotated[dict, Depends(getRoles)], session: SessionDep
-) -> Union[Response.Requirement.List, Response.Requirement.ListWithComments]:
+) -> Response.Requirement.List | Response.Requirement.ListWithComments:
     requirements = session.exec(select(Requirement)).unique().all()
 
     if "Comments.Reader" in roles:
@@ -80,7 +81,7 @@ async def findRequirements(
 )
 async def getRequirement(
     roles: Annotated[dict, Depends(getRoles)], session: SessionDep, requirementID: int
-) -> Union[Response.Requirement.One, Response.Requirement.OneWithComments]:
+) -> Response.Requirement.One | Response.Requirement.OneWithComments:
     requirement = session.get(Requirement, requirementID)
 
     if not requirement:
@@ -124,7 +125,10 @@ async def patchRequirement(
         else:
             raise NotFound(detail=f"Tag with ID {tag.id} not found")
     session.add(requirementFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(requirementFromDB)
     audit(session, 1, requirementFromDB, userId)
     return Response.buildResponse(Response.Requirement.One, requirementFromDB)  # type: ignore
@@ -157,7 +161,10 @@ async def addRequirement(
         else:
             raise NotFound(detail=f"Tag with ID {tag.id} not found")
     session.add(requirementDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(requirementDB)
     audit(session, 0, requirementDB, userId)
     return Response.buildResponse(Response.Requirement.One, requirementDB, 201)  # type: ignore
@@ -201,6 +208,9 @@ async def deleteRequirement(
             ]
         )
     session.delete(requirement)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     audit(session, 2, requirement, userId)
     return None

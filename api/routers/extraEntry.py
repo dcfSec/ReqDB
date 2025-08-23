@@ -1,9 +1,10 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 from fastapi import Depends, status
+from sqlalchemy.exc import DatabaseError
 from sqlmodel import col, select
 
-from api.error import NotFound, ErrorResponses
+from api.error import ErrorResponses, NotFound, raiseDBErrorReadable
 from api.models import SessionDep, audit
 from api.models.db import ExtraEntry
 from api.models.insert import Insert
@@ -71,7 +72,7 @@ async def findExtraEntries(
 )
 async def getExtraEntry(
     session: SessionDep, extraTypeID: int, expandTopics: bool = True
-) -> Union[Response.ExtraEntry.One, Response.ExtraEntry.One]:
+) -> Response.ExtraEntry.One | Response.ExtraEntry.One:
     extraType = session.get(ExtraEntry, extraTypeID)
 
     if not extraType:
@@ -104,7 +105,10 @@ async def patchExtraEntry(
         raise NotFound(detail="ExtraEntry not found")
     extraTypeFromDB.sqlmodel_update(extraType.model_dump(exclude_unset=True))
     session.add(extraTypeFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(extraTypeFromDB)
     audit(session, 1, extraTypeFromDB, userId)
     return Response.buildResponse(Response.ExtraEntry.One, extraTypeFromDB)  # type: ignore
@@ -127,7 +131,10 @@ async def addExtraEntry(
 ) -> Response.ExtraEntry.One:
     extraTypeDB = ExtraEntry.model_validate(extraType)
     session.add(extraTypeDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(extraTypeDB)
     audit(session, 0, extraTypeDB, userId)
     return Response.buildResponse(Response.ExtraEntry.One, extraTypeDB, 201)  # type: ignore
@@ -153,6 +160,9 @@ async def deleteExtraEntry(
     if not extraType:
         raise NotFound(detail="ExtraEntry not found")
     session.delete(extraType)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     audit(session, 2, extraType, userId)
     return None

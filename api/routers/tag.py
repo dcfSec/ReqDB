@@ -1,9 +1,10 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 from fastapi import Depends, status
+from sqlalchemy.exc import DatabaseError
 from sqlmodel import col, select
 
-from api.error import ConflictError, NotFound, ErrorResponses
+from api.error import ConflictError, ErrorResponses, NotFound, raiseDBErrorReadable
 from api.models import SessionDep, audit
 from api.models.db import Catalogue, Requirement, Tag
 from api.models.insert import Insert
@@ -25,7 +26,7 @@ router = AuthRouter()
 )
 async def getTags(
     session: SessionDep, expandTopics: bool = True
-) -> Union[Response.Tag.List, Response.Tag.ListWithRequirements]:
+) -> Response.Tag.List | Response.Tag.ListWithRequirements:
     tags = session.exec(select(Tag)).unique().all()
 
     if expandTopics is False:
@@ -67,7 +68,7 @@ async def findTags(
 )
 async def getTag(
     session: SessionDep, tagID: int, expandTopics: bool = True
-) -> Union[Response.Tag.One, Response.Tag.OneWithRequirementsAndCatalogues]:
+) -> Response.Tag.One | Response.Tag.OneWithRequirementsAndCatalogues:
     tag = session.get(Tag, tagID)
 
     if not tag:
@@ -114,7 +115,10 @@ async def patchTag(
         else:
             raise NotFound(detail=f"Catalogue with ID {catalogue.id} not found")
     session.add(tagFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(tagFromDB)
     audit(session, 1, tagFromDB, userId)
     return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tagFromDB)  # type: ignore
@@ -138,7 +142,10 @@ async def addTag(
     tag.catalogues = []
     tag.requirements = []
     tagDB = Tag.model_validate(tag)
-    session.add(tagDB)
+    try:
+        session.add(tagDB)
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     for requirement in tag.requirements:
         t = session.get(Requirement, requirement.id)
         if t:
@@ -151,7 +158,10 @@ async def addTag(
             tagDB.catalogues.append(t)
         else:
             raise NotFound(detail=f"Catalogue with ID {catalogue.id} not found")
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(tagDB)
     audit(session, 0, tagDB, userId)
     return Response.buildResponse(Response.Tag.OneWithRequirementsAndCatalogues, tagDB, 201)  # type: ignore
@@ -186,6 +196,9 @@ async def deleteTag(
             ]
         )
     session.delete(tag)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     audit(session, 2, tag, userId)
     return None

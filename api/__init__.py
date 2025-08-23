@@ -36,7 +36,7 @@ api.include_router(audit.router)
 api.include_router(coffee.router)
 
 
-@api.head("/health", status_code=status.HTTP_200_OK)
+@api.get("/health", status_code=status.HTTP_200_OK)
 async def head() -> None:
     """
     Health check for the container

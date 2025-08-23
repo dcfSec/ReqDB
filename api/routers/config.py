@@ -1,9 +1,10 @@
 from typing import Annotated
 
 from fastapi import Depends, status
+from sqlalchemy.exc import DatabaseError
 from sqlmodel import select
 
-from api.error import ErrorResponses, NotFound
+from api.error import ErrorResponses, NotFound, raiseDBErrorReadable
 from api.models import SessionDep, audit
 from api.models.db import Configuration, User
 from api.models.insert import Insert
@@ -93,7 +94,10 @@ async def patchSystemConfig(
         raise NotFound(detail="Configuration item not found")
     configurationFromDB.sqlmodel_update(configuration.model_dump(exclude_unset=True))
     session.add(configurationFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(configurationFromDB)
     # if configurationFromDB.type == "secret":
     #     configurationFromDB.value = "******"
@@ -140,7 +144,10 @@ async def patchUserConfig(
         raise NotFound(detail="Configuration item not found")
     configurationFromDB.sqlmodel_update(configuration.model_dump(exclude_unset=True))
     session.add(configurationFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(configurationFromDB)
     return Response.buildResponse(Response.User, configurationFromDB)  # type: ignore
 
@@ -159,7 +166,10 @@ async def addServiceIdentity(
     service.service = True
     serviceDB: User = User.model_validate(service)
     session.add(serviceDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(serviceDB)
     audit(session, 0, serviceDB, service.id)
     return Response.buildResponse(Response.User, serviceDB)  # type: ignore
@@ -183,7 +193,10 @@ async def patchServiceIdentity(
         raise NotFound(detail="Service user not found")
     userFromDB.sqlmodel_update(service.model_dump(exclude_unset=True))
     session.add(userFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(userFromDB)
     audit(session, 1, userFromDB, userId)
     return Response.buildResponse(Response.User, userFromDB)  # type: ignore

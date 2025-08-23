@@ -1,9 +1,10 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 from fastapi import Depends, status
+from sqlalchemy.exc import DatabaseError
 from sqlmodel import col, or_, select
 
-from api.error import ConflictError, NotFound, ErrorResponses
+from api.error import ConflictError, ErrorResponses, NotFound, raiseDBErrorReadable
 from api.helper import checkParentTopicChildren
 from api.models import SessionDep, audit
 from api.models.db import Topic
@@ -26,7 +27,7 @@ router = AuthRouter()
 )
 async def getTopics(
     session: SessionDep, expandTopics: bool = False
-) -> Union[Response.Topic.List, Response.Topic.ListWithRequirements]:
+) -> Response.Topic.List | Response.Topic.ListWithRequirements:
     topics = session.exec(select(Topic)).unique().all()
 
     if expandTopics is False:
@@ -46,7 +47,7 @@ async def getTopics(
 )
 async def findTopics(
     session: SessionDep, query: str, expandTopics: bool = False
-) -> Union[Response.Topic.List, Response.Topic.ListWithRequirements]:
+) -> Response.Topic.List | Response.Topic.ListWithRequirements:
     topics = (
         session.exec(
             select(Topic).where(
@@ -76,7 +77,7 @@ async def findTopics(
 )
 async def getTopic(
     session: SessionDep, topicID: int, expandTopics: bool = False
-) -> Union[Response.Topic.One, Response.Topic.OneWithRequirements]:
+) -> Response.Topic.One | Response.Topic.OneWithRequirements:
     topic = session.get(Topic, topicID)
 
     if not topic:
@@ -110,7 +111,10 @@ async def patchTopic(
         raise NotFound(detail="Topic not found")
     topicFromDB.sqlmodel_update(topic.model_dump(exclude_unset=True))
     session.add(topicFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(topicFromDB)
     audit(session, 1, topicFromDB, userId)
     return Response.buildResponse(Response.Topic.One, topicFromDB)  # type: ignore
@@ -134,7 +138,10 @@ async def addTopic(
     topicDB = Topic.model_validate(topic)
     checkParentTopicChildren(topic.parentId, session, True)
     session.add(topicDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(topicDB)
     audit(session, 0, topicDB, userId)
     return Response.buildResponse(Response.Topic.One, topicDB, 201)  # type: ignore
@@ -178,6 +185,9 @@ async def deleteTopic(
             ]
         )
     session.delete(topic)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     audit(session, 2, topic, userId)
     return None

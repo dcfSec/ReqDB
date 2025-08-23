@@ -1,9 +1,10 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 from fastapi import Depends, status
+from sqlalchemy.exc import DatabaseError
 from sqlmodel import col, or_, select
 
-from api.error import ConflictError, ErrorResponses, NotFound
+from api.error import ConflictError, ErrorResponses, NotFound, raiseDBErrorReadable
 from api.models import SessionDep, audit
 from api.models.db import Catalogue, Tag, Topic
 from api.models.insert import Insert
@@ -25,9 +26,7 @@ router = AuthRouter()
 )
 async def getCatalogues(
     session: SessionDep, expandTopics: bool = True
-) -> Union[
-    Response.Catalogue.ListWithTags, Response.Catalogue.ListWithTopicsAndRequirements
-]:
+) -> Response.Catalogue.ListWithTags | Response.Catalogue.ListWithTopicsAndRequirements:
     catalogues = session.exec(select(Catalogue)).unique().all()
 
     if expandTopics is False:
@@ -47,9 +46,7 @@ async def getCatalogues(
 )
 async def findCatalogues(
     session: SessionDep, query: str, expandTopics: bool = True
-) -> Union[
-    Response.Catalogue.ListWithTags, Response.Catalogue.ListWithTopicsAndRequirements
-]:
+) -> Response.Catalogue.ListWithTags | Response.Catalogue.ListWithTopicsAndRequirements:
     catalogues = (
         session.exec(
             select(Catalogue).where(
@@ -85,11 +82,11 @@ async def getCatalogue(
     session: SessionDep,
     catalogueID: int,
     expandTopics: bool = True,
-) -> Union[
-    Response.Catalogue.OneWithTags,
-    Response.Catalogue.OneWithTopicsAndRequirements,
-    Response.Catalogue.OneWithTopicsAndRequirementsAndComments,
-]:
+) -> (
+    Response.Catalogue.OneWithTags
+    | Response.Catalogue.OneWithTopicsAndRequirements
+    | Response.Catalogue.OneWithTopicsAndRequirementsAndComments
+):
     catalogue = session.get(Catalogue, catalogueID)
 
     if not catalogue:
@@ -140,7 +137,10 @@ async def patchCatalogue(
         else:
             raise NotFound(detail=f"Tag with ID {tag.id} not found")
     session.add(catalogueFromDB)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(catalogueFromDB)
     audit(session, 1, catalogueFromDB, userId)
     return Response.buildResponse(Response.Catalogue.OneWithTopics, catalogueFromDB)  # type: ignore
@@ -180,7 +180,10 @@ async def addCatalogue(
             catalogueDB.tags.append(t)
         else:
             raise NotFound(detail=f"Child with ID {tag.id} not found")
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     session.refresh(catalogueDB)
     audit(session, 0, catalogueDB, userId)
     return Response.buildResponse(Response.Catalogue.One, catalogueDB, 201)  # type: ignore
@@ -215,6 +218,9 @@ async def deleteCatalogue(
             ]
         )
     session.delete(catalogue)
-    session.commit()
+    try:
+        session.commit()
+    except DatabaseError as e:
+        raiseDBErrorReadable(e)
     audit(session, 2, catalogue, userId)
     return None
