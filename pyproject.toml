@@ -12,14 +12,14 @@ requests = "^2.32.4"
 python-dotenv = "^1.0.1"
 pyodbc = "^5.2.0"
 psycopg2-binary = "^2.9.10"
-fastapi = "^0.115.7"
-fastapi-cli = "^0.0.7"
-sqlmodel = "^0.0.22"
+fastapi = "^0.121.2"
+fastapi-cli = {extras = ["standard-no-fastapi-cloud-cli"], version = "^0.0.16"}
+sqlmodel = "^0.0.27"
 authlib = "^1.4.0"
 httpx = "^0.28.1"
 itsdangerous = "^2.2.0"
 alembic = "^1.14.1"
-redis = "^6.2.0"
+redis = "^7.0.0"
 joserfc = "^1.2.2"
 
 [tool.isort]
