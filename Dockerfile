@@ -1,31 +1,37 @@
-FROM --platform=$BUILDPLATFORM node:22-alpine AS build
+FROM --platform=$BUILDPLATFORM node:22-alpine AS spa-build
 
 WORKDIR /src
 COPY spa ./
 RUN npm install
 RUN npm run build
 
-FROM python:3.13-alpine
+FROM --platform=$BUILDPLATFORM python:3.13 AS api-build
 
-WORKDIR /home/reqdb
-RUN mkdir spa
-COPY --from=build /src/dist ./spa/dist
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
+RUN pip install poetry && poetry config virtualenvs.in-project true
+
+WORKDIR /src
 COPY app.py ./
-COPY requirements.txt ./
 COPY api/ ./api
 COPY auth/ ./auth
+COPY poetry.lock .
+COPY pyproject.toml .
 
-RUN apk update && \
-    apk add --no-cache g++ unixodbc-dev curl && \
-    pip install --no-cache-dir --upgrade --no-deps -r requirements.txt && rm requirements.txt && \
-    apk del -r g++
+RUN poetry install --only main
 
-RUN addgroup --gid 1000 reqdb && adduser --disabled-password --home /reqdb --ingroup reqdb --no-create-home --uid 1000 reqdb
-RUN chown -R reqdb:reqdb /home/reqdb
-USER reqdb
+FROM python:3.13-alpine
+
+WORKDIR /reqdb
+
+COPY --from=spa-build /src/dist ./spa/dist
+COPY --from=api-build /src .
+
+RUN adduser app -DHh /reqdb -u 1000
+USER 1000
 
 EXPOSE 8000
 HEALTHCHECK CMD curl --fail http://localhost:8000/api/health || exit 1
 
-CMD ["python", "app.py"]
+CMD ["./.venv/bin/python", "app.py"]
