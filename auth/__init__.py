@@ -3,21 +3,17 @@ import datetime
 import logging
 import secrets
 
-import redis.asyncio as redis
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from authlib.integrations.starlette_client.apps import StarletteOAuth2App
 from authlib.oauth2.rfc6749.wrappers import OAuth2Token
 from cryptography.exceptions import InvalidTag
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from fastapi import FastAPI, HTTPException, Request
 from fastapi import Response as FastResponse
 from fastapi import status
 from fastapi.datastructures import URL
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, RedirectResponse
-from itsdangerous import BadSignature, TimestampSigner
-from pydantic import BaseModel
 from sqlalchemy.exc import DatabaseError
 from sqlmodel import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -29,36 +25,15 @@ from api.models import audit as dbAudit
 from api.models import engine
 from api.models.db import User
 from api.models.response import Response
+from auth.models import Token, UserInfo
+from helper.cache import EncryptedRedisCache
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-class UserInfo(BaseModel):
-    sub: str
-    email: str
-    roles: list[str]
-
-
-class Token(BaseModel):
-    access_token: str
-    refresh_token: str
-    id_token: str
-    expires_at: int
-    userinfo: UserInfo
-
-
 class AuthSession:
-    sessionStore = redis.Redis(
-        host=AppConfig.REDIS_HOST,
-        port=AppConfig.REDIS_PORT,
-        password=AppConfig.REDIS_PASSWORD,
-        db=AppConfig.REDIS_DB,
-        ssl=AppConfig.REDIS_TLS,
-        decode_responses=True,
-    )
-    signer = TimestampSigner(AppConfig.SESSION_SECRET_KEY, b"AuthSession")
-    maxAge: int = 14 * 24 * 60 * 60
-    key: bytes = secrets.token_bytes(32)
+    sessionStore = EncryptedRedisCache()
+    maxAge: int = sessionStore.maxAge
 
     def __init__(self) -> None:
         pass
@@ -69,82 +44,49 @@ class AuthSession:
             12
         )  # GCM mode needs 12 fresh bytes every time
 
-        await self.sessionStore.set(
-            sessionId,
-            base64.b64encode(
-                nonce
-                + AESGCM(self.key).encrypt(
-                    nonce, Token.model_validate(token).model_dump_json().encode(), b""
-                )
-            ).decode(),
-            self.maxAge,
+        return await self.sessionStore.set(
+            sessionId, Token.model_validate(token).model_dump_json()
         )
-        return self.signer.sign(sessionId).decode()
 
     async def getSession(
         self, signedSessionId: str
     ) -> tuple[str, Token] | tuple[None, None]:
-        try:
-            sessionId: str = self.signer.unsign(
-                signedSessionId, max_age=self.maxAge
-            ).decode()
-
-            if await self.sessionStore.exists(sessionId):
-                try:
-                    storedEncryptedSession: bytes = base64.b64decode(
-                        await self.sessionStore.get(sessionId)
-                    )
-                    decryptedSession: str = (
-                        AESGCM(self.key)
-                        .decrypt(
-                            storedEncryptedSession[:12],
-                            storedEncryptedSession[12:],
-                            b"",
-                        )
-                        .decode()
-                    )
-                    return sessionId, Token.model_validate_json(decryptedSession)
-                except InvalidTag as error:
-                    logger.error(f"Can't decrypt session with ID: {sessionId}")
-                    return None, None
-            else:
-                return None, None
-        except BadSignature:
+        data: tuple[str, str] | tuple[None, None] = await self.sessionStore.get(
+            signedSessionId
+        )
+        if data[0] and data[1]:
+            return data[0], Token.model_validate_json(data[1])
+        else:
             return None, None
 
     async def refreshSession(self, sessionId: str, newToken: dict) -> tuple[str, Token]:
+
         try:
-            storedEncryptedSession: bytes = base64.b64decode(
-                await self.sessionStore.get(sessionId)
+            session: tuple[str, str] | tuple[None, None] = await self.sessionStore.get(
+                sessionId
             )
-            decryptedSession: str = (
-                AESGCM(self.key)
-                .decrypt(
-                    storedEncryptedSession[:12],
-                    storedEncryptedSession[12:],
-                    b"",
-                )
-                .decode()
-            )
-            sessionToken: Token = Token.model_validate_json(decryptedSession)
+
+            if not session[1]:
+                raise HTTPException(500, "Error refreshing the given session")
+
+            sessionToken: Token = Token.model_validate_json(session[1])
             sessionToken.id_token = newToken["id_token"]
             sessionToken.refresh_token = newToken["refresh_token"]
             sessionToken.access_token = newToken["access_token"]
             sessionToken.expires_at = newToken["expires_at"]
 
             newSessionId: str = secrets.token_urlsafe(32)
-            await self.sessionStore.set(
-                newSessionId, sessionToken.model_dump_json(), self.maxAge
+            signedNewSessionId: str = await self.sessionStore.set(
+                newSessionId, sessionToken.model_dump_json()
             )
             await self.removeSession(sessionId)
-            return self.signer.sign(newSessionId).decode("utf-8"), sessionToken
+            return signedNewSessionId, sessionToken
         except InvalidTag as error:
             logger.error(f"Can't decrypt session with ID: {sessionId}")
             raise HTTPException(500, "Error refreshing the given session")
 
     async def removeSession(self, sessionId: str) -> None:
-        if await self.sessionStore.exists(sessionId):
-            await self.sessionStore.delete(sessionId)
+        await self.sessionStore.delete(sessionId)
 
 
 auth = FastAPI(title="ReqDB - Auth", docs_url=None, redoc_url=None, openapi_url=None)
@@ -226,8 +168,6 @@ async def parseCallback(request: Request, response: FastResponse) -> UserInfo:
 @auth.get("/login")
 async def login(request: Request, spa: bool = False):
     redirect_uri: URL = request.url_for("getCallback" if not spa else "getSPACallback")
-    if AppConfig.AUTH_FRONTEND_DEV_MODE and spa:
-        redirect_uri = URL("http://localhost:3000/auth/spaCallback")
     return await oauth._clients[AppConfig.OAUTH_PROVIDER].authorize_redirect(
         request,
         redirect_uri,
@@ -256,10 +196,7 @@ async def getCallback(request: Request, response: FastResponse) -> UserInfo:
 )
 async def getSPACallback(request: Request, response: FastResponse) -> RedirectResponse:
     callback: UserInfo = await parseCallback(request, response)
-    if AppConfig.AUTH_FRONTEND_DEV_MODE:
-        redirect_uri = "http://localhost:3000/oauth/callback"
-    else:
-        redirect_uri = "/oauth/callback"
+    redirect_uri = "/oauth/callback"
     return RedirectResponse(
         f"{redirect_uri}?data={base64.b64encode(callback.model_dump_json().encode()).decode()}",
         headers=response.headers,
