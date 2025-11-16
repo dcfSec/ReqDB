@@ -78,3 +78,15 @@ class Insert:
         id: str
         email: str | None = None
         service: bool = True
+
+    class Token(SQLModel):
+        name: str
+        token_type: str
+        access_token: str
+        refresh_token: str
+        expires_at: int
+        userId: str = ""
+
+    class ExportToJira(SQLModel):
+        items: list[int]
+        extraFields: dict = {}

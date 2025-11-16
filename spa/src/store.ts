@@ -11,6 +11,7 @@ import LayoutReducer from './stateSlices/LayoutSlice'
 import AuditReducer from './stateSlices/AuditSlice'
 import ConfigurationReducer from './stateSlices/ConfigurationSlice'
 import ApiDocSliceReducer from './stateSlices/APIDocSlice'
+import AtlassianSliceReducer from './stateSlices/AtlassianSlice'
 
 const store = configureStore({
   reducer: {
@@ -25,7 +26,8 @@ const store = configureStore({
     layout: LayoutReducer,
     audit: AuditReducer,
     configuration: ConfigurationReducer,
-    apiDoc: ApiDocSliceReducer
+    apiDoc: ApiDocSliceReducer,
+    atlassian: AtlassianSliceReducer
   }
 })
 

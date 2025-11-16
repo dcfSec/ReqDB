@@ -8,7 +8,7 @@ import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { set, reset, sort } from "../stateSlices/CatalogueDataSlice";
 import LoadingBar from "../components/LoadingBar";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
-import APIClient, { handleError, handleResult } from "../APIClient";
+import APIClient, { handleError, handleResult } from "../APIClients";
 import { APIErrorData, APISuccessData } from "../types/Generics";
 import { Item as Catalogue } from "../types/API/Catalogues";
 

@@ -2,7 +2,7 @@ import { Accordion, Alert, Button, Col, Row, Tab, Tabs } from "react-bootstrap";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { useEffect, useState } from "react";
-import APIClient, { handleError, handleResult } from "../APIClient";
+import APIClient, { handleError, handleResult } from "../APIClients";
 import LoadingBar from "../components/LoadingBar";
 import { toast } from "../stateSlices/NotificationToastSlice";
 import { APIErrorData, APISuccessData } from "../types/Generics";
@@ -52,14 +52,14 @@ export default function APIDoc() {
 
   function okCallback(response: APISuccessData) {
     parseSwagger(response as unknown as OpenAPI.Document)
-    .then(() => {
-      setFetched(true);
-    })
-    .catch((err) => {
-      console.error(err);
-      setError(err);
-      setFetched(true);
-    });
+      .then(() => {
+        setFetched(true);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err);
+        setFetched(true);
+      });
   }
 
   function APIErrorCallback(response: APIErrorData) {
@@ -96,14 +96,14 @@ export default function APIDoc() {
         <Tabs defaultActiveKey="endpoints" id="API-Tabs">
           <Tab eventKey="endpoints" title="Endpoints">
             <Accordion defaultActiveKey="0" flush>
-              {apiSpec.paths && Object.keys(apiSpec.paths).map((key, index) => { 
-                return apiSpec.paths && apiSpec.servers ? <APIPath key={index} index={index} pathName={`${apiSpec.servers[0].url}${key}`} pathProperties={apiSpec.paths[key] as OpenAPIV3_1.PathItemObject} /> : null 
+              {apiSpec.paths && Object.keys(apiSpec.paths).map((key, index) => {
+                return apiSpec.paths && apiSpec.servers ? <APIPath key={index} index={index} pathName={`${apiSpec.servers[0].url}${key}`} pathProperties={apiSpec.paths[key] as OpenAPIV3_1.PathItemObject} /> : null
               })}
             </Accordion>
           </Tab>
           <Tab eventKey="schemas" title="Schemas">
-          <Accordion defaultActiveKey="0" flush>
-              {apiSpec.components?.schemas && Object.keys(apiSpec.components?.schemas).map((key, index) => { 
+            <Accordion defaultActiveKey="0" flush>
+              {apiSpec.components?.schemas && Object.keys(apiSpec.components?.schemas).map((key, index) => {
                 return apiSpec.components?.schemas ? <APISchema key={`schema-${index}`} index={`schema-${index}`} name={key} object={apiSpec.components?.schemas[key] as OpenAPIV3_1.PathItemObject} /> : null
               })}
             </Accordion>

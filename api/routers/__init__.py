@@ -66,6 +66,15 @@ auth = {
     "deleteExtraEntry": {"required": True, "roles": ["Requirements.Writer"]},
     "getCoffee": {"required": True, "roles": ["Requirements.Reader"]},
     "getAudit": {"required": True, "roles": ["Requirements.Auditor"]},
+    "getJiraLogin": {"required": True, "roles": []},
+    "getJiraCallback": {"required": False, "roles": []},
+    "postJiraConnectUser": {"required": True, "roles": []},
+    "getJiraConfiguration": {"required": True, "roles": []},
+    "getJiraToken": {"required": True, "roles": []},
+    "getJiraProjects": {"required": True, "roles": []},
+    "getJiraIssueTypes": {"required": True, "roles": []},
+    "deleteJiraConnectUser": {"required": True, "roles": []},
+    "postJiraExport": {"required": True, "roles": ["Requirements.Reader"]},
 }
 
 

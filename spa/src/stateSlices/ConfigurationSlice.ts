@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Item } from '../types/API/Configuration';
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClient';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClients';
 import { APISuccessData } from '../types/Generics';
 import store from '../store';
 

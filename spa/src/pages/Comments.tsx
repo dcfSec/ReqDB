@@ -11,7 +11,7 @@ import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { reset, setComments } from "../stateSlices/CommentSlice";
 import { CommentRow } from "../components/Comments/CommentRow";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
-import APIClient, { handleError, handleResult } from "../APIClient";
+import APIClient, { handleError, handleResult } from "../APIClients";
 import { APIErrorData, APISuccessData } from "../types/Generics";
 import { Item as Comment } from "../types/API/Comments";
 

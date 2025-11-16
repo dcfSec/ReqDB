@@ -4,7 +4,7 @@ import { ErrorMessage, buildRows } from '../MiniComponents'
 import RequirementsTable from "./RequirementsTable";
 import CheckboxDropdown from "../CheckboxDropdown";
 import FilterTopicModal from "./FilterTopicsModal";
-import { ExportTable } from "../Export";
+import { ExportTable } from "../Export/ExportTable";
 import Search from "./Search"
 import { setDescription, toggleTagFilterSelected, toggleTagFilterSelectedAll } from '../../stateSlices/BrowseSlice';
 
@@ -16,7 +16,7 @@ import { setPageTitle } from "../../stateSlices/LayoutSlice";
 import { Suspense, startTransition, useDeferredValue } from "react";
 import BrowseRow from "./BrowseRow";
 import { Item as Topic } from "../../types/API/Topics";
-import APIClient, { handleError, handleResult } from "../../APIClient";
+import APIClient, { handleError, handleResult } from "../../APIClients";
 import { APIErrorData, APISuccessData } from "../../types/Generics";
 
 import { Item as Catalogue } from "../../types/API/Catalogues";
@@ -46,7 +46,7 @@ export default function BrowseContent({ id }: Props) {
 
   const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   let init = false
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function BrowseContent({ id }: Props) {
       dispatch(reset());
       dispatch(showSpinner(true))
       dispatch(setStatus("loading"));
-  
+
       APIClient.get(`catalogues/${id}?expandTopics=true`).then((response) => {
         handleResult(response, okCallback, APIErrorCallback)
       }).catch((error) => {
@@ -135,11 +135,11 @@ export default function BrowseContent({ id }: Props) {
     );
   } else if (APIError || error) {
     return (
-        <Row>
-          <Col>
+      <Row>
+        <Col>
           <Alert variant="danger">{errorMessage}</Alert>
-          </Col>
-        </Row>
+        </Col>
+      </Row>
     )
   } else {
     return null

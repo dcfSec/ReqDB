@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form';
 import { useState } from "react";
 
 import { Item } from "../../types/API/Comments";
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClient";
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClients";
 import { APISuccessData } from "../../types/Generics";
 import { useAppDispatch } from "../../hooks";
 import LinkContainer from "../LinkContainer";
@@ -81,7 +81,7 @@ export function CommentRow({ index, comment, search, searchFields, showCompleted
         <td><Form.Check type="switch" id="completed" defaultChecked={comment.completed} onChange={e => { updateCompleted(e.target.checked) }} /></td>
         <td><LinkContainer to={`/Browse/Requirement/${comment.requirement.id}`}><Button variant="primary" size="sm">{comment.requirement.title}</Button></LinkContainer></td>
         <td>{comment.parentId}</td>
-        <td><Button variant="danger" onClick={() => {setShowDeleteModal(true)}}>Delete</Button></td>
+        <td><Button variant="danger" onClick={() => { setShowDeleteModal(true) }}>Delete</Button></td>
         {showDeleteModal ? <DeleteConfirmationModal
           key={`${comment.id}`}
           show={showDeleteModal}

@@ -7,7 +7,7 @@ import { addComment } from '../../stateSlices/CommentSlice';
 import { toast } from "../../stateSlices/NotificationToastSlice";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import APIClient, { handleError, handleResult } from '../../APIClient';
+import APIClient, { handleError, handleResult } from '../../APIClients';
 import { APIErrorData, APISuccessData } from '../../types/Generics';
 import { Item as Comment } from "../../types/API/Comments";
 import { showSpinner } from '../../stateSlices/MainLogoSpinnerSlice';
@@ -16,9 +16,9 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 
 
 type Props = {
-  replyTo: Comment|null;
+  replyTo: Comment | null;
   replyToText: string;
-  setReply: (a: Comment|null) => void;
+  setReply: (a: Comment | null) => void;
 }
 
 /**
@@ -61,11 +61,11 @@ export default function AddComment({ replyTo = null, replyToText = "", setReply 
 
   return (
     <>
-      { replyTo != null ? <Alert variant="info" style={{marginBottom: "0.5rem", padding: "0.2rem"}}>
-      <Stack direction="horizontal" gap={3}>
-        <span>Replying to: <span style={{ fontStyle: "italic"}}>{truncate(replyToText, 100)}</span></span>
-        <Button className="ms-auto" variant="link" size='sm' onClick={() => setReply(null)}><FontAwesomeIcon icon={"xmark"} /></Button>
-      </Stack>
+      {replyTo != null ? <Alert variant="info" style={{ marginBottom: "0.5rem", padding: "0.2rem" }}>
+        <Stack direction="horizontal" gap={3}>
+          <span>Replying to: <span style={{ fontStyle: "italic" }}>{truncate(replyToText, 100)}</span></span>
+          <Button className="ms-auto" variant="link" size='sm' onClick={() => setReply(null)}><FontAwesomeIcon icon={"xmark"} /></Button>
+        </Stack>
       </Alert> : null}
       <Stack direction="horizontal" gap={3}>
         <Form.Control as="textarea" className="me-auto" id="description" value={newComment} onChange={e => { setNewComment(e.target.value) }}></Form.Control>

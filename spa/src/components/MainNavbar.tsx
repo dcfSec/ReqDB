@@ -13,11 +13,11 @@ import { useAppSelector, useAppDispatch } from "../hooks";
 import { loadUserConfiguration, setAuthenticated, setExpiresAt, setToken, toggleDarkMode } from "../stateSlices/UserSlice";
 import { useState } from 'react';
 import RolesModal from './RolesModal';
-import Preferences from './Preferences';
+import Preferences from './Preferences/PreferencesModal';
 import { ReactNode } from 'react';
 import ConfigurationModal from './Configuration/ConfigurationModal';
 import { showSpinner } from '../stateSlices/MainLogoSpinnerSlice';
-import { APIErrorToastCallback, authClient, errorToastCallback, handleError, handleResult } from '../APIClient';
+import { APIErrorToastCallback, authClient, errorToastCallback, handleError, handleResult } from '../APIClients';
 import { APISuccessData } from '../types/Generics';
 
 /**

@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { removeComment, updateComment } from '../../stateSlices/CommentSlice';
 import { Item as Comment, Item } from '../../types/API/Comments';
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClient';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClients';
 import { APISuccessData } from '../../types/Generics';
 import { toISOStringWithTimezone } from '../MiniComponents';
 
@@ -23,7 +23,7 @@ type Props = {
   index: number;
   comment: Comment;
   showCompleted: boolean;
-  setReply: (a: Item|null) => void;
+  setReply: (a: Item | null) => void;
 }
 
 /**
@@ -77,7 +77,7 @@ export default function CommentEntry({ index, comment, showCompleted, setReply }
 
     function okCallback(response: APISuccessData) {
       dispatch(toast({ header: "Comment marked as completed", body: "Comment successfully marked as completed" }))
-        dispatch(updateComment({ index: index, comment: response.data as Comment }))
+      dispatch(updateComment({ index: index, comment: response.data as Comment }))
     }
   }
 
@@ -101,15 +101,15 @@ export default function CommentEntry({ index, comment, showCompleted, setReply }
                     <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { toggleComplete() }}><FontAwesomeIcon icon={"check"} /></Button>
                   </OverlayTrigger>
                 </> : null}
-                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="reply-tooltip">Reply</Tooltip>}>
-                    <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { setReply(comment) }}><FontAwesomeIcon icon={"reply"} /></Button>
-                  </OverlayTrigger>
+              <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="reply-tooltip">Reply</Tooltip>}>
+                <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { setReply(comment) }}><FontAwesomeIcon icon={"reply"} /></Button>
+              </OverlayTrigger>
               <span></span>
             </Stack>
           </Card.Header>
           <Card.Body style={{ padding: '0.5em' }}>
             <Card.Text style={{ whiteSpace: "pre-line" }}>{comment.comment}</Card.Text>
-            {comments.map((item, childIndex) => item.parentId == comment.id ? <CommentEntry index={childIndex} comment={item} key={`comment-${childIndex}`} showCompleted={showCompleted} setReply={setReply}/> : null)}
+            {comments.map((item, childIndex) => item.parentId == comment.id ? <CommentEntry index={childIndex} comment={item} key={`comment-${childIndex}`} showCompleted={showCompleted} setReply={setReply} /> : null)}
           </Card.Body>
         </Card>
         {

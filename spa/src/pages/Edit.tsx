@@ -20,7 +20,7 @@ import { Type } from '../types/API/Extras';
 import { Item as Requirement } from "../types/API/Requirements";
 import { Item as Tag } from "../types/API/Tags";
 import { Item as Topic } from "../types/API/Topics";
-import APIClient, { handleError, handleResult } from "../APIClient";
+import APIClient, { handleError, handleResult } from "../APIClients";
 import { APIErrorData, APISuccessData, GenericItem } from "../types/Generics";
 import { BatchActionDropdown } from "../components/Edit/BatchAction";
 

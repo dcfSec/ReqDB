@@ -13,6 +13,7 @@ class NotFound(HTTPException):
 
     :param HTTPException: Base FastAPI exception
     """
+
     def __init__(self, status_code=404, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
 
@@ -23,6 +24,7 @@ class Unauthorized(HTTPException):
 
     :param HTTPException: Base FastAPI exception
     """
+
     def __init__(self, status_code=401, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
 
@@ -33,6 +35,7 @@ class Forbidden(HTTPException):
 
     :param HTTPException: Base FastAPI exception
     """
+
     def __init__(self, status_code=403, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
 
@@ -43,8 +46,10 @@ class AuthConfigMissing(HTTPException):
 
     :param HTTPException: Base FastAPI exception
     """
+
     def __init__(self, status_code=500, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
+
 
 class ValidationError(HTTPException):
     """
@@ -52,8 +57,10 @@ class ValidationError(HTTPException):
 
     :param HTTPException: Base FastAPI exception
     """
+
     def __init__(self, status_code=400, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
+
 
 class ConflictError(HTTPException):
     """
@@ -61,8 +68,10 @@ class ConflictError(HTTPException):
 
     :param HTTPException: Base FastAPI exception
     """
+
     def __init__(self, status_code=409, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
+
 
 class BadRequest(HTTPException):
     """
@@ -70,8 +79,10 @@ class BadRequest(HTTPException):
 
     :param HTTPException: Base FastAPI exception
     """
+
     def __init__(self, status_code=400, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
+
 
 class InternalServerError(HTTPException):
     """
@@ -79,8 +90,10 @@ class InternalServerError(HTTPException):
 
     :param HTTPException: Base FastAPI exception
     """
+
     def __init__(self, status_code=500, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
+
 
 class UnprocessableContent(HTTPException):
     """
@@ -88,19 +101,43 @@ class UnprocessableContent(HTTPException):
 
     :param HTTPException: Base FastAPI exception
     """
+
     def __init__(self, status_code=422, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
+
 
 class ErrorResponses:
     """
     Class to manage the error responses. This is mostly used for the openAPI spec generation in FastAPI
     """
-    notFound = { 404: {"model": Response.ErrorStr, "description": "Item was not found"} }
-    unauthorized = {401: {"model": Response.ErrorStr, "description": "Authentication is missing"}}
-    forbidden = {403: {"model": Response.ErrorStr, "description": "Authorization is missing (Missing role)"}}
-    conflict = {409: {"model": Response.ErrorStrList, "description": "Dependency conflicts"}}
+
+    notFound = {404: {"model": Response.ErrorStr, "description": "Item was not found"}}
+    unauthorized = {
+        401: {"model": Response.ErrorStr, "description": "Authentication is missing"}
+    }
+    forbidden = {
+        403: {
+            "model": Response.ErrorStr,
+            "description": "Authorization is missing (Missing role)",
+        }
+    }
+    conflict = {
+        409: {"model": Response.ErrorStrList, "description": "Dependency conflicts"}
+    }
     unprocessable = {422: {"model": Response.Error, "description": "Validation error"}}
-    badRequest= {400: {"model": Response.Error, "description": "Can't process request. (E.g. constrain errors)"}}
+    badRequest = {
+        400: {
+            "model": Response.Error,
+            "description": "Can't process request. (E.g. constrain errors)",
+        }
+    }
+    server = {
+        404: {
+            "model": Response.ErrorStr,
+            "description": "Server error (E.g. missing configuration)",
+        }
+    }
+
 
 def raiseDBErrorReadable(e: SQLAlchemyError) -> NoReturn:
     logging.getLogger(__name__).error(str(e).replace("\n", "\n    "))

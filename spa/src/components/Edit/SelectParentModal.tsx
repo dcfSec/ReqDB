@@ -15,7 +15,7 @@ import { updateCache, cleanCache } from "../../stateSlices/EditSlice";
 
 import LoadingBar from '../LoadingBar';
 import { APIErrorData, APISuccessData, RowObject } from '../../types/Generics';
-import APIClient, { handleError, handleResult } from '../../APIClient';
+import APIClient, { handleError, handleResult } from '../../APIClients';
 
 
 type Props = {

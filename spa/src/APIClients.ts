@@ -4,6 +4,7 @@ import { showSpinner } from './stateSlices/MainLogoSpinnerSlice';
 import { APIErrorData, APISuccessData } from './types/Generics';
 import { toast } from './stateSlices/NotificationToastSlice';
 import { setAuthenticated, setExpiresAt, setToken } from './stateSlices/UserSlice';
+import { setAtlassianAuthenticated, setAtlassianTokenExpiresAt, setAtlassianToken } from './stateSlices/AtlassianSlice';
 
 
 const apiClient = axios.create({
@@ -76,3 +77,46 @@ export function errorToastCallback(error: string) {
 }
 
 export default apiClient
+
+
+const atlassianClient = axios.create({
+  baseURL: "",
+});
+
+
+atlassianClient.interceptors.request.use(function (config) {
+  const token = store.getState().atlassian.token
+  if (token != "") {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    return Promise.reject("Token missing");
+  }
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
+
+atlassianClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status !== 401) {
+      return Promise.reject(error);
+    }
+    return apiClient.get("/export/jira/token").then((response) => {
+
+      store.dispatch(setAtlassianToken(response.data.data["access_token"]))
+      store.dispatch(setAtlassianTokenExpiresAt(response.data.data["expires_at"]))
+      error.response.config.headers["Authorization"] =
+        "Bearer " + response.data.data["access_token"];
+      return axios(error.response.config);
+    })
+      .catch((authError) => {
+        store.dispatch(setAtlassianToken(""))
+        store.dispatch(setAtlassianTokenExpiresAt(0))
+        store.dispatch(setAtlassianAuthenticated(false))
+        return Promise.reject(authError);
+      })
+  }
+);
+
+export { atlassianClient }

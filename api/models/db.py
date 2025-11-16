@@ -1,6 +1,7 @@
-from typing import Optional
+from __future__ import annotations
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy.orm import Mapped, relationship
+from sqlmodel import Field, Relationship, SQLModel, inspect
 
 from api.models.base import (
     AuditBase,
@@ -11,9 +12,20 @@ from api.models.base import (
     ExtraTypeBase,
     RequirementBase,
     TagBase,
+    TokenBase,
     TopicBase,
     UserBase,
 )
+
+
+def getModelTable(model):
+    ins = inspect(model)
+    table = getattr(ins, "local_table")
+    return table
+
+
+def SARelationship(**kwargs):
+    return Relationship(sa_relationship=relationship(**kwargs))
 
 
 class TableBase(SQLModel):
@@ -22,30 +34,44 @@ class TableBase(SQLModel):
 
 
 class CatalogueTag(SQLModel, table=True):
-    __tablename__ = "CatalogueTag" # type: ignore
+    __tablename__ = "CatalogueTag"  # type: ignore
     catalogueId: int = Field(foreign_key="catalogue.id", primary_key=True)
     tagId: int = Field(foreign_key="tag.id", primary_key=True)
 
 
 class RequirementTag(SQLModel, table=True):
-    __tablename__ = "RequirementTag" # type: ignore
+    __tablename__ = "RequirementTag"  # type: ignore
     requirementId: int = Field(foreign_key="requirement.id", primary_key=True)
     tagId: int = Field(foreign_key="tag.id", primary_key=True)
 
 
 class CatalogueTopic(SQLModel, table=True):
-    __tablename__ = "CatalogueTopic" # type: ignore
+    __tablename__ = "CatalogueTopic"  # type: ignore
     catalogueId: int = Field(foreign_key="catalogue.id", primary_key=True)
     topicId: int = Field(foreign_key="topic.id", primary_key=True)
 
 
 class User(UserBase, table=True):
-    comments: list["Comment"] = Relationship(
+    comments: Mapped[list[Comment]] = SARelationship(
         back_populates="author",
+    )
+    tokens: Mapped[list[Token]] = SARelationship(
+        back_populates="user",
     )
 
     def __repr__(self):
         return f'<User "{self.id}">'
+
+
+class Token(TokenBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    user: User = SARelationship(
+        back_populates="tokens",
+        lazy="joined",
+    )
+
+    def __repr__(self):
+        return f'<Token "{self.id}">'
 
 
 class Audit(AuditBase, SQLModel, table=True):
@@ -57,21 +83,22 @@ class Audit(AuditBase, SQLModel, table=True):
 
 
 class Topic(TopicBase, TableBase, table=True):
-    parent: Optional["Topic"] | None = Relationship(
+    parent: Mapped[Topic | None] = SARelationship(
         back_populates="children",
-        sa_relationship_kwargs={"remote_side": "Topic.id", "lazy": "joined"},
+        remote_side="Topic.id",
+        lazy="joined",
     )
-    children: list["Topic"] = Relationship(
+    children: Mapped[list[Topic]] = SARelationship(
         back_populates="parent",
-        sa_relationship_kwargs={"lazy": "joined"},
+        lazy="joined",
     )
-    requirements: list["Requirement"] = Relationship(
+    requirements: Mapped[list[Requirement]] = SARelationship(
         back_populates="parent",
-        cascade_delete=True,
-        sa_relationship_kwargs={"lazy": "joined"},
+        cascade="all, delete-orphan",
+        lazy="joined",
     )
-    catalogues: list["Catalogue"] = Relationship(
-        back_populates="topics", link_model=CatalogueTopic
+    catalogues: Mapped[list[Catalogue]] = SARelationship(
+        back_populates="topics", secondary=getModelTable(CatalogueTopic)
     )
 
     def __repr__(self):
@@ -81,22 +108,23 @@ class Topic(TopicBase, TableBase, table=True):
 class Requirement(RequirementBase, TableBase, table=True):
     parent: Topic = Relationship(back_populates="requirements")
 
-    tags: list["Tag"] = Relationship(
+    tags: Mapped[list[Tag]] = SARelationship(
         back_populates="requirements",
-        link_model=RequirementTag,
-        sa_relationship_kwargs={"lazy": "joined"},
+        secondary=getModelTable(RequirementTag),
+        lazy="joined",
     )
 
-    extras: list["ExtraEntry"] = Relationship(
+    extras: Mapped[list[ExtraEntry]] = SARelationship(
         back_populates="requirement",
-        cascade_delete=True,
-        sa_relationship_kwargs={"lazy": "joined"},
+        cascade="all, delete-orphan",
+        lazy="joined",
     )
 
-    comments: list["Comment"] = Relationship(
+    comments: Mapped[list[Comment]] = SARelationship(
         back_populates="requirement",
-        cascade_delete=True,
-        sa_relationship_kwargs={"lazy": "joined", "order_by": "Comment.created"},
+        cascade="all, delete-orphan",
+        order_by="Comment.created",
+        lazy="joined",
     )
 
     def __repr__(self):
@@ -104,16 +132,16 @@ class Requirement(RequirementBase, TableBase, table=True):
 
 
 class Catalogue(CatalogueBase, TableBase, table=True):
-    topics: list["Topic"] = Relationship(
+    topics: Mapped[list[Topic]] = SARelationship(
         back_populates="catalogues",
-        link_model=CatalogueTopic,
-        sa_relationship_kwargs={"lazy": "joined"},
+        secondary=getModelTable(CatalogueTopic),
+        lazy="joined",
     )
 
-    tags: list["Tag"] = Relationship(
+    tags: Mapped[list[Tag]] = SARelationship(
         back_populates="catalogues",
-        link_model=CatalogueTag,
-        sa_relationship_kwargs={"lazy": "joined"},
+        secondary=getModelTable(CatalogueTag),
+        lazy="joined",
     )
 
     def __repr__(self):
@@ -128,15 +156,17 @@ class Comment(CommentBase, TableBase, table=True):
         sa_relationship_kwargs={"lazy": "joined"},
     )
 
-    parent: Optional["Comment"] | None = Relationship(
+    parent: Mapped[Comment | None] = SARelationship(
         back_populates="children",
-        sa_relationship_kwargs={"remote_side": "Comment.id", "lazy": "joined"},
+        remote_side="Comment.id",
+        lazy="joined",
     )
 
-    children: list["Comment"] = Relationship(
+    children: Mapped[list[Comment]] = SARelationship(
         back_populates="parent",
-        sa_relationship_kwargs={"lazy": "joined", "order_by": "Comment.created"},
-        cascade_delete=True,
+        order_by="Comment.created",
+        lazy="joined",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):
@@ -150,12 +180,12 @@ class Configuration(ConfigurationBase, table=True):
 
 
 class ExtraType(ExtraTypeBase, TableBase, table=True):
-    __tablename__ = "extra_type" # type: ignore
+    __tablename__ = "extra_type"  # type: ignore
 
-    children: list["ExtraEntry"] = Relationship(
+    children: Mapped[list[ExtraEntry]] = SARelationship(
         back_populates="extraType",
-        cascade_delete=True,
-        sa_relationship_kwargs={"lazy": "joined"},
+        lazy="joined",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):
@@ -163,7 +193,7 @@ class ExtraType(ExtraTypeBase, TableBase, table=True):
 
 
 class ExtraEntry(ExtraEntryBase, TableBase, table=True):
-    __tablename__ = "extra_entry" # type: ignore
+    __tablename__ = "extra_entry"  # type: ignore
 
     extraType: ExtraType = Relationship(
         back_populates="children",
@@ -176,11 +206,14 @@ class ExtraEntry(ExtraEntryBase, TableBase, table=True):
 
 
 class Tag(TagBase, TableBase, table=True):
-    requirements: list["Requirement"] = Relationship(
-        back_populates="tags", link_model=RequirementTag
+    requirements: Mapped[list[Requirement]] = SARelationship(
+        back_populates="tags",
+        secondary=getModelTable(RequirementTag),
     )
-    catalogues: list["Catalogue"] = Relationship(
-        back_populates="tags", link_model=CatalogueTag
+    catalogues: Mapped[list[Catalogue]] = SARelationship(
+        back_populates="tags",
+        secondary=getModelTable(CatalogueTag),
+        lazy="joined",
     )
 
     def __repr__(self):

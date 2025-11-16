@@ -11,7 +11,7 @@ import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { CommentCard, DescriptionCard, ExtraCard, TagsCard, TopicsCard } from "../components/Requirement/RequirementCards";
 
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import APIClient, { handleError, handleResult } from "../APIClient";
+import APIClient, { handleError, handleResult } from "../APIClients";
 import { APIErrorData, APISuccessData } from "../types/Generics";
 import { Item as RequirementItem } from "../types/API/Requirements";
 

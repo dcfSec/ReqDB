@@ -5,7 +5,7 @@ import { useState } from "react";
 import { staticConfig } from "../static";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { useAppDispatch } from "../hooks";
-import { authClient } from "../APIClient";
+import { authClient } from "../APIClients";
 import { setAuthenticated, setExpiresAt, setName, setRoles, setToken } from "../stateSlices/UserSlice";
 
 /**

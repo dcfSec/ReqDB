@@ -19,7 +19,7 @@ import { Type } from '../../types/API/Extras';
 import { Item as Requirement } from "../../types/API/Requirements";
 import { Item as Tag } from "../../types/API/Tags";
 import { Item as Topic } from "../../types/API/Topics";
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClient";
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClients";
 import { APISuccessData, GenericItem } from "../../types/Generics";
 import { Form } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -116,7 +116,7 @@ export default function EditListRow({ index, endpoint, needCascade, humanKey, se
         row = <ExtraTypeEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Type} />
         break;
       case "Requirements":
-        row = <RequirementEditListRow index={index} updateTempItem={updateTempItem} edit={edit} item={item as Requirement} originalItem={originalItem as Requirement}/>
+        row = <RequirementEditListRow index={index} updateTempItem={updateTempItem} edit={edit} item={item as Requirement} originalItem={originalItem as Requirement} />
         break;
       case "Tags":
         row = <TagEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Tag} />

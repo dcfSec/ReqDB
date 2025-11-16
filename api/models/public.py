@@ -1,5 +1,7 @@
-from typing import Optional
+from __future__ import annotations
+
 from pydantic import computed_field
+from sqlmodel import SQLModel
 
 from api.models.base import (
     AuditBase,
@@ -15,7 +17,7 @@ from api.models.base import TagBase, TopicBase, UserBase
 
 
 class User(UserBase):
-    pass
+    atlassianCloudActive: bool = False
 
 
 class Audit(AuditBase):
@@ -54,7 +56,7 @@ class Topic:
         id: int
 
     class WithParent(Base):
-        parent: Optional["Topic.WithParent"] = None
+        parent: Topic.WithParent | None = None
 
     class WithChildrenAndRequirements(Base):
         children: list["Topic.WithChildrenAndRequirements"] | None = []
@@ -139,3 +141,24 @@ class ExtraEntry:
 
     class WithExtraTypeAndRequirement(WithExtraType, WithRequirement):
         pass
+
+
+class Export:
+    class Jira:
+        class Token(SQLModel):
+            name: str
+            token_type: str
+            access_token: str
+            expires_at: int
+
+        class IssueType(SQLModel):
+            name: str
+            icon: str
+
+        class RedirectLocation(SQLModel):
+            location: str
+
+        class Configuration(SQLModel):
+            tenant: str
+            user: str
+            enabled: bool

@@ -15,6 +15,7 @@ from api.models.public import (
     Tag,
     Topic,
     User,
+    Export,
 )
 
 
@@ -171,8 +172,23 @@ class Response:
 
     class Export:
         class Jira:
+            class Create(ResponseBase):
+                pass
+
             class Configuration(ResponseBase):
-                data: list[Audit]
+                data: Export.Jira.Configuration
+
+            class Projects(ResponseBase):
+                data: dict[str, str]
+
+            class Token(ResponseBase):
+                data: Export.Jira.Token
+
+            class IssueTypes(ResponseBase):
+                data: dict[str, Export.Jira.IssueType]
+
+            class RedirectLocation(ResponseBase):
+                data: Export.Jira.RedirectLocation
 
     class Error(ResponseBase):
         error: str

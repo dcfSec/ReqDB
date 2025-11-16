@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from pydantic import computed_field
 from sqlmodel import JSON, Column, Field, SQLModel
 
 
@@ -15,6 +16,24 @@ class UserBase(SQLModel):
     service: bool = Field(default=False)
     notificationMailOnCommentChain: bool = Field(default=False)
     notificationMailOnRequirementComment: bool = Field(default=False)
+
+
+class TokenBase(SQLModel):
+    name: str = Field(max_length=40)
+    token_type: str = Field(max_length=40)
+    access_token: str
+    refresh_token: str
+    expires_at: int
+
+    userId: str = Field(foreign_key="user.id", ondelete="CASCADE")
+
+    def to_token(self) -> dict[str, str | int]:
+        return {
+            "access_token": self.access_token,
+            "token_type": self.token_type,
+            "refresh_token": self.refresh_token,
+            "expires_at": self.expires_at,
+        }
 
 
 class AuditBase(SQLModel):
@@ -103,5 +122,9 @@ class StaticConfiguration(SQLModel):
     class LoginClass(SQLModel):
         MOTD: "StaticConfiguration.MOTDClass"
 
+    class OAuthClass(SQLModel):
+        provider: str
+
     home: "StaticConfiguration.HomeClass"
     login: "StaticConfiguration.LoginClass"
+    oauth: "OAuthClass"

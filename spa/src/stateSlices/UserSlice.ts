@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClient';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClients';
 import { APISuccessData } from '../types/Generics';
 import store from '../store';
 import { Item } from '../types/API/User';
@@ -11,6 +11,7 @@ interface UserState {
     darkMode: boolean,
     notificationMailOnCommentChain: boolean,
     notificationMailOnRequirementComment: boolean,
+    atlassianCloudActive: boolean
   },
   name: string,
   token: string,
@@ -24,6 +25,7 @@ const initialState: UserState = {
     darkMode: getDarkModeWithColorSchemaPreference(),
     notificationMailOnCommentChain: false,
     notificationMailOnRequirementComment: false,
+    atlassianCloudActive: false,
   },
   name: "Nobody",
   token: "",
@@ -74,6 +76,7 @@ export const UserSlice = createSlice({
     setUserConfiguration: (state, action: PayloadAction<Item>) => {
       state.preferences.notificationMailOnCommentChain = action.payload.notificationMailOnCommentChain
       state.preferences.notificationMailOnRequirementComment = action.payload.notificationMailOnRequirementComment
+      state.preferences.atlassianCloudActive = action.payload.atlassianCloudActive
     },
     toggleUserConfiguration: (state, action: PayloadAction<{ id: string, checked: boolean }>) => {
       switch (action.payload.id) {
@@ -82,6 +85,9 @@ export const UserSlice = createSlice({
           break;
         case "notification-comment-requirement-switch":
           state.preferences.notificationMailOnRequirementComment = action.payload.checked
+          break;
+        case "atlassianCloudActive":
+          state.preferences.atlassianCloudActive = action.payload.checked
           break;
         default:
           break;

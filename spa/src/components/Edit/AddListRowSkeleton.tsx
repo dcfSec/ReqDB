@@ -16,7 +16,7 @@ import { Type } from '../../types/API/Extras';
 import { Item as Requirement } from "../../types/API/Requirements";
 import { Item as Tag } from "../../types/API/Tags";
 import { Item as Topic } from "../../types/API/Topics";
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClient";
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClients";
 import { APISuccessData, GenericItem } from "../../types/Generics";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import { Button } from "react-bootstrap";

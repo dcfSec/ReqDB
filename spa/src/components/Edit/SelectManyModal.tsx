@@ -20,7 +20,7 @@ import { Item as Tag } from '../../types/API/Tags';
 import { Item as Requirement } from '../../types/API/Requirements';
 import { Item as Catalogue } from '../../types/API/Catalogues';
 import { APIErrorData, APISuccessData, RowObject } from '../../types/Generics';
-import APIClient, { handleError, handleResult } from '../../APIClient';
+import APIClient, { handleError, handleResult } from '../../APIClients';
 
 type Props = {
   humanKey: string;

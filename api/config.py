@@ -44,12 +44,10 @@ class AppConfig:
     EMAIL_TLS: bool = bool(int(getenv("EMAIL_TLS", 1)))
     EMAIL_SEND_SELF: bool = bool(int(getenv("EMAIL_SEND_SELF", 0)))
 
-    AUTH_FRONTEND_DEV_MODE: bool = bool(int(getenv("AUTH_FRONTEND_DEV_MODE", 0)))
-
     REDIS_HOST: str = getenv("REDIS_HOST", "")
     REDIS_PORT: int = int(getenv("REDIS_PORT", 6379))
     REDIS_PASSWORD: str = getenv("REDIS_PASSWORD", "")
-    REDIS_DB: str | int = getenv("REDIS_DB", 0)
+    REDIS_DB: int = int(getenv("REDIS_DB", 0))
     REDIS_TLS = bool(int(getenv("REDIS_TLS", 0)))
 
     LOGGING_CONFIG: dict[str, Any] = {
@@ -214,9 +212,9 @@ class AppConfig:
                 "type": "boolean",
                 "category": "jira",
             },
-            "JIRA_URL": {
+            "JIRA_TENANT": {
                 "value": "",
-                "description": "URL for the used Jira instance",
+                "description": "Tenant name for Atlassian cloud (Jira)",
                 "type": "string",
                 "category": "jira",
             },

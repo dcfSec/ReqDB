@@ -7,6 +7,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from api.config import AppConfig
 from api.models.response import Response
 from api.routers import (
     audit,
@@ -20,9 +21,16 @@ from api.routers import (
     requirement,
     tag,
     topic,
+    export,
 )
 
 api = FastAPI(title="ReqDB - API", docs_url=None, redoc_url=None, openapi_url=None)
+
+from starlette.middleware.sessions import SessionMiddleware
+
+api.add_middleware(
+    SessionMiddleware, secret_key=AppConfig.SESSION_SECRET_KEY  # , same_site="strict"
+)
 
 api.include_router(config.router)
 api.include_router(tag.router)
@@ -34,6 +42,7 @@ api.include_router(extraType.router)
 api.include_router(extraEntry.router)
 api.include_router(audit.router)
 api.include_router(coffee.router)
+api.include_router(export.router)
 
 
 @api.get("/health", status_code=status.HTTP_200_OK)

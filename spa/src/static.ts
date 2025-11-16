@@ -1,9 +1,6 @@
 interface Config {
   oauth: {
     provider: string
-    authority: string
-    client_id: string
-    scope: string
   };
   home: {
     title: string;

@@ -17,7 +17,7 @@ import AuditRow from '../components/Audit/AuditRow';
 import { Item } from "../types/API/Audit";
 
 import { toggleActionFilterSelected, toggleActionFilterSelectedAll } from '../stateSlices/AuditSlice';
-import APIClient from '../APIClient';
+import APIClient from '../APIClients';
 
 
 type Props = {

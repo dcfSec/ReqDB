@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { showSpinner } from '../../stateSlices/MainLogoSpinnerSlice';
 import { APISuccessData } from '../../types/Generics';
 import { toast } from '../../stateSlices/NotificationToastSlice';
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClient';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClients';
 import { addIndexToRemoveList, removeItems } from '../../stateSlices/EditSlice';
 
 type Props = {

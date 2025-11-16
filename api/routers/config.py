@@ -4,9 +4,11 @@ from fastapi import Depends, status
 from sqlalchemy.exc import DatabaseError
 from sqlmodel import select
 
+from api.config import AppConfig
 from api.error import ErrorResponses, NotFound, raiseDBErrorReadable
 from api.models import SessionDep, audit
 from api.models.db import Configuration, User
+from api.models.public import User as PublicUser
 from api.models.insert import Insert
 from api.models.response import Response
 from api.models.update import Update
@@ -34,6 +36,7 @@ async def getStaticConfig(
     return Response.buildResponse(
         Response.Configuration.Static,
         {
+            "oauth": {"provider": AppConfig.OAUTH_PROVIDER},
             "home": {
                 "title": (
                     homeTitle.value
@@ -120,7 +123,13 @@ async def getUserConfig(
 ) -> Response.User:
 
     conf: User | None = session.get(User, userId)
-    return Response.buildResponse(Response.User, conf)  # type: ignore
+    if conf:
+        publicConf: PublicUser = PublicUser.model_validate(conf)
+        for token in conf.tokens:
+            if token.name == "AtlassianID":
+                publicConf.atlassianCloudActive = True
+
+    return Response.buildResponse(Response.User, publicConf)  # type: ignore
 
 
 @router.patch(

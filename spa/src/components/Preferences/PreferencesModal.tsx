@@ -1,13 +1,13 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import { Col, Container, Row, Card } from 'react-bootstrap';
-import { useAppDispatch, useAppSelector } from '../hooks';
-import { toggleUserConfiguration } from '../stateSlices/UserSlice';
-import { showSpinner } from '../stateSlices/MainLogoSpinnerSlice';
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClient';
-import { APISuccessData } from '../types/Generics';
-import { toast } from '../stateSlices/NotificationToastSlice';
+import { Col, Container, Row } from 'react-bootstrap';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { showSpinner } from '../../stateSlices/MainLogoSpinnerSlice';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClients';
+import { APISuccessData } from '../../types/Generics';
+import { toast } from '../../stateSlices/NotificationToastSlice';
+import { Notifications } from './Cards/Notifications';
+import { Atlassian } from './Cards/Atlassian';
 
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
 }
 
 /**
- * Component for showing the own roles
+ * Component for showing the user preferences
  * 
  * @param {object} param Props for this component: show, setShow
  * @returns Returns a modal for viewing the own roles
@@ -60,21 +60,8 @@ export default function Preferences({ show, setShow }: Props) {
         <Container>
           <Row>
             <Col>
-              <Card>
-                <Card.Header as="h4">Notifications (E-Mail)</Card.Header>
-                <Card.Body>
-                  Send an E-Mail when
-                  <Form.Check type="switch" id="notification-comment-chain-switch" label="someone replies to a comment chain I'm participating in" onChange={(e) => dispatch(toggleUserConfiguration({ id: e.target.id, checked: e.target.checked }))} checked={preferences.notificationMailOnCommentChain} />
-                  <Form.Check type="switch" id="notification-comment-requirement-switch" label="someone adds a new comment to a requirement" onChange={(e) => dispatch(toggleUserConfiguration({ id: e.target.id, checked: e.target.checked }))} checked={preferences.notificationMailOnRequirementComment}/>
-                </Card.Body>
-              </Card>
-              <Card>
-                <Card.Header as="h4">Something</Card.Header>
-                <Card.Body>
-                  <Form.Check type="switch" id="something-yyy-switch" label="yyy" />
-                  <Form.Check type="switch" id="something-xxx-switch" label="xxx" />
-                </Card.Body>
-              </Card>
+              <Notifications />
+              <Atlassian />
             </Col>
           </Row>
         </Container>

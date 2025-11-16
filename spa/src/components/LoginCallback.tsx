@@ -1,7 +1,7 @@
 import { useAppDispatch } from "../hooks";
 import { Navigate, useSearchParams } from "react-router";
 import { setExpiresAt, setName, setRoles, setToken } from "../stateSlices/UserSlice";
-import { authClient, handleError, handleResult } from "../APIClient";
+import { authClient, handleError, handleResult } from "../APIClients";
 import { useEffect, useState } from "react";
 import { APIErrorData, APISuccessData } from "../types/Generics";
 import { Auth } from "../types/API/Auth";

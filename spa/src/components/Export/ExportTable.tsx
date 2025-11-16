@@ -4,12 +4,14 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip, { TooltipProps } from 'react-bootstrap/Tooltip';
 import { stringify } from 'csv-stringify/browser/esm';
 
-import { useAppSelector } from '../hooks';
-import { RefAttributes } from 'react';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { RefAttributes, useEffect, useState } from 'react';
 import { JSX } from 'react/jsx-runtime';
-import { saveAs } from './MiniComponents';
-import { Item as Topic } from '../types/API/Topics';
-import { Item as Requirement } from '../types/API/Requirements';
+import { saveAs } from '../MiniComponents';
+import { Item as Topic } from '../../types/API/Topics';
+import { Item as Requirement } from '../../types/API/Requirements';
+import JiraExportModal from './Jira/Modal';
+import { loadAtlassianConfiguration } from '../../stateSlices/AtlassianSlice';
 
 /**
  * Exports the browse table in different formats
@@ -17,10 +19,18 @@ import { Item as Requirement } from '../types/API/Requirements';
  * @returns Returns a dropdown for export selection
  */
 export function ExportTable() {
+  const dispatch = useAppDispatch()
 
   const data = useAppSelector(state => state.browse.data)
   const items = useAppSelector(state => state.browse.rows.items)
   const rowsToExport = [...useAppSelector(state => state.browse.rows.items).filter(function (v) { return v.selected === true; })]
+
+  useEffect(() => {
+    dispatch(loadAtlassianConfiguration())
+  }, [])
+
+
+  const atlassianEnabled = useAppSelector(state => state.atlassian.enabled)
 
   function exportCSV() {
 
@@ -123,6 +133,8 @@ export function ExportTable() {
     </Tooltip>
   );
 
+  const [showJiraModal, setShowJiraModal] = useState(false);
+
   return (
     <Dropdown>
       <OverlayTrigger
@@ -139,7 +151,9 @@ export function ExportTable() {
         <Dropdown.Item onClick={exportJson} disabled={rowsToExport.length === 0}>As JSON</Dropdown.Item>
         <Dropdown.Item onClick={exportYaml} disabled={rowsToExport.length === 0}>As Yaml</Dropdown.Item>
         <Dropdown.Item onClick={exportMarkdown} disabled={rowsToExport.length === 0}>As Markdown</Dropdown.Item>
+        {atlassianEnabled ? <Dropdown.Item onClick={() => { setShowJiraModal(true) }} disabled={rowsToExport.length === 0}>To Jira</Dropdown.Item> : null}
       </Dropdown.Menu>
+      {atlassianEnabled && showJiraModal ? <JiraExportModal show={showJiraModal} setShow={setShowJiraModal} rowsToExport={rowsToExport} /> : null}
     </Dropdown>
   );
 }

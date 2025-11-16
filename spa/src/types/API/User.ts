@@ -5,4 +5,5 @@ export interface Item extends BaseItem {
   created: number;
   notificationMailOnCommentChain: boolean;
   notificationMailOnRequirementComment: boolean;
+  atlassianCloudActive: boolean;
 }

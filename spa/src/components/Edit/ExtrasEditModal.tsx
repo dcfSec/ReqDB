@@ -11,7 +11,7 @@ import { toast } from "../../stateSlices/NotificationToastSlice";
 import { updateItem } from "../../stateSlices/EditSlice";
 
 import { APISuccessData, GenericItem } from '../../types/Generics';
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClient';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClients';
 import { Item } from '../../types/API/Extras';
 import SelectParentModal from './SelectParentModal';
 import DeleteConfirmationModal from '../DeleteConfirmationModal';
@@ -51,7 +51,7 @@ export default function ExtrasEditModal({ extras, requirementIndex, requirementI
           </Row>
           <Row>
             <Col>
-              <ExtraAddCard requirementIndex={requirementIndex} requirementID={requirementID}/>
+              <ExtraAddCard requirementIndex={requirementIndex} requirementID={requirementID} />
             </Col>
           </Row>
         </Container>

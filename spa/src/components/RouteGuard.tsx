@@ -1,7 +1,7 @@
 import { Button, Col, Row } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { ReactNode } from "react";
-import { APIErrorToastCallback, authClient, errorToastCallback, handleError, handleResult } from "../APIClient";
+import { APIErrorToastCallback, authClient, errorToastCallback, handleError, handleResult } from "../APIClients";
 import { APISuccessData } from "../types/Generics";
 import { setAuthenticated, setExpiresAt, setToken } from "../stateSlices/UserSlice";
 

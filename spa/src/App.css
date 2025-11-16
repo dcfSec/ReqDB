@@ -61,7 +61,7 @@ table tr:hover td {
   --bs-btn-padding-y: 0.1rem !important;
 }
 
-.form-switch > .form-check-input {
+.form-switch>.form-check-input {
   margin-top: .30em !important;
 }
 
@@ -80,4 +80,8 @@ th .form-check-input {
 
 .lowerHeaderButton {
   margin-top: 2em;
+}
+
+.btn-form-control {
+  border: var(--bs-border-width) solid var(--bs-border-color) !important
 }

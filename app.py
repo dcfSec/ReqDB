@@ -60,7 +60,6 @@ async def lifespan(app: FastAPI):
     AppConfig.getJWKs()
     checkAndUpdateConfigDB()
     yield
-    await auth.authSession.sessionStore.close()
 
 
 class SPAStaticFiles(StaticFiles):

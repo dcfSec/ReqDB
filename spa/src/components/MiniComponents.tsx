@@ -6,7 +6,7 @@ import { useAppSelector } from '../hooks'
 import { addRows, addTopicFilterItems, addExtraHeader } from '../stateSlices/BrowseSlice';
 import store from '../store'
 import { Button } from "react-bootstrap";
-import { JSX, useEffect, useState } from 'react';
+import { CSSProperties, JSX, useEffect, useState } from 'react';
 import { Item as Topic } from '../types/API/Topics';
 import { Item as Requirement } from '../types/API/Requirements';
 import { BrowseState, Row } from '../types/Generics';
@@ -49,6 +49,8 @@ export function MainBreadcrumb() {
 type SearchFieldProps = {
   title: string;
   onSearch: SearchFunction;
+  autoFocus?: boolean;
+  style?: CSSProperties | undefined;
 }
 
 /**
@@ -57,9 +59,9 @@ type SearchFieldProps = {
  * @param {object} props Props for the component: title, search, onsearch
  * @returns Searchfield component
  */
-export function SearchField({title, onSearch}: SearchFieldProps): JSX.Element {
+export function SearchField({ title, onSearch, autoFocus = false, style = undefined }: SearchFieldProps): JSX.Element {
 
-  const [ query, setQuery ] = useState("")
+  const [query, setQuery] = useState("")
 
   useEffect(() => {
     const timeOutId = setTimeout(() => onSearch(query), 500);
@@ -67,7 +69,7 @@ export function SearchField({title, onSearch}: SearchFieldProps): JSX.Element {
   }, [query]);
 
   return (
-    <Form.Control type="text" id="search" placeholder={`Search for ${title}`} value={query} onChange={e => { setQuery(e.target.value) }}></Form.Control>
+    <Form.Control type="text" id="search" placeholder={`Search for ${title}`} value={query} onChange={e => { setQuery(e.target.value) }} autoFocus={autoFocus} style={style}></Form.Control>
   );
 }
 
@@ -204,7 +206,7 @@ export async function buildRows(extraHeaders: object, tagFilterItems: Array<stri
       dispatch(addTopicFilterItems(`${topic.key} ${topic.title}`));
     }
     let newPath = ""
-    if(basePath === "topics") {
+    if (basePath === "topics") {
       newPath = `${basePath}.${index}`
     } else {
       newPath = `${basePath}.children.${index}`
@@ -243,7 +245,7 @@ type EditButtonProps = {
   setEdit: SetEditFunction;
   resetTempItem: ResetTempItemFunction;
   setShowDeleteModal: SetShowDeleteModalFunction;
-  small? : boolean
+  small?: boolean
 }
 
 /**
@@ -251,7 +253,7 @@ type EditButtonProps = {
  * @param {object} props Props for this component: saveItem, edit, setEdit, resetTempItem, setShowDeleteModal
  * @returns 2 Buttons for an edit row
  */
-export function EditButtons({saveItem, edit, setEdit, resetTempItem, setShowDeleteModal, small = false}: EditButtonProps): JSX.Element {
+export function EditButtons({ saveItem, edit, setEdit, resetTempItem, setShowDeleteModal, small = false }: EditButtonProps): JSX.Element {
   if (edit) {
     return <><Button variant="success" size={small ? "sm" : undefined} onClick={() => saveItem()}>Save</Button>{' '}<Button variant="danger" size={small ? "sm" : undefined} onClick={() => { setEdit(false); resetTempItem() }}>Cancel</Button></>
   } else {

@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { ConfigurationItem } from './ConfigurationItem';
 import { loadConfiguration, removeDirty } from '../../stateSlices/ConfigurationSlice';
 import { showSpinner } from '../../stateSlices/MainLogoSpinnerSlice';
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClient';
+import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../../APIClients';
 import { APISuccessData } from '../../types/Generics';
 import { Item } from '../../types/API/Configuration';
 import { useEffect } from 'react';
@@ -17,7 +17,7 @@ type Props = {
 }
 
 /**
- * Component for showing the own roles
+ * Modal to show the application configuration
  * 
  * @param {object} param Props for this component: show, setShow
  * @returns Returns a modal for viewing the own roles
