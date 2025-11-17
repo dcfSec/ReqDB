@@ -7,15 +7,15 @@ RUN npm run build
 
 FROM --platform=$BUILDPLATFORM python:3.13 AS api-build
 
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+ENV POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
-RUN pip install poetry && poetry config virtualenvs.in-project true
+RUN pip install poetry
 
 WORKDIR /src
-COPY app.py ./
-COPY api/ ./api
-COPY auth/ ./auth
 COPY poetry.lock .
 COPY pyproject.toml .
 
@@ -26,7 +26,12 @@ FROM python:3.13-alpine
 WORKDIR /reqdb
 
 COPY --from=spa-build /src/dist ./spa/dist
-COPY --from=api-build /src .
+COPY --from=api-build /src/.venv ./.venv
+
+COPY app.py ./
+COPY api/ ./api
+COPY auth/ ./auth
+COPY helper/ ./helper
 
 RUN adduser app -DHh /reqdb -u 1000
 USER 1000
