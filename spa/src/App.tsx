@@ -37,7 +37,7 @@ function App() {
     return <Router />
   }
   const authError = searchParams.get("error")
-  const authErrorMessage = searchParams.get("authErrorMessage")
+  const authErrorMessage = searchParams.get("message")
 
   return <LoginRouter authError={authError} authErrorMessage={authErrorMessage} />;
 }

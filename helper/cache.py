@@ -46,7 +46,6 @@ class EncryptedRedisCache:
                 key: str = self.signer.unsign(signedKey, max_age=self.maxAge).decode()
             else:
                 key = signedKey
-
             if await self.store.exists(key):
                 try:
                     storedEncryptedSession: bytes = base64.b64decode(
@@ -62,7 +61,7 @@ class EncryptedRedisCache:
                         .decode()
                     )
                     return key, decryptedSession
-                except InvalidTag as error:
+                except InvalidTag:
                     logger.error(f"Can't decrypt stored values with ID: {key}")
                     return None, None
             else:

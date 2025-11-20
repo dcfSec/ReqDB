@@ -40,9 +40,6 @@ class AuthSession:
 
     async def startSession(self, token: dict) -> str:
         sessionId: str = secrets.token_urlsafe(32)
-        nonce: bytes = secrets.token_bytes(
-            12
-        )  # GCM mode needs 12 fresh bytes every time
 
         return await self.sessionStore.set(
             sessionId, Token.model_validate(token).model_dump_json()
@@ -63,7 +60,7 @@ class AuthSession:
 
         try:
             session: tuple[str, str] | tuple[None, None] = await self.sessionStore.get(
-                sessionId
+                sessionId, False
             )
 
             if not session[1]:
@@ -81,7 +78,7 @@ class AuthSession:
             )
             await self.removeSession(sessionId)
             return signedNewSessionId, sessionToken
-        except InvalidTag as error:
+        except InvalidTag:
             logger.error(f"Can't decrypt session with ID: {sessionId}")
             raise HTTPException(500, "Error refreshing the given session")
 
@@ -113,9 +110,10 @@ async def parseCallback(request: Request, response: FastResponse) -> UserInfo:
         token: OAuth2Token = await oauthClient.authorize_access_token(request)
         userInfo: object | None = token.get("userinfo", None)
         if userInfo:
+            sessionId: str = await authSession.startSession(token)
             response.set_cookie(
                 key="ReqDBSession",
-                value=await authSession.startSession(token),
+                value=sessionId,
                 samesite="strict",
                 max_age=authSession.maxAge,
                 secure=True,
@@ -220,7 +218,7 @@ async def getToken(request: Request, response: FastResponse):
             )
             tokenMaxAgeNow: datetime.datetime = datetime.datetime.now(
                 datetime.timezone.utc
-            ) - datetime.timedelta(minutes=2)
+            ) - datetime.timedelta(minutes=10)
 
             if tokenExpireTimestamp < tokenMaxAgeNow:
                 oauthApp: StarletteOAuth2App = oauth._clients[AppConfig.OAUTH_PROVIDER]
