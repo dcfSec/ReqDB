@@ -5,7 +5,7 @@ COPY spa ./
 RUN npm install
 RUN npm run build
 
-FROM --platform=$BUILDPLATFORM python:3.13 AS api-build
+FROM python:3.13-alpine AS api-build
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
@@ -13,6 +13,7 @@ ENV POETRY_VIRTUALENVS_IN_PROJECT=1 \
     POETRY_VIRTUALENVS_CREATE=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
+RUN apk add build-base
 RUN pip install poetry
 
 WORKDIR /src
