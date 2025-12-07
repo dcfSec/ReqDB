@@ -1,7 +1,7 @@
 import { Alert, Button, Col, Row, Stack } from "react-bootstrap";
 import Markdown from 'react-markdown'
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
-import { useState } from "react";
+import { useEffect } from "react";
 import { staticConfig } from "../static";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { useAppDispatch } from "../hooks";
@@ -15,9 +15,8 @@ import { setAuthenticated, setExpiresAt, setName, setRoles, setToken } from "../
  */
 export default function Login({ authError = null, authErrorMessage = null }: { authError?: string | null; authErrorMessage?: string | null; }) {
   const dispatch = useAppDispatch()
-  const [init, setInit] = useState(false)
 
-  if (!init) {
+  useEffect(() => {
     authClient.get("/token").then((response) => {
       dispatch(setToken(response.data.data["access_token"]))
       dispatch(setExpiresAt(response.data.data["expires_at"]))
@@ -27,8 +26,7 @@ export default function Login({ authError = null, authErrorMessage = null }: { a
     }).catch((/*error*/) => { /*console.log(error)*/ })
     dispatch(setBreadcrumbs([{ href: "", title: "Login", active: true }]))
     dispatch(setPageTitle("Login"))
-    setInit(true)
-  }
+  }, []);
 
   function onAuth() {
     dispatch(showSpinner(true))
