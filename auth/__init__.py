@@ -218,7 +218,7 @@ async def getToken(request: Request, response: FastResponse):
             )
             tokenMaxAgeNow: datetime.datetime = datetime.datetime.now(
                 datetime.timezone.utc
-            ) - datetime.timedelta(minutes=10)
+            ) + datetime.timedelta(minutes=10)
 
             if tokenExpireTimestamp < tokenMaxAgeNow:
                 oauthApp: StarletteOAuth2App = oauth._clients[AppConfig.OAUTH_PROVIDER]
