@@ -74,7 +74,7 @@ export default function Home() {
                   : null}
               </Dropdown.Menu>
             </Dropdown> : null}
-          {roles.includes(appRoles.Configuration.Writer) || roles.includes(appRoles.ServiceUser.Writer) || roles.includes(appRoles.ServiceUser.Reader) ?
+          {roles.includes(appRoles.Configuration.Writer) || roles.includes(appRoles.ServiceUser.Writer) ?
             <Dropdown className="d-inline-block">
               <Dropdown.Toggle as={Button} variant="outline-secondary" id="dropdown-edit" className="mx-auto w-100">
                 Administration
@@ -83,7 +83,7 @@ export default function Home() {
                 {roles.includes(appRoles.Configuration.Writer) ? <>
                   <Dropdown.Item as={Link} to="/Administration/System">System</Dropdown.Item>
                 </> : null}
-                {roles.includes(appRoles.ServiceUser.Writer) || roles.includes(appRoles.ServiceUser.Reader) ?
+                {roles.includes(appRoles.ServiceUser.Writer) ?
                   <Dropdown.Item as={Link} to="/Administration/ServiceUser">ServiceUser</Dropdown.Item>
                   : null}
               </Dropdown.Menu>

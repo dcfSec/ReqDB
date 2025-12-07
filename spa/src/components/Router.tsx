@@ -53,7 +53,7 @@ export function Router() {
         </Route>
         <Route path="Administration">
           <Route path="System" element={<RouteGuard requiredRoles={[appRoles.Configuration.Writer]}><System /></RouteGuard>} />
-          <Route path="ServiceUser" element={<RouteGuard requiredRoles={[appRoles.ServiceUser.Writer, appRoles.ServiceUser.Reader]}><ServiceUser /></RouteGuard>} />
+          <Route path="ServiceUser" element={<RouteGuard requiredRoles={[appRoles.ServiceUser.Writer]}><ServiceUser /></RouteGuard>} />
         </Route>
         <Route path="APIDoc" element={<RouteGuard requiredRoles={[appRoles.Comments.Reader]}><APIDoc /></RouteGuard>} />
         <Route path="*" element={<NoPage />} />
