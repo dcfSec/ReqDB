@@ -5,6 +5,8 @@ import { Item as Requirement } from "./API/Requirements";
 import { Item as Tag } from "./API/Tags";
 import { Item as Topic } from "./API/Topics";
 import { Item as Comment } from "./API/Comments";
+import { Item as ServiceUser } from "./API/ServiceUser";
+import { Item as Configuration } from "./API/Configuration";
 
 export interface Row {
   id: number
@@ -66,4 +68,4 @@ export type RowObject = {
 
 }
 
-export type GenericItem = Catalogue | Extra | Type | Requirement | Tag | Topic
+export type GenericItem = Catalogue | Extra | Type | Requirement | Tag | Topic | ServiceUser | Configuration

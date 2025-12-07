@@ -245,7 +245,8 @@ type EditButtonProps = {
   setEdit: SetEditFunction;
   resetTempItem: ResetTempItemFunction;
   setShowDeleteModal: SetShowDeleteModalFunction;
-  small?: boolean
+  small?: boolean;
+  deletable: boolean;
 }
 
 /**
@@ -253,11 +254,11 @@ type EditButtonProps = {
  * @param {object} props Props for this component: saveItem, edit, setEdit, resetTempItem, setShowDeleteModal
  * @returns 2 Buttons for an edit row
  */
-export function EditButtons({ saveItem, edit, setEdit, resetTempItem, setShowDeleteModal, small = false }: EditButtonProps): JSX.Element {
+export function EditButtons({ saveItem, edit, setEdit, resetTempItem, setShowDeleteModal, small = false, deletable }: EditButtonProps): JSX.Element {
   if (edit) {
     return <><Button variant="success" size={small ? "sm" : undefined} onClick={() => saveItem()}>Save</Button>{' '}<Button variant="danger" size={small ? "sm" : undefined} onClick={() => { setEdit(false); resetTempItem() }}>Cancel</Button></>
   } else {
-    return <><Button variant="success" size={small ? "sm" : undefined} onClick={() => setEdit(true)}>Edit</Button>{' '}<Button variant="danger" size={small ? "sm" : undefined} onClick={() => setShowDeleteModal(true)}>Delete</Button></>
+    return <><Button variant="success" size={small ? "sm" : undefined} onClick={() => setEdit(true)}>Edit</Button>{' '}{deletable ? <Button variant="danger" size={small ? "sm" : undefined} onClick={() => setShowDeleteModal(true)}>Delete</Button> : null}</>
   }
 }
 

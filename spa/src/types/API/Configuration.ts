@@ -4,5 +4,5 @@ export interface Item extends Record<string, unknown> {
   description: string;
   category: string;
   type: string;
-  dirty?: boolean
+  selected?: boolean;
 }

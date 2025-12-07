@@ -12,6 +12,9 @@ import { ExtraTypeEditListRow } from "./ExtraTypes/EditListRow"
 import { RequirementEditListRow } from "./Requirements/EditListRow"
 import { TagEditListRow } from "./Tags/EditListRow"
 import { TopicEditListRow } from "./Topics/EditListRow"
+import { ServiceUserEditListRow } from "./ServiceUser/EditListRow";
+import { ConfigurationEditListRow } from "./SystemConfiguration/EditListRow";
+
 
 import { Item as Catalogue } from '../../types/API/Catalogues';
 import { Item as Extra } from '../../types/API/Extras';
@@ -19,11 +22,12 @@ import { Type } from '../../types/API/Extras';
 import { Item as Requirement } from "../../types/API/Requirements";
 import { Item as Tag } from "../../types/API/Tags";
 import { Item as Topic } from "../../types/API/Topics";
+import { Item as ServiceUser } from '../../types/API/ServiceUser';
+import { Item as Configuration } from '../../types/API/Configuration';
 import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClients";
 import { APISuccessData, GenericItem } from "../../types/Generics";
 import { Form } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-
 type Props = {
   index: number;
   endpoint: string;
@@ -32,6 +36,8 @@ type Props = {
   search: string;
   searchFields: Array<string>;
   editPageName: string;
+  deletable: boolean;
+  selectable: boolean;
 }
 /**
  * Component for a row to edit an object
@@ -39,7 +45,7 @@ type Props = {
  * @param {object} props Props for this component: index, endpoint, originalItem, humanKey, search, searchFields, editPageName
  * @returns Table row for editing an object
  */
-export default function EditListRow({ index, endpoint, needCascade, humanKey, search, searchFields, editPageName }: Props) {
+export default function EditListRow({ index, endpoint, needCascade, humanKey, search, searchFields, editPageName, deletable, selectable }: Props) {
   const dispatch = useAppDispatch()
   const originalItem = useAppSelector(state => state.edit.items)[index]
 
@@ -63,7 +69,7 @@ export default function EditListRow({ index, endpoint, needCascade, humanKey, se
 
   function saveItem() {
     dispatch(showSpinner(true))
-    APIClient.patch(`${endpoint}/${originalItem.id}?minimal=true`, item).then((response) => {
+    APIClient.patch(`${endpoint}/${'key' in originalItem ? (originalItem as Configuration).key : originalItem.id}?minimal=true`, item).then((response) => {
       handleResult(response, okCallback, APIErrorToastCallback)
     }).catch((error) => {
       handleError(error, APIErrorToastCallback, errorToastCallback)
@@ -124,6 +130,12 @@ export default function EditListRow({ index, endpoint, needCascade, humanKey, se
       case "Topics":
         row = <TopicEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Topic} />
         break;
+      case "ServiceUser":
+        row = <ServiceUserEditListRow updateTempItem={updateTempItem} edit={edit} item={item as ServiceUser} />
+        break;
+      case "System Configuration":
+        row = <ConfigurationEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Configuration} />
+        break;
       default:
         row = <></>
         break;
@@ -131,8 +143,8 @@ export default function EditListRow({ index, endpoint, needCascade, humanKey, se
     return (
       <tr>
         {row}
-        <td><EditButtons saveItem={saveItem} edit={edit} setEdit={setEdit} resetTempItem={resetTempItem} setShowDeleteModal={setShowDeleteModal} /></td>
-        <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelected(index)) }} checked={originalItem.selected} /></td>
+        <td><EditButtons saveItem={saveItem} edit={edit} setEdit={setEdit} resetTempItem={resetTempItem} setShowDeleteModal={setShowDeleteModal} deletable={deletable} /></td>
+        {selectable ? <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelected(index)) }} checked={originalItem.selected} /></td> : null}
         {deleteModal}
       </tr>
     )

@@ -15,7 +15,6 @@ import { useState } from 'react';
 import RolesModal from './RolesModal';
 import Preferences from './Preferences/PreferencesModal';
 import { ReactNode } from 'react';
-import ConfigurationModal from './Configuration/ConfigurationModal';
 import { showSpinner } from '../stateSlices/MainLogoSpinnerSlice';
 import { APIErrorToastCallback, authClient, errorToastCallback, handleError, handleResult } from '../APIClients';
 import { APISuccessData } from '../types/Generics';
@@ -30,7 +29,6 @@ export default function MainNavbar() {
 
   const [showRoles, setShowRoles] = useState(false)
   const [showPreferences, setShowPreferences] = useState(false)
-  const [showConfiguration, setShowConfiguration] = useState(false)
 
   function onAuth() {
     dispatch(showSpinner(true))
@@ -62,12 +60,12 @@ export default function MainNavbar() {
     const roles = useAppSelector(state => state.user.roles)
     const name = useAppSelector(state => state.user.name)
 
-    return <MainNavbarParent showRoles={showRoles} setShowRoles={setShowRoles} showPreferences={showPreferences} setShowPreferences={setShowPreferences} showConfiguration={showConfiguration} setShowConfiguration={setShowConfiguration}>
+    return <MainNavbarParent showRoles={showRoles} setShowRoles={setShowRoles} showPreferences={showPreferences} setShowPreferences={setShowPreferences}>
       <MainNavbarLeftParent>
         {roles.includes(appRoles.Requirements.Reader) ? <Nav.Link as={Link} to="/browse">Browse</Nav.Link> : null}
         {roles.includes(appRoles.Comments.Moderator) ? <Nav.Link as={Link} to="/Comments">Comments</Nav.Link> : null}
         {roles.includes(appRoles.Requirements.Writer) ?
-          <NavDropdown title="Edit" id="navbarScrollingDropdown">
+          <NavDropdown title="Edit" id="navbarDropdownEdit">
             <NavDropdown.Item as={Link} to="/Edit/Tags">Tags</NavDropdown.Item>
             <NavDropdown.Item as={Link} to="/Edit/Catalogues">Catalogues</NavDropdown.Item>
             <NavDropdown.Item as={Link} to="/Edit/Topics">Topics</NavDropdown.Item>
@@ -77,7 +75,7 @@ export default function MainNavbar() {
           </NavDropdown>
           : null}
         {roles.includes(appRoles.Requirements.Auditor) || roles.includes(appRoles.Comments.Auditor) ?
-          <NavDropdown title="Audit" id="navbarScrollingDropdown">
+          <NavDropdown title="Audit" id="navbarDropdownAudit">
             {roles.includes(appRoles.Requirements.Auditor) ? <>
               <NavDropdown.Item as={Link} to="/Audit/Tags">Tags</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/Audit/Catalogues">Catalogues</NavDropdown.Item>
@@ -91,6 +89,16 @@ export default function MainNavbar() {
               : null}
           </NavDropdown>
           : null}
+        {roles.includes(appRoles.Configuration.Writer) || roles.includes(appRoles.ServiceUser.Writer) ?
+          <NavDropdown title="Administration" id="navbarDropdownAdministration">
+            {roles.includes(appRoles.Configuration.Writer) ? <>
+              <NavDropdown.Item as={Link} to="/Administration/System">System</NavDropdown.Item>
+            </> : null}
+            {roles.includes(appRoles.ServiceUser.Writer) ?
+              <NavDropdown.Item as={Link} to="/Administration/ServiceUser">ServiceUser</NavDropdown.Item>
+              : null}
+          </NavDropdown>
+          : null}
       </MainNavbarLeftParent>
       <MainNavbarRightParent>
         <NavDropdown title={name} id="accountDropdown" align="end">
@@ -98,9 +106,6 @@ export default function MainNavbar() {
             <>
               <NavDropdown.Item onClick={() => { setShowRoles(true) }}>My Roles</NavDropdown.Item>
               <NavDropdown.Item onClick={() => { dispatch(loadUserConfiguration()); setShowPreferences(true) }}>Preferences</NavDropdown.Item>
-              {roles.includes(appRoles.Configuration.Reader) ?
-                <NavDropdown.Item onClick={() => { setShowConfiguration(true) }}>Configuration</NavDropdown.Item>
-                : null}
               <NavDropdown.Item as={Link} to="/APIDoc">API Doc</NavDropdown.Item>
               <NavDropdown.Item onClick={onLogout}>Logout</NavDropdown.Item>
             </> :
@@ -112,7 +117,7 @@ export default function MainNavbar() {
 
 
   } else {
-    return <MainNavbarParent showRoles={showRoles} setShowRoles={setShowRoles} showPreferences={showPreferences} setShowPreferences={setShowPreferences} showConfiguration={showConfiguration} setShowConfiguration={setShowConfiguration}>
+    return <MainNavbarParent showRoles={showRoles} setShowRoles={setShowRoles} showPreferences={showPreferences} setShowPreferences={setShowPreferences}>
       <MainNavbarLeftParent />
       <MainNavbarRightParent>
         <NavDropdown title={"Nobody"} id="accountDropdown" align="end">
@@ -131,11 +136,9 @@ interface MainNavbarParentProps {
   setShowRoles: (show: boolean) => void;
   showPreferences: boolean;
   setShowPreferences: (show: boolean) => void;
-  showConfiguration: boolean;
-  setShowConfiguration: (show: boolean) => void;
 }
 
-function MainNavbarParent({ children, showRoles, setShowRoles, showPreferences, setShowPreferences, showConfiguration, setShowConfiguration }: MainNavbarParentProps) {
+function MainNavbarParent({ children, showRoles, setShowRoles, showPreferences, setShowPreferences }: MainNavbarParentProps) {
 
   return <Navbar className="bg-body-tertiary">
     <Container fluid>
@@ -146,7 +149,6 @@ function MainNavbarParent({ children, showRoles, setShowRoles, showPreferences, 
     </Container>
     {showRoles ? <RolesModal show={showRoles} setShow={setShowRoles} /> : null}
     <Preferences show={showPreferences} setShow={setShowPreferences} />
-    {showConfiguration ? <ConfigurationModal show={showConfiguration} setShow={setShowConfiguration} /> : null}
   </Navbar>
 }
 

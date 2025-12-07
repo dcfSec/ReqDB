@@ -233,3 +233,19 @@ export function AuditComments() {
     endpoint="comments"
   />
 }
+
+/**
+ * View for editing ExtraEntries
+ * 
+ * @returns ExtraEntries view for editing
+ */
+export function AuditUsers() {
+  return <AuditParent auditPageName="Users"
+    searchFields={[
+      "timestamp", "user.email", "action", "target_id", "parent",
+      "data.id",
+      "data.email",
+    ]}
+    endpoint="users"
+  />
+}

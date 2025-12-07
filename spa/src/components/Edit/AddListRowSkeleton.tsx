@@ -9,6 +9,7 @@ import { ExtraTypeAddListRow } from "./ExtraTypes/AddListRow"
 import { RequirementAddListRow } from "./Requirements/AddListRow"
 import { TagAddListRow } from "./Tags/AddListRow"
 import { TopicAddListRow } from "./Topics/AddListRow"
+import { ServiceUserAddListRow } from "./ServiceUser/AddListRow";
 
 import { Item as Catalogue } from '../../types/API/Catalogues';
 import { Item as Extra } from '../../types/API/Extras';
@@ -16,6 +17,8 @@ import { Type } from '../../types/API/Extras';
 import { Item as Requirement } from "../../types/API/Requirements";
 import { Item as Tag } from "../../types/API/Tags";
 import { Item as Topic } from "../../types/API/Topics";
+import { Item as ServiceUser } from '../../types/API/ServiceUser';
+import { Item as Configuration } from '../../types/API/Configuration';
 import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClients";
 import { APISuccessData, GenericItem } from "../../types/Generics";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
@@ -24,7 +27,7 @@ import { useAppDispatch } from "../../hooks";
 
 
 type Props = {
-  blankItem: Catalogue | Extra | Type | Requirement | Tag | Topic;
+  blankItem: Catalogue | Extra | Type | Requirement | Tag | Topic | ServiceUser | Configuration;
   humanKey: string;
   endpoint: string;
   editPageName: string;
@@ -77,6 +80,10 @@ export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, edit
       return <tr><TagAddListRow newItem={newItem as Tag} updateNewItem={updateNewItem} />{post}</tr>
     case "Topics":
       return <tr><TopicAddListRow newItem={newItem as Topic} updateNewItem={updateNewItem} />{post}</tr>
+    case "ServiceUser":
+      return <tr><ServiceUserAddListRow newItem={newItem as ServiceUser} updateNewItem={updateNewItem} />{post}</tr>
+    case "System Configuration":
+      return <></>
     default:
       return <></>
   }
