@@ -20,8 +20,10 @@ auth = {
     "patchSystemConfig": {"required": True, "roles": ["Configuration.Writer"]},
     "getUserConfig": {"required": True, "roles": []},
     "patchUserConfig": {"required": True, "roles": []},
-    "addServiceIdentity": {"required": True, "roles": ["ServiceUser.Writer"]},
-    "patchServiceIdentity": {"required": True, "roles": ["ServiceUser.Writer"]},
+    "getServiceUsers": {"required": True, "roles": ["ServiceUser.Writer"]},
+    "addServiceUser": {"required": True, "roles": ["ServiceUser.Writer"]},
+    "patchServiceUser": {"required": True, "roles": ["ServiceUser.Writer"]},
+    "deleteServiceUser": {"required": True, "roles": ["ServiceUser.Writer"]},
     "getTags": {"required": True, "roles": ["Requirements.Reader"]},
     "findTags": {"required": True, "roles": ["Requirements.Reader"]},
     "getTag": {"required": True, "roles": ["Requirements.Reader"]},
@@ -71,8 +73,6 @@ auth = {
     "postJiraConnectUser": {"required": True, "roles": []},
     "getJiraConfiguration": {"required": True, "roles": []},
     "getJiraToken": {"required": True, "roles": []},
-    "getJiraProjects": {"required": True, "roles": []},
-    "getJiraIssueTypes": {"required": True, "roles": []},
     "deleteJiraConnectUser": {"required": True, "roles": []},
     "postJiraExport": {"required": True, "roles": ["Requirements.Reader"]},
 }
@@ -174,7 +174,7 @@ async def validateJWT(
         user: User | None = session.get(User, claims["sub"])
         if not user:
             raise Forbidden(
-                detail="User not registered. Use /config/service/identity to register the user with an id token"
+                detail="User not registered. Use /config/service/users to register the user with an id token"
             )
 
     return claims

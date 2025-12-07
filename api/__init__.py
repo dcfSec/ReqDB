@@ -22,6 +22,7 @@ from api.routers import (
     tag,
     topic,
     export,
+    serviceUser,
 )
 
 api = FastAPI(title="ReqDB - API", docs_url=None, redoc_url=None, openapi_url=None)
@@ -33,6 +34,7 @@ api.add_middleware(
 )
 
 api.include_router(config.router)
+api.include_router(serviceUser.router)
 api.include_router(tag.router)
 api.include_router(catalogue.router)
 api.include_router(comment.router)

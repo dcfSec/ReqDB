@@ -133,7 +133,7 @@ Lastly in in `API permissions` the permissions `email`, `openid` and `profile` n
 ### Users who do not use `/auth/login` for authentication and authorization
 
 When using `/auth/login` for authentication and authorization ReqDB will request an access and id token from the OIDC provider to get the email.
-If you get your access token another way (E.g. via a different oauth client and the ReqDB scope) ReqDB does not know the user and an admin needs to register the application (client id) with the `/config/service/identity` endpoint. With that a display name/email is set for the client.
+If you get your access token another way (E.g. via a different oauth client and the ReqDB scope) ReqDB does not know the user and an admin needs to register the application (client id) with the `/config/service/users` endpoint or via the GUI `Administration -> System`. With that a display name/email is set for the client.
 
 ## Development
 

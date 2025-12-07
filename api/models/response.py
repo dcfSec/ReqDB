@@ -168,7 +168,13 @@ class Response:
         data: str
 
     class User(ResponseBase):
-        data: User
+
+        class One(ResponseBase):
+            data: User
+
+        class List(ResponseBase):
+            data: list[User]
+            # page: Pagination
 
     class Export:
         class Jira:

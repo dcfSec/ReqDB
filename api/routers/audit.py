@@ -14,6 +14,7 @@ from api.models.db import (
     Requirement,
     Tag,
     Topic,
+    User,
 )
 from api.models.response import Response
 from api.routers import AuthRouter, getRoles
@@ -46,6 +47,7 @@ async def getAudit(
         "topics": (Topic, "Requirements.Auditor"),
         "catalogues": (Catalogue, "Requirements.Auditor"),
         "comments": (Comment, "Comments.Auditor"),
+        "users": (User, "Users.Auditor"),
     }
 
     if object not in modelMapping.keys():
@@ -61,4 +63,4 @@ async def getAudit(
     )
     data = session.exec(statement)
 
-    return Response.buildResponse(Response.Audit, data) # type: ignore
+    return Response.buildResponse(Response.Audit, data)  # type: ignore

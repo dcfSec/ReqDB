@@ -6,10 +6,9 @@ from sqlmodel import select
 
 from api.config import AppConfig
 from api.error import ErrorResponses, NotFound, raiseDBErrorReadable
-from api.models import SessionDep, audit
+from api.models import SessionDep
 from api.models.db import Configuration, User
 from api.models.public import User as PublicUser
-from api.models.insert import Insert
 from api.models.response import Response
 from api.models.update import Update
 from api.routers import AuthRouter, getUserId
@@ -120,7 +119,7 @@ async def patchSystemConfig(
 async def getUserConfig(
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.User:
+) -> Response.User.One:
 
     conf: User | None = session.get(User, userId)
     if conf:
@@ -129,7 +128,7 @@ async def getUserConfig(
             if token.name == "AtlassianID":
                 publicConf.atlassianCloudActive = True
 
-    return Response.buildResponse(Response.User, publicConf)  # type: ignore
+    return Response.buildResponse(Response.User.One, publicConf)  # type: ignore
 
 
 @router.patch(
@@ -147,7 +146,7 @@ async def patchUserConfig(
     configuration: Update.User,
     session: SessionDep,
     userId: Annotated[str, Depends(getUserId)],
-) -> Response.User:
+) -> Response.User.One:
     configurationFromDB = session.get(User, userId)
     if not configurationFromDB:
         raise NotFound(detail="Configuration item not found")
@@ -158,54 +157,4 @@ async def patchUserConfig(
     except DatabaseError as e:
         raiseDBErrorReadable(e)
     session.refresh(configurationFromDB)
-    return Response.buildResponse(Response.User, configurationFromDB)  # type: ignore
-
-
-@router.post(
-    "/config/service/identity",
-    status_code=status.HTTP_201_CREATED,
-    responses={
-        201: {"description": "Service user was created"},
-    },
-)
-async def addServiceIdentity(
-    session: SessionDep,
-    service: Insert.ServiceUser,
-) -> Response.User:
-    service.service = True
-    serviceDB: User = User.model_validate(service)
-    session.add(serviceDB)
-    try:
-        session.commit()
-    except DatabaseError as e:
-        raiseDBErrorReadable(e)
-    session.refresh(serviceDB)
-    audit(session, 0, serviceDB, service.id)
-    return Response.buildResponse(Response.User, serviceDB)  # type: ignore
-
-
-@router.patch(
-    "/config/service/identity/{id}",
-    status_code=status.HTTP_201_CREATED,
-    responses={
-        201: {"description": "Service user was updated"},
-    },
-)
-async def patchServiceIdentity(
-    session: SessionDep,
-    id: str,
-    service: Update.ServiceUser,
-    userId: Annotated[str, Depends(getUserId)],
-) -> Response.User:
-    userFromDB: User | None = session.get(User, id)
-    if not userFromDB or not userFromDB.service:
-        raise NotFound(detail="Service user not found")
-    userFromDB.sqlmodel_update(service.model_dump(exclude_unset=True))
-    session.add(userFromDB)
-    try:
-        session.commit()
-    except DatabaseError as e:
-        raiseDBErrorReadable(e)
-    session.refresh(userFromDB)
-    audit(session, 1, userFromDB, userId)
-    return Response.buildResponse(Response.User, userFromDB)  # type: ignore
+    return Response.buildResponse(Response.User.One, configurationFromDB)  # type: ignore

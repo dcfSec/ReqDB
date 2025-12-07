@@ -57,6 +57,7 @@ class User(UserBase, table=True):
     )
     tokens: Mapped[list[Token]] = SARelationship(
         back_populates="user",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):
