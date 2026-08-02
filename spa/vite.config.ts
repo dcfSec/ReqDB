@@ -1,4 +1,3 @@
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import macrosPlugin from "vite-plugin-babel-macros";
 import { dependencies } from './package.json';
@@ -15,7 +14,7 @@ function renderChunks(deps: Record<string, string>) {
 
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default {
   base: '/',
   server: {
     port: 3000,
@@ -51,4 +50,4 @@ export default defineConfig({
       },
     },
   },
-})
+}
