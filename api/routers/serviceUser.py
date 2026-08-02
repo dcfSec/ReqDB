@@ -100,18 +100,9 @@ async def deleteServiceUser(
     user: User | None = session.get(User, id)
     if not user or not user.service:
         raise NotFound(detail="Service user not found")
-    if len(user.comments) > 0:
-        raise ConflictError(
-            detail=[
-                f"Service user has {len(user.comments)} comment(s).",
-                "Users with comments cannot be deleted.",
-                "To deactivate access remove the roles in your IDP.",
-            ]
-        )
-    session.delete(user)
-    try:
-        session.commit()
-    except DatabaseError as e:
-        raiseDBErrorReadable(e)
-    audit(session, 2, user, userId)
-    return None
+    raise ConflictError(
+        detail=[
+            f"Service users cannot be deleted in the system",
+            "To deactivate access remove the roles in your IDP.",
+        ]
+    )

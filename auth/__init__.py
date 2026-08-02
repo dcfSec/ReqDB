@@ -5,7 +5,6 @@ import secrets
 
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.integrations.starlette_client import OAuth, OAuthError
-from authlib.integrations.starlette_client.apps import StarletteOAuth2App
 from authlib.oauth2.rfc6749.wrappers import OAuth2Token
 from cryptography.exceptions import InvalidTag
 from fastapi import FastAPI, HTTPException, Request
@@ -102,7 +101,7 @@ oauth.register(
     client_secret=AppConfig.OAUTH_CLIENT_SECRET,
 )
 
-oauthClient: StarletteOAuth2App = oauth._clients[AppConfig.OAUTH_PROVIDER]
+oauthClient = oauth.create_client(AppConfig.OAUTH_PROVIDER)
 
 
 async def parseCallback(request: Request, response: FastResponse) -> UserInfo:
@@ -221,11 +220,13 @@ async def getToken(request: Request, response: FastResponse):
             ) + datetime.timedelta(minutes=10)
 
             if tokenExpireTimestamp < tokenMaxAgeNow:
-                oauthApp: StarletteOAuth2App = oauth._clients[AppConfig.OAUTH_PROVIDER]
-                client: OAuth2Session = oauthApp._get_oauth_client()
+                client = OAuth2Session(
+                    client_id=AppConfig.OAUTH_CLIENT_ID,
+                    client_secret=AppConfig.OAUTH_CLIENT_SECRET,
+                )
                 sessionId, token = await authSession.refreshSession(
                     sessionId,
-                    await client.refresh_token(
+                    client.refresh_token(
                         AppConfig.OAUTH_TOKEN_ENDPOINT,
                         refresh_token=token.refresh_token,
                     ),

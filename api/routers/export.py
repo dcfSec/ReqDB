@@ -4,7 +4,6 @@ from fastapi import Depends, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.exc import DatabaseError
 from sqlmodel import Session
-from starlette.responses import Response
 
 from api.connectors.jira import Jira
 from api.error import (
