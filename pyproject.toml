@@ -12,7 +12,7 @@ requests = "^2.32.4"
 python-dotenv = "^1.0.1"
 pyodbc = "^5.2.0"
 psycopg2-binary = "^2.9.10"
-fastapi = "^0.121.2"
+fastapi = "^0.141.1"
 fastapi-cli = {extras = ["standard-no-fastapi-cloud-cli"], version = "^0.0.16"}
 sqlmodel = "^0.0.27"
 authlib = "^1.4.0"
@@ -21,6 +21,7 @@ itsdangerous = "^2.2.0"
 alembic = "^1.14.1"
 redis = "^7.0.0"
 joserfc = "^1.2.2"
+starlette = "^1.0.1"
 
 [tool.isort]
 profile = "black"
