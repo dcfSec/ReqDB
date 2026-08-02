@@ -2,12 +2,12 @@ import { Alert, Button, Col, Row, Stack } from "react-bootstrap";
 import Markdown from 'react-markdown'
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { useEffect } from "react";
-import { staticConfig } from "../static";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
-import { useAppDispatch } from "../hooks";
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { authClient } from "../APIClients";
 import { setAuthenticated, setExpiresAt, setName, setRoles, setToken } from "../stateSlices/UserSlice";
 import { useTranslation } from 'react-i18next';
+import { loadStaticConfiguration } from "../stateSlices/ConfigurationSlice";
 
 /**
  * View to display the button to login with the oauth provider
@@ -18,7 +18,10 @@ export default function Login({ authError = null, authErrorMessage = null }: { a
   const dispatch = useAppDispatch()
   const { t } = useTranslation();
 
+  const staticConfig = useAppSelector(state => state.configuration.static)
+
   useEffect(() => {
+    dispatch(loadStaticConfiguration())
     authClient.get("/token").then((response) => {
       dispatch(setToken(response.data.data["access_token"]))
       dispatch(setExpiresAt(response.data.data["expires_at"]))

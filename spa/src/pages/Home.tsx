@@ -2,12 +2,11 @@ import { Button, Col, Dropdown, Row, Stack } from "react-bootstrap";
 import { Link } from "react-router";
 import { appRoles } from "../authConfig";
 import Markdown from 'react-markdown'
-import { staticConfig } from "../static";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { useEffect } from "react";
-import { loadConfiguration } from "../stateSlices/ConfigurationSlice";
+import { loadSystemConfiguration, loadStaticConfiguration } from "../stateSlices/ConfigurationSlice";
 import LinkContainer from "../components/LinkContainer";
 import { useTranslation } from 'react-i18next';
 
@@ -25,10 +24,12 @@ export default function Home() {
     dispatch(setBreadcrumbs([{ href: "", title: t('nav.home'), active: true }]))
     dispatch(setPageTitle(t('nav.home')))
     dispatch(showSpinner(true))
-    dispatch(loadConfiguration())
+    dispatch(loadSystemConfiguration())
+    dispatch(loadStaticConfiguration())
   }, []);
 
   const roles = useAppSelector(state => state.user.roles)
+  const staticConfig = useAppSelector(state => state.configuration.static)
 
   return <>
     <Row>

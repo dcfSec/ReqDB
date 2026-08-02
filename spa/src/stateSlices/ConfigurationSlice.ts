@@ -1,8 +1,27 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Item } from '../types/API/Configuration';
-import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClients';
+import APIClient, { unauthApiClient, APIErrorToastCallback, errorToastCallback, handleError, handleResult } from '../APIClients';
 import { APISuccessData } from '../types/Generics';
 import store from '../store';
+
+interface StaticConfig {
+  oauth: {
+    provider: string
+  };
+  home: {
+    title: string;
+    MOTD: {
+      pre: string
+      post: string
+    };
+  };
+  login: {
+    MOTD: {
+      pre: string
+      post: string
+    };
+  };
+}
 
 interface Category {
   category: string
@@ -14,26 +33,69 @@ interface ConfigurationState {
     [key: string]: Item
   };
   categories: Category[];
+  static: StaticConfig;
 }
 
 const initialState: ConfigurationState = {
   configuration: {},
-  categories: []
+  categories: [],
+  static: {
+    oauth: {
+      provider: "",
+    },
+    home: {
+      title: "",
+      MOTD: {
+        pre: "",
+        post: "",
+      },
+    },
+    login: {
+      MOTD: {
+        pre: "",
+        post: "",
+      }
+    }
+  }
 }
 
-export const editSlice = createSlice({
+export const configurationSlice = createSlice({
   name: 'edit',
   initialState,
   reducers: {
     reset: () => initialState,
-    loadConfiguration: () => {
+    resetSystem: (state) => {
+      state.configuration = {}
+    },
+    resetStatic: (state) => {
+      state.static = initialState.static
+    },
+    loadSystemConfiguration: () => {
       APIClient.get(`config/system`).then((response) => {
-        handleResult(response, okCallback, APIErrorToastCallback)
+        handleResult(response, okSystemCallback, APIErrorToastCallback)
       }).catch((error) => {
         handleError(error, APIErrorToastCallback, errorToastCallback)
       });
     },
-    setConfiguration: (state, action: PayloadAction<Array<Item>>) => {
+    loadStaticConfiguration: (state) => {
+      let storedConfig;
+      try {
+        storedConfig = JSON.parse(sessionStorage.getItem("static") || "{}") || {};
+      } catch (error) {
+        console.error("Error parsing stored config:", error);
+        storedConfig = {};
+      }
+      if (Object.keys(storedConfig).length === 0) {
+        unauthApiClient.get(`config/static`).then((response) => {
+          handleResult(response, okStaticCallback, APIErrorToastCallback)
+        }).catch((error) => {
+          handleError(error, APIErrorToastCallback, errorToastCallback)
+        });
+      } else {
+        state.static = { ...storedConfig }
+      }
+    },
+    setSystemConfiguration: (state, action: PayloadAction<Array<Item>>) => {
       action.payload.forEach(item => {
         let result = state.categories.findIndex(({ category }) => category === item.category);
         if (result == -1) {
@@ -47,6 +109,10 @@ export const editSlice = createSlice({
         state.configuration[item.key] = { ...item }
       });
     },
+    setStaticConfiguration: (state, action: PayloadAction<StaticConfig>) => {
+      sessionStorage.setItem("static", JSON.stringify({ ...action.payload }));
+      state.static = { ...action.payload }
+    },
     editConfigurationItem: (state, action: PayloadAction<{ key: string, value: string }>) => {
       state.configuration[action.payload.key].value = action.payload.value
       state.configuration[action.payload.key].dirty = true
@@ -57,11 +123,16 @@ export const editSlice = createSlice({
   }
 })
 
-export const { setConfiguration, editConfigurationItem, reset, loadConfiguration, removeDirty } = editSlice.actions
+export const { setSystemConfiguration, setStaticConfiguration, editConfigurationItem, reset, resetSystem, resetStatic, loadSystemConfiguration, loadStaticConfiguration, removeDirty } = configurationSlice.actions
 
-export default editSlice.reducer
+export default configurationSlice.reducer
 
-function okCallback(response: APISuccessData) {
-  store.dispatch(reset())
-  store.dispatch(setConfiguration(response.data as Item[]))
+function okSystemCallback(response: APISuccessData) {
+  store.dispatch(resetSystem())
+  store.dispatch(setSystemConfiguration(response.data as Item[]))
+}
+
+function okStaticCallback(response: APISuccessData) {
+  store.dispatch(resetStatic())
+  store.dispatch(setStaticConfiguration(response.data as StaticConfig))
 }

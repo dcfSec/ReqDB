@@ -15,6 +15,10 @@ export const authClient = axios.create({
   baseURL: "/auth",
 });
 
+export const unauthApiClient = axios.create({
+  baseURL: "/api",
+});
+
 apiClient.interceptors.request.use(function (config) {
   const token = store.getState().user.token
   if (token != "") {
