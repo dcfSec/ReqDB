@@ -1,0 +1,241 @@
+{
+    "login": {
+        "sso": "Login with {{provider}}"
+    },
+    "nav": {
+        "user": "Signed in as:",
+        "roles": "My Roles",
+        "preferences": "Preferences",
+        "apiDoc": "API Documentation",
+        "login": "Login",
+        "logout": "Logout",
+        "nobody": "Nobody",
+        "home": "Home",
+        "browse": "Browse",
+        "comments": "Comments",
+        "edit": "Edit",
+        "audit": "Audit",
+        "administration": "Administration",
+        "tags": "Tags",
+        "catalogues": "Catalogues",
+        "topics": "Topics",
+        "requirements": "Requirements",
+        "extraTypes": "ExtraTypes",
+        "extraEntries": "ExtraEntries",
+        "system": "System Configuration",
+        "serviceUser": "ServiceUser",
+        "requirement": "View Requirement",
+        "users": "Users"
+    },
+    "buttons": {
+        "close": "Close",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "delete": "Delete"
+    },
+    "routes": {
+        "guard": {
+            "unauthorized": "Unauthorized",
+            "missing": "You are missing the role(s)",
+            "roles": "Your roles are",
+            "logoutHint": "Logout to refresh your token if you think this is an error"
+        }
+    },
+    "roles": {
+        "title": "My Roles",
+        "my": "Your role(s) are"
+    },
+    "404": {
+        "title": "Page not Found",
+        "error": "The requested page does not exist."
+    },
+    "browseSelect": {
+        "noCataloguesError": "No catalogues found. Ask your administrator to add a requirement catalogue",
+        "title": "Select Requirement Catalogue",
+        "loadingError": "Error loading catalogue data. Error:"
+    },
+    "browseCatalogue": {
+        "titleLoading": "Loading...",
+        "headline": "Browse"
+    },
+    "browseRequirement": {
+        "titleLoading": "View Requirement - Loading...",
+        "headline": "Browse",
+        "loadingError": "Error loading requirement data. Error:",
+        "search": "{{count}} requirements visible",
+        "filter": {
+            "tags": "Filter Tags",
+            "topic": "Filter topic"
+        },
+        "comments": "comments",
+        "modal": {
+            "topicFilterTitle": "Select Topic Filter"
+        }
+    },
+    "comments": {
+        "comment": "Comment",
+        "author": "Author",
+        "completed": "Completed",
+        "requirement": "Requirement",
+        "parentId": "Parent #",
+        "action": "Action",
+        "noCommentsError": "No comments",
+        "loadingError": "Error loading comment data. Error:",
+        "showCompleted": "Show completed",
+        "from": "From",
+        "at": "at",
+        "modal": {
+            "title": "Comments for"
+        },
+        "actions": {
+            "delete": "Delete comment",
+            "edit": "Edit comment",
+            "reply": "Reply",
+            "markAs": "Mark as {{state}}",
+            "toDo": "to do",
+            "completed": "completed"
+        },
+        "delete": {
+            "titleItem": "the selected comment",
+            "toastHeader": "Comment deleted",
+            "toastBody": "Comment successfully deleted"
+        },
+        "complete": {
+            "toastHeader": "Comment marked as completed",
+            "toastBody": "Comment successfully marked as completed",
+            "updatedToastHeader": "Comment marked as completed updated",
+            "updatedToastBody": "Comment successfully updated marked as completed"
+        }
+    },
+    "edit": {
+        "noItemsError": "No items",
+        "loadingError": "Error loading {{item}}  data. Error:",
+        "catalogues": {
+            "name": "Catalogues",
+            "headers": {
+                "key": "Key",
+                "title": "Title",
+                "description": "Description",
+                "root": "Root Elements",
+                "tags": "Tags"
+            }
+        },
+        "tags": {
+            "name": "Tags",
+            "headers": {
+                "name": "Name",
+                "requirements": "Requirements",
+                "catalogues": "Catalogues"
+            }
+        },
+        "topics": {
+            "name": "Topics",
+            "headers": {
+                "key": "Key",
+                "title": "Title",
+                "description": "Description",
+                "parent": "Parent",
+                "children": "Children"
+            }
+        },
+        "requirements": {
+            "name": "Requirements",
+            "headers": {
+                "key": "Key",
+                "title": "Title",
+                "description": "Description",
+                "parent": "Parent",
+                "tags": "Tags",
+                "extras": "Extras",
+                "visible": "Visible"
+            }
+        },
+        "extraTypes": {
+            "name": "ExtraTypes",
+            "headers": {
+                "title": "Title",
+                "description": "Description",
+                "type": "Type",
+                "children": "Children"
+            }
+        },
+        "extraEntries": {
+            "name": "ExtraEntries",
+            "headers": {
+                "content": "Content",
+                "extraTypes": "ExtraType",
+                "requirements": "Requirement"
+            }
+        }
+    },
+    "app": {
+        "name": "ReqDB"
+    },
+    "system": {
+        "configuration": {
+            "name": "System Configuration",
+            "headers": {
+                "category": "Category",
+                "key": "Key",
+                "value": "Value"
+            },
+            "serviceUser": {
+                "name": "System Configuration",
+                "headers": {
+                    "email": "E-Mail (Display name)",
+                    "created": "Created"
+                }
+            }
+        },
+        "serviceUser": {
+            "name": "Service User",
+            "headers": {
+                "email": "E-Mail (Display name)",
+                "created": "Created"
+            }
+        }
+    },
+    "deleteConfirmation": {
+        "title": "Delete {{item}}?",
+        "bodyPrefix": "Are you sure you want to delete",
+        "force": "Force deletion",
+        "cascade": "Cascade deletion"
+    },
+    "preferences": {
+        "atlassian": {
+            "title": "Atlassian Connection",
+            "connect": "Connect Atlassian Id",
+            "removeConnection": "Remove Atlassian connection",
+            "delete": {
+                "toastHeader": "Connection deleted",
+                "toastBody": "Atlassian connection successfully deleted"
+            },
+            "create": {
+                "toastHeader": "Connection created",
+                "toastBody": "Atlassian connection successfully created"
+            },
+            "authWindow": {
+                "toastHeader": "Opening authentication window failed",
+                "toastBody": "Could not open the authentication window"
+            }
+        }
+    },
+    "apiDoc": {
+        "export": "Export openAPI.json",
+        "error": "Error loading OpenAPI data. Error:"
+    },
+    "audit": {
+        "error": "Error loading catalogue data. Error:",
+        "filter": "Filter Actions",
+        "userCheckboxLabel": "Show User ID instead of email",
+        "empty": "No audit entries",
+        "headers": {
+            "timestamp": "Timestamp",
+            "user": "User",
+            "action": "Action",
+            "target": "Target ID",
+            "targetId": "Target ID",
+            "data": "Data"
+        }
+    }
+}

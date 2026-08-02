@@ -2,6 +2,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useAppSelector } from "../hooks";
+import { useTranslation } from 'react-i18next';
 
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
  * @returns Returns a modal for viewing the own roles
  */
 export default function RolesModal({ show, setShow }: Props) {
+  const { t } = useTranslation();
   const roles = useAppSelector(state => state.user.roles)
 
   return (
@@ -27,14 +29,14 @@ export default function RolesModal({ show, setShow }: Props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="myRolesModal">
-          My Roles
+          {t('roles.title')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Container>
           <Row>
             <Col>
-            <p>Your role(s) are:</p>
+              <p>{t('roles.my')}:</p>
               <ul>
                 {[...roles].sort().map((role) => (<li key={role}><code>{role}</code></li>))}
               </ul>
@@ -43,7 +45,7 @@ export default function RolesModal({ show, setShow }: Props) {
         </Container>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={() => setShow(false)}>Close</Button>
+        <Button variant="primary" onClick={() => setShow(false)}>{t('buttons.close')}</Button>
       </Modal.Footer>
     </Modal>
   );

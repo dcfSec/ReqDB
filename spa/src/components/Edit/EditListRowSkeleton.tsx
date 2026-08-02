@@ -112,28 +112,28 @@ export default function EditListRow({ index, endpoint, needCascade, humanKey, se
     const deleteModal = <DeleteConfirmationModal show={showDeleteModal} item={String(item[humanKey])} onCancel={() => setShowDeleteModal(false)} onConfirm={() => handleDeleteItem()} onForceChange={e => setForce(e)} force={force} needCascade={needCascade} onCascadeChange={e => setCascade(e)} />
 
     switch (editPageName) {
-      case "Catalogues":
+      case "edit.catalogues.name":
         row = <CatalogueEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Catalogue} />
         break;
-      case "ExtraEntries":
+      case "edit.extraEntries.name":
         row = <ExtraEntryEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Extra} />
         break;
-      case "ExtraTypes":
+      case "edit.extraTypes.name":
         row = <ExtraTypeEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Type} />
         break;
-      case "Requirements":
+      case "edit.requirements.name":
         row = <RequirementEditListRow index={index} updateTempItem={updateTempItem} edit={edit} item={item as Requirement} originalItem={originalItem as Requirement} />
         break;
-      case "Tags":
+      case "edit.tags.name":
         row = <TagEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Tag} />
         break;
-      case "Topics":
+      case "edit.topics.name":
         row = <TopicEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Topic} />
         break;
-      case "ServiceUser":
+      case "system.serviceUser.name":
         row = <ServiceUserEditListRow updateTempItem={updateTempItem} edit={edit} item={item as ServiceUser} />
         break;
-      case "System Configuration":
+      case "system.configuration.name":
         row = <ConfigurationEditListRow updateTempItem={updateTempItem} edit={edit} item={item as Configuration} />
         break;
       default:

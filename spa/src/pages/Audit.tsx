@@ -18,6 +18,7 @@ import { Item } from "../types/API/Audit";
 
 import { toggleActionFilterSelected, toggleActionFilterSelectedAll } from '../stateSlices/AuditSlice';
 import APIClient from '../APIClients';
+import { useTranslation } from 'react-i18next';
 
 
 type Props = {
@@ -32,8 +33,9 @@ type Props = {
  * @returns Parent component for all editor views
  */
 function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
-  const dispatch = useAppDispatch()
-  const items = useAppSelector(state => state.audit.items)
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+  const items = useAppSelector(state => state.audit.items);
 
   useEffect(() => {
     dispatch(setPageTitle(auditPageName))
@@ -73,7 +75,7 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
   let body = <LoadingBar />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data. Error: {error}</Alert>
+    body = <Alert variant="danger">{t('audit.error')} {error}</Alert>
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
@@ -81,18 +83,18 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
       <Row>
         <Col>
           <Dropdown className="d-inline">
-            <Dropdown.Toggle id="tag-dropdown">Filter Actions</Dropdown.Toggle>
+            <Dropdown.Toggle id="tag-dropdown">{t('audit.filter')}</Dropdown.Toggle>
             <Dropdown.Menu as={CheckboxDropdown} target="action" toggleChangeAll={toggleActionFilterSelectedAll} toggleChange={toggleActionFilterSelected}>
               {["INSERT", "UPDATE", "DELETE"].map((verb, index) => (<Dropdown.Item key={index} eventKey={verb}>{verb}</Dropdown.Item>))}
             </Dropdown.Menu>
           </Dropdown>
         </Col>
-        <Col><Form.Check type="switch" id="completed" defaultChecked={showId} onChange={e => { setShowId(e.target.checked) }} label="Show User ID instead of email" reverse /></Col>
+        <Col><Form.Check type="switch" id="completed" defaultChecked={showId} onChange={e => { setShowId(e.target.checked) }} label={t('audit.userCheckboxLabel')} reverse /></Col>
       </Row >
-      <Row><Col><DataTable headers={["Timestamp", "User", "Action", "Target ID", "Data", ""]}>
+      <Row><Col><DataTable headers={[t('audit.headers.timestamp'), t('audit.headers.user'), t('audit.headers.action'), t('audit.headers.target'), t('audit.headers.data'), ""]}>
         {items.length > 0 ? items.map((item, /*index*/) => (
           renderItem(item, showId/*index*/)
-        )) : <tr><td colSpan={6} style={{ textAlign: 'center' }}>No audit entries</td></tr>}
+        )) : <tr><td colSpan={6} style={{ textAlign: 'center' }}>{t('audit.empty')}</td></tr>}
       </DataTable></Col></Row>
     </>
   }
@@ -131,7 +133,8 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
  * @returns Tags view for editing
  */
 export function AuditTags() {
-  return <AuditParent auditPageName="Tags"
+  const { t } = useTranslation();
+  return <AuditParent auditPageName={t('nav.tags')}
     searchFields={[
       "timestamp", "user.email", "action", "target_id", "data.name", "parent"
     ]}
@@ -145,7 +148,8 @@ export function AuditTags() {
  * @returns Catalogues view for editing
  */
 export function AuditCatalogues() {
-  return <AuditParent auditPageName="Catalogues"
+  const { t } = useTranslation();
+  return <AuditParent auditPageName={t('nav.catalogues')}
     searchFields={[
       "timestamp", "user.email", "action", "target_id", "parent",
       "data.title",
@@ -161,7 +165,8 @@ export function AuditCatalogues() {
  * @returns Topics view for editing
  */
 export function AuditTopics() {
-  return <AuditParent auditPageName="Topics"
+  const { t } = useTranslation();
+  return <AuditParent auditPageName={t('nav.topics')}
     searchFields={[
       "timestamp", "user.email", "action", "target_id", "parent",
       "data.key", "data.title", "data.description"
@@ -176,7 +181,8 @@ export function AuditTopics() {
  * @returns Requirements view for editing
  */
 export function AuditRequirements() {
-  return <AuditParent auditPageName="Requirements"
+  const { t } = useTranslation();
+  return <AuditParent auditPageName={t('nav.requirements')}
     searchFields={[
       "timestamp", "user.email", "action", "target_id", "parent",
       "data.key", "data.title", "data.description"
@@ -191,7 +197,8 @@ export function AuditRequirements() {
  * @returns ExtraTypes view for editing
  */
 export function AuditExtraTypes() {
-  return <AuditParent auditPageName="ExtraTypes"
+  const { t } = useTranslation();
+  return <AuditParent auditPageName={t('nav.extraTypes')}
     searchFields={[
       "timestamp", "user.email", "action", "target_id", "parent",
       "data.title", "data.description"
@@ -206,7 +213,8 @@ export function AuditExtraTypes() {
  * @returns ExtraEntries view for editing
  */
 export function AuditExtraEntries() {
-  return <AuditParent auditPageName="ExtraEntries"
+  const { t } = useTranslation();
+  return <AuditParent auditPageName={t('nav.extraEntries')}
     searchFields={[
       "timestamp", "user.email", "action", "target_id", "parent",
       "data.content",
@@ -223,7 +231,8 @@ export function AuditExtraEntries() {
  * @returns ExtraEntries view for editing
  */
 export function AuditComments() {
-  return <AuditParent auditPageName="Comments"
+  const { t } = useTranslation();
+  return <AuditParent auditPageName={t('nav.comments')}
     searchFields={[
       "timestamp", "user.email", "action", "target_id", "parent",
       "data.comment",
@@ -240,7 +249,8 @@ export function AuditComments() {
  * @returns ExtraEntries view for editing
  */
 export function AuditUsers() {
-  return <AuditParent auditPageName="Users"
+  const { t } = useTranslation();
+  return <AuditParent auditPageName={t('nav.users')}
     searchFields={[
       "timestamp", "user.email", "action", "target_id", "parent",
       "data.id",

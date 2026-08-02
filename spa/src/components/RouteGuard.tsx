@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { APIErrorToastCallback, authClient, errorToastCallback, handleError, handleResult } from "../APIClients";
 import { APISuccessData } from "../types/Generics";
 import { setAuthenticated, setExpiresAt, setToken } from "../stateSlices/UserSlice";
+import { useTranslation } from "react-i18next";
 
 
 type Props = {
@@ -18,6 +19,7 @@ type Props = {
  */
 export default function RouteGuard({ requiredRoles, children }: Props) {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
   const roles = useAppSelector(state => state.user.roles)
   const isAuthorized = (requiredRoles.filter((role) => roles.includes(role)).length > 0);
@@ -46,11 +48,11 @@ export default function RouteGuard({ requiredRoles, children }: Props) {
       {isAuthenticated && isAuthorized ? (children) :
         <>
           <Row>
-            <Col><h1>Unauthorized</h1></Col>
+            <Col><h1>{t('routes.guard.unauthorized')}</h1></Col>
           </Row>
           <Row>
             <Col>
-              <p>You are missing the role(s):</p>
+              <p>{t('routes.guard.missing')}:</p>
               <ul>
                 {requiredRoles.map((role) => (<li key={role}><code>{role}</code></li>))}
               </ul>
@@ -58,7 +60,7 @@ export default function RouteGuard({ requiredRoles, children }: Props) {
           </Row>
           <Row>
             <Col>
-              <p>Your roles are:</p>
+              <p>{t('routes.guard.roles')}:</p>
               <ul>
                 {roles.map((role) => (<li key={role}><code>{role}</code></li>))}
               </ul>
@@ -66,8 +68,8 @@ export default function RouteGuard({ requiredRoles, children }: Props) {
           </Row>
           <Row>
             <Col>
-              <p>Logout to refresh your token if you think this is an error:</p>
-              <Button onClick={onLogout} variant="outline-secondary">Logout</Button>
+              <p>{t('routes.guard.logoutHint')}:</p>
+              <Button onClick={onLogout} variant="outline-secondary">{t('nav.logout')}</Button>
             </Col>
           </Row>
         </>

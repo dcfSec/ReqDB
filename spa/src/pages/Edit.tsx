@@ -5,6 +5,7 @@ import { Item as Requirement } from "../types/API/Requirements";
 import { Item as Tag } from "../types/API/Tags";
 import { Item as Topic } from "../types/API/Topics";
 import { EditParent } from "../components/Edit/Parent";
+import { useTranslation } from 'react-i18next';
 
 
 /**
@@ -13,12 +14,13 @@ import { EditParent } from "../components/Edit/Parent";
  * @returns Tags view for editing
  */
 export function Tags() {
-  return <EditParent editPageName="Tags" humanKey="name"
+  const { t } = useTranslation();
+  return <EditParent editPageName="edit.tags.name" humanKey="name"
     headers={[
       "#",
-      "Name",
-      "Requirements",
-      "Catalogues",
+      t('edit.tags.headers.name'),
+      t('edit.tags.headers.requirements'),
+      t('edit.tags.headers.catalogues'),
     ]}
     blankItem={{
       name: "",
@@ -38,14 +40,15 @@ export function Tags() {
  * @returns Catalogues view for editing
  */
 export function Catalogues() {
-  return <EditParent editPageName="Catalogues" humanKey="title"
+  const { t } = useTranslation();
+  return <EditParent editPageName="edit.catalogues.name" humanKey="title"
     headers={[
       "#",
-      "Key",
-      "Title",
-      "Description",
-      "Root Elements",
-      "Tags",
+      t('edit.catalogues.headers.key'),
+      t('edit.catalogues.headers.title'),
+      t('edit.catalogues.headers.description'),
+      t('edit.catalogues.headers.root'),
+      t('edit.catalogues.headers.tags'),
     ]}
     blankItem={{
       title: "",
@@ -67,14 +70,15 @@ export function Catalogues() {
  * @returns Topics view for editing
  */
 export function Topics() {
-  return <EditParent editPageName="Topics" humanKey="key"
+  const { t } = useTranslation();
+  return <EditParent editPageName="edit.topics.name" humanKey="key"
     headers={[
       "#",
-      "Key",
-      "Title",
-      "Description",
-      "Parent",
-      "Children",
+      t('edit.topics.headers.key'),
+      t('edit.topics.headers.title'),
+      t('edit.topics.headers.description'),
+      t('edit.topics.headers.parent'),
+      t('edit.topics.headers.children'),
     ]}
     blankItem={{
       key: "",
@@ -97,16 +101,17 @@ export function Topics() {
  * @returns Requirements view for editing
  */
 export function Requirements() {
-  return <EditParent editPageName="Requirements" humanKey="key"
+  const { t } = useTranslation();
+  return <EditParent editPageName="edit.requirements.name" humanKey="key"
     headers={[
       "#",
-      "Key",
-      "Title",
-      "Description",
-      "Parent",
-      "Tags",
-      "Extras",
-      "Visible",
+      t('edit.requirements.headers.key'),
+      t('edit.requirements.headers.title'),
+      t('edit.requirements.headers.description'),
+      t('edit.requirements.headers.parent'),
+      t('edit.requirements.headers.tags'),
+      t('edit.requirements.headers.extras'),
+      t('edit.requirements.headers.visible'),
     ]}
     blankItem={{
       key: "",
@@ -130,13 +135,14 @@ export function Requirements() {
  * @returns ExtraTypes view for editing
  */
 export function ExtraTypes() {
-  return <EditParent editPageName="ExtraTypes" humanKey="title"
+  const { t } = useTranslation();
+  return <EditParent editPageName="edit.extraTypes.name" humanKey="title"
     headers={[
       "#",
-      "Title",
-      "Description",
-      "Type",
-      "Children",
+      t('edit.extraTypes.headers.title'),
+      t('edit.extraTypes.headers.description'),
+      t('edit.extraTypes.headers.type'),
+      t('edit.extraTypes.headers.children'),
     ]}
     blankItem={{
       title: "",
@@ -158,12 +164,13 @@ export function ExtraTypes() {
  * @returns ExtraEntries view for editing
  */
 export function ExtraEntries() {
-  return <EditParent editPageName="ExtraEntries" humanKey="id"
+  const { t } = useTranslation();
+  return <EditParent editPageName="edit.extraEntries.name" humanKey="id"
     headers={[
       "#",
-      "Content",
-      "ExtraType",
-      "Requirement",
+      t('edit.extraEntries.headers.content'),
+      t('edit.extraEntries.headers.extraType'),
+      t('edit.extraEntries.headers.requirement'),
     ]}
     blankItem={{
       content: "",

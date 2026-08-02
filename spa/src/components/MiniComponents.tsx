@@ -16,7 +16,6 @@ type SearchFunction = (a: string) => void;
 /**
  * Component for the main logo which is replaced by a spinner if something is loading
  * 
- * @param {object} props Props for the component: show
  * @returns Logo/Spinner component
  */
 export function MainLogoSpinner() {
@@ -263,12 +262,34 @@ export function EditButtons({ saveItem, edit, setEdit, resetTempItem, setShowDel
 }
 
 
+/**
+ * Determines whether a given row is visible based on the current
+ * browsing state (search text, selected tag filters, and selected topic filters).
+ *
+ * The row is considered visible only if all of the following are true:
+ * 1. The row matches the current search criteria as evaluated by
+ * 2. The row satisfies the tag filter
+ * 3. The row satisfies the topic filter:
+ *
+ * @param state - The current BrowseState.
+ * @param row - The row object to test for visibility.
+ * @returns True if the row passes the search, tag, and topic filters; otherwise false.
+ */
 export function isVisible(state: BrowseState, row: Row) {
   return inSearchField(state.search, Object.keys(row), row)
     && (/* tagFilterSelected.length === 0 || */ row.Tags.some(r => state.tags.filterSelected.indexOf(r) >= 0) || (row.Tags.length === 0 && state.tags.filterSelected.indexOf("No Tags") >= 0))
     && row.Topics.some(r => state.topics.filterSelected.indexOf(`${r.key} ${r.title}`) >= 0)
 }
 
+/**
+ * Returns a Badge JSX element corresponding to a audit log action.
+ *
+ * @param action - The action name to render as a badge (expected: "INSERT" | "UPDATE" | "DELETE").
+ * @returns A <Badge> element with the appropriate background color for the audit log action.
+ *
+ * @example
+ * getActionBadge("INSERT"); // Returns <Badge bg="success">INSERT</Badge>
+ */
 export function getActionBadge(action: string) {
   if (action == "INSERT") {
     return <Badge bg="success">INSERT</Badge>
@@ -281,6 +302,21 @@ export function getActionBadge(action: string) {
   }
 }
 
+/**
+ * Format a Date into an ISO-like string that includes the local timezone offset.
+ *
+ * The output has the form "YYYY-MM-DDTHH:mm:ss±HH:MM" where the date/time fields are
+ * taken from the local time of the provided Date and the trailing offset represents
+ * the difference from UTC.
+ *
+ * @param date - The Date to format (local components are used).
+ * @returns A string representing the local date/time with timezone offset,
+ *          for example "2025-12-07T14:05:09+01:00".
+ *
+ * @example
+ * const now = new Date();
+ * toISOStringWithTimezone(now); // Returns "2025-12-07T14:05:09+01:00"
+ */
 export function toISOStringWithTimezone(date: Date) {
   const pad = (n: number) => `${Math.floor(Math.abs(n))}`.padStart(2, '0');
   const getTimezoneOffset = (date: Date) => {

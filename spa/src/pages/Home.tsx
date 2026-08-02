@@ -9,6 +9,7 @@ import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { useEffect } from "react";
 import { loadConfiguration } from "../stateSlices/ConfigurationSlice";
 import LinkContainer from "../components/LinkContainer";
+import { useTranslation } from 'react-i18next';
 
 
 /**
@@ -18,10 +19,11 @@ import LinkContainer from "../components/LinkContainer";
  */
 export default function Home() {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
   useEffect(() => {
-    dispatch(setBreadcrumbs([{ href: "", title: "Home", active: true }]))
-    dispatch(setPageTitle("Home"))
+    dispatch(setBreadcrumbs([{ href: "", title: t('nav.home'), active: true }]))
+    dispatch(setPageTitle(t('nav.home')))
     dispatch(showSpinner(true))
     dispatch(loadConfiguration())
   }, []);
@@ -30,61 +32,61 @@ export default function Home() {
 
   return <>
     <Row>
-      <Col><h1>ReqDB</h1></Col>
+      <Col><h1>{t('app.name')}</h1></Col>
     </Row>
     <Row>
       <Col>
         <Stack gap={2} className="col-md-3 mx-auto">
           <h2>{staticConfig.home.title}</h2>
           <Markdown>{staticConfig.home.MOTD.pre}</Markdown>
-          <LinkContainer to="Browse"><Button variant="outline-secondary">Browse Catalogues</Button></LinkContainer>
+          <LinkContainer to="Browse"><Button variant="outline-secondary">{t('nav.browse')}</Button></LinkContainer>
           {roles.includes(appRoles.Comments.Moderator) ?
-            <LinkContainer to="Comments"><Button variant="outline-secondary">Comments</Button></LinkContainer>
+            <LinkContainer to="Comments"><Button variant="outline-secondary">{t('nav.comments')}</Button></LinkContainer>
             : null}
           {roles.includes(appRoles.Requirements.Writer) ?
             <Dropdown className="d-inline-block">
               <Dropdown.Toggle as={Button} variant="outline-secondary" id="dropdown-edit" className="mx-auto w-100">
-                Edit
+                {t('nav.edit')}
               </Dropdown.Toggle>
               <Dropdown.Menu className="mx-auto w-100">
-                <Dropdown.Item as={Link} to="/Edit/Tags">Tags</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/Edit/Catalogues">Catalogues</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/Edit/Topics">Topics</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/Edit/Requirements">Requirements</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/Edit/ExtraTypes">ExtraTypes</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/Edit/ExtraEntries">ExtraEntries</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/Edit/Tags">{t('nav.tags')}</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/Edit/Catalogues">{t('nav.catalogues')}</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/Edit/Topics">{t('nav.topics')}</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/Edit/Requirements">{t('nav.requirements')}</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/Edit/ExtraTypes">{t('nav.extraTypes')}</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/Edit/ExtraEntries">{t('nav.extraEntries')}</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown> : null}
           {roles.includes(appRoles.Requirements.Auditor) || roles.includes(appRoles.Comments.Auditor) ?
             <Dropdown className="d-inline-block">
               <Dropdown.Toggle as={Button} variant="outline-secondary" id="dropdown-edit" className="mx-auto w-100">
-                Audit
+                {t('nav.audit')}
               </Dropdown.Toggle>
               <Dropdown.Menu className="mx-auto w-100">
                 {roles.includes(appRoles.Requirements.Auditor) ? <>
-                  <Dropdown.Item as={Link} to="/Audit/Tags">Tags</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/Audit/Catalogues">Catalogues</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/Audit/Topics">Topics</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/Audit/Requirements">Requirements</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/Audit/ExtraTypes">ExtraTypes</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/Audit/ExtraEntries">ExtraEntries</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/Tags">{t('nav.tags')}</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/Catalogues">{t('nav.catalogues')}</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/Topics">{t('nav.topics')}</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/Requirements">{t('nav.requirements')}</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/ExtraTypes">{t('nav.extraTypes')}</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/ExtraEntries">{t('nav.extraEntries')}</Dropdown.Item>
                 </> : null}
                 {roles.includes(appRoles.Comments.Auditor) ?
-                  <Dropdown.Item as={Link} to="/Audit/Comments">Comments</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Audit/Comments">{t('nav.comments')}</Dropdown.Item>
                   : null}
               </Dropdown.Menu>
             </Dropdown> : null}
           {roles.includes(appRoles.Configuration.Writer) || roles.includes(appRoles.ServiceUser.Writer) ?
             <Dropdown className="d-inline-block">
               <Dropdown.Toggle as={Button} variant="outline-secondary" id="dropdown-edit" className="mx-auto w-100">
-                Administration
+                {t('nav.administration')}
               </Dropdown.Toggle>
               <Dropdown.Menu className="mx-auto w-100">
                 {roles.includes(appRoles.Configuration.Writer) ? <>
-                  <Dropdown.Item as={Link} to="/Administration/System">System</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Administration/System">{t('nav.system')}</Dropdown.Item>
                 </> : null}
                 {roles.includes(appRoles.ServiceUser.Writer) ?
-                  <Dropdown.Item as={Link} to="/Administration/ServiceUser">ServiceUser</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Administration/ServiceUser">{t('nav.serviceUser')}</Dropdown.Item>
                   : null}
               </Dropdown.Menu>
             </Dropdown> : null}

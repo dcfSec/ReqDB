@@ -11,6 +11,7 @@ import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import APIClient, { handleError, handleResult } from "../APIClients";
 import { APIErrorData, APISuccessData } from "../types/Generics";
 import { Item as Catalogue } from "../types/API/Catalogues";
+import { useTranslation } from "react-i18next";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -19,11 +20,12 @@ import { Item as Catalogue } from "../types/API/Catalogues";
  */
 export default function BrowseSelectCatalogue() {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
   const catalogueData = useAppSelector(state => state.catalogueData.items)
 
   useEffect(() => {
-    dispatch(setPageTitle("Browse - Select Requirement Catalogue"))
-    dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: "Select Requirement Catalogue", active: true }]))
+    dispatch(setPageTitle(`${t('nav.browse')} - ${t('browseSelect.title')}`))
+    dispatch(setBreadcrumbs([{ href: "/Browse", title: t('nav.browse'), active: false }, { href: "", title: t('browseSelect.title'), active: true }]))
   }, []);
 
   const [fetched, setFetched] = useState(false);
@@ -60,7 +62,7 @@ export default function BrowseSelectCatalogue() {
   let body = <LoadingBar />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data. Error: {error}</Alert>
+    body = <Alert variant="danger">{t('browseSelect.loadingError')} {error}</Alert>
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {
@@ -69,7 +71,7 @@ export default function BrowseSelectCatalogue() {
         {catalogueData.map((catalogue, index) => (<SelectCatalogueItem key={index} catalogue={catalogue} />))}
       </ListGroup></Stack>
     } else {
-      body = <Alert variant="warning">No catalogues found. Ask your administrator to add a requirement catalogue</Alert>
+      body = <Alert variant="warning">{t('browseSelect.noCataloguesError')}</Alert>
 
     }
   }
@@ -77,7 +79,7 @@ export default function BrowseSelectCatalogue() {
   return (
     <>
       <Row>
-        <Col><h2>Select Catalogue</h2></Col>
+        <Col><h2>{t('browseSelect.title')}</h2></Col>
       </Row>
       <Row>
         <Col>

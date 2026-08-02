@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
@@ -34,6 +35,7 @@ type Props = {
  */
 export default function CommentEntry({ index, comment, showCompleted, setReply }: Props) {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
   const roles = useAppSelector(state => state.user.roles)
   const comments = useAppSelector(state => state.comment.comments)
@@ -62,7 +64,7 @@ export default function CommentEntry({ index, comment, showCompleted, setReply }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function okCallback(response: APISuccessData) {
-      dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
+      dispatch(toast({ header: t('comments.delete.toastHeader'), body: t('comments.delete.toastBody') }))
       dispatch(removeComment({ index, force }))
     }
   }
@@ -76,7 +78,7 @@ export default function CommentEntry({ index, comment, showCompleted, setReply }
     });
 
     function okCallback(response: APISuccessData) {
-      dispatch(toast({ header: "Comment marked as completed", body: "Comment successfully marked as completed" }))
+      dispatch(toast({ header: t('comments.complete.toastHeader'), body: t('comments.complete.toastBody') }))
       dispatch(updateComment({ index: index, comment: response.data as Comment }))
     }
   }
@@ -87,21 +89,21 @@ export default function CommentEntry({ index, comment, showCompleted, setReply }
         <Card id={`comment-${comment.id}`} style={{ marginBottom: '0.5em', lineHeight: '1em' }} border={comment.completed ? "danger" : undefined}>
           <Card.Header style={{ padding: '0em' }}>
             <Stack direction="horizontal" gap={2}>
-              <span className="p-2">From <span style={{ fontStyle: 'italic' }}>{comment.author.email}</span></span>
-              <span className="ms-auto text-muted" style={{ justifyContent: 'left' }}>at {toISOStringWithTimezone(new Date(comment.created * 1000))}</span>
+              <span className="p-2">{t('comments.from')} <span style={{ fontStyle: 'italic' }}>{comment.author.email}</span></span>
+              <span className="ms-auto text-muted" style={{ justifyContent: 'left' }}>{t('comments.at')} {toISOStringWithTimezone(new Date(comment.created * 1000))}</span>
               {roles.includes(appRoles.Comments.Moderator) ?
                 <>
-                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="delete-tooltip">Delete comment</Tooltip>}>
+                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="delete-tooltip">{t('comments.actions.delete')}</Tooltip>}>
                     <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0em' }} size='sm' onClick={() => { setShowDeleteModal(true) }}><FontAwesomeIcon icon={"eraser"} /></Button>
                   </OverlayTrigger>
-                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">Edit comment</Tooltip>}>
+                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="edit-tooltip">{t('comments.actions.edit')}</Tooltip>}>
                     <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' disabled><FontAwesomeIcon icon={"pen"} /></Button>
                   </OverlayTrigger>
-                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="complete-tooltip">Mark as {comment.completed ? "to do" : "completed"}</Tooltip>}>
+                  <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="complete-tooltip">{t('comments.actions.markAs', { state: comment.completed ? t('comments.actions.toDo') : t('comments.actions.completed') })}</Tooltip>}>
                     <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { toggleComplete() }}><FontAwesomeIcon icon={"check"} /></Button>
                   </OverlayTrigger>
                 </> : null}
-              <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="reply-tooltip">Reply</Tooltip>}>
+              <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="reply-tooltip">{t('comments.actions.reply')}</Tooltip>}>
                 <Button variant="outline-secondary" style={{ height: '1.5rem', width: '1.5rem', padding: '0.05em' }} size='sm' onClick={() => { setReply(comment) }}><FontAwesomeIcon icon={"reply"} /></Button>
               </OverlayTrigger>
               <span></span>
@@ -115,7 +117,7 @@ export default function CommentEntry({ index, comment, showCompleted, setReply }
         {
           showDeleteModal ? <DeleteConfirmationModal
             show={showDeleteModal}
-            titleItem="the selected comment"
+            titleItem={t('comments.delete.titleItem')}
             item={comment.comment}
             onCancel={() => setShowDeleteModal(false)} onConfirm={() => deleteComment()}
             onForceChange={e => setForce(e)} force={force}

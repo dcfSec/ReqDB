@@ -6,6 +6,7 @@ import { toast } from "../../stateSlices/NotificationToastSlice";
 import { showSpinner } from "../../stateSlices/MainLogoSpinnerSlice";
 import Form from 'react-bootstrap/Form';
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 import { Item } from "../../types/API/Comments";
 import APIClient, { APIErrorToastCallback, errorToastCallback, handleError, handleResult } from "../../APIClients";
@@ -29,6 +30,7 @@ type Props = {
  */
 export function CommentRow({ index, comment, search, searchFields, showCompleted }: Props) {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [force, setForce] = useState(false);
@@ -53,7 +55,7 @@ export function CommentRow({ index, comment, search, searchFields, showCompleted
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function okCallback(response: APISuccessData) {
-      dispatch(toast({ header: "Comment deleted", body: "Comment successfully deleted" }))
+      dispatch(toast({ header: t('comments.delete.toastHeader'), body: t('comments.delete.toastBody') }))
       dispatch(removeComment({ index, force }))
     }
   }
@@ -67,7 +69,7 @@ export function CommentRow({ index, comment, search, searchFields, showCompleted
     });
 
     function okCallback(response: APISuccessData) {
-      dispatch(toast({ header: "Comment marked as completed updated", body: "Comment successfully updated marked as completed" }))
+      dispatch(toast({ header: t('comments.complete.updatedToastHeader'), body: t('comments.complete.updatedToastBody') }))
       dispatch(updateComment({ index, comment: response.data }))
     }
   }
@@ -81,7 +83,7 @@ export function CommentRow({ index, comment, search, searchFields, showCompleted
         <td><Form.Check type="switch" id="completed" defaultChecked={comment.completed} onChange={e => { updateCompleted(e.target.checked) }} /></td>
         <td><LinkContainer to={`/Browse/Requirement/${comment.requirement.id}`}><Button variant="primary" size="sm">{comment.requirement.title}</Button></LinkContainer></td>
         <td>{comment.parentId}</td>
-        <td><Button variant="danger" onClick={() => { setShowDeleteModal(true) }}>Delete</Button></td>
+        <td><Button variant="danger" onClick={() => { setShowDeleteModal(true) }}>{t('buttons.delete')}</Button></td>
         {showDeleteModal ? <DeleteConfirmationModal
           key={`${comment.id}`}
           show={showDeleteModal}

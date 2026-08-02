@@ -12,6 +12,7 @@ import APIPath from "../components/APIDoc/Path";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { setSpec } from "../stateSlices/APIDocSlice";
 import APISchema from "../components/APIDoc/Schema";
+import { useTranslation } from "react-i18next";
 
 
 /**
@@ -20,7 +21,8 @@ import APISchema from "../components/APIDoc/Schema";
  * @returns Container for the home view
  */
 export default function APIDoc() {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const apiSpec = useAppSelector(state => state.apiDoc.spec)
 
@@ -30,8 +32,8 @@ export default function APIDoc() {
 
 
   useEffect(() => {
-    dispatch(setBreadcrumbs([{ href: "", title: "Home", active: true }]))
-    dispatch(setPageTitle("Home"))
+    dispatch(setBreadcrumbs([{ href: "", title: t('nav.apiDoc'), active: true }]))
+    dispatch(setPageTitle(t('nav.apiDoc')))
 
     dispatch(showSpinner(true))
 
@@ -83,14 +85,14 @@ export default function APIDoc() {
   let body = <LoadingBar />
 
   if (error) {
-    body = <Alert variant="danger">Error loading OpenAPI data. Error: {error}</Alert>
+    body = <Alert variant="danger">{t('apiDoc.error')} {error}</Alert>
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched && apiSpec) {
 
     body = <>
       <Row>
-        <Col><Button onClick={exportJson}>Export openAPI.json</Button></Col>
+        <Col><Button onClick={exportJson}>{t('apiDoc.export')}</Button></Col>
       </Row>
       <Row>
         <Tabs defaultActiveKey="endpoints" id="API-Tabs">
@@ -115,7 +117,7 @@ export default function APIDoc() {
 
   return <>
     <Row>
-      <Col><h1>OpenAPI Documentation</h1></Col>
+      <Col><h1>{t('nav.apiDoc')}</h1></Col>
     </Row>
     {body}
   </>;

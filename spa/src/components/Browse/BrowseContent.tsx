@@ -20,6 +20,7 @@ import APIClient, { handleError, handleResult } from "../../APIClients";
 import { APIErrorData, APISuccessData } from "../../types/Generics";
 
 import { Item as Catalogue } from "../../types/API/Catalogues";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   id: string | undefined
@@ -31,7 +32,9 @@ type Props = {
  * @returns View to browse a catalogues
  */
 export default function BrowseContent({ id }: Props) {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+
   const rows = useAppSelector(state => state.browse.rows.items)
   const tagFilterItems = useAppSelector(state => state.browse.tags.filterItems)
   // const topicFilterItems = useAppSelector(state => state.browse.topics.filterItems)
@@ -110,12 +113,12 @@ export default function BrowseContent({ id }: Props) {
           <Row>
             <Col>
               <Dropdown className="d-inline">
-                <Dropdown.Toggle id="tag-dropdown">Filter Tags</Dropdown.Toggle>
+                <Dropdown.Toggle id="tag-dropdown">{t('browseRequirement.filter.tags')}</Dropdown.Toggle>
                 <Dropdown.Menu as={CheckboxDropdown} target="tag" toggleChangeAll={toggleTagFilterSelectedAll} toggleChange={toggleTagFilterSelected}>
                   {[...tagFilterItems].sort().map((tag, index) => (<Dropdown.Item key={index} eventKey={tag}>{tag}</Dropdown.Item>))}
                 </Dropdown.Menu>
               </Dropdown>
-              <Button className="mx-1" onClick={() => { setShowFilterModal(true) }}>Filter topic</Button>
+              <Button className="mx-1" onClick={() => { setShowFilterModal(true) }}>{t('browseRequirement.filter.topic')}</Button>
             </Col>
             <Col md={2}>
               <Stack direction="horizontal" gap={3}>

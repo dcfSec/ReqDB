@@ -7,6 +7,7 @@ import { Link } from "react-router";
 import { Item } from "../types/API/ServiceUser";
 import { Item as Configuration } from "../types/API/Configuration";
 import { EditParent } from "../components/Edit/Parent";
+import { useTranslation } from 'react-i18next';
 
 
 /**
@@ -15,18 +16,19 @@ import { EditParent } from "../components/Edit/Parent";
  * @returns Container for the administration view
  */
 export default function Administration() {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
-    dispatch(setBreadcrumbs([{ href: "", title: "Administration", active: true }]))
-    dispatch(setPageTitle("Administration"))
+    dispatch(setBreadcrumbs([{ href: "", title: t('nav.administration'), active: true }]))
+    dispatch(setPageTitle(t('nav.administration')))
   }, []);
 
   const roles = useAppSelector(state => state.user.roles)
 
   return <>
     <Row>
-      <Col><h1>Administration</h1></Col>
+      <Col><h1>{t('nav.administration')}</h1></Col>
     </Row>
     <Row>
       <Col>
@@ -34,14 +36,14 @@ export default function Administration() {
           {roles.includes(appRoles.Configuration.Writer) || roles.includes(appRoles.ServiceUser.Writer) ?
             <Dropdown className="d-inline-block">
               <Dropdown.Toggle as={Button} variant="outline-secondary" id="dropdown-edit" className="mx-auto w-100">
-                Administration
+                {t('nav.administration')}
               </Dropdown.Toggle>
               <Dropdown.Menu className="mx-auto w-100">
                 {roles.includes(appRoles.Configuration.Writer) ? <>
-                  <Dropdown.Item as={Link} to="/Administration/System">System</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Administration/System">{t('nav.system')}</Dropdown.Item>
                 </> : null}
                 {roles.includes(appRoles.ServiceUser.Writer) ?
-                  <Dropdown.Item as={Link} to="/Administration/ServiceUser">ServiceUser</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/Administration/ServiceUser">{t('nav.serviceUser')}</Dropdown.Item>
                   : null}
               </Dropdown.Menu>
             </Dropdown> : null}
@@ -57,17 +59,18 @@ export default function Administration() {
  * @returns Container for the administration view
  */
 export function System() {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
-    dispatch(setBreadcrumbs([{ href: "", title: "Administration", active: true }, { href: "", title: "System Configuration", active: true }]))
-    dispatch(setPageTitle("System Configuration"))
+    dispatch(setBreadcrumbs([{ href: "", title: t('nav.administration'), active: true }, { href: "", title: t('nav.system'), active: true }]))
+    dispatch(setPageTitle(t('nav.system')))
   }, []);
-  return <EditParent editPageName="System Configuration" humanKey="key"
+  return <EditParent editPageName="system.configuration.name" humanKey="key"
     headers={[
-      "Category",
-      "Key",
-      "Value"
+      t('system.configuration.headers.category'),
+      t('system.configuration.headers.key'),
+      t('system.configuration.headers.value')
     ]}
     blankItem={{
       key: "",
@@ -97,17 +100,18 @@ export function System() {
  */
 export function ServiceUser() {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
   useEffect(() => {
-    dispatch(setBreadcrumbs([{ href: "", title: "Administration", active: true }, { href: "", title: "ServiceUser", active: true }]))
-    dispatch(setPageTitle("Administration"))
+    dispatch(setBreadcrumbs([{ href: "", title: t('nav.administration'), active: true }, { href: "", title: t('nav.serviceUser'), active: true }]))
+    dispatch(setPageTitle(t('nav.serviceUser')))
   }, []);
 
-  return <EditParent editPageName="ServiceUser" humanKey="id"
+  return <EditParent editPageName="system.serviceUser.name" humanKey="id"
     headers={[
       "#",
-      "E-Mail (Display name)",
-      "Created"
+      t('system.configuration.serviceUser.headers.email'),
+      t('system.configuration.serviceUser.headers.created')
     ]}
     blankItem={{
       id: "",

@@ -68,21 +68,21 @@ export default function AddListRowSkeleton({ blankItem, humanKey, endpoint, edit
   const post = <><td><Button variant="success" onClick={() => postItem()}>Add</Button></td><td></td></>
 
   switch (editPageName) {
-    case "Catalogues":
+    case "edit.catalogues.name":
       return <tr><CatalogueAddListRow newItem={newItem as Catalogue} updateNewItem={updateNewItem} />{post}</tr>
-    case "ExtraEntries":
+    case "edit.extraEntries.name":
       return <tr><ExtraEntryAddListRow newItem={newItem as Extra} updateNewItem={updateNewItem} />{post}</tr>
-    case "ExtraTypes":
+    case "edit.extraTypes.name":
       return <tr><ExtraTypeAddListRow newItem={newItem as Type} updateNewItem={updateNewItem} />{post}</tr>
-    case "Requirements":
+    case "edit.requirements.name":
       return <tr><RequirementAddListRow newItem={newItem as Requirement} updateNewItem={updateNewItem} />{post}</tr>
-    case "Tags":
+    case "edit.tags.name":
       return <tr><TagAddListRow newItem={newItem as Tag} updateNewItem={updateNewItem} />{post}</tr>
-    case "Topics":
+    case "edit.topics.name":
       return <tr><TopicAddListRow newItem={newItem as Topic} updateNewItem={updateNewItem} />{post}</tr>
-    case "ServiceUser":
+    case "system.serviceUser.name":
       return <tr><ServiceUserAddListRow newItem={newItem as ServiceUser} updateNewItem={updateNewItem} />{post}</tr>
-    case "System Configuration":
+    case "system.configuration.name":
       return <></>
     default:
       return <></>

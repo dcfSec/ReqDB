@@ -6,6 +6,7 @@ import BrowseContent from "../components/Browse/BrowseContent";
 import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTranslation } from "react-i18next";
 
 /**
  * View to browse a
@@ -17,13 +18,14 @@ export default function BrowseCatalogue() {
   const title = useAppSelector(state => state.layout.pageTitle)
   const description = useAppSelector(state => state.browse.description)
   const status = useAppSelector(state => state.browse.status)
-  const data = useAppSelector(state => state.browse.data) 
+  const data = useAppSelector(state => state.browse.data)
 
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
   useEffect(() => {
-    dispatch(setPageTitle("Loading..."))
-    dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: title, active: true }]))
+    dispatch(setPageTitle(t('browseCatalogue.titleLoading')))
+    dispatch(setBreadcrumbs([{ href: "/Browse", title: t('nav.browse'), active: false }, { href: "", title: title, active: true }]))
   }, []);
 
   const params = useParams();
@@ -37,7 +39,7 @@ export default function BrowseCatalogue() {
       <Row>
         <Col>
           <Stack direction="horizontal" gap={1}>
-            <h2>Browse <code>{title}</code></h2>
+            <h2>{t('browseCatalogue.headline')} <code>{title}</code></h2>
             {status == "ok" ? overlay : null}
             {data?.tags.map((item) => (
               <Badge key={`tag-${item.id}`} bg="secondary" className="lowerHeaderButton">{item.name}</Badge>

@@ -14,6 +14,7 @@ import ExtraField from "./ExtraField";
 import { Row } from "../../types/Generics";
 import { setComments, setRequirementId } from "../../stateSlices/CommentSlice";
 import LinkContainer from "../LinkContainer";
+import { useTranslation } from "react-i18next";
 
 
 type Props = {
@@ -27,8 +28,9 @@ type Props = {
  * @returns A row for the browse view
  */
 export default memo(function BrowseRow({ index, row }: Props) {
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
-  const dispatch = useAppDispatch()
   const extraHeaders = useAppSelector(state => state.browse.extraHeaders)
   const roles = useAppSelector(state => state.user.roles)
 
@@ -48,8 +50,8 @@ export default memo(function BrowseRow({ index, row }: Props) {
     <td className="vertical-middle">
       <Stack gap={1}>
         <LinkContainer to={`/Browse/Requirement/${row.id}`}><Button className="eye-button" variant="primary"><FontAwesomeIcon icon={"link"} /></Button></LinkContainer>
-        { roles.includes(appRoles.Comments.Reader) ? <Button className="eye-button" variant="primary" onClick={() => { showCommentsModal() }} style={{ position: "relative" }}><FontAwesomeIcon icon={"comment"} />
-        { commentCount > 0 ? <><Badge pill bg="success" style={{position: 'absolute', marginTop: '1.5em', marginLeft: '-0.5em'}}>{commentCount}</Badge><span className="visually-hidden">comments</span></> : null }</Button> : null }
+        {roles.includes(appRoles.Comments.Reader) ? <Button className="eye-button" variant="primary" onClick={() => { showCommentsModal() }} style={{ position: "relative" }}><FontAwesomeIcon icon={"comment"} />
+          {commentCount > 0 ? <><Badge pill bg="success" style={{ position: 'absolute', marginTop: '1.5em', marginLeft: '-0.5em' }}>{commentCount}</Badge><span className="visually-hidden">{t('browseRequirement.comments')}</span></> : null}</Button> : null}
       </Stack>
     </td>
     <td>{row.Tags.map((tag) => (<span key={row.Key + " " + tag}><Badge bg="info">{tag}</Badge><br /></span>))}</td>
@@ -64,11 +66,11 @@ export default memo(function BrowseRow({ index, row }: Props) {
     <td>{row.Key}</td>
     <td>{row.Title}</td>
     <td><Markdown>{row.Description}</Markdown></td>
-    {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader] as string} lineBreak={true}/></td>))}
+    {Object.keys(extraHeaders).map((extraHeader) => (<td key={row.Key + extraHeader}><ExtraField index={index} extraType={extraHeaders[extraHeader]} item={row[extraHeader] as string} lineBreak={true} /></td>))}
     <td><Form.Check inline id={String(index)} type="checkbox" aria-label="All" onChange={() => { dispatch(toggleSelectRow(index)) }} checked={row.selected} /></td>
-    { roles.includes(appRoles.Comments.Reader) ? <CommentModal requirementIndex={index} title={row.Title} show={showComments} setShow={setShowComments}></CommentModal> : null }
+    {roles.includes(appRoles.Comments.Reader) ? <CommentModal requirementIndex={index} title={row.Title} show={showComments} setShow={setShowComments}></CommentModal> : null}
   </tr>
 
-  return (row.visible ? renderRow : null )
+  return (row.visible ? renderRow : null)
 
 })

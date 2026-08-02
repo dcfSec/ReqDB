@@ -3,6 +3,7 @@ import { setSearch } from '../../stateSlices/BrowseSlice';
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 
 /**
@@ -12,6 +13,7 @@ import { Form } from "react-bootstrap";
  */
 export default function Search() {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
 
   const items = useAppSelector(state => state.browse.rows.items)
@@ -26,7 +28,7 @@ export default function Search() {
   return (
     <>
       <SearchField title="Requirements" onSearch={setQuery} />
-      {selectedCount != items.length ? <Form.Text id="searchHelp" muted>{selectedCount}/{items.length} requirements visible</Form.Text> : null}
+      {selectedCount != items.length ? <Form.Text id="searchHelp" muted>{t('login.sso', { count: `${selectedCount}/${items.length}` })}</Form.Text> : null}
     </>
   )
 }

@@ -7,6 +7,7 @@ import { showSpinner } from "../stateSlices/MainLogoSpinnerSlice";
 import { useAppDispatch } from "../hooks";
 import { authClient } from "../APIClients";
 import { setAuthenticated, setExpiresAt, setName, setRoles, setToken } from "../stateSlices/UserSlice";
+import { useTranslation } from 'react-i18next';
 
 /**
  * View to display the button to login with the oauth provider
@@ -15,6 +16,7 @@ import { setAuthenticated, setExpiresAt, setName, setRoles, setToken } from "../
  */
 export default function Login({ authError = null, authErrorMessage = null }: { authError?: string | null; authErrorMessage?: string | null; }) {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
   useEffect(() => {
     authClient.get("/token").then((response) => {
@@ -24,8 +26,8 @@ export default function Login({ authError = null, authErrorMessage = null }: { a
       dispatch(setRoles(response.data.data["roles"]))
       dispatch(setAuthenticated(true))
     }).catch((/*error*/) => { /*console.log(error)*/ })
-    dispatch(setBreadcrumbs([{ href: "", title: "Login", active: true }]))
-    dispatch(setPageTitle("Login"))
+    dispatch(setBreadcrumbs([{ href: "", title: t('nav.login'), active: true }]))
+    dispatch(setPageTitle(t('nav.login')))
   }, []);
 
   function onAuth() {
@@ -35,7 +37,7 @@ export default function Login({ authError = null, authErrorMessage = null }: { a
 
   return <>
     <Row>
-      <Col><h1>ReqDB</h1></Col>
+      <Col><h1>{t('app.name')}</h1></Col>
     </Row>
     <Row>
       <Col>
@@ -43,7 +45,7 @@ export default function Login({ authError = null, authErrorMessage = null }: { a
         <Stack gap={2} className="col-md-3 mx-auto">
           <h2>{staticConfig.home.title}</h2>
           <Markdown>{staticConfig.login.MOTD.pre}</Markdown>
-          <Button onClick={(onAuth)} disabled={false} variant="outline-secondary">Login with {staticConfig.oauth.provider}</Button>
+          <Button onClick={onAuth} disabled={false} variant="outline-secondary">{t('login.sso', { provider: staticConfig.oauth.provider })}</Button>
           <Markdown>{staticConfig.login.MOTD.post}</Markdown>
         </Stack>
       </Col>

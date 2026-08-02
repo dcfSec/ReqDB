@@ -14,6 +14,7 @@ import { CommentCard, DescriptionCard, ExtraCard, TagsCard, TopicsCard } from ".
 import APIClient, { handleError, handleResult } from "../APIClients";
 import { APIErrorData, APISuccessData } from "../types/Generics";
 import { Item as RequirementItem } from "../types/API/Requirements";
+import { useTranslation } from "react-i18next";
 
 /**
  * View to select a catalogue to browse in the BrowseCatalogue view
@@ -22,10 +23,11 @@ import { Item as RequirementItem } from "../types/API/Requirements";
  */
 export default function Requirement() {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
   useEffect(() => {
-    dispatch(setPageTitle("View Requirement - Loading..."))
-    dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: "View Requirement", active: true }]))
+    dispatch(setPageTitle(t('browseRequirement.titleLoading')))
+    dispatch(setBreadcrumbs([{ href: "/Browse", title: t('nav.browse'), active: false }, { href: "", title: t('nav.requirement'), active: true }]))
   }, []);
 
   const title = useAppSelector(state => state.layout.pageTitle)
@@ -50,7 +52,7 @@ export default function Requirement() {
   function okCallback(response: APISuccessData) {
     dispatch(setRequirement(response.data as RequirementItem))
     dispatch(setPageTitle(`${(response.data as RequirementItem).key} - ${(response.data as RequirementItem).title}`))
-    dispatch(setBreadcrumbs([{ href: "/Browse", title: "Browse", active: false }, { href: "", title: `${(response.data as RequirementItem).key} - ${(response.data as RequirementItem).title}`, active: true }]))
+    dispatch(setBreadcrumbs([{ href: "/Browse", title: t('nav.browse'), active: false }, { href: "", title: `${(response.data as RequirementItem).key} - ${(response.data as RequirementItem).title}`, active: true }]))
     setFetched(true);
   }
 
@@ -67,7 +69,7 @@ export default function Requirement() {
   let body = <LoadingBar />
 
   if (error) {
-    body = <Alert variant="danger">Error loading catalogue data. Error: {error}</Alert>
+    body = <Alert variant="danger">{t('browseRequirement.loadingError')} {error}</Alert>
   } else if (APIError) {
     body = <Alert variant="danger">{ErrorMessage(APIError)}</Alert>
   } else if (fetched) {

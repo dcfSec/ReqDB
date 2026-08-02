@@ -14,6 +14,7 @@ import { setBreadcrumbs, setPageTitle } from "../stateSlices/LayoutSlice";
 import APIClient, { handleError, handleResult } from "../APIClients";
 import { APIErrorData, APISuccessData } from "../types/Generics";
 import { Item as Comment } from "../types/API/Comments";
+import { useTranslation } from "react-i18next";
 
 
 /**
@@ -23,10 +24,11 @@ import { Item as Comment } from "../types/API/Comments";
  */
 export default function Comments() {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
   useEffect(() => {
-    dispatch(setBreadcrumbs([{ href: "", title: "Comments", active: true }]))
-    dispatch(setPageTitle("Comments"))
+    dispatch(setBreadcrumbs([{ href: "", title: t('nav.comments'), active: true }]))
+    dispatch(setPageTitle(t('nav.comments')))
   }, []);
 
   const comments = useAppSelector(state => state.comment.comments)
@@ -34,12 +36,12 @@ export default function Comments() {
   const searchFields = ["comment", "requirement.title"]
   const headers = [
     "#",
-    "Comment",
-    "Author",
-    "Completed",
-    "Requirement",
-    "Parent #",
-    "Action",
+    t('comments.comment'),
+    t('comments.author'),
+    t('comments.completed'),
+    t('comments.requirement'),
+    t('comments.parentId'),
+    t('comments.action'),
   ]
 
   const [search, setSearch] = useState("");
@@ -79,21 +81,21 @@ export default function Comments() {
   let body = <></>
 
   if (error) {
-    body = <Row><Col><Alert variant="danger">Error loading catalogue data. Error: {error}</Alert></Col></Row>
+    body = <Row><Col><Alert variant="danger">{t('comments.loadingError')} {error}</Alert></Col></Row>
   } else if (APIError) {
     body = <Row><Col><Alert variant="danger">{ErrorMessage(APIError)}</Alert></Col></Row>
   } else if (fetched) {
-    searchBar = <Col><SearchField title="Comments" onSearch={setSearch}></SearchField></Col>
+    searchBar = <Col><SearchField title={t('nav.comments')} onSearch={setSearch}></SearchField></Col>
     table = <Row><Col><DataTable headers={headers}>
       {comments.length > 0 ? comments.map((item, index) => (
         <CommentRow key={index} index={index} search={search} searchFields={searchFields} comment={item} showCompleted={showCompleted} />
-      )) : <tr><td colSpan={7} style={{ textAlign: 'center' }}>No comments</td></tr>}
+      )) : <tr><td colSpan={7} style={{ textAlign: 'center' }}>{t('comments.noCommentsError')}</td></tr>}
     </DataTable></Col></Row>
     body = (
       <>
         <Row>{searchBar}</Row>
         <Row>
-          <Col><Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label="Show completed" reverse /></Col>
+          <Col><Form.Check type="switch" id="completed" defaultChecked={showCompleted} onChange={e => { setShowCompleted(e.target.checked) }} label={t('comments.showCompleted')} reverse /></Col>
         </Row>
         {table}
       </>
@@ -103,7 +105,7 @@ export default function Comments() {
   return (
     <>
       <Row>
-        <Col><h2>Comments</h2></Col>
+        <Col><h2>{t('nav.comments')}</h2></Col>
       </Row>
       {body}
     </>

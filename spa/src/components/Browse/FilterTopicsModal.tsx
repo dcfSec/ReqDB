@@ -6,6 +6,7 @@ import { useState } from 'react';
 import FilterTopicEntry from './FilterTopicEntry';
 import { useAppSelector } from '../../hooks';
 import { Item } from '../../types/API/Topics';
+import { useTranslation } from 'react-i18next';
 
 
 type Props = {
@@ -20,6 +21,7 @@ type Props = {
  */
 export default function FilterTopicsModal({ show, setShow }: Props) {
 
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
 
   const data = useAppSelector(state => state.browse.data)
@@ -50,7 +52,7 @@ export default function FilterTopicsModal({ show, setShow }: Props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          Select Topic Filter
+          {t('browseRequirement.modal.topicFilterTitle')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -64,7 +66,7 @@ export default function FilterTopicsModal({ show, setShow }: Props) {
         </Container>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={() => reset()}>Close</Button>
+        <Button variant="primary" onClick={() => reset()}>{t('buttons.close')}</Button>
       </Modal.Footer>
     </Modal>
   );

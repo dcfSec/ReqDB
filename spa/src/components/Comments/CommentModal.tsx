@@ -1,6 +1,7 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Stack from 'react-bootstrap/Stack';
+import { useTranslation } from 'react-i18next';
 import CommentsBase from './CommentsBase';
 import { reset } from '../../stateSlices/CommentSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -22,6 +23,7 @@ type Props = {
  */
 export default function CommentModal({ requirementIndex, title, show, setShow }: Props) {
   const dispatch = useAppDispatch()
+  const { t } = useTranslation();
 
   const comments = useAppSelector(state => state.comment.comments)
 
@@ -41,7 +43,7 @@ export default function CommentModal({ requirementIndex, title, show, setShow }:
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          Comments for <code>{title}</code>
+          {t('comments.modal.title')} <code>{title}</code>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -50,7 +52,7 @@ export default function CommentModal({ requirementIndex, title, show, setShow }:
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>
         </Stack>
-        <Button variant="secondary" onClick={() => close()}>Close</Button>
+        <Button variant="secondary" onClick={() => close()}>{t('buttons.close')}</Button>
       </Modal.Footer>
     </Modal>
   );
