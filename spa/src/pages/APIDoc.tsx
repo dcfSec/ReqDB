@@ -36,17 +36,13 @@ export default function APIDoc() {
     dispatch(setPageTitle(t('nav.apiDoc')))
 
     dispatch(showSpinner(true))
-
-  }, []);
-
-  useEffect(() => {
-    dispatch(showSpinner(true));
     APIClient.get(`openapi.json`).then((response) => {
       handleResult(response, okCallback, APIErrorCallback)
     }).catch((error) => {
       handleError(error, APIErrorCallback, errorCallback)
     });
-  }, [])
+
+  }, []);
 
   async function parseSwagger(response: OpenAPI.Document) {
     dispatch(setSpec(response as OpenAPIV3_1.Document))

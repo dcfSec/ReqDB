@@ -29,6 +29,13 @@ export default function Comments() {
   useEffect(() => {
     dispatch(setBreadcrumbs([{ href: "", title: t('nav.comments'), active: true }]))
     dispatch(setPageTitle(t('nav.comments')))
+    dispatch(showSpinner(true))
+    dispatch(reset());
+    APIClient.get(`comments`).then((response) => {
+      handleResult(response, okCallback, APIErrorCallback)
+    }).catch((error) => {
+      handleError(error, APIErrorCallback, errorCallback)
+    });
   }, []);
 
   const comments = useAppSelector(state => state.comment.comments)
@@ -51,16 +58,6 @@ export default function Comments() {
   const [fetched, setFetched] = useState(false);
   const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    dispatch(showSpinner(true))
-    dispatch(reset());
-    APIClient.get(`comments`).then((response) => {
-      handleResult(response, okCallback, APIErrorCallback)
-    }).catch((error) => {
-      handleError(error, APIErrorCallback, errorCallback)
-    });
-  }, [])
 
   function okCallback(response: APISuccessData) {
     dispatch(setComments(response.data as Comment[]))

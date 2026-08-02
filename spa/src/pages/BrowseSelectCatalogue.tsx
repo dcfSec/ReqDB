@@ -26,14 +26,6 @@ export default function BrowseSelectCatalogue() {
   useEffect(() => {
     dispatch(setPageTitle(`${t('nav.browse')} - ${t('browseSelect.title')}`))
     dispatch(setBreadcrumbs([{ href: "/Browse", title: t('nav.browse'), active: false }, { href: "", title: t('browseSelect.title'), active: true }]))
-  }, []);
-
-  const [fetched, setFetched] = useState(false);
-  const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
-
-  useEffect(() => {
     dispatch(showSpinner(true))
     dispatch(reset());
     APIClient.get(`catalogues?expandTopics=false`).then((response) => {
@@ -41,7 +33,12 @@ export default function BrowseSelectCatalogue() {
     }).catch((error) => {
       handleError(error, APIErrorCallback, errorCallback)
     });
-  }, [])
+  }, []);
+
+  const [fetched, setFetched] = useState(false);
+  const [APIError, setAPIError] = useState<string | Array<string> | Record<string, Array<string>> | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   function okCallback(response: APISuccessData) {
     dispatch(set(response.data as Catalogue[]));

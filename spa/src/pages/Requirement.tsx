@@ -28,6 +28,13 @@ export default function Requirement() {
   useEffect(() => {
     dispatch(setPageTitle(t('browseRequirement.titleLoading')))
     dispatch(setBreadcrumbs([{ href: "/Browse", title: t('nav.browse'), active: false }, { href: "", title: t('nav.requirement'), active: true }]))
+    dispatch(reset());
+    dispatch(showSpinner(true))
+    APIClient.get(`requirements/${id}`).then((response) => {
+      handleResult(response, okCallback, APIErrorCallback)
+    }).catch((error) => {
+      handleError(error, APIErrorCallback, errorCallback)
+    });
   }, []);
 
   const title = useAppSelector(state => state.layout.pageTitle)
@@ -38,16 +45,6 @@ export default function Requirement() {
 
   const params = useParams();
   const id = params.requirementId
-
-  useEffect(() => {
-    dispatch(reset());
-    dispatch(showSpinner(true))
-    APIClient.get(`requirements/${id}`).then((response) => {
-      handleResult(response, okCallback, APIErrorCallback)
-    }).catch((error) => {
-      handleError(error, APIErrorCallback, errorCallback)
-    });
-  }, [])
 
   function okCallback(response: APISuccessData) {
     dispatch(setRequirement(response.data as RequirementItem))

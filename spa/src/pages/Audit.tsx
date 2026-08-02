@@ -40,18 +40,6 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
   useEffect(() => {
     dispatch(setPageTitle(auditPageName))
     dispatch(setBreadcrumbs([{ href: "", title: "Audit", active: true }, { href: "", title: auditPageName, active: true }]))
-  }, []);
-
-  const [search, setSearch] = useState("");
-  const [showId, setShowId] = useState(false);
-
-  const [fetched, setFetched] = useState(false);
-  const [APIError, setAPIError] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
-
-  useEffect(() => {
     APIClient.get(`audit/${endpoint}`).then((response) => {
       if (response && response.data && response.data.status === 200) {
         dispatch(setItems(response.data.data))
@@ -70,7 +58,16 @@ function AuditParent({ auditPageName, searchFields, endpoint }: Props) {
         dispatch(showSpinner(false))
       }
     });
-  }, [])
+  }, []);
+
+  const [search, setSearch] = useState("");
+  const [showId, setShowId] = useState(false);
+
+  const [fetched, setFetched] = useState(false);
+  const [APIError, setAPIError] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => { dispatch(showSpinner(!fetched)) }, [fetched]);
 
   let body = <LoadingBar />
 

@@ -53,6 +53,12 @@ export function EditParent({ editPageName, humanKey, headers, blankItem, searchF
   useEffect(() => {
     dispatch(setPageTitle(editPageName))
     dispatch(setBreadcrumbs([{ href: "", title: "Edit", active: true }, { href: "", title: editPageName, active: true }]))
+    dispatch(showSpinner(true));
+    APIClient.get(`${endpoint}?${parameters.join("&")}`).then((response) => {
+      handleResult(response, okCallback, APIErrorCallback)
+    }).catch((error) => {
+      handleError(error, APIErrorCallback, errorCallback)
+    });
   }, []);
 
   const [search, setSearch] = useState("");
@@ -66,15 +72,6 @@ export function EditParent({ editPageName, humanKey, headers, blankItem, searchF
   if (selectable) {
     actionHeaders.push(<><Form.Check key={"selectAll"} inline id={"selectAll"} type="checkbox" aria-label="All" label={`(${selectedCount}/${items.length})`} onChange={() => { dispatch(toggleSelectAll()) }} checked={selectedCount == items.length} /></>)
   }
-
-  useEffect(() => {
-    dispatch(showSpinner(true));
-    APIClient.get(`${endpoint}?${parameters.join("&")}`).then((response) => {
-      handleResult(response, okCallback, APIErrorCallback)
-    }).catch((error) => {
-      handleError(error, APIErrorCallback, errorCallback)
-    });
-  }, [])
 
   function okCallback(response: APISuccessData) {
     dispatch(setItems(response.data as GenericItem[]))
