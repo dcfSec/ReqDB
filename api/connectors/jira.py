@@ -1,6 +1,6 @@
 import re
 
-import httpx
+import httpx2
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.starlette_client.apps import StarletteOAuth2App
 from authlib.oauth2.rfc6749.wrappers import OAuth2Token
@@ -15,7 +15,6 @@ from api.connectors import ConnectorConfig
 from api.error import BadRequest, Unauthorized, raiseDBErrorReadable
 from api.models.db import Requirement, Token, User
 from api.models.insert import Insert
-from api.models.public import Export
 from helper.cache import EncryptedRedisCache
 
 
@@ -23,7 +22,7 @@ class Jira:
 
     def __init__(self, session: Session) -> None:
         if ConnectorConfig.Atlassian.TENANT:
-            self.client = httpx.Client()
+            self.client = httpx2.Client()
             self.cloudId: str = self.getCloudId(ConnectorConfig.Atlassian.TENANT)
             self.session: Session = session
             oauth = OAuth(update_token=self.updateToken)
@@ -39,7 +38,7 @@ class Jira:
                 client_kwargs={"scope": ConnectorConfig.Atlassian.OAUTH_SCOPE},
                 fetch_token=self.fetchToken,
             )
-            self.oauthClient: StarletteOAuth2App = oauth._clients["AtlassianID"]
+            self.oauthClient: StarletteOAuth2App = oauth.create_client("AtlassianID")
             self.authCache = EncryptedRedisCache()
             self.headers: dict[str, str] = {
                 "Accept": "application/json",
@@ -58,7 +57,7 @@ class Jira:
         return None
 
     def getCloudId(self, tenant) -> str:
-        response: httpx.Response = self.client.get(
+        response: httpx2.Response = self.client.get(
             f"https://{tenant}.atlassian.net/_edge/tenant_info",
         )
         response.raise_for_status()
@@ -69,7 +68,7 @@ class Jira:
         return jsonResponse["cloudId"]
 
     async def getUser(self, request: Request) -> str:
-        response: httpx.Response = await self.oauthClient.get(
+        response: httpx2.Response = await self.oauthClient.request("GET",
             f"https://api.atlassian.com/ex/jira/{self.cloudId}/rest/api/3/myself",
             request=request,
             headers=self.headers,
@@ -194,7 +193,7 @@ class Jira:
             del extraFields["labels"]
 
         description += f"Link to requirement in ReqDB: [{requirement.key}]({AppConfig.BASE_URL}/Browse/Requirement/{requirement.id})"
-        response: httpx.Response = await self.oauthClient.post(
+        response: httpx2.Response = await self.oauthClient.request("POST",
             f"https://api.atlassian.com/ex/jira/{self.cloudId}/rest/api/2/issue",
             request=request,
             headers=self.headers,
@@ -215,7 +214,7 @@ class Jira:
 
         try:
             response.raise_for_status()
-        except httpx.HTTPStatusError as e:
+        except httpx2.HTTPStatusError as e:
             raise BadRequest(
                 detail=e.response.json()["errorMessages"]
             )  # TODO: Add checks

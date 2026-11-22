@@ -509,10 +509,10 @@ typing-extensions = ">=4.8.0"
 typing-inspection = ">=0.4.2"
 
 [package.extras]
-all = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.32)", "httpx (>=0.23.0,<1.0.0)", "httpx2 (>=2.0.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "pyyaml (>=5.3.1)", "uvicorn[standard] (>=0.12.0)"]
+all = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.32)", "httpx2 (>=0.23.0,<1.0.0)", "httpx22 (>=2.0.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "pyyaml (>=5.3.1)", "uvicorn[standard] (>=0.12.0)"]
 opentelemetry = ["opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)"]
-standard = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.32)", "fastar (>=0.9.0)", "httpx (>=0.23.0,<1.0.0)", "httpx2 (>=2.0.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
-standard-no-fastapi-cloud-cli = ["email-validator (>=2.0.0)", "fastapi-cli[standard-no-fastapi-cloud-cli] (>=0.0.32)", "httpx (>=0.23.0,<1.0.0)", "httpx2 (>=2.0.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
+standard = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.32)", "fastar (>=0.9.0)", "httpx2 (>=0.23.0,<1.0.0)", "httpx22 (>=2.0.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
+standard-no-fastapi-cloud-cli = ["email-validator (>=2.0.0)", "fastapi-cli[standard-no-fastapi-cloud-cli] (>=0.0.32)", "httpx2 (>=0.23.0,<1.0.0)", "httpx22 (>=2.0.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
 name = "fastapi-cli"
@@ -549,26 +549,27 @@ files = [
 ]
 
 [[package]]
-name = "httpcore"
-version = "1.0.9"
+name = "httpcore2"
+version = "2.16.2"
 description = "A minimal low-level HTTP client."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.11"
 groups = ["main"]
+markers = "sys_platform != \"emscripten\""
 files = [
-    {file = "httpcore-1.0.9-py3-none-any.whl", hash = "sha256:2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55"},
-    {file = "httpcore-1.0.9.tar.gz", hash = "sha256:6e34463af53fd2ab5d807f399a9b45ea31c3dfa2276f15a2c3f00afff6e176e8"},
+    {file = "httpcore2-2.16.2-py3-none-any.whl", hash = "sha256:16051ae2a42f776007543f32de9349a317b23d2cbb4e1456b4bac0e88b87419a"},
+    {file = "httpcore2-2.16.2.tar.gz", hash = "sha256:6c519d0f7b44f7269fa9bbb4d2763db395a4a2370f046d8e8e0a4b38227815d2"},
 ]
 
 [package.dependencies]
-certifi = "*"
 h11 = ">=0.16"
+truststore = ">=0.10"
 
 [package.extras]
-asyncio = ["anyio (>=4.0,<5.0)"]
+asyncio = ["anyio (>=4.5.0,<5.0)"]
 http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (==1.*)"]
-trio = ["trio (>=0.22.0,<1.0)"]
+trio = ["trio (>=0.34.0,<1.0)"]
 
 [[package]]
 name = "httptools"
@@ -699,29 +700,44 @@ files = [
 ]
 
 [[package]]
-name = "httpx"
-version = "0.28.1"
+name = "httpx22"
+version = "2.16.2"
 description = "The next generation HTTP client."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "httpx-0.28.1-py3-none-any.whl", hash = "sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"},
-    {file = "httpx-0.28.1.tar.gz", hash = "sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc"},
+    {file = "httpx22-2.16.2-py3-none-any.whl", hash = "sha256:f05c13aade4c45dbf1c9060647a1058f0acad62398fad96e741269edb33d46f5"},
+    {file = "httpx22-2.16.2.tar.gz", hash = "sha256:748b615678f07d8e3b183efe81ad13b655ca88bfc56ce4589219b2d442860574"},
 ]
 
 [package.dependencies]
-anyio = "*"
-certifi = "*"
-httpcore = "==1.*"
-idna = "*"
+anyio = {version = ">=4.10", markers = "sys_platform != \"emscripten\""}
+httpcore2 = {version = "2.16.2", markers = "sys_platform != \"emscripten\""}
+httpx22-jsfetch = {version = "*", markers = "sys_platform == \"emscripten\" and python_version >= \"3.12\""}
+idna = ">=3.18"
+truststore = {version = ">=0.10", markers = "sys_platform != \"emscripten\""}
 
 [package.extras]
-brotli = ["brotli ; platform_python_implementation == \"CPython\"", "brotlicffi ; platform_python_implementation != \"CPython\""]
-cli = ["click (==8.*)", "pygments (==2.*)", "rich (>=10,<14)"]
+brotli = ["brotli (>=1.2.0) ; platform_python_implementation == \"CPython\"", "brotlicffi (>=1.2.0.2) ; platform_python_implementation != \"CPython\""]
+cli = ["click (>=8.4.2)", "pygments (==2.*)", "rich (>=10,<16)"]
 http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (==1.*)"]
-zstd = ["zstandard (>=0.18.0)"]
+ws = ["wsproto (>=1.2)"]
+zstd = ["backports-zstd (>=1.0.0) ; python_version <= \"3.13\""]
+
+[[package]]
+name = "httpx22-jsfetch"
+version = "1.0"
+description = "httpx22 transports for Emscripten/Pyodide, backed by the JavaScript fetch API."
+optional = false
+python-versions = ">=3.12"
+groups = ["main"]
+markers = "sys_platform == \"emscripten\""
+files = [
+    {file = "httpx22_jsfetch-1.0-py3-none-any.whl", hash = "sha256:cb916b707601e69a07721aabc8f3f6659be3a6893bc1ff5c6f9e02241df2da32"},
+    {file = "httpx22_jsfetch-1.0.tar.gz", hash = "sha256:70a0e3eabfef7cce5ad9c629f7d01ca05e418f586646f4ddf14782e4c1454c60"},
+]
 
 [[package]]
 name = "idna"
@@ -1694,7 +1710,20 @@ files = [
 anyio = ">=4.0.0,<5"
 
 [package.extras]
-full = ["httpx (>=0.27.0,<0.29.0)", "httpx2 (>=2.0.0)", "itsdangerous", "jinja2", "opentelemetry-api", "python-multipart (>=0.0.18)", "pyyaml"]
+full = ["httpx2 (>=0.27.0,<0.29.0)", "httpx22 (>=2.0.0)", "itsdangerous", "jinja2", "opentelemetry-api", "python-multipart (>=0.0.18)", "pyyaml"]
+
+[[package]]
+name = "truststore"
+version = "0.10.5"
+description = "Verify certificates using native system trust stores"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "sys_platform != \"emscripten\""
+files = [
+    {file = "truststore-0.10.5-py3-none-any.whl", hash = "sha256:9aaaedaefaf06d8b206278cf8b5012bc897f485a874503501e12d776df78951c"},
+    {file = "truststore-0.10.5.tar.gz", hash = "sha256:30d36967ccaded5cbb38d602c433f53600036c79d502f4533a49b60a03bbefcd"},
+]
 
 [[package]]
 name = "typer"
@@ -2075,4 +2104,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "bcc005c2d0fa04f7f498312a2df98599e6862ac6978897d8634829e056abe860"
+content-hash = "6f633823ef6a89c7666527098c075e2cf8b9d239e3dd84bef4daae77b343a1ee"

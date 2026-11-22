@@ -89,7 +89,7 @@ class AppConfig:
                 "handlers": ["default"],
                 "level": "INFO",
             },
-            "httpx": {"level": "ERROR"},
+            "httpx2": {"level": "ERROR"},
             "": {"handlers": ["default"], "level": "INFO", "propagate": True},
         },
     }
