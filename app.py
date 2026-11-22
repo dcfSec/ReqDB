@@ -57,7 +57,6 @@ async def lifespan(app: FastAPI):
     AppConfig.setEmailActiveStatus()
     SQLModel.metadata.create_all(engine)
     AppConfig.getOpenIdConfig()
-    AppConfig.getJWKs()
     checkAndUpdateConfigDB()
     yield
 

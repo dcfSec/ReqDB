@@ -144,7 +144,7 @@ def getClaims(credentials: str) -> dict[str, Any]:
     :param str credentials: JWT from the Authentication header
     :return dict[str, Any]: Parsed and validated claims
     """
-    token: jwt.Token = jwt.decode(credentials, AppConfig.JWT_PUBLIC_KEYS)
+    token: jwt.Token = jwt.decode(credentials, AppConfig.getJWKs)
     claims_requests = jwt.JWTClaimsRegistry(
         iss={"essential": True, "value": AppConfig.JWT_DECODE_ISSUER},
         aud={"essential": True, "value": AppConfig.OAUTH_CLIENT_ID},

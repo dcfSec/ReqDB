@@ -1,9 +1,11 @@
 from os import getenv
 from typing import Any
 
+import functools
+
 import requests
 from joserfc.jwk import KeySet
-
+from joserfc.jws import CompactSignature
 
 class AppConfig:
     """
@@ -95,7 +97,8 @@ class AppConfig:
     }
 
     @classmethod
-    def getJWKs(cls) -> None:
+    @functools.cache
+    def getJWKs(cls, obj: CompactSignature) -> KeySet:
         """
         Returns the jwt signing keys from the authorities jwk list as dictionary
         with kid -> pem
@@ -104,7 +107,7 @@ class AppConfig:
         """
         response: requests.Response = requests.get(AppConfig.JWT_JWK_URI)
         response.raise_for_status()
-        cls.JWT_PUBLIC_KEYS: KeySet = KeySet.import_key_set(response.json())
+        return KeySet.import_key_set(response.json())
 
     @classmethod
     def getOpenIdConfig(cls) -> None:
@@ -113,7 +116,7 @@ class AppConfig:
 
         :raises AssertionError: Raises if "issuer" or "jwks_uri" are not present in the config
         :raises HTTPError: Raises if the HTTP status is not ok
-        :raises requests.exceptions.JSONDecodeError: Raises if oauth config can't be decoded as json
+        :raises requests.exceptions.JSONDecodeError: Raises if oauth config can't be decoded as JSON
         """
         response: requests.Response = requests.get(cls.OAUTH_CONFIG)
         response.raise_for_status()
