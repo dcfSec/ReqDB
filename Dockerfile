@@ -1,11 +1,11 @@
-FROM --platform=$BUILDPLATFORM node:22-alpine AS spa-build
+FROM --platform=$BUILDPLATFORM node:26-alpine AS spa-build
 
 WORKDIR /src
 COPY spa ./
-RUN npm install
+RUN npm ci
 RUN npm run build
 
-FROM python:3.13-alpine AS api-build
+FROM python:3.15-alpine AS api-build
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
@@ -22,7 +22,7 @@ COPY pyproject.toml .
 
 RUN poetry install --only main
 
-FROM python:3.13-alpine
+FROM python:3.15-alpine
 
 WORKDIR /reqdb
 
